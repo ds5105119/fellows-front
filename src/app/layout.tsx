@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Navigation from "@/components/nav/bottomnav";
 import MobileHeader from "@/components/header/mobileheader";
-import ExternalField from "@/components/section/externalfield";
+import LenisProvider from "@/lib/lenisprovider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { auth } from "@/auth";
@@ -31,19 +30,14 @@ export default async function RootLayout({
   const session = await auth();
 
   return (
-    <html lang="en" className="h-full">
-      <body
-        className={`flex ${pretendard.variable} font-pretendard antialiased justify-center bg-gray-100 overflow-hidden overscroll-none min-h-screen max-h-screen scrollbar-hide`}
-      >
-        <div className="hidden lg:flex items-center justify-center w-[600px]">
-          <ExternalField />
-        </div>
-        <div className="relative flex flex-col flex-1 max-w-[600px] w-full bg-white shadow-2xl shadow-zinc-500/50 min-h-screen max-h-screen">
-          <MobileHeader text={headerText} session={session} />
-          <main className="flex-1 flex flex-col min-h-0 overflow-auto scrollbar-hide">{children}</main>
-          <Navigation />
-        </div>
-
+    <html lang="en">
+      <body className={`${pretendard.variable} font-pretendard antialiased`}>
+        <LenisProvider>
+          <div className="relative bg-white shadow-2xl overscroll-none">
+            <MobileHeader text={headerText} session={session} />
+            <main className="flex flex-col scrollbar-hide">{children}</main>
+          </div>
+        </LenisProvider>
         <Analytics />
         <SpeedInsights />
       </body>

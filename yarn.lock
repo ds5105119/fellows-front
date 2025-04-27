@@ -1929,6 +1929,15 @@ for-each@^0.3.3, for-each@^0.3.5:
   dependencies:
     is-callable "^1.2.7"
 
+framer-motion@^12.8.2:
+  version "12.8.2"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-12.8.2.tgz#d006f28381b58fd68d86f7c7ecb2121a20c100a5"
+  integrity sha512-JCGFJPfVmvxL4rRJgCcVCnbzPniKj5N3Sa8XQ5/TQI1bN4PyVlKDHPWfWJ7AbnFuGm9IQvZysjk+ABFbkErCrA==
+  dependencies:
+    motion-dom "^12.8.1"
+    motion-utils "^12.7.5"
+    tslib "^2.4.0"
+
 function-bind@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.2.tgz#2c02d864d97f3ea6c8830c464cbd11ab6eab7a1c"
@@ -2392,6 +2401,11 @@ language-tags@^1.0.9:
   dependencies:
     language-subtag-registry "^0.3.20"
 
+lenis@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/lenis/-/lenis-1.3.1.tgz#c6a9cc4ab346ca84998670255f950e82bb4ecf19"
+  integrity sha512-OGRlQk7EkGUtjDdnH+U49Mp26G/wGJFHuyYJ8ZwATllwHQZOKYbeuVaPWYQ4lK0gHfAnk2m0u8qN8Y4dtrHaHw==
+
 levn@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/levn/-/levn-0.4.1.tgz#ae4562c007473b932a6200d403268dd2fffc6ade"
@@ -2528,6 +2542,18 @@ minimist@^1.2.0, minimist@^1.2.6:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
+
+motion-dom@^12.8.1:
+  version "12.8.1"
+  resolved "https://registry.yarnpkg.com/motion-dom/-/motion-dom-12.8.1.tgz#8960a69c599f0254b2e2c7c528aedbf9af64f244"
+  integrity sha512-ap7SvhLzSaYiY7/YzPB/dXarHqjlABJRBXGvSr7S7Sk9bwnU5J9X8+WgS3uu4w5C+JD0Xh/qZkWoRYNDjNeesg==
+  dependencies:
+    motion-utils "^12.7.5"
+
+motion-utils@^12.7.5:
+  version "12.7.5"
+  resolved "https://registry.yarnpkg.com/motion-utils/-/motion-utils-12.7.5.tgz#d77df2c6e336540766d9927498e62571b81b66bd"
+  integrity sha512-JIgrmEq7Vw1x0AUrjvkRp7oMMQkGqSUMT50O/Ag6RRCQWG3gRRTkOI+BirBAJT6m+GIPoiyxkJ1u98GgF/a6TQ==
 
 ms@^2.1.1, ms@^2.1.3:
   version "2.1.3"

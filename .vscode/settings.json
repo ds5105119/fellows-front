@@ -1,4 +1,5 @@
 {
-  "CodeGPT.apiKey": "OpenAI",
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "CodeGPT.apiKey": "CodeGPT Plus Beta",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "idf.pythonInstallPath": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3"
 }

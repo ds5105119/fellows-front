@@ -1,5 +1,6 @@
 import React from "react";
-import Link from "next/link";
+import Image from "next/image";
+import NavButtonGroup from "./navbuttongroup";
 
 interface TopDetailHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   text?: string;
@@ -9,11 +10,19 @@ interface TopDetailHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export default function MobileMainHeader({ text, href, children }: TopDetailHeaderProps) {
   return (
-    <header className="z-50 w-full border-b bg-background/90 backdrop-blur-xs supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 max-w-screen-md items-center justify-between px-4">
-        <div className="text-xl font-bold pl-2">{href ? <Link href="href">{text}</Link> : text}</div>
-        <div className="flex items-center gap-2">{children}</div>
-      </div>
-    </header>
+    <div className="sticky top-0 z-50">
+      <nav className="hidden min-md:flex absolute left-1/2 top-6 z-10 h-[60px] w-[584px] rounded-full bg-[hsla(0,0%,93%,0.72)] backdrop-blur-xl -translate-x-1/2 items-center gap-x-6 px-6 overflow-hidden">
+        <div className="flex grow items-center px-2">
+          <Image src="/fellows.svg" width={100} height={100} alt="fellows" />
+        </div>
+        <NavButtonGroup />
+      </nav>
+      <nav className="flex min-md:hidden absolute left-1/2 top-2 z-10 h-14 w-[calc(100vw-48px)] rounded-full bg-[hsla(0,0%,93%,0.72)] backdrop-blur-xl -translate-x-1/2 items-center gap-x-6 px-6">
+        <div className="flex grow items-center px-2">
+          <Image src="/fellows.svg" width={100} height={100} alt="fellows" />
+        </div>
+        <NavButtonGroup />
+      </nav>
+    </div>
   );
 }
