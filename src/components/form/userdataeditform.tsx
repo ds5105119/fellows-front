@@ -14,7 +14,6 @@ import { Check, ChevronsUpDown, Loader2, RotateCcw } from "lucide-react";
 import { PartialUserData, PartialUserDataSchema } from "@/@types/accounts/userdata";
 import ToggleButton from "@/components/button/checkbutton";
 interface UserDataEditFormProps {
-  session?: Session;
   data: UserData;
 }
 
@@ -64,7 +63,7 @@ const other_status = [
   { label: "질병·질환자", name: "disease" },
 ] as const;
 
-export default function UserDataEditForm({ data, session }: UserDataEditFormProps) {
+export default function UserDataEditForm({ data }: UserDataEditFormProps) {
   const form = useForm<PartialUserData>({
     resolver: zodResolver(PartialUserDataSchema),
     defaultValues: {

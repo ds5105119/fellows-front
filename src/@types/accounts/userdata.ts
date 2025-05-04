@@ -35,5 +35,30 @@ export const UserDataSchema = z.object({
 });
 export const PartialUserDataSchema = UserDataSchema.partial();
 
+export const UserBusinessDataSchema = z.object({
+  id: z.number().optional(),
+  sub: z.string().optional(),
+
+  JA1101: z.boolean().nullable(), // 예비창업자
+  JA1102: z.boolean().nullable(), // 영업중
+  JA1103: z.boolean().nullable(), // 생계곤란/폐업예정자
+
+  JA1201: z.boolean().nullable(), // 음식적업
+  JA1202: z.boolean().nullable(), // 제조업
+  JA1299: z.boolean().nullable(), // 기타업종
+
+  JA2101: z.boolean().nullable(), // 중소기업
+  JA2102: z.boolean().nullable(), // 사회복지시설
+  JA2103: z.boolean().nullable(), // 기관/단체
+
+  JA2201: z.boolean().nullable(), // 제조업
+  JA2202: z.boolean().nullable(), // 농업,임업 및 어업
+  JA2203: z.boolean().nullable(), // 정보통신업
+  JA2299: z.boolean().nullable(), // 기타업종
+});
+export const UserBusinessDataNullableSchema = UserBusinessDataSchema.nullable();
+
 export type UserData = z.infer<typeof UserDataSchema>;
 export type PartialUserData = z.infer<typeof PartialUserDataSchema>;
+export type UserBusinessData = z.infer<typeof UserBusinessDataSchema>;
+export type UserBusinessDataNullable = z.infer<typeof UserBusinessDataNullableSchema>;

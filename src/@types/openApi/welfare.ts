@@ -25,7 +25,7 @@ export const WelfareSchema = z.object({
 
   apply_period: z.string().nullable().optional(),
   apply_method: z.string().nullable().optional(),
-  apply_url: z.string().url().nullable().optional(),
+  apply_url: z.string().nullable().optional(),
   document: z.string().nullable().optional(),
   receiving_agency: z.string().nullable().optional(),
   contact: z.string().nullable().optional(),
@@ -34,7 +34,7 @@ export const WelfareSchema = z.object({
   support_targets: z.string().nullable().optional(),
   support_type: z.string().nullable().optional(),
 
-  detail_url: z.string().url().nullable().optional(),
+  detail_url: z.string().nullable().optional(),
   law: z.string().nullable().optional(),
 });
 
