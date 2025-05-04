@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { signIn, signOut } from "next-auth/react";
+import { Session } from "next-auth";
 
-export default function NavButtonGroup() {
+interface NavButtonGroupProps extends React.HTMLAttributes<HTMLDivElement> {
+  session: Session | null;
+}
+
+export default function NavButtonGroup({ session, ...props }: NavButtonGroupProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -13,8 +19,8 @@ export default function NavButtonGroup() {
       const windowHeight = window.innerHeight;
       const docHeight = document.documentElement.scrollHeight;
 
-      const scrolledEnough = scrollY >= windowHeight * 0.5;
-      const shortPage = docHeight <= windowHeight * 1.8;
+      const scrolledEnough = scrollY >= windowHeight * 0.3;
+      const shortPage = docHeight <= windowHeight * 1.5;
 
       setIsVisible(scrolledEnough || shortPage);
     };
@@ -28,39 +34,47 @@ export default function NavButtonGroup() {
   }, []);
 
   return (
-    <AnimatePresence>
-      <motion.span
-        key="navbutton1"
-        initial={false}
-        animate={{ x: isVisible ? -170 : 0 }}
-        exit={{ opacity: 1, x: 170 }}
-        transition={{ type: "spring", duration: 0.5 }}
-        className="w-fit font-bold space-x-7"
-      >
-        <Link href="/login" className="hover:opacity-80">
-          가격
-        </Link>
-        <Link href="/login" className="hover:opacity-80">
-          포토폴리오
-        </Link>
-        <Link href="/login" className="hover:opacity-80">
-          로그인
-        </Link>
-      </motion.span>
-
-      {isVisible && (
-        <motion.span
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 16 }}
-          transition={{ type: "tween", duration: 0.2, ease: "easeInOut" }}
-          className="absolute right-2.5 inset-y-2 px-5 font-bold text-white bg-black rounded-full flex items-center justify-center hover:bg-neutral-700"
+    <div {...props}>
+      <AnimatePresence>
+        <motion.div
+          key="nav-button-group"
+          initial={false}
+          animate={{ x: isVisible ? -170 : 0 }}
+          exit={{ opacity: 1, x: 170 }}
+          transition={{ type: "spring", duration: 0.5 }}
+          className="flex space-x-7 font-bold"
         >
-          <Link href="/login" className="flex w-full h-full items-center">
-            지금 바로 시작하기
+          <Link href="/abc" className="hover:opacity-80">
+            가격
           </Link>
-        </motion.span>
-      )}
-    </AnimatePresence>
+          <Link href="/df" className="hover:opacity-80">
+            포토폴리오
+          </Link>
+          <button style={{ cursor: "pointer" }} onClick={() => (session?.user ? signOut() : signIn("keycloak", { redirectTo: "/" }))}>
+            {session?.user ? "로그아웃" : "로그인"}
+          </button>
+        </motion.div>
+        {isVisible && (
+          <motion.span
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ type: "tween", duration: 0.2, ease: "easeInOut" }}
+            className="absolute right-2.5 px-5 inset-y-2 font-bold text-white bg-black rounded-full flex items-center justify-center hover:bg-neutral-700"
+            style={{ cursor: "pointer" }}
+          >
+            {session?.user ? (
+              <Link href="/service/offer/general" className="flex w-full h-full items-center">
+                지금 바로 시작하기
+              </Link>
+            ) : (
+              <button onClick={() => (session?.user ? signOut() : signIn("keycloak", { redirectTo: "/" }))} className="flex w-full h-full items-center">
+                지금 바로 시작하기
+              </button>
+            )}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

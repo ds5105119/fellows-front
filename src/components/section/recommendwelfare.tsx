@@ -1,9 +1,7 @@
 "use client";
 
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
-import WelfareCard from "@/components/card/welfarecard";
 import { WelfareResponseSchema } from "@/@types/openApi/welfare";
-import { WelfareCardSkeleton } from "../skeleton/welfarecardskeleton";
 
 const getKey: SWRInfiniteKeyLoader = (index, previousPageData) => {
   if (previousPageData && !previousPageData.length) return null;
@@ -26,13 +24,9 @@ export default function RecommendWelfareSection() {
   return (
     <div className="space-x-0.5 w-full">
       {data?.map((pages) => {
-        return pages.map((value) => <WelfareCard key={value.id} data={value} />);
+        return pages.map((value) => JSON.stringify(value));
       })}
-      {isLoading && (
-        <div className="flex flex-col space-x-0.5 mt-4 space-y-3 w-full">
-          <WelfareCardSkeleton /> <WelfareCardSkeleton /> <WelfareCardSkeleton />
-        </div>
-      )}
+      {isLoading && <div className="flex flex-col space-x-0.5 mt-4 space-y-3 w-full">로딩중이랑께</div>}
     </div>
   );
 }

@@ -99,3 +99,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 });
+
+export const SignIn = async () => {
+  await signIn("keycloak", { redirectTo: "/" });
+};

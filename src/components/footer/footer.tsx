@@ -3,10 +3,10 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-gray-50 px-80 py-14 inline-flex flex-col justify-start items-start gap-7">
+    <footer className="w-full bg-gray-50 px-60 py-14 inline-flex flex-col justify-start items-start gap-7">
       <Link href="/">
         <div className="w-20 h-5 relative">
-          <Image src="/fellows.svg" width={100} height={100} alt="fellows" />
+          <Image src="/fellows/logo.svg" width={139} height={31} alt="fellows" />
         </div>
       </Link>
       <div className="self-stretch inline-flex justify-start items-start gap-9">

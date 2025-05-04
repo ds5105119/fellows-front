@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import React from "react";
 
 interface SplitTextProps {
+  once?: boolean;
   children: React.ReactNode;
 }
 
@@ -11,20 +12,20 @@ const containerVariants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.09,
+      staggerChildren: 0.05,
     },
   },
 };
 
 const wordVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 10 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      type: "tween",
-      duration: 0.8,
-      ease: "easeOut",
+      type: "spring",
+      duration: 2,
+      bounce: 0,
     },
   },
 };
@@ -50,19 +51,31 @@ function splitIntoLines(node: React.ReactNode): string[] {
   return result;
 }
 
-export default function SplitText({ children }: SplitTextProps) {
+export default function SplitText({ once, children }: SplitTextProps) {
   if (!React.isValidElement(children)) return null;
 
   const element = children as React.ReactElement<{ className?: string; children?: React.ReactNode }>;
   const className = element.props.className ?? "";
   const lines = splitIntoLines(element.props.children);
 
-  return (
+  return once ? (
+    <motion.div initial="hidden" animate="visible" variants={containerVariants} className={className}>
+      {lines.map((line, i) => (
+        <div key={i} className="block">
+          {line.split(" ").map((word, j) => (
+            <motion.span key={`${i}-${j}`} variants={wordVariants} className="inline-block mr-3 whitespace-nowrap">
+              {word}
+            </motion.span>
+          ))}
+        </div>
+      ))}
+    </motion.div>
+  ) : (
     <motion.div initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.5 }} variants={containerVariants} className={className}>
       {lines.map((line, i) => (
         <div key={i} className="block">
           {line.split(" ").map((word, j) => (
-            <motion.span key={`${i}-${j}`} variants={wordVariants} className="inline-block mx-1 whitespace-nowrap">
+            <motion.span key={`${i}-${j}`} variants={wordVariants} className="inline-block mr-3 whitespace-nowrap">
               {word}
             </motion.span>
           ))}

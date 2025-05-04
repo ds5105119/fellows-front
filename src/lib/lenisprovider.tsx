@@ -1,4 +1,3 @@
-// lib/LenisProvider.tsx
 "use client";
 
 import { ReactLenis } from "lenis/react";
@@ -7,12 +6,15 @@ import { frame, cancelFrame } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
+function easeInOutQuad(x: number): number {
+  return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+}
+
 export default function LenisProvider({ children }: { children: React.ReactNode }) {
   const lenisRef = useRef<LenisRef>(null);
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
-  // 클라이언트 마운트 체크
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -42,10 +44,9 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
       ref={lenisRef}
       root
       options={{
-        lerp: 0.1,
-        duration: 1.5,
+        duration: 1.2,
         smoothWheel: true,
-        autoRaf: false, // autoRaf 끄고 위의 frame.update 로만 돌림
+        autoRaf: false,
       }}
     >
       {children}

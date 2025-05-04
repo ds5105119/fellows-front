@@ -1,7 +1,6 @@
 @import "tailwindcss";
-
 @plugin 'tailwindcss-animate';
-
+@plugin "@tailwindcss/typography";
 @custom-variant dark (&:is(.dark *));
 
 @layer utilities {
@@ -11,6 +10,25 @@
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+  body {
+    font-family: var(--font-satoshi), var(--font-pretendard), Helvetica, Arial, sans-serif;
+  }
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
   }
 }
 
@@ -54,30 +72,6 @@
   --radius-sm: calc(var(--radius) - 4px);
 
   --font-pretendard: var(--font-pretendard);
-}
-
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-}
-
-@layer utilities {
-  body {
-    font-family: Arial, Helvetica, sans-serif;
-  }
 }
 
 @layer base {
@@ -137,19 +131,6 @@
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-/*
-  ---break---
-*/
-
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -186,10 +167,6 @@
   --sidebar-ring: oklch(0.705 0.015 286.067);
 }
 
-/*
-  ---break---
-*/
-
 .dark {
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
@@ -224,10 +201,6 @@
   --sidebar-border: oklch(0.274 0.006 286.033);
   --sidebar-ring: oklch(0.442 0.017 285.786);
 }
-
-/*
-  ---break---
-*/
 
 @theme inline {
   --color-background: var(--background);
@@ -267,10 +240,6 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
-
-/*
-  ---break---
-*/
 
 @layer base {
   * {
