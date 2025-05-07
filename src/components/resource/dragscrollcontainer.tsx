@@ -34,7 +34,7 @@ export default function DragScrollContainer({ className, children }: DragScrollC
   return (
     <div
       ref={scrollRef}
-      className={cn("overflow-x-auto scrollbar-hide active:cursor-grabbing", className)}
+      className={cn("overflow-x-hidden scrollbar-hide active:cursor-grabbing", className)}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseUp}

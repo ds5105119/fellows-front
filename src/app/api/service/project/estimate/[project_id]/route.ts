@@ -1,19 +1,22 @@
+import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL = "http://127.0.0.1:8000/api/fellows/estimate";
-
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ project_id: string }> }) {
   try {
-    // 클라이언트가 보낸 URL에서 쿼리스트링 추출
-    const searchParams = request.nextUrl.searchParams;
-    const urlWithParams = `${API_URL}?${searchParams.toString()}`;
+    const session = await auth();
+
+    const project_id = (await params).project_id;
+    const url = new URL(project_id, process.env.NEXT_PUBLIC_PROJECT_ESTIMATE_URL);
 
     // FastAPI로 GET 요청 전송 (SSE)
-    const apiResponse = await fetch(urlWithParams, {
+    const apiResponse = await fetch(url, {
       method: "GET",
       headers: {
         Accept: "text/event-stream",
+        ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
       },
+      redirect: "follow",
+      credentials: "include",
     });
 
     // 실패 응답 처리

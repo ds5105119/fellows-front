@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { motion, AnimatePresence } from "framer-motion";
+import BreathingSparkles from "@/components/resource/breathingsparkles";
 
 const ReadinessLevel = {
   idea: "아이디어 단계",
@@ -467,38 +468,7 @@ export function EstimateForm() {
 
               <div className="h-full overflow-y-auto pb-16 pr-1 markdown-body">
                 <div className="min-h-[calc(100vh-10rem)] rounded-2xl bg-card/80 backdrop-blur-xl border border-border/40 p-6 shadow-sm">
-                  {streamingState.status === "streaming" && (
-                    <div className="absolute top-2 right-4 flex items-center">
-                      <span className="text-xs text-muted-foreground mr-2">AI가 견적 생성 중...</span>
-                      <div className="flex space-x-1">
-                        <motion.div
-                          animate={{ scale: [0.5, 1, 0.5] }}
-                          transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5, ease: "easeInOut" }}
-                          className="h-2 w-2 rounded-full bg-primary"
-                        ></motion.div>
-                        <motion.div
-                          animate={{ scale: [0.5, 1, 0.5] }}
-                          transition={{
-                            repeat: Number.POSITIVE_INFINITY,
-                            duration: 1.5,
-                            ease: "easeInOut",
-                            delay: 0.2,
-                          }}
-                          className="h-2 w-2 rounded-full bg-primary"
-                        ></motion.div>
-                        <motion.div
-                          animate={{ scale: [0.5, 1, 0.5] }}
-                          transition={{
-                            repeat: Number.POSITIVE_INFINITY,
-                            duration: 1.5,
-                            ease: "easeInOut",
-                            delay: 0.4,
-                          }}
-                          className="h-2 w-2 rounded-full bg-primary"
-                        ></motion.div>
-                      </div>
-                    </div>
-                  )}
+                  {streamingState.status === "streaming" && <BreathingSparkles />}
 
                   <div className="prose prose-sm md:prose-base max-w-none prose-headings:font-medium prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-a:text-primary prose-img:rounded-md prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{data || "AI가 견적을 생성하고 있습니다..."}</ReactMarkdown>

@@ -1,24 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
-import { NavMain } from "@/components/sidebar/nav-main";
-import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { auth } from "@/auth";
+import { NavGroup } from "@/components/sidebar/nav-group";
+import { NavDocuments } from "@/components/sidebar/nav-documents";
+import { NavUser } from "@/components/sidebar/nav-user";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 
 // Menu items.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
+export const data = {
   navMain: [
     {
       title: "대시보드",
-      url: "#",
+      url: "/service/dashboard",
       icon: "LayoutDashboardIcon",
     },
     {
       title: "프로젝트",
-      url: "/service/offer/general",
+      url: "/service/project",
       icon: "ListIcon",
     },
     {
@@ -37,108 +35,64 @@ const data = {
       icon: "UsersIcon",
     },
   ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: "CameraIcon",
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: "FileTextIcon",
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: "FileCodeIcon",
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
   navSecondary: [
     {
-      title: "Settings",
+      title: "설정",
       url: "#",
       icon: "SettingsIcon",
     },
     {
-      title: "Get Help",
+      title: "고객센터",
       url: "#",
       icon: "HelpCircleIcon",
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: "SearchIcon",
     },
   ],
   documents: [
     {
-      name: "Data Library",
+      name: "데이터 라이브러리",
       url: "#",
       icon: "DatabaseIcon",
     },
     {
-      name: "Reports",
+      name: "리포트",
       url: "#",
       icon: "ClipboardListIcon",
     },
     {
-      name: "Word Assistant",
+      name: "개발 상황",
       url: "#",
       icon: "FileIcon",
     },
   ],
 };
 
-export function AppSidebar() {
+export async function AppSidebar() {
+  const session = await auth();
+
   return (
     <Sidebar collapsible="icon" variant="inset">
-      <SidebarHeader>
+      <SidebarHeader className="px-6 md:p-0">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-2.5 data-[slot=sidebar-menu-button]:!py-6">
+            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5 data-[slot=sidebar-menu-button]:!py-6">
               <Link href="/">
-                <Image src="/fellows/logo.svg" width={121} height={20} alt="text logo" />
+                <Image src="/fellows/logo-img.svg" width={20} height={20} alt="image logo" />
+                <span className="text-base font-semibold">{session?.user?.email}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent>
-        <NavMain items={data.navMain} />
+      <SidebarContent className="px-4 md:p-0">
+        <NavGroup items={data.navMain} />
+        <NavDocuments items={data.documents} />
+        <NavGroup items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
+
+      <SidebarFooter className="px-6 md:p-0 group-data-[collapsible=icon]:ml-2">
+        <NavUser session={session} />
+      </SidebarFooter>
     </Sidebar>
   );
 }

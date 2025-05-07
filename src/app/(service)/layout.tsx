@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Footer from "@/components/footer/footer";
-import LenisProvider from "@/lib/lenisprovider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { auth } from "@/auth";
+import { auth, signIn } from "@/auth";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
+import { Toaster } from "@/components/ui/sonner";
 
 import "../globals.css";
 
@@ -38,8 +38,8 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { title?: string };
 }>) {
-  const headerText = params.title || "기본 헤더";
   const session = await auth();
+  if (!session) await signIn("keycloak", { redirectTo: "/" });
 
   return (
     <html lang="en">
@@ -54,34 +54,33 @@ export default async function RootLayout({
         >
           <AppSidebar />
           <SidebarInset>
-            <LenisProvider>
-              <div className="relative overscroll-none">
-                <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-                  <div className="flex items-center gap-2 px-10">
-                    <SidebarTrigger className="-ml-1" />
-                    <Separator orientation="vertical" className="mr-2 h-4" />
-                    <Breadcrumb>
-                      <BreadcrumbList>
-                        <BreadcrumbItem className="hidden md:block">
-                          <BreadcrumbLink href="#">프로젝트</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator className="hidden md:block" />
-                        <BreadcrumbItem>
-                          <BreadcrumbPage>새로 만들기</BreadcrumbPage>
-                        </BreadcrumbItem>
-                      </BreadcrumbList>
-                    </Breadcrumb>
-                  </div>
-                </header>
-                <main className="scrollbar-hide p-10 pt-0">{children}</main>
-                <Footer />
-              </div>
-            </LenisProvider>
+            <div className="relative overscroll-none flex flex-col h-full">
+              <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+                <div className="flex items-center gap-2 px-10">
+                  <SidebarTrigger className="-ml-1" />
+                  <Separator orientation="vertical" className="mr-2 h-4" />
+                  <Breadcrumb>
+                    <BreadcrumbList>
+                      <BreadcrumbItem className="hidden md:block">
+                        <BreadcrumbLink href="#">프로젝트</BreadcrumbLink>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator className="hidden md:block" />
+                      <BreadcrumbItem>
+                        <BreadcrumbPage>새로 만들기</BreadcrumbPage>
+                      </BreadcrumbItem>
+                    </BreadcrumbList>
+                  </Breadcrumb>
+                </div>
+              </header>
+              <main className="scrollbar-hide p-5 pt-0 grow">{children}</main>
+              <Footer />
+            </div>
           </SidebarInset>
 
           <Analytics />
           <SpeedInsights />
         </SidebarProvider>
+        <Toaster richColors />
       </body>
     </html>
   );

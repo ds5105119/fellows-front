@@ -68,7 +68,10 @@ export default function NavButtonGroup({ session, ...props }: NavButtonGroupProp
                 지금 바로 시작하기
               </Link>
             ) : (
-              <button onClick={() => (session?.user ? signOut() : signIn("keycloak", { redirectTo: "/" }))} className="flex w-full h-full items-center">
+              <button
+                onClick={() => (session?.user ? signOut() : signIn("keycloak", { redirectTo: "/service/dashboard" }))}
+                className="flex w-full h-full items-center"
+              >
                 지금 바로 시작하기
               </button>
             )}

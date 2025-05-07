@@ -122,7 +122,7 @@ interface CardSetDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const LeftCard = ({ scrollYProgress, segmentStart, segmentEnd, data, index, h, w, compressedScaleY, className, ...props }: LeftCardProps) => {
   // --- 애니메이션 값 설정 (사용자 값 기준 + compressedScaleY 조정) ---
-  const entranceOffsetY = 100;
+  const entranceOffsetY = 200;
   const stackGap = h * compressedScaleY + 20;
   const baseStackOffsetY = index * stackGap;
 
