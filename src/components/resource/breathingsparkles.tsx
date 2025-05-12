@@ -16,7 +16,7 @@ const BreathingSparkles: React.FC<Props> = ({ size = 24 }) => {
       xmlns="http://www.w3.org/2000/svg"
       style={{ overflow: "visible" }}
       animate={{
-        scale: [1, 1.01, 1],
+        scale: [0.95, 1, 0.95],
         opacity: [0.95, 1, 0.95],
       }}
       transition={{

@@ -1,10 +1,10 @@
 "use client";
 
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
-import DragScrollContainer from "../../resource/dragscrollcontainer";
+import DragScrollContainer from "../../ui/dragscrollcontainer";
 import Link from "next/link";
 import useThrottle from "@/lib/useThrottle";
-import ComboBoxResponsive from "@/components/resource/comboboxresponsive";
+import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import { useState } from "react";
 import { WelfareResponseSchema } from "@/@types/openApi/welfare";
@@ -21,26 +21,6 @@ interface getKeyFactoryProps {
   keyword?: string;
   order_by?: string;
 }
-
-const tags = [
-  { name: "전체", value: "" },
-  { name: "현금", value: "현금" },
-  { name: "현물", value: "현물" },
-  { name: "이용권", value: "이용권" },
-  { name: "시설이용", value: "시설이용" },
-  { name: "문화·여가", value: "문화" },
-  { name: "서비스", value: "서비스" },
-  { name: "의료지원", value: "의료지원" },
-  { name: "기술지원", value: "기술지원" },
-  { name: "기타", value: "기타" },
-] as const;
-
-const orders = [
-  { label: "인기순", value: "views" },
-  { label: "최신순", value: "created_at" },
-  { label: "최근 업데이트순", value: "updated_at" },
-  { label: "카테고리순", value: "service_category" },
-];
 
 const splitO = (input: string) =>
   input
@@ -95,9 +75,28 @@ const fetcher = async (url: string) => {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to load data");
   const data = await res.json();
-  console.log(data);
   return WelfareResponseSchema.parse(data);
 };
+
+const tags = [
+  { name: "전체", value: "" },
+  { name: "현금", value: "현금" },
+  { name: "현물", value: "현물" },
+  { name: "이용권", value: "이용권" },
+  { name: "시설이용", value: "시설이용" },
+  { name: "문화·여가", value: "문화" },
+  { name: "서비스", value: "서비스" },
+  { name: "의료지원", value: "의료지원" },
+  { name: "기술지원", value: "기술지원" },
+  { name: "기타", value: "기타" },
+] as const;
+
+const orders = [
+  { label: "인기순", value: "views" },
+  { label: "최신순", value: "created_at" },
+  { label: "최근 업데이트순", value: "updated_at" },
+  { label: "카테고리순", value: "service_category" },
+];
 
 export default function BusinessRecommendWelfareSection() {
   const [tag, setTag] = useState<string>("");
@@ -182,7 +181,7 @@ export default function BusinessRecommendWelfareSection() {
                       <SheetTitle className="flex flex-col space-y-1">
                         <div className="text-muted-foreground text-xs font-medium">{val.apply_period}</div>
                         <div className="text-2xl font-bold">{val.service_name}</div>
-                        <div className="text-muted-foreground font-medium mt-1">{val.service_summary}</div>
+                        <div className="text-muted-foreground font-medium text-base mt-1">{val.service_summary}</div>
                       </SheetTitle>
 
                       <SheetDescription asChild>

@@ -4,9 +4,7 @@ import { useRef } from "react";
 import { useLenis } from "lenis/react";
 import { useMotionValueEvent, useScroll } from "framer-motion";
 
-interface GravityBoxProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export default function GravityBox({ children, ...props }: GravityBoxProps) {
+export default function GravityBox({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const ref = useRef<HTMLDivElement>(null);
   const lenis = useLenis();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start center", "end center"] });

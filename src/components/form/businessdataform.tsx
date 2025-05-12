@@ -1,6 +1,5 @@
 "use client";
 
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserBusinessData, UserBusinessDataNullable, UserBusinessDataSchema } from "@/@types/accounts/userdata";
@@ -71,7 +70,7 @@ export default function UserBusinessDataForm({ data }: UserBusinessDataFormProps
 
   const onSubmit = async (value: UserBusinessData) => {
     if (!data?.sub) {
-      const response = await fetch("/api/user/user-data/business", {
+      fetch("/api/user/user-data/business", {
         method: "POST",
         body: JSON.stringify(value),
         redirect: "follow",
@@ -79,7 +78,7 @@ export default function UserBusinessDataForm({ data }: UserBusinessDataFormProps
       });
       location.reload();
     } else {
-      const response = await fetch("/api/user/user-data/business", {
+      await fetch("/api/user/user-data/business", {
         method: "PATCH",
         body: JSON.stringify(value),
         redirect: "follow",

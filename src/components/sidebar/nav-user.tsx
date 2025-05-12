@@ -30,12 +30,12 @@ export function NavUser({ session }: NavUserProps) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
               <Avatar className="h-8 w-8 rounded-lg group-data-[collapsible=icon]:-ml-2">
-                <AvatarImage src={session?.user?.image ?? ""} alt={session?.user?.id} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarImage src={session?.user.image ?? ""} alt={session?.user?.id} />
+                <AvatarFallback className="rounded-lg">{session?.user.name[0]}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{session?.user?.id}</span>
-                <span className="truncate text-xs text-muted-foreground">{session?.user?.email}</span>
+                <span className="truncate font-medium">{session?.user.name}</span>
+                <span className="truncate text-xs text-muted-foreground">{session?.user.email}</span>
               </div>
               <MoreVerticalIcon className="ml-auto size-4" />
             </SidebarMenuButton>

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   return (
-    <div className="grid grid-cols-4 md:grid-cols-12 mt-10 gap-6">
+    <div className="grid grid-cols-4 md:grid-cols-12 py-10 gap-6">
       <BlurFade className="grid grid-cols-4 md:grid-cols-10 col-span-full p-8 md:col-span-10 md:col-start-2 gap-6 border rounded-3xl">
         <div className="col-span-full flex flex-col gap-2">
           <h2 className="text-2xl font-bold">Fellows 시작하기</h2>

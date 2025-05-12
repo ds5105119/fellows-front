@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   // 요청 정보
+  console.log(request);
   const session = await auth();
 
   try {

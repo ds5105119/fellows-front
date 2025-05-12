@@ -12,43 +12,26 @@ export const ProjectInfoSchema = z.object({
   platforms: z.array(Platform).describe("개발 대상 플랫폼"),
   readiness_level: ReadinessLevel.describe("사전 준비도"),
 
-  // --- 디자인 요구사항 ---
-  design_requirements: z
-    .string()
-    .nullable()
-    .optional()
-    .describe("디자인 관련 구체적인 요구사항 (예: '제공된 Figma 시안 기반 개발', '애니메이션 효과 중요', '브랜드 가이드라인 준수')"),
-
-  // --- 기능 요구사항 (선택적이지만 구체적일수록 좋음) ---
-  feature_list: z
-    .array(z.string())
-    .nullable()
-    .optional()
-    .describe("구현해야 할 주요 기능 키워드 목록 (예: 실시간 채팅, 대시보드, 푸시 메시지, 알림톡, PG 연동(토스 등), AWS, GA, 로그 등)"),
-  i18n_support: z.boolean().default(false).describe("다국어 지원 필요 여부"),
-  content_pages: z
-    .number()
-    .int()
-    .nonnegative()
-    .nullable()
-    .optional() // ge=0 -> nonnegative
-    .describe("단순 콘텐츠 페이지 예상 개수"),
-
   // --- 기술 및 환경 (선택적 정보) ---
-  preferred_tech_stack: z.array(z.string()).nullable().optional().describe("선호하는 기술 스택 목록 (예: ['React', 'Node.js', 'PostgreSQL', 'AWS'])"),
-  security_compliance: z.array(z.string()).default([]).describe("반드시 준수해야 할 보안 표준 또는 컴플라이언스 목록 (예: 'ISMS', '개인정보보호법')"),
+  feature_list: z.array(z.string()).nullable().optional(),
+  content_pages: z.number().int().nonnegative().nullable().optional(),
+  preferred_tech_stack: z.array(z.string()).nullable().optional(),
+
+  // --- 디자인 요구사항 ---
+  design_requirements: z.string().nullable().optional(),
+  reference_design_url: z.array(z.string().url()).nullable().optional(),
 
   // --- 일정 및 기타 ---
-  start_date: z.string().date().nullable().optional().default(new Date().toISOString().split("T")[0]).describe("희망 시작일 (YYYY-MM-DD)"),
-  desired_deadline: z.string().date().nullable().optional().describe("희망 완료일 (YYYY-MM-DD)"),
-  maintenance_required: z.boolean().default(false).describe("출시 후 별도의 기술 지원 또는 유지보수 계약 필요 여부"),
+  start_date: z.string().date().nullable().optional(),
+  desired_deadline: z.string().date().nullable().optional(),
+  maintenance_required: z.boolean().default(false),
 });
 
 export const GetProjectsRequestSchema = z.object({
-  page: z.number().int().nonnegative().default(0).describe("Page number"), // ge=0
-  size: z.number().int().min(1).max(20).default(10).describe("Page size"), // ge=1, le=20
+  page: z.number().int().nonnegative().default(0),
+  size: z.number().int().min(1).max(20).default(10),
   keyword: z.string().nullable().optional(),
-  order_by: z.string().default("updated_at"),
+  order_by: z.string().default("updated_at.desc"),
 });
 
 export const ProjectGroupLinkSchema = z.object({
@@ -60,6 +43,7 @@ export const ProjectSchema = z.object({
   sub: z.string(),
   project_id: z.string(),
   status: z.string(),
+  groups: z.array(z.string()).default([]),
   ai_estimate: z.string().nullable().optional(),
   created_at: z.preprocess((val) => {
     if (typeof val === "string") {
@@ -67,21 +51,26 @@ export const ProjectSchema = z.object({
     }
     return val;
   }, z.coerce.date()),
-  updated_at: z.preprocess((val) => {
-    if (typeof val === "string") {
-      return /([+\-]\d{2}:\d{2}|Z)$/.test(val) ? val : val + "Z";
-    }
-    return val;
-  }, z.coerce.date()),
+  updated_at: z.coerce.date(),
 
   project_info: ProjectInfoSchema,
   group_links: z.array(ProjectGroupLinkSchema).default([]),
 });
 
 export const ProjectListSchema = z.array(ProjectSchema);
+export const ProjectPageSchema = z.object({
+  total: z.number().int(),
+  items: ProjectListSchema.nullable(),
+});
+
+export const ProjectEstimateFeatureSchema = z.object({
+  feature_list: z.array(z.string()),
+});
 
 export type ProjectInfoSchemaType = z.infer<typeof ProjectInfoSchema>;
 export type ProjectSchemaType = z.infer<typeof ProjectSchema>;
 export type ProjectListSchemaType = z.infer<typeof ProjectListSchema>;
+export type ProjectPageSchemaType = z.infer<typeof ProjectPageSchema>;
 export type GetProjectsRequestType = z.infer<typeof GetProjectsRequestSchema>;
 export type ProjectGroupLinkSchemaType = z.infer<typeof ProjectGroupLinkSchema>;
+export type ProjectEstimateFeatureSchemaType = z.infer<typeof ProjectEstimateFeatureSchema>;

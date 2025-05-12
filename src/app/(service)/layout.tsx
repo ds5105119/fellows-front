@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import BreadCrumb from "@/components/sidebar/breadcrumb";
 import Footer from "@/components/footer/footer";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { auth, signIn } from "@/auth";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
 import { Toaster } from "@/components/ui/sonner";
 
 import "../globals.css";
@@ -33,10 +32,8 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-  params,
 }: Readonly<{
   children: React.ReactNode;
-  params: { title?: string };
 }>) {
   const session = await auth();
   if (!session) await signIn("keycloak", { redirectTo: "/" });
@@ -54,25 +51,15 @@ export default async function RootLayout({
         >
           <AppSidebar />
           <SidebarInset>
-            <div className="relative overscroll-none flex flex-col h-full">
-              <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-                <div className="flex items-center gap-2 px-10">
-                  <SidebarTrigger className="-ml-1" />
-                  <Separator orientation="vertical" className="mr-2 h-4" />
-                  <Breadcrumb>
-                    <BreadcrumbList>
-                      <BreadcrumbItem className="hidden md:block">
-                        <BreadcrumbLink href="#">프로젝트</BreadcrumbLink>
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator className="hidden md:block" />
-                      <BreadcrumbItem>
-                        <BreadcrumbPage>새로 만들기</BreadcrumbPage>
-                      </BreadcrumbItem>
-                    </BreadcrumbList>
-                  </Breadcrumb>
+            <div className="flex flex-col h-full">
+              <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b bg-background transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+                <div className="flex w-full justify-between items-center gap-2 px-10 md:justify-start">
+                  <SidebarTrigger className="-ml-1 pl-1.5 hidden md:block" />
+                  <BreadCrumb />
+                  <SidebarTrigger className="block md:hidden pl-1.5" />
                 </div>
               </header>
-              <main className="scrollbar-hide p-5 pt-0 grow">{children}</main>
+              <main className="scrollbar-hide flex-1">{children}</main>
               <Footer />
             </div>
           </SidebarInset>

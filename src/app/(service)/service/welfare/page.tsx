@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { auth } from "@/auth";
-import { UserBusinessDataSchema } from "@/@types/accounts/userdata";
+import { UserBusinessDataNullableSchema } from "@/@types/accounts/userdata";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import BusinessRecommendWelfareSection from "@/components/section/service/businessrecommendwelfaresection";
@@ -28,7 +28,8 @@ export default async function Page() {
   }
 
   const data = await response.json();
-  const businessData = UserBusinessDataSchema.parse(data);
+  console.log(data);
+  const businessData = UserBusinessDataNullableSchema.parse(data);
 
   return (
     <div className="flex flex-col w-full h-full items-center space-y-10 px-8 py-10">

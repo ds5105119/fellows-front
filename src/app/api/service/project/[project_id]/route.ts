@@ -28,13 +28,16 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
 }
 
-export async function POST(request: Request) {
+export async function PUT(request: Request, { params }: { params: Promise<{ project_id: string }> }) {
   const session = await auth();
   const body = await request.json();
 
+  const project_id = (await params).project_id;
+  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}`;
+
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_PROJECT_URL}`, {
-      method: "POST",
+    const response = await fetch(url, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),

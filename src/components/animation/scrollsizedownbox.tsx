@@ -3,9 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
-interface ScrollSizeDownBoxProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export default function ScrollSizeDownBox({ children, className }: ScrollSizeDownBoxProps) {
+export default function ScrollSizeDownBox({ children, className }: React.HTMLAttributes<HTMLDivElement>) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
 
