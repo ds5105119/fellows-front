@@ -21,7 +21,7 @@ const cardSets = [
     },
     center: {
       title: "Create your wallet",
-      image: "/images/card-icons-placeholder.svg", // --- 실제 이미지 경로 확인 ---
+      image: "/hero-description-1.gif",
       buttonText: "With a Recovery Phrase",
       isMockup: false,
       icon: <Wallet size={48} className="text-blue-500" />, // 이미지 대신 아이콘 예시
@@ -45,7 +45,7 @@ const cardSets = [
     },
     center: {
       title: "Gas Tank",
-      image: "/images/gas-tank-screen.png", // --- 실제 이미지 경로 확인 ---
+      image: "/hero-description-2.gif", // --- 실제 이미지 경로 확인 ---
       isMockup: true,
       icon: <Waypoints size={48} className="text-yellow-500" />, // 이미지 없을 시 대체
     },

@@ -34,10 +34,10 @@ export default function MarkdownPreview({
 
   useEffect(() => {
     if (containerRef.current && overlayRef.current) {
-      overlayRef.current.scrollIntoView({
+      /* overlayRef.current.scrollIntoView({
         behavior: "smooth",
         block: "nearest",
-      });
+      }); */
     }
   }, [children, loading]);
 

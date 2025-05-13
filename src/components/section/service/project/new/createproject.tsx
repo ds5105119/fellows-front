@@ -8,12 +8,13 @@ import { Form } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ProjectInfoSchema, ProjectInfoSchemaType, ProjectSchema } from "@/@types/service/project";
+import { ProjectInfoSchema, ProjectInfoSchemaType, ProjectSchema, ProjectFileRecordsSchema, ProjectFileRecordsSchemaType } from "@/@types/service/project";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { TopProgressBar } from "@/components/animation/topprogressbar";
 import { useGetEstimateFeatures } from "@/hooks/fetch/project";
 import { stepsMeta } from "@/components/resource/project";
+import { uploadFileToPresignedUrl, getPresignedPutUrl } from "@/hooks/fetch/presigned";
 import CreateProjectFormStep1 from "./createprojectstep1";
 import CreateProjectFormStep2 from "./createprojectstep2";
 import CreateProjectFormStep3 from "./createprojectstep3";
@@ -30,6 +31,7 @@ export default function CreateProject() {
     platforms: [],
     readiness_level: "idea",
     feature_list: [],
+    files: [],
     design_requirements: null,
     content_pages: null,
     preferred_tech_stack: null,
@@ -40,11 +42,9 @@ export default function CreateProject() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [firstInSecondStop, setFirstInSecondStop] = useState(true);
-  const totalSteps = stepsMeta.length;
-
   const [isLoading, setIsLoading] = useState(false);
-  const [feature, setFeature] = useState<string[]>(initalProjectInfo.feature_list || []);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({ from: undefined, to: undefined });
+  const [isStepping, setIsStepping] = useState(false);
+  const totalSteps = stepsMeta.length;
 
   const form = useForm<ProjectInfoSchemaType>({
     resolver: zodResolver(ProjectInfoSchema),
@@ -65,8 +65,6 @@ export default function CreateProject() {
   const currentStepFields = useMemo(() => currentStepMeta?.fields || [], [currentStepMeta]);
   const watchedCurrentStepFields = watch(currentStepFields);
 
-  const [isStepping, setIsStepping] = useState(false);
-
   // 페이지 로드/단계 변경 시 유효성 검사
   useEffect(() => {
     const validateCurrentStepOnLoad = async () => {
@@ -79,11 +77,6 @@ export default function CreateProject() {
     }
   }, [currentStep, currentStepFields, trigger, form.formState.isReady]);
 
-  // feature 상태 변경 감지
-  useEffect(() => {
-    setValue("feature_list", feature, { shouldDirty: true, shouldValidate: true });
-  }, [feature, setValue]);
-
   // isStepping 상태 관리 (스텝 변경 애니메이션 후 상태 복구, 고도화 가능)
   useEffect(() => {
     if (isStepping) {
@@ -94,45 +87,6 @@ export default function CreateProject() {
       });
     }
   }, [currentStep, isStepping]);
-
-  // feature 배열에서 "기타:"로 시작하는 항목을 찾아 업데이트하거나, 새로 추가/제거
-  const handleFeatureChange = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const prefix = "기타:";
-    const newEtcValue = event.target.value;
-    setFeature((prevFeature) => {
-      let updatedFeature = [...prevFeature];
-      const etcIndex = updatedFeature.findIndex((item) => item.startsWith(prefix));
-      if (newEtcValue) {
-        if (etcIndex !== -1) {
-          updatedFeature[etcIndex] = `${prefix} ${newEtcValue}`;
-        } else {
-          updatedFeature.push(`${prefix} ${newEtcValue}`);
-        }
-      } else {
-        if (etcIndex !== -1) {
-          updatedFeature.splice(etcIndex, 1);
-        }
-      }
-      return updatedFeature;
-    });
-  }, []);
-
-  // feature 배열에 기능을 추가
-  const handleFeatureButtonClick = useCallback((value: string) => {
-    setFeature((prevFeature) => (prevFeature.includes(value) ? prevFeature.filter((item) => item !== value) : [...prevFeature, value]));
-  }, []);
-
-  // 날짜 선택 기능
-  const handleDateSelect = useCallback(
-    (range: DateRange) => {
-      const start = range.from ? format(range.from, "yyyy-MM-dd") : undefined;
-      const end = range.to ? format(range.to, "yyyy-MM-dd") : undefined;
-      setValue("start_date", start, { shouldDirty: true, shouldValidate: true });
-      setValue("desired_deadline", end, { shouldDirty: true, shouldValidate: true });
-      setDateRange(range);
-    },
-    [setValue]
-  );
 
   // 다음
   const handleNext = async (event?: React.MouseEvent<HTMLButtonElement>) => {
@@ -195,6 +149,57 @@ export default function CreateProject() {
     return false;
   }, [errors, currentStepMeta, currentStepFields, watchedCurrentStepFields, getValues, isStepping]);
 
+  // 기능 추가 관련
+
+  const [feature, setFeature] = useState<string[]>(initalProjectInfo.feature_list || []);
+
+  // feature 배열에서 "기타:"로 시작하는 항목을 찾아 업데이트하거나, 새로 추가/제거
+  const handleFeatureChange = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const prefix = "기타:";
+    const newEtcValue = event.target.value;
+    setFeature((prevFeature) => {
+      let updatedFeature = [...prevFeature];
+      const etcIndex = updatedFeature.findIndex((item) => item.startsWith(prefix));
+      if (newEtcValue) {
+        if (etcIndex !== -1) {
+          updatedFeature[etcIndex] = `${prefix} ${newEtcValue}`;
+        } else {
+          updatedFeature.push(`${prefix} ${newEtcValue}`);
+        }
+      } else {
+        if (etcIndex !== -1) {
+          updatedFeature.splice(etcIndex, 1);
+        }
+      }
+      return updatedFeature;
+    });
+  }, []);
+
+  // feature 배열에 기능을 추가
+  const handleFeatureButtonClick = useCallback((value: string) => {
+    setFeature((prevFeature) => (prevFeature.includes(value) ? prevFeature.filter((item) => item !== value) : [...prevFeature, value]));
+  }, []);
+
+  // feature 상태 변경 감지
+  useEffect(() => {
+    setValue("feature_list", feature, { shouldDirty: true, shouldValidate: true });
+  }, [feature, setValue]);
+
+  // 날짜 선택 기능
+
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({ from: undefined, to: undefined });
+
+  const handleDateSelect = useCallback(
+    (range: DateRange) => {
+      const start = range.from ? format(range.from, "yyyy-MM-dd") : undefined;
+      const end = range.to ? format(range.to, "yyyy-MM-dd") : undefined;
+      setValue("start_date", start, { shouldDirty: true, shouldValidate: true });
+      setValue("desired_deadline", end, { shouldDirty: true, shouldValidate: true });
+      setDateRange(range);
+    },
+    [setValue]
+  );
+
   // 기능 예측 데이터 관련
 
   const [estimateFeaturesData, setEstimateFeaturesData] = useState<{ project_name: string; project_summary: string; readiness_level: string }>({
@@ -231,6 +236,60 @@ export default function CreateProject() {
       mergeEstimateFeatures();
     }
   }, [firstInSecondStop, currentStep, setFirstInSecondStop, mergeEstimateFeatures]);
+
+  // 파일 업로드 관련
+
+  const [files, setFiles] = useState<{ record: ProjectFileRecordsSchemaType; name: string; size: number; progress: number }[]>([]);
+
+  const uploadFiles = async (file: File) => {
+    const isDuplicate = files.some((f) => f.name === file.name && f.size === file.size);
+    if (isDuplicate) {
+      toast.info("이미 업로드된 파일입니다.");
+      return;
+    }
+
+    const presigned = await getPresignedPutUrl();
+    const fileRecord = ProjectFileRecordsSchema.parse({ file_record_key: presigned.key });
+    setFiles((prev) => [...prev, { record: fileRecord, name: file.name, size: file.size, progress: 0 }]);
+
+    try {
+      await uploadFileToPresignedUrl({
+        file,
+        presigned,
+        onProgress: ({ percent }) => {
+          setFiles((prev) => prev.map((f) => (f.name === file.name ? { ...f, progress: percent } : f)));
+        },
+      });
+    } catch (err) {
+      toast.warning("업로드에 실패했어요.");
+    }
+  };
+
+  const handleChangeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadFiles(file);
+  };
+
+  const handleDropupload = async (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    await uploadFiles(file);
+  };
+
+  useEffect(() => {
+    setValue(
+      "files",
+      files.map((f) => f.record),
+      { shouldDirty: true, shouldValidate: true }
+    );
+  }, [files, setValue]);
 
   // 제출 관련
 
@@ -277,14 +336,7 @@ export default function CreateProject() {
   }, [trigger, errors, currentStep, getValues, setIsStepping, setCurrentStep]);
 
   const preparePayload = useCallback((values: ProjectInfoSchemaType): any => {
-    const payload = {
-      ...values,
-      content_pages: !!!values.content_pages || isNaN(Number(values.content_pages)) ? null : Number(values.content_pages),
-      design_requirements: values.design_requirements || null,
-      feature_list:
-        values.feature_list && values.feature_list.length > 0 ? values.feature_list.map((f) => f.trim()).filter((f) => f !== "" && f.trim() !== "기타:") : null,
-      preferred_tech_stack: values.preferred_tech_stack?.length ? values.preferred_tech_stack : null,
-    };
+    const payload = { ...values };
 
     if (payload.feature_list) {
       const etcFeatureIndex = payload.feature_list.findIndex((f) => f.startsWith("기타:"));
@@ -321,7 +373,7 @@ export default function CreateProject() {
 
   const handleSuccessfulSubmission = useCallback(
     (project: z.infer<typeof ProjectSchema>) => {
-      toast.success("프로젝트 정보가 성공적으로 업데이트되었습니다.");
+      toast.success("프로젝트 정보가 성공적으로 저장되었습니다.");
       router.push(`/service/project/${project.project_id}`);
       router.refresh();
       reset(initalProjectInfo);
@@ -351,8 +403,8 @@ export default function CreateProject() {
       const project = await postProjectData(payload);
       handleSuccessfulSubmission(project);
     } catch (error: any) {
-      toast.error(error.message || "프로젝트 업데이트 중 오류 발생", {
-        description: "서버와 통신 중 문제가 발생했거나 입력값을 확인해주세요.",
+      toast.error("프로젝트 업데이트 중 오류가 발생했어요", {
+        description: "잠시 뒤 다시 시도해 주세요.",
       });
       console.error("Error updating project:", error);
     } finally {
@@ -388,38 +440,50 @@ export default function CreateProject() {
                 handleFeatureChange={handleFeatureChange}
               />
             )}
-            {currentStep === 3 && <CreateProjectFormStep3 form={form} dateRange={dateRange} handleDateSelect={handleDateSelect} />}
+            {currentStep === 3 && (
+              <CreateProjectFormStep3
+                form={form}
+                dateRange={dateRange}
+                files={files}
+                handleDateSelect={handleDateSelect}
+                handleChangeUpload={handleChangeUpload}
+                handleDropupload={handleDropupload}
+              />
+            )}
 
-            <div className="flex justify-between mt-5 space-x-4">
-              {currentStep > 1 && (
-                <Button
-                  type="button"
-                  className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
-                  variant="secondary"
-                  onClick={(e) => handlePrev(e)}
-                  disabled={isLoading || isStepping} // isStepping 추가
-                >
-                  이전
-                </Button>
-              )}
-              {currentStep < totalSteps ? (
-                <Button
-                  className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
-                  type="button"
-                  onClick={(e) => handleNext(e)}
-                  disabled={isLoading || isNextButtonDisabled} // isNextButtonDisabled에 isStepping 포함됨
-                >
-                  다음
-                </Button>
-              ) : (
-                <Button
-                  className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
-                  type="submit"
-                  disabled={isLoading || !isDirty || !isFormValid || isStepping} // isStepping 추가
-                >
-                  {isLoading ? "저장 중..." : "프로젝트 만들기"}
-                </Button>
-              )}
+            <div className="sticky bottom-0 z-20">
+              <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
+              <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
+                {currentStep > 1 && (
+                  <Button
+                    type="button"
+                    className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
+                    variant="secondary"
+                    onClick={(e) => handlePrev(e)}
+                    disabled={isLoading || isStepping} // isStepping 추가
+                  >
+                    이전
+                  </Button>
+                )}
+                {currentStep < totalSteps ? (
+                  <Button
+                    className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
+                    type="button"
+                    onClick={(e) => handleNext(e)}
+                    disabled={isLoading || isNextButtonDisabled} // isNextButtonDisabled에 isStepping 포함됨
+                  >
+                    다음
+                  </Button>
+                ) : (
+                  <Button
+                    className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
+                    type="submit"
+                    disabled={isLoading || !isDirty || !isFormValid || isStepping} // isStepping 추가
+                  >
+                    {isLoading ? "저장 중..." : "프로젝트 만들기"}
+                  </Button>
+                )}
+              </div>
             </div>
           </form>
         </Form>

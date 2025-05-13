@@ -1,10 +1,17 @@
 import { z } from "zod";
+import { FileRecordSchema } from "../accounts/cloud";
 
 export const Platform = z.enum(["web", "android", "ios"]);
 export type Platform = z.infer<typeof Platform>;
 
 export const ReadinessLevel = z.enum(["idea", "requirements", "wireframe"]);
 export type ReadinessLevel = z.infer<typeof ReadinessLevel>;
+
+export const ProjectFileRecordsSchema = z.object({
+  file_record_key: z.string(),
+  project_info_id: z.number().optional().nullable(),
+  file_record: FileRecordSchema.nullable().optional(),
+});
 
 export const ProjectInfoSchema = z.object({
   project_name: z.string().describe("프로젝트 이름 (예: 'ABC 쇼핑몰 구축')"),
@@ -20,6 +27,7 @@ export const ProjectInfoSchema = z.object({
   // --- 디자인 요구사항 ---
   design_requirements: z.string().nullable().optional(),
   reference_design_url: z.array(z.string().url()).nullable().optional(),
+  files: z.array(ProjectFileRecordsSchema).nullable().optional(),
 
   // --- 일정 및 기타 ---
   start_date: z.string().date().nullable().optional(),
@@ -67,6 +75,7 @@ export const ProjectEstimateFeatureSchema = z.object({
   feature_list: z.array(z.string()),
 });
 
+export type ProjectFileRecordsSchemaType = z.infer<typeof ProjectFileRecordsSchema>;
 export type ProjectInfoSchemaType = z.infer<typeof ProjectInfoSchema>;
 export type ProjectSchemaType = z.infer<typeof ProjectSchema>;
 export type ProjectListSchemaType = z.infer<typeof ProjectListSchema>;

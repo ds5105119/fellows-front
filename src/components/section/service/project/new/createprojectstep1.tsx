@@ -9,7 +9,6 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { ProjectInfoSchemaType, Platform, ReadinessLevel } from "@/@types/service/project";
 import { readinessLevelLabels } from "@/components/resource/project";
 import { getEnumValues } from "@/components/section/service/project/new/createproject";
-
 interface CreateProjectFormStep1Props {
   form: UseFormReturn<ProjectInfoSchemaType>;
 }
@@ -115,6 +114,8 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
           </FormItem>
         )}
       />
+
+      <div className="flex flex-col space-y-2"></div>
     </>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import DynamicLucideIcon from "@/components/resource/dynamiclucideicon";
+import DynamicFcIcon from "@/components/resource/dynamicfcicon";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FolderIcon, MoreHorizontalIcon, ShareIcon } from "lucide-react";
@@ -27,7 +27,7 @@ export function NavDocuments({
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton className="[&>svg]:size-5 group-data-[collapsible=icon]:[&>svg]:-ml-0.5" isActive={pathname.startsWith(item.url)} asChild>
               <Link href={item.url}>
-                {item.icon && <DynamicLucideIcon name={item.icon} />}
+                {item.icon && <DynamicFcIcon name={item.icon} />}
                 <span className="font-medium text-sm">{item.name}</span>
               </Link>
             </SidebarMenuButton>

@@ -1,6 +1,6 @@
 "use client";
 
-import DynamicLucideIcon from "@/components/resource/dynamiclucideicon";
+import DynamicFcIcon from "@/components/resource/dynamicfcicon";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
@@ -46,7 +46,7 @@ export function NavGroup({
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton tooltip={item.title} className="[&>svg]:size-5">
                     {item.icon && (
-                      <DynamicLucideIcon
+                      <DynamicFcIcon
                         name={item.icon}
                         className={cn("group-data-[collapsible=icon]:-ml-0.5", pathname.startsWith(item.url) && "text-blue-500")}
                       />
@@ -74,7 +74,7 @@ export function NavGroup({
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton tooltip={item.title} className="[&>svg]:size-5" isActive={pathname.startsWith(item.url)} asChild>
                 <Link href={item.url}>
-                  {item.icon && <DynamicLucideIcon name={item.icon} className="group-data-[collapsible=icon]:-ml-0.5" />}
+                  {item.icon && <DynamicFcIcon name={item.icon} className="group-data-[collapsible=icon]:-ml-0.5" />}
                   <span className="font-medium text-sm">{item.title}</span>
                 </Link>
               </SidebarMenuButton>

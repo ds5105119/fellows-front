@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import BreadCrumb from "@/components/sidebar/breadcrumb";
+import Header from "@/components/sidebar/header";
 import Footer from "@/components/footer/footer";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { auth, signIn } from "@/auth";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
 import "../globals.css";
@@ -35,9 +34,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-  if (!session) await signIn("keycloak", { redirectTo: "/" });
-
   return (
     <html lang="en">
       <body className={`${pretendard.variable} ${satoshi.variable}`}>
@@ -52,13 +48,7 @@ export default async function RootLayout({
           <AppSidebar />
           <SidebarInset>
             <div className="flex flex-col h-full">
-              <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b bg-background transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-                <div className="flex w-full justify-between items-center gap-2 px-10 md:justify-start">
-                  <SidebarTrigger className="-ml-1 pl-1.5 hidden md:block" />
-                  <BreadCrumb />
-                  <SidebarTrigger className="block md:hidden pl-1.5" />
-                </div>
-              </header>
+              <Header />
               <main className="scrollbar-hide flex-1">{children}</main>
               <Footer />
             </div>

@@ -65,7 +65,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
                 <ProjectDetailMain project={project} />
               </div>
 
-              <div className="relative min-h-[40rem] col-span-full p-1 md:col-span-6 gap-5 border rounded-2xl">
+              <div className="relative min-h-[80rem] col-span-full p-1 md:col-span-6 gap-5 border rounded-2xl">
                 <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
                 <ProjectEstimator project={project} />
               </div>

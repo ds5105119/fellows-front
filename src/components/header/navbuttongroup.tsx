@@ -19,7 +19,7 @@ export default function NavButtonGroup({ session, ...props }: NavButtonGroupProp
       const windowHeight = window.innerHeight;
       const docHeight = document.documentElement.scrollHeight;
 
-      const scrolledEnough = scrollY >= windowHeight * 0.3;
+      const scrolledEnough = scrollY >= windowHeight * 0.03;
       const shortPage = docHeight <= windowHeight * 1.5;
 
       setIsVisible(scrolledEnough || shortPage);
@@ -45,13 +45,13 @@ export default function NavButtonGroup({ session, ...props }: NavButtonGroupProp
           className="flex space-x-7 font-bold"
         >
           <Link href="/abc" className="hover:opacity-80">
-            가격
+            Price
           </Link>
           <Link href="/df" className="hover:opacity-80">
-            포토폴리오
+            Work
           </Link>
-          <button style={{ cursor: "pointer" }} onClick={() => (session?.user ? signOut() : signIn("keycloak", { redirectTo: "/" }))}>
-            {session?.user ? "로그아웃" : "로그인"}
+          <button style={{ cursor: "pointer" }} onClick={() => (session?.user ? signOut() : signIn("keycloak", { redirectTo: "/service/dashboard" }))}>
+            {session?.user ? "Sign Out" : "Sign In"}
           </button>
         </motion.div>
         {isVisible && (
@@ -64,12 +64,12 @@ export default function NavButtonGroup({ session, ...props }: NavButtonGroupProp
             style={{ cursor: "pointer" }}
           >
             {session?.user ? (
-              <Link href="/service/offer/general" className="flex w-full h-full items-center">
+              <Link href="/service/dashboard" className="flex w-full h-full items-center">
                 지금 바로 시작하기
               </Link>
             ) : (
               <button
-                onClick={() => (session?.user ? signOut() : signIn("keycloak", { redirectTo: "/service/dashboard" }))}
+                onClick={() => (session?.user ? signOut() : signIn("keycloak", { redirectTo: "/service/project/new" }))}
                 className="flex w-full h-full items-center"
               >
                 지금 바로 시작하기
