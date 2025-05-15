@@ -14,34 +14,33 @@ date.setDate(2);
 const files = [
   {
     name: "가상화폐 거래소",
-    body: "비트코인 기반의 가상화폐 거래소 웹사이트를 만들어주세요 실시간 시세 조회, 시세 차트, 회원가입과 보안 중심의 로그인 시스템까지 포함되면 좋겠어요.",
+    body: "비트코인 기반의 가상화폐 거래소 웹사이트를 만들어주세요 💰 실시간 시세 조회 📊, 시세 차트 📈, 회원가입 📝과 보안 중심의 로그인 시스템 🔐까지 포함되면 좋겠어요.",
   },
   {
-    name: "쥬얼리 브랜드 쇼핑몰",
-    body: "쥬얼리 브랜드✨ 의 감성을 살릴 수 있는 쇼핑몰 사이트를 만들어주세요 우아한 디자인과 함께 카드·간편결제 기능도 넣어줄 수 있을까요?",
+    name: "쥬얼리 브랜드 쇼핑몰 💍",
+    body: "쥬얼리 브랜드✨의 감성을 살릴 수 있는 쇼핑몰 사이트를 만들어주세요 💖 우아한 디자인 🎨과 함께 카드💳·간편결제 기능 💸도 넣어줄 수 있을까요?",
   },
   {
-    name: "랜딩 페이지",
-    body: "브랜드 홍보를 위한 세련된 랜딩 페이지를 만들어주세요 반응형 디자인에 스크롤 애니메이션과 인터랙티브한 구성도 부탁드려요!",
+    name: "랜딩 페이지 🚀",
+    body: "브랜드 홍보를 위한 세련된 랜딩 페이지를 만들어주세요 ✨ 반응형 디자인 📱에 스크롤 애니메이션 🎞️과 인터랙티브한 구성 🎯도 부탁드려요!",
   },
   {
     name: "산업용 앱 개발",
-    body: "산업 현장에서 사용할 수 있는 내부 전용 앱을 개발해주세요 ⚙️ GPG 키 기반의 보안 기능과 파일 업로드, 사용자 권한 관리도 필요해요.",
+    body: "산업 현장에서 사용할 수 있는 내부 전용 앱을 개발해주세요 ⚙️ GPG 키 기반의 보안 기능 🔑과 파일 업로드 📂, 사용자 권한 관리 👤도 필요해요.",
   },
   {
-    name: "AI Saas 서비스 페이지",
-    body: "AI 기반 SaaS 🤖 서비스를 소개하는 웹페이지를 만들어주세요 핵심 기능 소개, 요금제, 가입 흐름까지 깔끔하게 정리되면 좋겠어요!",
+    name: "AI SaaS 서비스 페이지",
+    body: "AI 기반 SaaS 🤖 서비스를 소개하는 웹페이지를 만들어주세요 🌐 핵심 기능 소개 🧠, 요금제 💵, 가입 흐름 📋까지 깔끔하게 정리되면 좋겠어요!",
   },
 ];
-
 const features = [
   {
     emoji: "✨",
     Icon: FileTextIcon,
     name: "단 10분!",
-    description: "프로젝트 예상 견적서를 받아보세요.",
+    description: "프로젝를 시작하기 전에 AI 예상 견적서를 받아보세요.",
     href: "#",
-    cta: "Learn more",
+    cta: "더 알아보기",
     className: "col-span-3 lg:col-span-1 ![box-shadow:0_12px_24px_rgba(0,0,0,.05)] bg-gray-100/50",
     background: (
       <Marquee pauseOnHover className="absolute top-10 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)] ">
@@ -72,7 +71,7 @@ const features = [
     name: "알림 시스템",
     description: "프로젝트 진행 상황에 대한 알림을 실시간으로 받으세요.",
     href: "#",
-    cta: "Learn more",
+    cta: "더 알아보기",
     className: "col-span-3 lg:col-span-2 ![box-shadow:0_12px_24px_rgba(0,0,0,.05)] bg-blue-100/50",
     background: (
       <div className="absolute right-2 top-4 h-[300px] w-full scale-75 border-none transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)] group-hover:scale-90" />
@@ -84,7 +83,7 @@ const features = [
     name: "통합 관리",
     description: "다양한 외부 시스템과 연동하여 모든 작업을 하나의 플랫폼에서 관리하세요.",
     href: "#",
-    cta: "Learn more",
+    cta: "더 알아보기",
     className: "col-span-3 lg:col-span-2 ![box-shadow:0_12px_24px_rgba(0,0,0,.05)] bg-rose-100/50",
     background: (
       <AnimatedBeamSection className="absolute right-2 top-4 h-[300px] border-none transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)] group-hover:scale-105" />
@@ -97,7 +96,7 @@ const features = [
     description: "캘린더를 이용해 프로젝트 일정을 손쉽게 관리하고 필요한 파일을 날짜별로 필터링하세요.",
     className: "col-span-3 lg:col-span-1 ![box-shadow:0_12px_24px_rgba(0,0,0,.05)] bg-amber-100/50",
     href: "#",
-    cta: "Learn more",
+    cta: "더 알아보기",
     background: (
       <Calendar
         mode="single"

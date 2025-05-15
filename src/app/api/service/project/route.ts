@@ -7,13 +7,15 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const params = new URLSearchParams();
-  const keyword = url.searchParams.get("start_year");
+  const keyword = url.searchParams.get("keyword");
   const order_by = url.searchParams.get("order_by");
+  const status = url.searchParams.get("status");
 
   params.append("page", url.searchParams.get("page") || "0");
   params.append("size", url.searchParams.get("size") || "10");
   if (keyword) params.append("keyword", keyword);
   if (order_by) params.append("order_by", order_by);
+  if (status) params.append("status", status);
 
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_PROJECT_URL}?${params.toString()}`, {

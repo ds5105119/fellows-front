@@ -2,27 +2,15 @@
 
 import Link from "next/link";
 import useThrottle from "@/lib/useThrottle";
-import useIntersect from "@/lib/useIntersect";
 import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
-import AnimatedGradientButton from "@/components/animation/animatedgradientbutton";
-import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
-import { useState, useMemo } from "react";
-import { ProjectPageSchema, ProjectSchemaType } from "@/@types/service/project";
-import { Badge } from "@/components/ui/badge";
+import ProjectContainer from "./projectcontainer";
+import useSWRInfinite, { SWRInfiniteKeyLoader, SWRInfiniteResponse } from "swr/infinite";
+import { cn } from "@/lib/utils";
+import { useState, useEffect, useRef } from "react";
+import { ProjectPageSchema, ProjectPageSchemaType } from "@/@types/service/project";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
-import { ChevronRight, Plus, EllipsisVertical, Edit2, UserPlus, Trash2 } from "lucide-react";
+import { Plus, LayoutDashboard, Files, Users } from "lucide-react";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -34,9 +22,35 @@ interface getKeyFactoryProps {
   size?: number;
   keyword?: string;
   order_by?: string;
+  status?: string;
 }
 
-const getKeyFactory = ({ size, keyword, order_by }: getKeyFactoryProps): SWRInfiniteKeyLoader => {
+type Status = "draft" | "process" | "complete" | "maintenance";
+
+const statuses: Status[] = ["draft", "process", "complete", "maintenance"];
+
+const containerProps = {
+  draft: { name: "계획 중", bg: "bg-gray-500/10", text: "text-gray-500", border: "border-gray-300", className: "col-span-1" },
+  process: { name: "진행 중", bg: "bg-blue-500/10", text: "text-blue-500", border: "border-blue-300", className: "col-span-1" },
+  complete: { name: "완료", bg: "bg-green-500/10", text: "text-green-500", border: "border-green-300", className: "col-span-1" },
+  maintenance: { name: "유지보수", bg: "bg-amber-500/10", text: "text-amber-500", border: "border-amber-300", className: "col-span-1" },
+};
+
+const orders = [
+  { label: "최신순", value: "updated_at.desc" },
+  { label: "이름순", value: "project_info.project_name" },
+  { label: "생성일순", value: "created_at.desc" },
+];
+
+export type SWRMeta = {
+  swr: SWRInfiniteResponse<ProjectPageSchemaType>;
+  data: ProjectPageSchemaType;
+  isLoading?: boolean;
+  totalItems: number;
+  totalPages: number;
+};
+
+const getKeyFactory = ({ size, keyword, order_by, status }: getKeyFactoryProps): SWRInfiniteKeyLoader => {
   return (pageIndex, previousPageData) => {
     if (previousPageData && previousPageData.items.length === 0) return null;
 
@@ -46,6 +60,7 @@ const getKeyFactory = ({ size, keyword, order_by }: getKeyFactoryProps): SWRInfi
     if (size) params.append("size", `${size}`);
     if (keyword) params.append("keyword", keyword);
     if (order_by) params.append("order_by", order_by);
+    if (status) params.append("status", status);
 
     return `/api/service/project/?${params.toString()}`;
   };
@@ -53,172 +68,181 @@ const getKeyFactory = ({ size, keyword, order_by }: getKeyFactoryProps): SWRInfi
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to load data");
+
+  if (!res.ok) {
+    const error = new Error("Fetch failed") as any;
+    error.status = res.status;
+    throw error;
+  }
+
   const data = await res.json();
   return ProjectPageSchema.parse(data);
 };
 
-const ProjectDropdownMenu = ({
-  openMenu,
-  setOpenMenu,
-  val,
+export function useInfiniteObserver({
+  target,
+  onIntersect,
+  enabled = true,
+  error = false,
+  threshold = 1.0,
+  rootMargin = "0px",
 }: {
-  openMenu: string | null;
-  setOpenMenu: (val: string | null) => void;
-  val: ProjectSchemaType;
-}) => (
-  <DropdownMenu
-    open={openMenu === val.project_id}
-    onOpenChange={(isOpen) => {
-      setOpenMenu(isOpen ? val.project_id : null);
-    }}
-  >
-    <DropdownMenuTrigger asChild>
-      <div
-        className={cn(
-          "rounded-sm z-20 h-6 w-6 flex items-center justify-center pointer-events-auto hover:bg-neutral-200",
-          openMenu === val.project_id && "bg-neutral-100 hover:bg-neutral-200"
-        )}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-      >
-        <EllipsisVertical className="!size-5" />
-      </div>
-    </DropdownMenuTrigger>
+  target: React.RefObject<HTMLElement | undefined>;
+  onIntersect: () => void;
+  enabled?: boolean;
+  error: boolean;
+  threshold?: number;
+  rootMargin?: string;
+}) {
+  useEffect(() => {
+    if (!enabled || error || !target.current) return;
 
-    <DropdownMenuContent align="end" className="z-30">
-      <DropdownMenuLabel className="font-semibold">{val.project_info.project_name}</DropdownMenuLabel>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem className="flex items-center space-x-2 font-medium" asChild>
-        <Link href={`/service/project/${val.project_id}?p=edit`}>
-          <Edit2 className="size-4" />
-          <span>수정</span>
-        </Link>
-      </DropdownMenuItem>
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          onIntersect();
+        }
+      },
+      {
+        root: null,
+        rootMargin,
+        threshold,
+      }
+    );
 
-      <DropdownMenuItem className="flex items-center space-x-2 font-medium" asChild>
-        <Link href={`/service/project/${val.project_id}?p=edit`}>
-          <UserPlus className="size-4" />
-          <span>수정</span>
-        </Link>
-      </DropdownMenuItem>
+    observer.observe(target.current);
 
-      <DropdownMenuSeparator />
-
-      <DropdownMenuItem className="flex items-center space-x-2 font-medium" asChild>
-        <Link href={`/service/project/${val.project_id}?p=edit`}>
-          <Trash2 className="size-4 !text-red-600" />
-          <span className="!text-red-600">삭제</span>
-        </Link>
-      </DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
-);
-
-const orders = [
-  { label: "최신순", value: "updated_at.desc" },
-  { label: "이름순", value: "project_info.project_name" },
-  { label: "생성일순", value: "created_at.desc" },
-  { label: "상태순", value: "status" },
-];
+    return () => {
+      if (target.current) observer.unobserve(target.current);
+      observer.disconnect();
+    };
+  }, [enabled, error, target.current]);
+}
 
 export default function ProjectMainSection() {
+  const [activeRightTab, setActiveRightTab] = useState("대시보드");
   const [pageSize, setPageSize] = useState<number>(20);
   const [orderBy, setOrderBy] = useState<string>(orders[0].value);
   const [inputText, setInputText] = useState<string>("");
-  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [statusError, setStatusError] = useState<Record<Status, boolean>>({ draft: false, process: false, complete: false, maintenance: false });
+  const refs = useRef<Record<Status, HTMLDivElement | undefined>>({ draft: undefined, process: undefined, complete: undefined, maintenance: undefined });
   const keyword = useThrottle(inputText, 700);
 
-  const getKey = getKeyFactory({ size: pageSize, keyword: keyword, order_by: orderBy });
-  const { data, error, isLoading: _isLoading, size, setSize } = useSWRInfinite(getKey, fetcher);
-  const changePage = () => {
-    if (!isLoading && totalPages > 0 && size < totalPages) {
-      setSize((prev) => {
-        return prev + 1;
-      });
-    }
+  const getKeyByStatus = (status: string) => getKeyFactory({ size: pageSize, keyword, order_by: orderBy, status });
+  const data: Record<Status, SWRInfiniteResponse<ProjectPageSchemaType>> = statuses.reduce((acc, status) => {
+    acc[status] = useSWRInfinite<ProjectPageSchemaType>(getKeyByStatus(status), fetcher, {
+      onError: () => {
+        setStatusError((prev) => ({ ...prev, [status]: true }));
+      },
+    });
+    return acc;
+  }, {} as Record<Status, SWRInfiniteResponse<ProjectPageSchemaType>>);
+
+  const getMeta = (status: Status): SWRMeta => {
+    const swr = data[status];
+    const pages = swr.data?.flatMap((page) => page.items) || [];
+    const totalItems = swr.data?.[0]?.total ?? 0;
+    const totalPages = Math.ceil(totalItems / pageSize);
+    const isLoading = swr.isLoading || (swr.size > 0 && swr.data && typeof swr.data[swr.size - 1] === "undefined");
+
+    return {
+      swr: swr,
+      data: {
+        total: totalItems,
+        items: pages,
+      },
+      isLoading,
+      totalItems,
+      totalPages,
+    };
   };
-  const bottomRef = useIntersect(changePage);
 
-  const isLoading = _isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
-  const projects = useMemo(() => data?.flatMap((page) => page.items || []) ?? [], [data]);
-  const totalItems = useMemo(() => (data && data[0] ? data[0].total : 0), [data]);
-  const totalPages = useMemo(() => Math.ceil(totalItems / pageSize), [totalItems, pageSize]);
+  statuses.forEach((status) => {
+    const meta = getMeta(status);
 
-  if (error) return "error";
+    useInfiniteObserver({
+      target: { current: refs.current[status] },
+      enabled: !meta.isLoading && meta.swr.data && meta.swr.size < meta.totalPages,
+      error: statusError[status],
+      onIntersect: () => meta.swr.setSize((s) => s + 1),
+    });
+  });
 
   return (
-    <div className="flex flex-col w-full space-y-6">
-      {/* 검색어 입력, 선택, 버튼 */}
+    <div className="flex flex-col w-full space-y-4">
       <div className="w-full flex flex-col">
-        <div className="w-full flex items-center justify-between">
-          <div className="flex space-x-2">
-            <Select defaultValue="created_at">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="created_at">10개씩</SelectItem>
-                  <SelectItem value="project_name">20개씩</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Input placeholder="검색어를 입력하세요" className="w-80" />
+        {/* 선택 탭 */}
+        <div className="flex w-full h-12 px-4 md:px-8 border-b-1 border-b-sidebar-border space-x-2">
+          <button
+            className={cn(
+              "flex items-center space-x-2 px-4 h-12 text-base font-bold border-b-2 transition-colors",
+              activeRightTab === "대시보드" ? "border-black" : "border-transparent text-muted-foreground hover:text-foreground"
+            )}
+            onClick={() => setActiveRightTab("대시보드")}
+          >
+            <LayoutDashboard />
+            <span>대시보드</span>
+          </button>
+          <button
+            className={cn(
+              "flex items-center space-x-2 px-4 h-12 text-base font-bold border-b-2 transition-colors",
+              activeRightTab === "문서" ? "border-black" : "border-transparent text-muted-foreground hover:text-foreground"
+            )}
+            onClick={() => setActiveRightTab("문서")}
+          >
+            <Files />
+            <span>문서</span>
+          </button>{" "}
+          <button
+            className={cn(
+              "flex items-center space-x-2 px-4 h-12 text-base font-bold border-b-2 transition-colors",
+              activeRightTab === "팀원" ? "border-black" : "border-transparent text-muted-foreground hover:text-foreground"
+            )}
+            onClick={() => setActiveRightTab("팀원")}
+          >
+            <Users />
+            <span>팀원</span>
+          </button>
+        </div>
+
+        {/* 정렬, 검색 및 새로 만들기 탭 */}
+        <div className="flex w-full h-12 justify-between items-center px-4 md:px-8 border-b-1 border-b-sidebar-border space-x-2">
+          <div className="flex grow md:max-w-1/2 space-x-2">
+            <ComboBoxResponsive statuses={orders} initial="updated_at.desc" callback={setOrderBy} />
+            <Input placeholder="검색어를 입력하세요" className="max-w-96 px-4 border-0 shadow-none rounded-full focus-visible:ring-0 bg-muted" />
           </div>
-          <div className="flex space-x-2">
-            <Button asChild>
-              <Link href="/service/project/new">
+          <div className="flex">
+            <Button size="sm" className="bg-blue-500/15 hover:bg-blue-500/25 text-blue-500 transition-colors duration-200 focus-visible:ring-0" asChild>
+              <Link href="./project/new">
                 새로 만들기 <Plus />
               </Link>
             </Button>
           </div>
         </div>
-
-        <div className="flex w-full justify-between mt-6">
-          <ComboBoxResponsive statuses={orders} initial="updated_at.desc" callback={setOrderBy} />
-        </div>
       </div>
 
-      {/* 프로젝트 리스트 */}
-      <div className="w-full flex flex-col space-y-2">
-        <div className="w-full flex text-sm font-light text-muted-foreground px-2">
-          <div className="w-24 truncate break-all text-center">상태</div>
-          <div className="w-48 truncate break-all text-center">플랫폼</div>
-          <div className="grow truncate break-all text-center">이름</div>
-          <div className="w-24 truncate break-all text-center">업데이트</div>
-          <div className="w-24 truncate break-all text-center">메뉴</div>
-        </div>
-        <div className="w-full flex flex-col space-y-2.5 rounded-sm bg-gray-50 p-2">
-          {projects?.map((project, idx) => (
-            <div key={idx} className="w-full pointer-events-none">
-              <div className="relative not-visited:w-full flex rounded-xs text-sm font-semibold outline outline-neutral-200 bg-background hover:bg-muted py-2 items-center">
-                <Link href={`/service/project/${project.project_id}`} className="absolute inset-0 z-10 pointer-events-auto" />
-                <div className="w-24 truncate break-all text-center font-medium">
-                  <Badge variant="outline">{project.status}</Badge>
-                </div>
-                <div className="w-48 truncate break-all text-center">{project.project_info.platforms}</div>
-                <div className="grow truncate break-all text-left">{project.project_info.project_name}</div>
-                <div className="w-24 truncate break-all text-center">{dayjs(project.updated_at).fromNow()}</div>
-                <div className="w-24 text-center flex items-center justify-center">
-                  <ProjectDropdownMenu openMenu={openMenu} setOpenMenu={setOpenMenu} val={project} />
-                </div>
-              </div>
-            </div>
-          ))}
-          {(data?.length == 0 || (data?.length == 1 && data[0].total == 0)) && (
-            <div className="w-full h-80 flex flex-col items-center justify-center space-y-2">
-              <AnimatedGradientButton href="/service/project/new" text="프로젝트를 새로 만들어보세요!" />
-              <div className="text-sm text-muted-foreground">처음이신가요?</div>
-            </div>
-          )}
-        </div>
+      <div className="w-full grid grid-cols-1 lg:grid-cols-4 gap-4 px-8">
+        {statuses.map((status, index) => (
+          <div key={index} className="flex flex-col">
+            <ProjectContainer
+              meta={getMeta(status)}
+              status={status}
+              name={containerProps[status].name}
+              bg={containerProps[status].bg}
+              text={containerProps[status].text}
+              border={containerProps[status].border}
+              className={containerProps[status].className}
+            />
+            {/* 무한 로딩 컴포넌트 */}
+            <div
+              className="w-full h-1"
+              ref={(el: HTMLDivElement | null) => {
+                refs.current[status] = el ?? undefined;
+              }}
+            />
+          </div>
+        ))}
       </div>
-
-      {/* 무한 로딩 컴포넌트 */}
-      <div ref={bottomRef} className="w-full h-1" />
     </div>
   );
 }

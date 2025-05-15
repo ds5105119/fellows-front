@@ -26,5 +26,5 @@ export const headerData = {
     },
     { title: "고객센터", url: "#", icon: "FcOnlineSupport" },
   ],
-  development: [{ title: "홈", url: "/devloper", icon: "FcOnlineSupport" }],
+  development: [{ title: "홈", url: "/devloper", icon: "FcHome" }],
 };

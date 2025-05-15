@@ -9,7 +9,7 @@ import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 export default function MainSection3() {
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2">
         <div className="col-span-full pb-16">
           <div className="text-center flex flex-col space-y-3">
             <h4 className="text-lg md:text-xl font-semibold text-foreground">예상 견적 이후 담당 매니저의 밀착 관리</h4>

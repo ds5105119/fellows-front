@@ -53,6 +53,8 @@ export const ProjectSchema = z.object({
   status: z.string(),
   groups: z.array(z.string()).default([]),
   ai_estimate: z.string().nullable().optional(),
+  emoji: z.string().nullable().optional(),
+  total_amount: z.number().nullable().optional(),
   created_at: z.preprocess((val) => {
     if (typeof val === "string") {
       return /([+\-]\d{2}:\d{2}|Z)$/.test(val) ? val : val + "Z";
@@ -60,6 +62,7 @@ export const ProjectSchema = z.object({
     return val;
   }, z.coerce.date()),
   updated_at: z.coerce.date(),
+  deletable: z.boolean().nullable().optional(),
 
   project_info: ProjectInfoSchema,
   group_links: z.array(ProjectGroupLinkSchema).default([]),
@@ -68,7 +71,7 @@ export const ProjectSchema = z.object({
 export const ProjectListSchema = z.array(ProjectSchema);
 export const ProjectPageSchema = z.object({
   total: z.number().int(),
-  items: ProjectListSchema.nullable(),
+  items: ProjectListSchema,
 });
 
 export const ProjectEstimateFeatureSchema = z.object({

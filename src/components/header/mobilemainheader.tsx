@@ -14,7 +14,7 @@ export default function MobileMainHeader({ session }: TopDetailHeaderProps) {
         <SelectLogo />
         <NavButtonGroup session={session} />
       </nav>
-      <nav className="flex min-md:hidden absolute left-1/2 top-2 z-10 h-14 w-[calc(100vw-48px)] rounded-full bg-[hsla(0,0%,93%,0.42)] backdrop-blur-xl -translate-x-1/2 items-center gap-x-6 px-6">
+      <nav className="flex min-md:hidden items-center justify-between absolute left-1/2 top-2 z-10 h-14 w-[calc(100vw-48px)] rounded-full bg-[hsla(0,0%,93%,0.42)] backdrop-blur-xl -translate-x-1/2 gap-x-6 px-6">
         <SelectLogo />
         <NavButtonGroup session={session} />
       </nav>

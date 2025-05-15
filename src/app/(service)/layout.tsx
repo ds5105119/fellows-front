@@ -49,7 +49,7 @@ export default async function RootLayout({
           <SidebarInset>
             <div className="flex flex-col h-full">
               <Header />
-              <main className="scrollbar-hide flex-1">{children}</main>
+              <main className="scrollbar-hide flex-1 break-keep">{children}</main>
               <Footer />
             </div>
           </SidebarInset>
@@ -57,7 +57,24 @@ export default async function RootLayout({
           <Analytics />
           <SpeedInsights />
         </SidebarProvider>
-        <Toaster richColors />
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            classNames: {
+              toast:
+                "group toast group-[.toaster]:!rounded-lg group-[.toaster]:!items-center group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:!border-0 group-[.toaster]:shadow-lg",
+              title: "group-[.toaster]:!text-sm group-[.toaster]:!font-bold",
+              description: "group-[.toast]:!text-muted-foreground ",
+              actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
+              cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+            },
+          }}
+          icons={{
+            info: null,
+          }}
+          visibleToasts={1}
+          expand
+        />
       </body>
     </html>
   );

@@ -43,7 +43,7 @@ export default async function RootLayout({
         <LenisProvider>
           <div className="relative overscroll-none">
             <MobileHeader text={headerText} session={session} />
-            <main className="scrollbar-hide">{children}</main>
+            <main className="scrollbar-hide break-keep">{children}</main>
             <Footer />
           </div>
         </LenisProvider>

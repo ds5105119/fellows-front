@@ -8,9 +8,8 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   return (
-    <div className="grid grid-cols-4 md:grid-cols-12 px-8 gap-6 mt-12 mb-8">
+    <div className="grid grid-cols-4 md:grid-cols-12 gap-6 mb-8">
       <div className="col-span-full">
-        <h1 className="mb-5 text-4xl font-bold">프로젝트 목록</h1>
         <ProjectMainSection />
       </div>
     </div>
