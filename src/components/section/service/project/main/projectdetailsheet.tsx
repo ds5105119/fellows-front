@@ -4,32 +4,50 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Clock, Copy, Download, Settings2, FileText, Plus, Calendar, SquareCode, ExternalLink, Link } from "lucide-react";
+import { ArrowLeft, Clock, Copy, Download, FileText, SquareCode, ExternalLink, LinkIcon, Fullscreen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProjectSchemaType } from "@/@types/service/project";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import BreathingSparkles from "@/components/resource/breathingsparkles";
+import MarkdownPreview from "@/components/ui/markdownpreview";
+import Link from "next/link";
+import { fileIconMap, getFileExtension } from "@/components/form/fileinput";
+import { UploadProgressIndicator } from "@/components/ui/uploadprogressindicator";
 
 export default function ProjectDetailSheet({ project, onClose }: { project: ProjectSchemaType | null; onClose: () => void }) {
-  const [activeTab, setActiveTab] = useState("상세");
+  const [valueToggle, setValueToggle] = useState(false);
   const [activeRightTab, setActiveRightTab] = useState("지출");
+  const [files, setFiles] = useState(project?.project_info.files || []);
 
   if (!project) return null;
 
-  // 예산 진행률 계산 (실제 데이터가 없으므로 가정)
   const budgetProgress = project.total_amount ? 65 : 0; // 예산 진행률 예시
 
+  const removeFile = async (key: string, sse_key: string) => {
+    const params = new URLSearchParams();
+    params.append("key", key);
+    params.append("sse_key", sse_key);
+
+    await fetch(`/api/cloud/object?${params.toString()}`, {
+      method: "DELETE",
+    });
+
+    if (files) {
+      setFiles((prev) => prev.filter((file) => file.file_record.key !== key));
+    }
+  };
+
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col w-full h-full overflow-hidden">
       {/* 헤더 */}
-      <div className="flex items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4">
+      <div className="flex items-center justify-between min-h-16 border-b-1 border-b-sidebar-border px-4">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-blue-500/10 border-0">
+          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
             <ArrowLeft className="!size-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-blue-500/10 border-0">
-            <Link className="!size-5" />
+          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
+            <LinkIcon className="!size-5" />
           </Button>
         </div>
         <div className="flex items-center gap-2">
@@ -40,8 +58,10 @@ export default function ProjectDetailSheet({ project, onClose }: { project: Proj
             <Download className="h-4 w-4" />
             내보내기
           </Button>
-          <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none">
-            <Settings2 className="h-4 w-4" />
+          <Button variant="outline" size="icon" className="size-8 font-semibold rounded-sm border-gray-200 shadow-none" asChild>
+            <Link href={`./project/${project.project_id}`}>
+              <Fullscreen className="h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </div>
@@ -49,187 +69,182 @@ export default function ProjectDetailSheet({ project, onClose }: { project: Proj
       {/* 메인 콘텐츠 */}
       <div className="grow overflow-hidden grid grid-cols-1 md:grid-cols-5">
         {/* 왼쪽 패널 */}
-        <div className="col-span-1 md:col-span-3 h-full overflow-y-auto scrollbar-hide border-r-1 border-b-sidebar-border">
+        <div className="col-span-full md:col-span-3 h-full overflow-y-auto scrollbar-hide border-r-1 border-b-sidebar-border">
+          {/* 프로젝트 헤더 */}
           <div className="w-full flex items-center pt-12 px-8 space-x-3">
             <div className="flex items-center justify-center size-9 rounded-sm bg-blue-500/15 ">
               <FileText className="!size-6 text-blue-500" strokeWidth={2.2} />
             </div>
-            <span className="text-base font-bold text-blue-500">프로젝트 현황</span>
+            <span className="text-base font-bold text-blue-500">프로젝트 미리보기</span>
             <span className="text-xs font-normal text-muted-foreground">{dayjs(project.created_at).format("YY.MM.DD HH시 mm분")} 생성</span>
           </div>
-
-          <div className="w-full flex flex-col pt-6 px-8 space-y-6">
-            <h2 className="text-4xl font-bold">
+          {/* 프로젝트 이름 및 기본 정보 */}
+          <div className="w-full flex flex-col pt-6 px-8 space-y-5">
+            <h2 className="text-4xl font-bold break-keep">
               {project.emoji} {project.project_info.project_name}
             </h2>
             <div className="w-full flex items-center space-x-2">
               <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">계약 번호</div>
-              <div className="ml-1 text-xs font-medium text-muted-foreground">{project.project_id}</div>
-              <div className="size-6 flex items-center justify-center rounded-sm hover:bg-gray-300/40 transition-colros duration-200">
+              <div className="ml-1 flex-1 text-xs font-medium text-muted-foreground truncate overflow-hidden whitespace-nowrap">{project.project_id}</div>
+              <div className="size-6 flex items-center justify-center rounded-sm hover:bg-gray-300/40 transition-colors duration-200">
                 <Copy className="text-muted-foreground !size-4" strokeWidth={2.7} />
               </div>
             </div>
           </div>
-
+          {/* 프로젝트 상태 및 종류 */}
           <div className="w-full flex items-center justify-between pt-6 pb-3 px-8 border-b-1 border-b-sidebar-border">
             <h3 className="text-sm font-bold">상태</h3>
             <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold truncate">{project.status}</div>
           </div>
-
           <div className="w-full flex items-center justify-between py-3 px-8 border-b-1 border-b-sidebar-border">
             <h3 className="text-sm font-bold">종류</h3>
             <div className="flex space-x-2">
               {project.project_info.platforms.map((val, i) => (
-                <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">{val}</div>
+                <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
+                  {val}
+                </div>
               ))}
             </div>
           </div>
-
-          <div className="w-full flex flex-col pt-6 px-8 space-y-4">
+          {/* 프로젝트 설명 및 사용기술 */}
+          <div className="w-full flex flex-col pt-6 pb-6 px-8 space-y-4 border-b-1 border-b-sidebar-border">
             <div className="w-full flex items-center space-x-2">
               <FileText className="!size-5" strokeWidth={2.2} />
               <span className="text-lg font-semibold">계약 내용</span>
             </div>
+
             <div className="w-full flex flex-col space-y-2">
-              <div className="text-base font-semibold">설명</div>
+              <div className="text-sm font-semibold">{project.status === "draft" ? "얘상 금액" : "계약 금액"}</div>
+              {project.total_amount ? (
+                <div className="flex flex-col space-y-2">
+                  <div>
+                    <span className="text-lg font-bold">
+                      {valueToggle ? (project.total_amount * 1.1).toLocaleString() : project.total_amount.toLocaleString()}
+                    </span>
+                    <span className="text-sm font-normal"> 원 (부가세 별도)</span>
+                  </div>
+                  <Button size="sm" variant="outline" className="w-fit text-xs h-7 shadow-none" onClick={() => setValueToggle((prev) => !prev)}>
+                    {valueToggle ? "부가세 미포함 금액으로 변경" : "부가세 포함된 금액으로 변경"}
+                  </Button>
+                </div>
+              ) : (
+                <div className="text-lg font-bold">AI 견적으로 예상 견적을 확인해보세요</div>
+              )}
+            </div>
+
+            <div className="w-full flex flex-col space-y-2">
+              <div className="text-sm font-semibold">설명</div>
               <div className="text-sm font-normal">{project.project_info.project_summary}</div>
             </div>
-          </div>
 
-          <Tabs defaultValue="상세" className="w-full" onValueChange={setActiveTab}>
-            <div className="px-6 pt-4">
-              <TabsList className="w-full mb-4 grid grid-cols-2 bg-gray-100 p-1 rounded-full">
-                <TabsTrigger
-                  value="상세"
-                  className={cn(
-                    "rounded-full border-0 data-[state=active]:shadow-none",
-                    "data-[state=active]:bg-white data-[state=active]:text-blue-600",
-                    "data-[state=inactive]:bg-transparent"
-                  )}
-                >
-                  상세
-                </TabsTrigger>
-                <TabsTrigger
-                  value="커뮤고리"
-                  className={cn(
-                    "rounded-full border-0 data-[state=active]:shadow-none",
-                    "data-[state=active]:bg-white data-[state=active]:text-blue-600",
-                    "data-[state=inactive]:bg-transparent"
-                  )}
-                >
-                  커뮤고리
-                </TabsTrigger>
-              </TabsList>
+            <div className="w-full flex flex-col space-y-2">
+              <div className="text-sm font-semibold">디자인 요구사항</div>
+              <div className="text-sm font-normal">{project.project_info.design_requirements ?? "디자인 요구사항이 없어요."}</div>
             </div>
 
-            <TabsContent value="상세" className="p-6 pt-0 space-y-6">
-              <Card className="border-0 shadow-sm rounded-xl">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-lg">계약 금액</CardTitle>
-                    <div className="flex items-center">
-                      <span className="text-2xl font-bold">{project.total_amount?.toLocaleString() || "미정"}</span>
-                      {project.total_amount && <span className="ml-1">원</span>}
-                      {project.total_amount && <span className="text-xs text-muted-foreground ml-2">(세금제외 별도)</span>}
+            <div className="w-full flex flex-col space-y-1.5">
+              <div className="text-sm font-semibold">{project.status === "draft" ? "희망 사용기술" : "계약 사용기술"}</div>
+              <div className="flex space-x-2">
+                {project.project_info.preferred_tech_stack && project.project_info.preferred_tech_stack.length > 0 ? (
+                  project.project_info.preferred_tech_stack.map((val, i) => (
+                    <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
+                      {val}
                     </div>
+                  ))
+                ) : (
+                  <span className="text-sm font-normal">사용기술이 정해지지 않았어요</span>
+                )}
+              </div>
+            </div>
+
+            <div className="w-full flex">
+              <div className="w-1/2 flex flex-col space-y-1.5">
+                <div className="text-sm font-semibold">{project.status === "draft" ? "예상 시작일" : "계약 시작일"}</div>
+                <div className="text-sm font-normal">{project.project_info.start_date ?? "정해지지 않았어요"}</div>
+              </div>
+
+              <div className="w-1/2 flex flex-col space-y-1.5">
+                <div className="text-sm font-semibold">{project.status === "draft" ? "예상 종료일" : "계약 종료일"}</div>
+                <div className="text-sm font-normal">{project.project_info.desired_deadline ?? "정해지지 않았어요"}</div>
+              </div>
+            </div>
+
+            <div className="w-full flex flex-col space-y-2">
+              <div className="text-sm font-semibold">파일</div>
+              <div className="grid grid-cols-1 gap-2">
+                {files && files.length > 0 ? (
+                  files.map((f, i) => {
+                    const extension = getFileExtension(f.file_record.name);
+                    const IconComponent = fileIconMap[extension] || fileIconMap.default;
+
+                    return (
+                      <div
+                        key={i}
+                        className="col-span-1 grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm bg-gray-100 px-4 py-2 text-sm font-medium hover:bg-gray-200 transition-colors duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <IconComponent className="!size-7" />
+
+                        <div className="min-w-0 overflow-hidden">
+                          <p className="truncate text-sm">{f.file_record.name}</p>
+                          <p className="truncate text-xs font-normal">{f.file_record.algorithm}로 암호화됐어요</p>
+                        </div>
+
+                        <div className="w-9 h-9 flex items-center justify-center">
+                          <UploadProgressIndicator progress={100} onRemove={() => removeFile(f.file_record.key, f.file_record.sse_key)} size={36} />
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <span className="text-sm font-normal">첨부된 파일이 없어요</span>
+                )}
+              </div>
+            </div>
+          </div>
+          {/* AI 견적 */}
+          <div className="w-full items-center justify-between pt-4 pb-3 px-8 flex">
+            <div className="w-full flex flex-col space-y-3 pt-2">
+              <div className="w-full flex justify-between">
+                <div className="w-full flex items-center space-x-2">
+                  <BreathingSparkles />
+                  <span className="text-lg font-bold">AI 견적</span>
+                </div>
+                <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
+                  <Fullscreen className="!size-5" />
+                </Button>
+              </div>
+
+              <div>
+                {project.ai_estimate && (
+                  <div className="pt-2 prose prose-h2:text-base prose-p:text-sm prose-a:text-sm">
+                    <MarkdownPreview loading={false}>{project.ai_estimate}</MarkdownPreview>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="outline" size="sm" className="w-full rounded-full border-gray-200">
-                    정산 금액수정 확정하기
+                )}
+              </div>
+            </div>
+          </div>
+          {/* 계약 시작하기 버튼 */}
+          {(project.status === "draft" || project.status === "process:1") && (
+            <div className="sticky flex flex-col bottom-0 z-50 px-4">
+              <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
+              <div className="w-full flex pb-4 pt-3 bg-background">
+                {project.status === "draft" && project.ai_estimate ? (
+                  <Button size="lg" className="w-full px-16 h-[3.75rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500" asChild>
+                    <Link href="/service/dashboard">계약 시작하기</Link>
                   </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="border-0 shadow-sm rounded-xl">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-muted-foreground" />
-                      <CardTitle className="text-base">프로젝트 개요</CardTitle>
-                    </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-blue-500/10 border-0">
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="rounded-xl p-4 bg-gray-50">
-                    <div className="text-sm">{project.project_info.project_summary || "프로젝트 개요가 입력되지 않았습니다."}</div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {project.project_info.feature_list && project.project_info.feature_list.length > 0 && (
-                <Card className="border-0 shadow-sm rounded-xl">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base">주요 기능</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-1 list-disc list-inside text-sm">
-                      {project.project_info.feature_list.map((feature, index) => (
-                        <li key={index}>{feature}</li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              )}
-
-              {project.project_info.preferred_tech_stack && project.project_info.preferred_tech_stack.length > 0 && (
-                <Card className="border-0 shadow-sm rounded-xl">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base">기술 스택</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {project.project_info.preferred_tech_stack.map((tech, index) => (
-                        <Badge key={index} variant="outline" className="rounded-full px-3 py-1 border-gray-200 bg-transparent">
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              <Card className="border-0 shadow-sm rounded-xl">
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <div className="font-medium">시작일</div>
-                      </div>
-                      <div className="text-sm ml-6">
-                        {project.project_info.start_date ? new Date(project.project_info.start_date).toLocaleDateString("ko-KR") : "정해지지 않았어요"}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <div className="font-medium">마감일</div>
-                      </div>
-                      <div className="text-sm ml-6">
-                        {project.project_info.desired_deadline
-                          ? new Date(project.project_info.desired_deadline).toLocaleDateString("ko-KR")
-                          : "정해지지 않았어요"}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Button className="w-full rounded-full bg-blue-500/15 text-blue-600 hover:bg-blue-500/25 border-0">계약 종단하기</Button>
-            </TabsContent>
-
-            <TabsContent value="커뮤고리">
-              <div className="flex items-center justify-center h-[400px] text-muted-foreground">커뮤고리 내용이 여기에 표시됩니다.</div>
-            </TabsContent>
-          </Tabs>
+                ) : (
+                  <Button size="lg" className="w-full px-16 h-[3.75rem] rounded-2xl text-lg font-semibold" asChild>
+                    <Link href={`./project/${project.project_id}`}>지금 바로 예상 견적을 받아보세요 ✨</Link>
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 오른쪽 패널 */}
-        <div className="col-span-1 md:col-span-2 h-full overflow-y-auto scrollbar-hide">
+        <div className="hidden md:block md:col-span-2 h-full overflow-y-auto scrollbar-hide">
           {/* 상태 표시 */}
           <div className="flex items-center px-6 py-3 bg-white">
             <div className="flex items-center gap-6">

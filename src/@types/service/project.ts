@@ -9,8 +9,8 @@ export type ReadinessLevel = z.infer<typeof ReadinessLevel>;
 
 export const ProjectFileRecordsSchema = z.object({
   file_record_key: z.string(),
-  project_info_id: z.number().optional().nullable(),
-  file_record: FileRecordSchema.nullable().optional(),
+  project_info_id: z.number().nullable().optional(),
+  file_record: FileRecordSchema,
 });
 
 export const ProjectInfoSchema = z.object({

@@ -9,9 +9,10 @@ export const PresignedPutUrlResponseSchema = z.object({
 });
 
 export const FileRecordSchema = z.object({
-  algorithm: z.string().optional().nullable().default("AES256"),
   key: z.string(),
-  sse_key: z.string().optional().nullable(),
+  name: z.string(),
+  algorithm: z.string().optional().nullable().default("AES256"),
+  sse_key: z.string(),
 });
 
 export type PresignedPutUrlResponseType = z.infer<typeof PresignedPutUrlResponseSchema>;

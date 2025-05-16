@@ -1,69 +1,28 @@
 "use client";
 
 import { UseFormReturn } from "react-hook-form";
-import { cn } from "@/lib/utils";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { SwitchIndicator } from "@/components/ui/switch-indicator";
-import { ProjectInfoSchemaType, ProjectFileRecordsSchemaType } from "@/@types/service/project";
+import { ProjectInfoSchemaType } from "@/@types/service/project";
 import { DateRange } from "react-day-picker";
-import { useRef, useState, useCallback } from "react";
-import { FcFile } from "react-icons/fc";
-import { motion } from "framer-motion";
-import { AnimatedCircularProgressBar } from "@/components/magicui/animated-circular-progress-bar";
 import DatePickerWithRange from "@/components/form/datepickerwithrange";
+import { TagInput } from "../../../../form/taginput";
+import FileInput from "../../../../form/fileinput";
 
 interface CreateProjectFormStep3Props {
   form: UseFormReturn<ProjectInfoSchemaType>;
   dateRange: DateRange | undefined;
-  files: { record: ProjectFileRecordsSchemaType; name: string; size: number; progress: number }[];
   handleDateSelect: (range: DateRange) => void;
-  handleChangeUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-  handleDropupload: (e: React.DragEvent<HTMLElement>) => Promise<void>;
 }
 
-const formatFileSize = (bytes: number): string => {
-  if (bytes < 1024) return `${bytes}Bytes`;
-  const kb = bytes / 1024;
-  if (kb < 1024) return `${kb.toFixed(1)}KB`;
-  const mb = kb / 1024;
-  if (mb < 1024) return `${mb.toFixed(1)}MB`;
-  const gb = mb / 1024;
-  return `${gb.toFixed(2)}GB`;
-};
-
-export default function CreateProjectFormStep3({
-  form,
-  dateRange,
-  files,
-  handleDateSelect,
-  handleChangeUpload,
-  handleDropupload,
-}: CreateProjectFormStep3Props) {
+export default function CreateProjectFormStep3({ form, dateRange, handleDateSelect }: CreateProjectFormStep3Props) {
   const {
     control,
     getValues,
     formState: { errors },
   } = form;
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [dragOver, setDragOver] = useState(false);
-
-  const handleDrop = useCallback(async (e: React.DragEvent<HTMLLabelElement>) => {
-    setDragOver(false);
-    await handleDropupload(e);
-  }, []);
-
-  const handleDragOver = useCallback((event: React.DragEvent<HTMLLabelElement>) => {
-    event.preventDefault();
-    setDragOver(true);
-  }, []);
-
-  const handleDragLeave = useCallback((event: React.DragEvent<HTMLLabelElement>) => {
-    event.preventDefault();
-    setDragOver(false);
-  }, []);
 
   return (
     <>
@@ -100,7 +59,7 @@ export default function CreateProjectFormStep3({
             <FormControl>
               <Textarea
                 placeholder="디자인 관련 요구사항을 입력해주세요. (예: Figma 시안 보유, 특정 스타일 선호 등)"
-                className="text-base font-semibold focus-visible:ring-0 rounded-3xl bg-gray-100 border-0 px-6 py-4 min-h-36"
+                className="text-base font-semibold focus-visible:ring-0 rounded-2xl bg-gray-100 border-0 px-6 py-4 min-h-36"
                 {...field}
                 value={field.value ?? ""}
                 onChange={(e) => field.onChange(e.target.value || null)}
@@ -117,20 +76,12 @@ export default function CreateProjectFormStep3({
           <FormItem>
             <FormLabel className="text-sm font-medium">선호 기술 스택</FormLabel>
             <FormControl>
-              <Textarea
-                placeholder="선호하는 기술 스택이 있다면 쉼표로 구분해 입력해주세요. (예: React, Node.js, PostgreSQL)"
-                className="text-base font-semibold focus-visible:ring-0 rounded-3xl bg-gray-100 border-0 px-6 py-4 min-h-36"
-                value={Array.isArray(field.value) ? field.value.join(", ") : ""}
-                onChange={(e) => {
-                  const stacks = e.target.value
-                    .split(",")
-                    .map((s) => s.trim())
-                    .filter((s) => s.length > 0);
-                  field.onChange(stacks.length > 0 ? stacks : null);
-                }}
+              <TagInput
+                value={field.value || []}
+                onChange={field.onChange}
+                placeholder={field.value && field.value.length > 0 ? "⌫ 키로 지울 수 있어요." : "쉼표(,)로 구분하여 입력해주세요. (얘시: Next.js)"}
               />
             </FormControl>
-            <FormDescription>쉼표(,)로 구분하여 입력해주세요.</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -143,7 +94,7 @@ export default function CreateProjectFormStep3({
             <FormItem>
               <FormLabel className="text-sm font-medium">희망 일정 및 유지보수</FormLabel>
               <FormControl>
-                <div className="rounded-t-3xl overflow-hidden">
+                <div className="rounded-t-2xl overflow-hidden">
                   <DatePickerWithRange
                     value={
                       dateRange || {
@@ -168,7 +119,7 @@ export default function CreateProjectFormStep3({
               <FormControl>
                 <button
                   type="button"
-                  className="h-20 w-full flex flex-row items-center justify-between rounded-b-3xl px-6 bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="h-20 w-full flex flex-row items-center justify-between rounded-b-2xl px-6 bg-gray-100 hover:bg-gray-200 transition-colors"
                   onClick={() => field.onChange(!field.value)}
                 >
                   <div className="text-sm font-semibold whitespace-pre-wrap text-left">
@@ -198,78 +149,7 @@ export default function CreateProjectFormStep3({
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <div className="w-full rounded-3xl bg-gray-100 px-6 pt-5 pb-2 space-y-4 mt-6">
-                  <div className="flex flex-col space-y-1 justify-center px-1">
-                    <div className="font-semibold">추가로 전달해주고 싶은 파일이 있다면 첨부해주세요.</div>
-                    <div className="text-sm font-medium text-muted-foreground">올린 파일은 암호화되어 안전하게 보호됩니다.</div>
-                  </div>
-                  <label
-                    className={cn(
-                      "flex flex-col rounded-xl px-3 py-3 min-h-40 md:min-h-30 space-y-2.5",
-                      files.length === 0 && "justify-center items-center",
-                      dragOver ? "bg-blue-100 border-blue-400" : "bg-white"
-                    )}
-                    onClick={() => fileInputRef.current?.click()}
-                    onDrop={handleDrop}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                  >
-                    {files.length > 0 ? (
-                      files.map((f, idx) => (
-                        <div
-                          className="relative w-full flex items-center space-x-3 rounded-sm bg-gray-100 px-4 py-2 text-sm font-medium hover:bg-gray-200 transition-colors duration-200"
-                          key={idx}
-                        >
-                          {/* 아이콘 */}
-                          <FcFile className="!size-7" />
-
-                          {/* 파일 정보 */}
-                          <div className="w-full">
-                            <div className="truncate">{f.name}</div>
-                            <div className="text-xs font-normal">{formatFileSize(f.size)}</div>
-                          </div>
-
-                          {/* 프로그레스 바 */}
-                          <div className={cn("absolute inset-y-0 left-0 w-full rounded-sm", f.progress > 9 && "hidden")}>
-                            <motion.div
-                              className="h-full rounded-sm"
-                              animate={{
-                                backgroundColor: ["#ffffff40", "#cecece40", "#ffffff40"],
-                              }}
-                              transition={{
-                                duration: 2.0,
-                                ease: "easeInOut",
-                                repeat: Infinity,
-                                repeatType: "reverse",
-                              }}
-                            />
-                          </div>
-
-                          <AnimatedCircularProgressBar
-                            className="!size-8 overflow-clip text-transparent"
-                            max={100}
-                            min={0}
-                            value={f.progress}
-                            gaugePrimaryColor="rgb(50, 125, 255)"
-                            gaugeSecondaryColor="rgba(0, 0, 0, 0.3)"
-                          />
-                        </div>
-                      ))
-                    ) : (
-                      <div className="h-full flex flex-col items-center justify-center space-y-1.5">
-                        <div className="text-4xl font-bold select-none pointer-events-none">📎</div>
-                        <div className="flex flex-col space-y-1 items-center justify-center select-none pointer-events-none">
-                          <div className="font-semibold">파일을 선택하거나 올려주세요</div>
-                          <div className="text-xs font-medium text-muted-foreground">30MB 이하</div>
-                        </div>
-                      </div>
-                    )}
-                  </label>
-                  <Button type="button" onClick={() => fileInputRef.current?.click()}>
-                    업로드
-                  </Button>
-                  <Input id="fileInput" ref={fileInputRef} type="file" onChange={handleChangeUpload} style={{ display: "none" }} />
-                </div>
+                <FileInput onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -120,8 +120,8 @@ export function useInfiniteObserver({
 }
 
 export default function ProjectMainSection() {
+  const pageSize = 20;
   const [activeRightTab, setActiveRightTab] = useState("대시보드");
-  const [pageSize, setPageSize] = useState<number>(20);
   const [orderBy, setOrderBy] = useState<string>(orders[0].value);
   const [inputText, setInputText] = useState<string>("");
   const [statusError, setStatusError] = useState<Record<Status, boolean>>({ draft: false, process: false, complete: false, maintenance: false });
@@ -134,6 +134,7 @@ export default function ProjectMainSection() {
       onError: () => {
         setStatusError((prev) => ({ ...prev, [status]: true }));
       },
+      refreshInterval: 60000,
     });
     return acc;
   }, {} as Record<Status, SWRInfiniteResponse<ProjectPageSchemaType>>);
@@ -192,7 +193,7 @@ export default function ProjectMainSection() {
           >
             <Files />
             <span>문서</span>
-          </button>{" "}
+          </button>
           <button
             className={cn(
               "flex items-center space-x-2 px-4 h-12 text-base font-bold border-b-2 transition-colors",
@@ -209,7 +210,11 @@ export default function ProjectMainSection() {
         <div className="flex w-full h-12 justify-between items-center px-4 md:px-8 border-b-1 border-b-sidebar-border space-x-2">
           <div className="flex grow md:max-w-1/2 space-x-2">
             <ComboBoxResponsive statuses={orders} initial="updated_at.desc" callback={setOrderBy} />
-            <Input placeholder="검색어를 입력하세요" className="max-w-96 px-4 border-0 shadow-none rounded-full focus-visible:ring-0 bg-muted" />
+            <Input
+              placeholder="검색어를 입력하세요"
+              className="max-w-96 px-4 border-0 shadow-none rounded-full focus-visible:ring-0 bg-muted"
+              onChange={(e) => setInputText(e.target.value)}
+            />
           </div>
           <div className="flex">
             <Button size="sm" className="bg-blue-500/15 hover:bg-blue-500/25 text-blue-500 transition-colors duration-200 focus-visible:ring-0" asChild>
@@ -221,7 +226,7 @@ export default function ProjectMainSection() {
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-1 lg:grid-cols-4 gap-4 px-8">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-4 gap-4 px-4 md:px-8">
         {statuses.map((status, index) => (
           <div key={index} className="flex flex-col">
             <ProjectContainer

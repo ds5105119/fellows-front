@@ -6,8 +6,8 @@ export interface UploadProgress {
   total: number;
 }
 
-export async function getPresignedPutUrl(suffix?: string): Promise<PresignedPutUrlResponseType> {
-  const response = await fetch(suffix ? `/api/cloud/presigned/put?${suffix}` : "/api/cloud/presigned/put", {
+export async function getPresignedPutUrl(name: string): Promise<PresignedPutUrlResponseType> {
+  const response = await fetch(`/api/cloud/object/presigned/put?name=${name}`, {
     method: "get",
     headers: {
       "Content-Type": "application/json",
@@ -19,7 +19,6 @@ export async function getPresignedPutUrl(suffix?: string): Promise<PresignedPutU
   }
 
   const data = await response.json();
-  console.log(data);
   PresignedPutUrlResponseSchema.parse(data);
   return data;
 }
@@ -44,8 +43,6 @@ export async function uploadFileToPresignedUrl({
     "x-amz-server-side-encryption-customer-key": presigned.sse_key,
     "x-amz-server-side-encryption-customer-key-md5": presigned.md5,
   };
-
-  console.log(presigned);
 
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();

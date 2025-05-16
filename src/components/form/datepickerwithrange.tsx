@@ -14,6 +14,10 @@ interface DatePickerWithRangeProps {
 }
 
 export default function DatePickerWithRange({ value, onSelect, className }: DatePickerWithRangeProps) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const disabledDays = { before: today };
+
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<number>(1);
   const [internal, setInternal] = useState<DateRange | undefined>(value);
@@ -62,7 +66,7 @@ export default function DatePickerWithRange({ value, onSelect, className }: Date
           </div>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-4 rounded-xl" align="center">
-          <Calendar mode="range" defaultMonth={internal?.from} selected={internal} onSelect={handleSelect} numberOfMonths={2} />
+          <Calendar mode="range" defaultMonth={internal?.from} selected={internal} onSelect={handleSelect} numberOfMonths={2} disabled={disabledDays} />
         </PopoverContent>
       </Popover>
     </div>

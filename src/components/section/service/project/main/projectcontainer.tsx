@@ -7,7 +7,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SWRMeta } from "./projectmainsection";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Plus, PencilLine, Receipt, Calendar, ArrowRight, Clock5, SquareCode } from "lucide-react";
 
 import dayjs from "dayjs";
@@ -83,7 +83,7 @@ export default function ProjectContainer({
                   <div className="truncate break-all font-bold">{project.project_info.project_name}</div>
                 </div>
                 <div className="w-6 flex items-center justify-center">
-                  <ProjectDropdownMenu openMenu={openMenu} setOpenMenu={setOpenMenu} project={project} />
+                  <ProjectDropdownMenu openMenu={openMenu} setOpenMenu={setOpenMenu} meta={meta} idx={idx} />
                 </div>
               </div>
 
@@ -137,7 +137,7 @@ export default function ProjectContainer({
 
         {/* 프로젝트 선택 시 팝업 */}
         <Sheet open={openSheet} onOpenChange={setOpenSheet}>
-          <SheetContent className="w-full md:min-w-[800px] [&>button:first-of-type]:hidden">
+          <SheetContent className="w-full sm:max-w-full md:w-1/2 md:min-w-[728px] [&>button:first-of-type]:hidden">
             <ProjectDetailSheet project={selectedProject} onClose={() => setOpenSheet(false)} />
             <SheetHeader className="sr-only h-0">
               <SheetTitle>{selectedProject?.project_info?.project_name ?? "프로젝트가 선택되지 않았습니다."}</SheetTitle>

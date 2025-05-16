@@ -8,13 +8,12 @@ import { Form } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ProjectInfoSchema, ProjectInfoSchemaType, ProjectSchema, ProjectFileRecordsSchema, ProjectFileRecordsSchemaType } from "@/@types/service/project";
+import { ProjectInfoSchema, ProjectInfoSchemaType, ProjectSchema } from "@/@types/service/project";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { TopProgressBar } from "@/components/animation/topprogressbar";
 import { useGetEstimateFeatures } from "@/hooks/fetch/project";
 import { stepsMeta } from "@/components/resource/project";
-import { uploadFileToPresignedUrl, getPresignedPutUrl } from "@/hooks/fetch/presigned";
 import CreateProjectFormStep1 from "./createprojectstep1";
 import CreateProjectFormStep2 from "./createprojectstep2";
 import CreateProjectFormStep3 from "./createprojectstep3";
@@ -237,60 +236,6 @@ export default function CreateProject() {
     }
   }, [firstInSecondStop, currentStep, setFirstInSecondStop, mergeEstimateFeatures]);
 
-  // 파일 업로드 관련
-
-  const [files, setFiles] = useState<{ record: ProjectFileRecordsSchemaType; name: string; size: number; progress: number }[]>([]);
-
-  const uploadFiles = async (file: File) => {
-    const isDuplicate = files.some((f) => f.name === file.name && f.size === file.size);
-    if (isDuplicate) {
-      toast.info("이미 업로드된 파일입니다.");
-      return;
-    }
-
-    const presigned = await getPresignedPutUrl();
-    const fileRecord = ProjectFileRecordsSchema.parse({ file_record_key: presigned.key });
-    setFiles((prev) => [...prev, { record: fileRecord, name: file.name, size: file.size, progress: 0 }]);
-
-    try {
-      await uploadFileToPresignedUrl({
-        file,
-        presigned,
-        onProgress: ({ percent }) => {
-          setFiles((prev) => prev.map((f) => (f.name === file.name ? { ...f, progress: percent } : f)));
-        },
-      });
-    } catch (err) {
-      toast.warning("업로드에 실패했어요.");
-    }
-  };
-
-  const handleChangeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const file = e.target.files?.[0];
-    if (!file) return;
-    await uploadFiles(file);
-  };
-
-  const handleDropupload = async (e: React.DragEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const file = e.dataTransfer.files?.[0];
-    if (!file) return;
-    await uploadFiles(file);
-  };
-
-  useEffect(() => {
-    setValue(
-      "files",
-      files.map((f) => f.record),
-      { shouldDirty: true, shouldValidate: true }
-    );
-  }, [files, setValue]);
-
   // 제출 관련
 
   const validateFormForSubmission = useCallback(async (): Promise<boolean> => {
@@ -406,7 +351,6 @@ export default function CreateProject() {
       toast.error("프로젝트 업데이트 중 오류가 발생했어요", {
         description: "잠시 뒤 다시 시도해 주세요.",
       });
-      console.error("Error updating project:", error);
     } finally {
       setIsLoading(false);
     }
@@ -440,16 +384,7 @@ export default function CreateProject() {
                 handleFeatureChange={handleFeatureChange}
               />
             )}
-            {currentStep === 3 && (
-              <CreateProjectFormStep3
-                form={form}
-                dateRange={dateRange}
-                files={files}
-                handleDateSelect={handleDateSelect}
-                handleChangeUpload={handleChangeUpload}
-                handleDropupload={handleDropupload}
-              />
-            )}
+            {currentStep === 3 && <CreateProjectFormStep3 form={form} dateRange={dateRange} handleDateSelect={handleDateSelect} />}
 
             <div className="sticky bottom-0 z-20">
               <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
