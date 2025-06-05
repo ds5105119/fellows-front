@@ -7,9 +7,9 @@ export const headerData = {
     { title: "구독", url: "#", icon: "FcConferenceCall" },
   ],
   documents: [
-    { name: "데이터 라이브러리", url: "#", icon: "FcDatabase" },
-    { name: "리포트", url: "#", icon: "FcBarChart" },
-    { name: "개발 상황", url: "#", icon: "FcCableRelease" },
+    { title: "데이터 라이브러리", url: "#", icon: "FcDatabase" },
+    { title: "리포트", url: "#", icon: "FcBarChart" },
+    { title: "개발 상황", url: "#", icon: "FcCableRelease" },
   ],
   navSecondary: [
     {
@@ -26,5 +26,4 @@ export const headerData = {
     },
     { title: "고객센터", url: "#", icon: "FcOnlineSupport" },
   ],
-  development: [{ title: "홈", url: "/devloper", icon: "FcHome" }],
 };

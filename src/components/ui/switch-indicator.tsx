@@ -17,7 +17,7 @@ export function SwitchIndicator({ checked, className }: SwitchIndicatorProps) {
           layout
           transition={{
             type: "spring",
-            duration: 0.4,
+            duration: 0.5,
             bounce: 0.45,
           }}
           className="w-4 h-4 rounded-full bg-background drop-shadow"

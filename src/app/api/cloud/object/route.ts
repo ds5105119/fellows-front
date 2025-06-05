@@ -18,7 +18,7 @@ export async function DELETE(request: Request) {
   if (sse_key) params.append("sse_key", sse_key);
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_CLOUD_DELETE_URL}?${params.toString()}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_CLOUD_URL}?${params.toString()}`, {
       method: "DELETE",
       redirect: "follow",
     });

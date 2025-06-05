@@ -22,7 +22,7 @@ export async function GET(request: Request) {
   if (sse_key) params.append("sse_key", sse_key);
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_PROJECT_URL}?${params.toString()}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_CLOUD_PRESIGNED_GET_URL}?${params.toString()}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -1,10 +1,10 @@
-import { ProjectInfoSchemaType } from "@/@types/service/project";
+import { UserERPNextProjectType } from "@/@types/service/erpnext";
 
 export const categorizedFeatures = [
   {
     title: "도구 및 기술",
     items: [
-      { icon: "✏️", title: "노코드 웹", description: "비용을 크게 절감할 수 있지만 월별 소액 요금이 부과될 수 있어요." },
+      { icon: "✏️", title: "노코드 웹", description: "비용을 크게 절감할 수 있지만 커스터마이징이 제한됩니다." },
       { icon: "🌐", title: "다국어 지원" },
       { icon: "📁", title: "파일 업로드" },
       { icon: "🔎", title: "검색 기능" },
@@ -59,7 +59,7 @@ export const categorizedFeatures = [
       { icon: "🌐", title: "고급 다국어 지원", description: "문화적 특성을 고려한 수준으로 현지화합니다." },
       { icon: "🚀", title: "고급 파일 관리", description: "대용량 처리, CDN 활용 등 전문적인 파일 관리 시스템을 제공합니다." },
       { icon: "🔎", title: "지능형 검색", description: "오타 보정, 연관 검색어, 개인화 결과 등 AI 기반의 스마트 검색 기능을 제공합니다." },
-      { icon: "🗺️", title: "고급 지도/위치 기반 서비스", description: "실시간 경로 안내, 주변 추천 등 다양한 위치 기반 서비스를 제공합니다." },
+      { icon: "🗺️", title: "고급 위치 기반 서비스", description: "실시간 경로 안내, 주변 추천 등 다양한 위치 기반 서비스를 제공합니다." },
       { icon: "🛡️", title: "고도화된 권한 관리", description: "팀별, 직책별 등 역할 및 접근 제어 시스템을 구축합니다." },
       { icon: "🧠", title: "AI 기능", description: "AI 챗봇, AI 모델 학습, AI 기반의 자동화된 작업 등을 제공합니다." },
       { icon: "💬", title: "다기능 실시간 채팅", description: "파일 공유, 읽음 확인, 실시간 번역 등 풍부한 기능을 갖춘 고급 채팅 환경을 제공합니다." },
@@ -77,26 +77,33 @@ export const stepsMeta: {
   number: number;
   title: string;
   description: string;
-  fields: (keyof ProjectInfoSchemaType)[];
-  uiRequiredFields?: (keyof ProjectInfoSchemaType)[];
+  fields: (keyof UserERPNextProjectType)[];
+  uiRequiredFields?: (keyof UserERPNextProjectType)[];
 }[] = [
   {
     number: 1,
     title: "필수 정보를 입력해주세요.",
     description: "꼼꼼히 읽고 프로젝트에 필요한 기능을 자동으로 추천해드릴께요.",
-    fields: ["project_name", "project_summary", "platforms", "readiness_level"],
-    uiRequiredFields: ["project_name", "project_summary", "platforms", "readiness_level"],
+    fields: ["custom_project_title", "custom_project_summary", "custom_platforms", "custom_readiness_level"],
+    uiRequiredFields: ["custom_project_title", "custom_project_summary", "custom_platforms", "custom_readiness_level"],
   },
   {
     number: 2,
     title: "필요한 기능을 선택해주세요.",
     description: "나중에 프로젝트 컨설턴트가 직접 프로젝트를 확인하고, \n부족한 기능은 보완해 드릴께요.",
-    fields: ["feature_list"],
+    fields: ["custom_features"],
   },
   {
     number: 3,
     title: "추가 사항을 알려주세요.",
     description: "프로젝트 진행이 더 빨라질 수 있어요.",
-    fields: ["content_pages", "design_requirements", "preferred_tech_stack", "start_date", "desired_deadline", "maintenance_required"],
+    fields: [
+      "custom_content_pages",
+      "custom_design_requirements",
+      "custom_preferred_tech_stacks",
+      "expected_start_date",
+      "expected_end_date",
+      "custom_maintenance_required",
+    ],
   },
 ];

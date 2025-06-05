@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { auth } from "@/auth";
 import ProjectMainSection from "@/components/section/service/project/main/projectmainsection";
 
 export const metadata: Metadata = {
@@ -7,10 +8,12 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  const session = await auth();
+
   return (
     <div className="grid grid-cols-4 md:grid-cols-12 gap-6 mb-8">
       <div className="col-span-full">
-        <ProjectMainSection />
+        <ProjectMainSection session={session} />
       </div>
     </div>
   );

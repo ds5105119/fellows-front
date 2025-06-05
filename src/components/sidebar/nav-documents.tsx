@@ -11,7 +11,7 @@ export function NavDocuments({
   items,
 }: {
   items: {
-    name: string;
+    title: string;
     url: string;
     icon: string;
   }[];
@@ -24,11 +24,15 @@ export function NavDocuments({
       <SidebarGroupLabel>Documents</SidebarGroupLabel>
       <SidebarMenu className="gap-2">
         {items.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton className="[&>svg]:size-5 group-data-[collapsible=icon]:[&>svg]:-ml-0.5" isActive={pathname.startsWith(item.url)} asChild>
+          <SidebarMenuItem key={item.title}>
+            <SidebarMenuButton
+              className="[&>svg]:size-5 group-data-[collapsible=icon]:[&>svg]:-ml-0.5 hover:text-primary data-[active=true]:text-primary"
+              isActive={pathname.startsWith(item.url)}
+              asChild
+            >
               <Link href={item.url}>
                 {item.icon && <DynamicFcIcon name={item.icon} />}
-                <span className="font-medium text-sm">{item.name}</span>
+                <span className="font-medium text-sm">{item.title}</span>
               </Link>
             </SidebarMenuButton>
             <DropdownMenu>

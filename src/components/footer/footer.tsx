@@ -1,16 +1,11 @@
-import Image from "next/image";
-import Link from "next/link";
+import SelectLogo from "../resource/selectlogo";
 
 export default function Footer() {
   return (
     <footer className="bg-neutral-50 w-full grid grid-cols-4 md:grid-cols-12 gap-6">
       <div className="z-10 col-span-full mx-6 my-12 md:mx-0 md:my-20 md:col-span-9 md:col-start-2">
-        <Link href="/">
-          <div className="w-20 h-5 relative">
-            <Image src="/fellows/logo.svg" width={139} height={31} alt="fellows" />
-          </div>
-        </Link>
-        <div className="self-stretch inline-flex justify-start items-start gap-9">
+        <SelectLogo />
+        <div className="self-stretch inline-flex justify-start items-start gap-9 mt-4">
           <div className="w-fit inline-flex flex-col justify-start items-start gap-2.5">
             <div className="self-stretch justify-start text-black text-sm font-semibold">Fellows* 정보</div>
             <div className="self-stretch flex flex-col justify-start items-start gap-2">
@@ -27,7 +22,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="self-stretch flex flex-col justify-start items-start gap-4 mt-8 md:mt-6">
+        <div className="self-stretch flex flex-col justify-start items-start gap-4 mt-8">
           <div className="self-stretch flex flex-col space-y-4 justify-start items-center flex-wrap content-center xl:flex-row xl:space-y-0 mb-4 xl:mb-0">
             <div className="flex-1 justify-start text-neutral-500 text-sm font-medium leading-none">Copyright © 2025 IIH Inc. All rights reserved.</div>
             <div className="flex justify-start items-center gap-2.5">

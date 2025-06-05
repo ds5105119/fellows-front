@@ -38,10 +38,6 @@ export default function ComboBoxResponsive({ placeholder, initial, statuses, cal
     setSelectedStatus(statuses.find((priority) => priority.value === initial) || null);
   }, [initial, statuses]);
 
-  useEffect(() => {
-    console.log(selectedStatus);
-  }, [selectedStatus]);
-
   if (!isMobile) {
     return (
       <Popover open={open} onOpenChange={setOpen}>

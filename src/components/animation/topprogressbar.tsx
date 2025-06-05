@@ -39,7 +39,7 @@ export const TopProgressBar = ({ className, progress, top, bottom, ...props }: S
       const targetValue = Math.max(0, Math.min(1, progress));
       animationControls = animate(scaleX, targetValue, {
         type: "tween", // tween 타입 명시
-        duration: 2.0, // 애니메이션 지속 시간 (초)
+        duration: 1.0, // 애니메이션 지속 시간 (초)
         ease: "easeInOut", // 완화 함수 (예: "linear", "easeIn", "easeOut", [0.42, 0, 0.58, 1] 등)
       });
     }

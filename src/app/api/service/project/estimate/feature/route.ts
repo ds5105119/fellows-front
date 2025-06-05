@@ -10,14 +10,16 @@ export async function GET(request: Request) {
   const project_name = url.searchParams.get("project_name");
   const project_summary = url.searchParams.get("project_summary");
   const readiness_level = url.searchParams.get("readiness_level");
+  const platforms = url.searchParams.getAll("platforms");
 
-  if (!project_name || !project_summary || !readiness_level) {
+  if (!project_name || !project_summary || !readiness_level || platforms.length === 0) {
     return NextResponse.json({ error: "Invalid parameters" }, { status: 400 });
   }
 
   params.append("project_name", project_name);
   params.append("project_summary", project_summary);
   params.append("readiness_level", readiness_level);
+  platforms.forEach((platform) => params.append("platforms", platform));
 
   const response = await fetch(`${process.env.NEXT_PUBLIC_PROJECT_ESTIMATE_FEATURE_URL}?${params.toString()}`, {
     method: "GET",

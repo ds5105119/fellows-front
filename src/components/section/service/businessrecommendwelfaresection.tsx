@@ -7,7 +7,7 @@ import useThrottle from "@/lib/useThrottle";
 import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import { useState } from "react";
-import { WelfareResponseSchema } from "@/@types/openApi/welfare";
+import { Welfare, WelfareResponseSchema } from "@/@types/openApi/welfare";
 import { formatNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Compass, Phone } from "lucide-react";
@@ -98,10 +98,109 @@ const orders = [
   { label: "카테고리순", value: "service_category" },
 ];
 
+function WelfareSheet({ selected, onClose }: { selected: Welfare | null; onClose: () => void }) {
+  if (!selected) return null;
+
+  return (
+    <Sheet open={!!selected} onOpenChange={onClose}>
+      <SheetContent className="py-6 px-3 min-w-full md:min-w-[540px] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle className="flex flex-col space-y-1">
+            <div className="text-muted-foreground text-xs font-medium">{selected.apply_period}</div>
+            <div className="text-2xl font-bold">{selected.service_name}</div>
+            <div className="text-muted-foreground font-medium text-base mt-1">{selected.service_summary}</div>
+          </SheetTitle>
+
+          <SheetDescription asChild>
+            <div className="flex flex-col space-y-5 items-center">
+              <div className="flex flex-col space-y-3 items-center w-full py-5 px-4 rounded-xl bg-neutral-400/10 outline-1 outline-neutral-300/50 mt-6 hover:bg-neutral-300/10 transition-colors duration-200">
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-sm text-muted-foreground">연락처</span>
+                  <span className="text-sm w-1/2 truncate text-foreground text-right">{selected.contact}</span>
+                </div>
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-sm text-muted-foreground">관련기관</span>
+                  <span className="text-sm w-1/2 truncate text-foreground text-right">{selected.dept_name}</span>
+                </div>
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-sm text-muted-foreground">부서이름</span>
+                  <span className="text-sm w-1/2 truncate text-foreground text-right">{selected.offc_name}</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col space-y-3 items-center w-full py-5 px-4 rounded-xl outline-1 outline-neutral-200">
+                <div className="flex items-center w-full space-x-2">
+                  <BreathingSparkles />
+                  <span className="text-sm font-bold text-foreground">정책을 요약했어요</span>
+                </div>
+                <div className="w-full">{selected.service_description}</div>
+              </div>
+
+              <div className="flex space-x-3 items-center w-full">
+                <Button
+                  variant={"outline"}
+                  className="flex-1 h-10"
+                  onClick={() => window.open(selected.apply_url ?? selected.detail_url ?? "", "_blank")}
+                  disabled={!(selected.apply_url ?? selected.detail_url)}
+                >
+                  <Compass />웹 사이트로 이동
+                </Button>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant={"outline"} className="flex-1 h-10">
+                      <Phone />
+                      전화하기
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-2.5 w-56" side={"left"}>
+                    {extractNameAndPhones(selected.contact ?? "").map((val, idx) => (
+                      <button
+                        key={idx}
+                        className="flex flex-col w-full space-x-2 rounded-md hover:bg-neutral-100 p-3"
+                        onClick={() => callPhoneNumber(val.phone)}
+                      >
+                        <span className="text-sm font-semibold text-foreground text-left">{val.name}</span>
+                        <span className="text-xs font-medium text-muted-foreground text-left">{val.phone}</span>
+                      </button>
+                    ))}
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="flex flex-col w-full space-y-10">
+                {selected.support_details && (
+                  <div className="flex flex-col w-full space-y-2">
+                    <div className="text-lg font-bold text-foreground">지원 내용</div>
+                    <div className="whitespace-pre-wrap leading-relaxed">{splitO(selected.support_details)}</div>
+                  </div>
+                )}
+                {selected.support_targets && (
+                  <div className="flex flex-col w-full space-y-2">
+                    <div className="text-lg font-bold text-foreground">지원 대상</div>
+                    <div className="whitespace-pre-wrap leading-relaxed">{splitO(selected.support_targets)}</div>
+                  </div>
+                )}
+                {selected.document && (
+                  <div className="flex flex-col w-full space-y-2">
+                    <div className="text-lg font-bold text-foreground">구비 서류</div>
+                    <div className="whitespace-pre-wrap leading-relaxed">{splitO(selected.document)}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </SheetDescription>
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
 export default function BusinessRecommendWelfareSection() {
   const [tag, setTag] = useState<string>("");
   const [inputText, setInputText] = useState<string>("");
   const [orderBy, setOrderBy] = useState<string>("");
+  const [selected, setSelected] = useState<Welfare | null>(null);
   const keyword = useThrottle(inputText, 1000);
   const getKey = getKeyFactory({ tag, keyword: keyword, order_by: orderBy });
   const { data, error, isLoading: _isLoading, size, setSize } = useSWRInfinite(getKey, fetcher);
@@ -156,116 +255,23 @@ export default function BusinessRecommendWelfareSection() {
           <TableBody>
             {data?.map((pages) => {
               return pages.map((val, idx) => (
-                <Sheet key={idx}>
-                  <SheetTrigger asChild>
-                    <TableRow className="h-14">
-                      <TableCell className="text-center">
-                        {val.apply_url ?? val.detail_url ? (
-                          <Link href={val.apply_url ?? val.detail_url ?? ""} className="">
-                            🔗
-                          </Link>
-                        ) : (
-                          <>❌</>
-                        )}
-                      </TableCell>
-                      <TableCell className="truncate break-all text-center">{formatNumber(val.views)}</TableCell>
-                      <TableCell className="truncate break-all text-center font-semibold">{val.service_category}</TableCell>
-                      <TableCell className="truncate break-all">{val.service_name}</TableCell>
-                      <TableCell className="truncate break-all">{val.service_summary}</TableCell>
-                      <TableCell className="truncate break-all">{val.apply_period}</TableCell>
-                      <TableCell className="truncate break-all text-center font-semibold">{val.dept_type === "시군구" ? val.dept_name : "전국"}</TableCell>
-                    </TableRow>
-                  </SheetTrigger>
-                  <SheetContent className="py-6 px-3 min-w-full md:min-w-[540px] overflow-y-auto">
-                    <SheetHeader>
-                      <SheetTitle className="flex flex-col space-y-1">
-                        <div className="text-muted-foreground text-xs font-medium">{val.apply_period}</div>
-                        <div className="text-2xl font-bold">{val.service_name}</div>
-                        <div className="text-muted-foreground font-medium text-base mt-1">{val.service_summary}</div>
-                      </SheetTitle>
-
-                      <SheetDescription asChild>
-                        <div className="flex flex-col space-y-5 items-center">
-                          <div className="flex flex-col space-y-3 items-center w-full py-5 px-4 rounded-xl bg-neutral-400/10 outline-1 outline-neutral-300/50 mt-6 hover:bg-neutral-300/10 transition-colors duration-200">
-                            <div className="flex justify-between items-center w-full">
-                              <span className="text-sm text-muted-foreground">연락처</span>
-                              <span className="text-sm w-1/2 truncate text-foreground text-right">{val.contact}</span>
-                            </div>
-                            <div className="flex justify-between items-center w-full">
-                              <span className="text-sm text-muted-foreground">관련기관</span>
-                              <span className="text-sm w-1/2 truncate text-foreground text-right">{val.dept_name}</span>
-                            </div>
-                            <div className="flex justify-between items-center w-full">
-                              <span className="text-sm text-muted-foreground">부서이름</span>
-                              <span className="text-sm w-1/2 truncate text-foreground text-right">{val.offc_name}</span>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col space-y-3 items-center w-full py-5 px-4 rounded-xl outline-1 outline-neutral-200">
-                            <div className="flex items-center w-full space-x-2">
-                              <BreathingSparkles />
-                              <span className="text-sm font-bold text-foreground">정책을 요약했어요</span>
-                            </div>
-                            <div className="w-full">{val.service_description}</div>
-                          </div>
-
-                          <div className="flex space-x-3 items-center w-full">
-                            <Button
-                              variant={"outline"}
-                              className="flex-1 h-10"
-                              onClick={() => window.open(val.apply_url ?? val.detail_url ?? "", "_blank")}
-                              disabled={!(val.apply_url ?? val.detail_url)}
-                            >
-                              <Compass />웹 사이트로 이동
-                            </Button>
-
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button variant={"outline"} className="flex-1 h-10">
-                                  <Phone />
-                                  전화하기
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="p-2.5 w-56" side={"left"}>
-                                {extractNameAndPhones(val.contact ?? "").map((val, idx) => (
-                                  <button
-                                    key={idx}
-                                    className="flex flex-col w-full space-x-2 rounded-md hover:bg-neutral-100 p-3"
-                                    onClick={() => callPhoneNumber(val.phone)}
-                                  >
-                                    <span className="text-sm font-semibold text-foreground text-left">{val.name}</span>
-                                    <span className="text-xs font-medium text-muted-foreground text-left">{val.phone}</span>
-                                  </button>
-                                ))}
-                              </PopoverContent>
-                            </Popover>
-                          </div>
-
-                          <div className="flex flex-col w-full space-y-10">
-                            {val.support_details && (
-                              <div className="flex flex-col w-full space-y-2">
-                                <div className="text-lg font-bold text-foreground">지원 내용</div>
-                                <div className="whitespace-pre-wrap leading-relaxed">{splitO(val.support_details)}</div>
-                              </div>
-                            )}
-                            {val.support_targets && (
-                              <div className="flex flex-col w-full space-y-2">
-                                <div className="text-lg font-bold text-foreground">지원 대상</div>
-                                <div className="whitespace-pre-wrap leading-relaxed">{splitO(val.support_targets)}</div>
-                              </div>
-                            )}
-                            {val.document && (
-                              <div className="flex flex-col w-full space-y-2">
-                                <div className="text-lg font-bold text-foreground">구비 서류</div>
-                                <div className="whitespace-pre-wrap leading-relaxed">{splitO(val.document)}</div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </SheetDescription>
-                    </SheetHeader>
-                  </SheetContent>
-                </Sheet>
+                <TableRow key={idx} className="h-14" onClick={() => setSelected(val)}>
+                  <TableCell className="text-center">
+                    {val.apply_url ?? val.detail_url ? (
+                      <Link href={val.apply_url ?? val.detail_url ?? ""} className="">
+                        🔗
+                      </Link>
+                    ) : (
+                      <>❌</>
+                    )}
+                  </TableCell>
+                  <TableCell className="truncate break-all text-center">{formatNumber(val.views)}</TableCell>
+                  <TableCell className="truncate break-all text-center font-semibold">{val.service_category}</TableCell>
+                  <TableCell className="truncate break-all">{val.service_name}</TableCell>
+                  <TableCell className="truncate break-all">{val.service_summary}</TableCell>
+                  <TableCell className="truncate break-all">{val.apply_period}</TableCell>
+                  <TableCell className="truncate break-all text-center font-semibold">{val.dept_type === "시군구" ? val.dept_name : "전국"}</TableCell>
+                </TableRow>
               ));
             })}
           </TableBody>
@@ -284,6 +290,8 @@ export default function BusinessRecommendWelfareSection() {
           더보기
         </Button>
       </div>
+
+      <WelfareSheet selected={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }

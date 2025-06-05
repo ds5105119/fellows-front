@@ -6,17 +6,17 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { toast } from "sonner";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { ProjectInfoSchema, ProjectInfoSchemaType, ProjectSchema } from "@/@types/service/project";
-import { format } from "date-fns";
-import { DateRange } from "react-day-picker";
 import { TopProgressBar } from "@/components/animation/topprogressbar";
 import { useGetEstimateFeatures } from "@/hooks/fetch/project";
 import { stepsMeta } from "@/components/resource/project";
+import { useInView } from "framer-motion";
+import AIRecommendSkeleton from "@/components/skeleton/airecommendskeleton";
 import CreateProjectFormStep1 from "./createprojectstep1";
 import CreateProjectFormStep2 from "./createprojectstep2";
 import CreateProjectFormStep3 from "./createprojectstep3";
+import { UserERPNextProjectType, UserERPNextProjectZod, ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
 
 export const getEnumValues = <T extends z.ZodEnum<[string, ...string[]]>>(enumType: T): z.infer<typeof enumType>[] => {
   return Object.values(enumType.Values) as z.infer<typeof enumType>[];
@@ -24,29 +24,9 @@ export const getEnumValues = <T extends z.ZodEnum<[string, ...string[]]>>(enumTy
 
 export default function CreateProject() {
   const router = useRouter();
-  const initalProjectInfo = ProjectInfoSchema.parse({
-    project_name: "",
-    project_summary: "",
-    platforms: [],
-    readiness_level: "idea",
-    feature_list: [],
-    files: [],
-    design_requirements: null,
-    content_pages: null,
-    preferred_tech_stack: null,
-    start_date: null,
-    desired_deadline: null,
-    maintenance_required: false,
-  });
-
-  const [currentStep, setCurrentStep] = useState(1);
-  const [firstInSecondStop, setFirstInSecondStop] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isStepping, setIsStepping] = useState(false);
-  const totalSteps = stepsMeta.length;
-
-  const form = useForm<ProjectInfoSchemaType>({
-    resolver: zodResolver(ProjectInfoSchema),
+  const initalProjectInfo = UserERPNextProjectZod.parse({ custom_project_title: "", custom_project_summary: "" });
+  const form = useForm<UserERPNextProjectType>({
+    resolver: zodResolver(UserERPNextProjectZod),
     defaultValues: initalProjectInfo,
     mode: "onChange",
   });
@@ -55,11 +35,19 @@ export default function CreateProject() {
     reset,
     formState: { errors, isDirty, isValid: isFormValid },
     trigger,
-    control,
     getValues,
     watch,
+    handleSubmit,
   } = form;
 
+  const [currentStep, setCurrentStep] = useState(1);
+  const [firstInSecondStop, setFirstInSecondStop] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isStepping, setIsStepping] = useState(false);
+  const targetRef = useRef<HTMLDivElement>(null);
+  const isReachedEnd = useInView(targetRef, { margin: "-92px 0px 0px 0px" });
+
+  const totalSteps = stepsMeta.length;
   const currentStepMeta = useMemo(() => stepsMeta[currentStep - 1], [currentStep]);
   const currentStepFields = useMemo(() => currentStepMeta?.fields || [], [currentStepMeta]);
   const watchedCurrentStepFields = watch(currentStepFields);
@@ -87,10 +75,29 @@ export default function CreateProject() {
     }
   }, [currentStep, isStepping]);
 
+  const scrollToEnd = () => {
+    const target = targetRef.current;
+    if (!target) return;
+
+    const maxScroll = target.offsetTop + target.offsetHeight - window.innerHeight + 93;
+    const nextScrollTop = Math.min(window.scrollY + 500, maxScroll);
+    console.log(nextScrollTop, maxScroll);
+
+    window.scrollTo({
+      top: nextScrollTop,
+      left: 0,
+      behavior: "smooth",
+    });
+  };
+
   // 다음
   const handleNext = async (event?: React.MouseEvent<HTMLButtonElement>) => {
     event?.preventDefault();
     event?.stopPropagation();
+
+    if (!isReachedEnd) {
+      return scrollToEnd();
+    }
 
     const isZodValid = await trigger(currentStepFields, { shouldFocus: true });
     let isUiValid = true;
@@ -150,84 +157,60 @@ export default function CreateProject() {
 
   // 기능 추가 관련
 
-  const [feature, setFeature] = useState<string[]>(initalProjectInfo.feature_list || []);
+  const [feature, setFeature] = useState<{ feature: string }[]>([]);
 
-  // feature 배열에서 "기타:"로 시작하는 항목을 찾아 업데이트하거나, 새로 추가/제거
-  const handleFeatureChange = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const prefix = "기타:";
-    const newEtcValue = event.target.value;
-    setFeature((prevFeature) => {
-      let updatedFeature = [...prevFeature];
-      const etcIndex = updatedFeature.findIndex((item) => item.startsWith(prefix));
-      if (newEtcValue) {
-        if (etcIndex !== -1) {
-          updatedFeature[etcIndex] = `${prefix} ${newEtcValue}`;
-        } else {
-          updatedFeature.push(`${prefix} ${newEtcValue}`);
-        }
-      } else {
-        if (etcIndex !== -1) {
-          updatedFeature.splice(etcIndex, 1);
-        }
-      }
-      return updatedFeature;
-    });
-  }, []);
+  const [isRecommend, setIsRecommend] = useState(false);
+  const [isRecommandFetch, setIsRecommandFetch] = useState(false);
 
-  // feature 배열에 기능을 추가
-  const handleFeatureButtonClick = useCallback((value: string) => {
-    setFeature((prevFeature) => (prevFeature.includes(value) ? prevFeature.filter((item) => item !== value) : [...prevFeature, value]));
-  }, []);
+  const loadingStartRef = useRef<number | null>(null);
+  const recommendTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // feature 상태 변경 감지
-  useEffect(() => {
-    setValue("feature_list", feature, { shouldDirty: true, shouldValidate: true });
-  }, [feature, setValue]);
-
-  // 날짜 선택 기능
-
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({ from: undefined, to: undefined });
-
-  const handleDateSelect = useCallback(
-    (range: DateRange) => {
-      const start = range.from ? format(range.from, "yyyy-MM-dd") : undefined;
-      const end = range.to ? format(range.to, "yyyy-MM-dd") : undefined;
-      setValue("start_date", start, { shouldDirty: true, shouldValidate: true });
-      setValue("desired_deadline", end, { shouldDirty: true, shouldValidate: true });
-      setDateRange(range);
-    },
-    [setValue]
-  );
-
-  // 기능 예측 데이터 관련
-
-  const [estimateFeaturesData, setEstimateFeaturesData] = useState<{ project_name: string; project_summary: string; readiness_level: string }>({
+  const [estimateFeaturesData, setEstimateFeaturesData] = useState<{
+    project_name: string;
+    project_summary: string;
+    readiness_level: string;
+    platforms: string[];
+  }>({
     project_name: "",
     project_summary: "",
     readiness_level: "",
+    platforms: [],
   });
   const estimateFeatures = useGetEstimateFeatures(estimateFeaturesData);
 
   const mergeEstimateFeatures = useCallback(() => {
-    setIsLoading(true);
-    const project_name = getValues("project_name");
-    const project_summary = getValues("project_summary");
-    const readiness_level = getValues("readiness_level");
-    setEstimateFeaturesData({ project_name, project_summary, readiness_level });
+    const project_name = getValues("custom_project_title");
+    const project_summary = getValues("custom_project_summary");
+    const readiness_level = getValues("custom_readiness_level");
+    const platforms = getValues("custom_platforms");
+    const platformsList = (platforms || []).map((platform) => platform.platform);
+    setEstimateFeaturesData({ project_name, project_summary, readiness_level, platforms: platformsList });
   }, [getValues, setEstimateFeaturesData]);
 
   useEffect(() => {
-    if (estimateFeaturesData.project_name || estimateFeaturesData.project_summary || estimateFeaturesData.readiness_level) {
+    if (
+      estimateFeaturesData.project_name ||
+      estimateFeaturesData.project_summary ||
+      estimateFeaturesData.readiness_level ||
+      estimateFeaturesData.platforms.length > 0
+    ) {
       estimateFeatures.fetchData();
     }
   }, [estimateFeaturesData, estimateFeatures.fetchData]);
 
   useEffect(() => {
-    if (estimateFeatures.success) {
-      setFeature(estimateFeatures.data?.feature_list || []);
+    if (!isRecommend) {
+      setValue("custom_features", []);
+
+      const timer = setTimeout(() => {
+        const docValue = estimateFeatures.data?.feature_list.map((p) => ({ doctype: "Features", feature: p }));
+        setValue("custom_features", docValue || []);
+      }, 600);
+
+      return () => clearTimeout(timer);
     }
-    setIsLoading(false);
-  }, [estimateFeatures.data]);
+  }, [isRecommend]);
 
   useEffect(() => {
     if (firstInSecondStop === true && currentStep === 2) {
@@ -235,6 +218,41 @@ export default function CreateProject() {
       mergeEstimateFeatures();
     }
   }, [firstInSecondStop, currentStep, setFirstInSecondStop, mergeEstimateFeatures]);
+
+  useEffect(() => {
+    if (estimateFeatures.loading) {
+      loadingStartRef.current = Date.now();
+
+      setIsRecommend(true);
+      setIsRecommandFetch(true);
+      window.scrollTo(0, 0);
+
+      if (recommendTimeoutRef.current) clearTimeout(recommendTimeoutRef.current);
+      if (fetchTimeoutRef.current) clearTimeout(fetchTimeoutRef.current);
+    } else {
+      const now = Date.now();
+      const startedAt = loadingStartRef.current ?? now;
+
+      const elapsed = now - startedAt;
+      const remainingForRecommend = Math.max(7500 - elapsed, 0);
+      const remainingForFetch = Math.max(3500 - elapsed, 0);
+
+      recommendTimeoutRef.current = setTimeout(() => {
+        setIsRecommend(false);
+      }, remainingForRecommend);
+
+      fetchTimeoutRef.current = setTimeout(() => {
+        setIsRecommandFetch(false);
+      }, remainingForFetch);
+    }
+  }, [estimateFeatures.loading]);
+
+  useEffect(() => {
+    return () => {
+      if (recommendTimeoutRef.current) clearTimeout(recommendTimeoutRef.current);
+      if (fetchTimeoutRef.current) clearTimeout(fetchTimeoutRef.current);
+    };
+  }, []);
 
   // 제출 관련
 
@@ -280,23 +298,23 @@ export default function CreateProject() {
     return true;
   }, [trigger, errors, currentStep, getValues, setIsStepping, setCurrentStep]);
 
-  const preparePayload = useCallback((values: ProjectInfoSchemaType): any => {
+  const preparePayload = useCallback((values: UserERPNextProjectType): any => {
     const payload = { ...values };
 
-    if (payload.feature_list) {
-      const etcFeatureIndex = payload.feature_list.findIndex((f) => f.startsWith("기타:"));
-      if (etcFeatureIndex > -1 && payload.feature_list[etcFeatureIndex].replace("기타:", "").trim() === "") {
-        payload.feature_list.splice(etcFeatureIndex, 1);
+    if (payload.custom_features) {
+      const etcFeatureIndex = payload.custom_features.findIndex((f) => f.feature.startsWith("기타:"));
+      if (etcFeatureIndex > -1 && payload.custom_features[etcFeatureIndex].feature.replace("기타:", "").trim() === "") {
+        payload.custom_features.splice(etcFeatureIndex, 1);
       }
-      if (payload.feature_list.length === 0) {
-        payload.feature_list = null;
+      if (payload.custom_features.length === 0) {
+        payload.custom_features = null;
       }
     }
 
     return payload;
   }, []);
 
-  const postProjectData = useCallback(async (payload: any): Promise<z.infer<typeof ProjectSchema>> => {
+  const postProjectData = useCallback(async (payload: any): Promise<ERPNextProjectType> => {
     const response = await fetch("/api/service/project", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -310,27 +328,30 @@ export default function CreateProject() {
 
     try {
       const responseData = await response.json();
-      return ProjectSchema.parse(responseData);
+      return ERPNextProjectZod.parse(responseData);
     } catch {
       throw new Error("프로젝트 정보 저장에 문제가 밣생했어요.");
     }
   }, []);
 
   const handleSuccessfulSubmission = useCallback(
-    (project: z.infer<typeof ProjectSchema>) => {
+    (project: ERPNextProjectType) => {
       toast.success("프로젝트 정보가 성공적으로 저장되었습니다.");
-      router.push(`/service/project/${project.project_id}`);
+      router.push(`/service/project/${project.project_name}`);
       router.refresh();
       reset(initalProjectInfo);
-      setFeature(initalProjectInfo.feature_list || []);
-      setDateRange({ from: undefined, to: undefined });
+      setFeature([]);
       setIsStepping(true);
     },
-    [router, reset, initalProjectInfo, setFeature, setDateRange, setIsStepping]
+    [router, reset, initalProjectInfo, setFeature, setIsStepping]
   );
 
-  const onSubmit = async (values: ProjectInfoSchemaType) => {
+  const onSubmit = async (values: UserERPNextProjectType) => {
     if (isStepping) return;
+
+    if (!isReachedEnd) {
+      return scrollToEnd();
+    }
 
     const isFormValidForSubmission = await validateFormForSubmission();
     if (!isFormValidForSubmission) {
@@ -345,6 +366,7 @@ export default function CreateProject() {
     setIsLoading(true);
     try {
       const payload = preparePayload(values);
+      console.log(payload);
       const project = await postProjectData(payload);
       handleSuccessfulSubmission(project);
     } catch (error: any) {
@@ -357,72 +379,86 @@ export default function CreateProject() {
   };
 
   return (
-    <div className="w-full grid grid-cols-4 lg:grid-cols-12">
-      <TopProgressBar className="col-span-full" progress={currentStep / totalSteps} />
-      <div className="col-span-full lg:col-span-8 xl:col-span-6 lg:col-start-3 xl:col-start-4 w-full px-4 sm:px-8 py-10">
-        <div className="mb-10 flex items-end justify-between">
-          <div className="w-[80%]">
-            <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
-            <p className="text-3xl font-bold mt-3">{currentStepMeta?.title || "정보 입력"}</p>
-            <p className="text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">{currentStepMeta.description}</p>
-          </div>
-          {currentStep === 2 && (
-            <Button type="button" onClick={mergeEstimateFeatures} disabled={estimateFeatures.loading} className="font-semibold text-background">
-              {estimateFeatures.loading ? "기능 추천중..." : "다시 추천받기"}
-            </Button>
-          )}
-        </div>
+    <div className="w-full flex flex-col items-center">
+      <TopProgressBar className="w-full" progress={currentStep / totalSteps} />
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
-            {currentStep === 1 && <CreateProjectFormStep1 form={form} />}
-            {currentStep === 2 && (
-              <CreateProjectFormStep2
-                form={form}
-                feature={feature}
-                handleFeatureButtonClick={handleFeatureButtonClick}
-                handleFeatureChange={handleFeatureChange}
-              />
-            )}
-            {currentStep === 3 && <CreateProjectFormStep3 form={form} dateRange={dateRange} handleDateSelect={handleDateSelect} />}
-
-            <div className="sticky bottom-0 z-20">
-              <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
-              <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
-                {currentStep > 1 && (
-                  <Button
-                    type="button"
-                    className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
-                    variant="secondary"
-                    onClick={(e) => handlePrev(e)}
-                    disabled={isLoading || isStepping} // isStepping 추가
-                  >
-                    이전
-                  </Button>
-                )}
-                {currentStep < totalSteps ? (
-                  <Button
-                    className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
-                    type="button"
-                    onClick={(e) => handleNext(e)}
-                    disabled={isLoading || isNextButtonDisabled} // isNextButtonDisabled에 isStepping 포함됨
-                  >
-                    다음
-                  </Button>
-                ) : (
-                  <Button
-                    className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
-                    type="submit"
-                    disabled={isLoading || !isDirty || !isFormValid || isStepping} // isStepping 추가
-                  >
-                    {isLoading ? "저장 중..." : "프로젝트 만들기"}
-                  </Button>
-                )}
-              </div>
+      {!isRecommend ? (
+        <div className="w-full lg:w-xl px-5 sm:px-8 py-16 sm:py-10">
+          <div className="mb-10 flex items-end justify-between">
+            <div className="w-full">
+              <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
+              <p className="text-3xl font-bold mt-3">{currentStepMeta?.title || "정보 입력"}</p>
+              <p className="text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">{currentStepMeta.description}</p>
             </div>
-          </form>
-        </Form>
-      </div>
+            {currentStep === 2 && (
+              <Button type="button" onClick={mergeEstimateFeatures} disabled={isRecommend} className="font-semibold text-background">
+                다시 추천받기
+              </Button>
+            )}
+          </div>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
+              {currentStep === 1 && <CreateProjectFormStep1 form={form} />}
+              {currentStep === 2 && <CreateProjectFormStep2 form={form} />}
+              {currentStep === 3 && <CreateProjectFormStep3 form={form} />}
+            </form>
+          </Form>
+        </div>
+      ) : (
+        <div className="w-full h-full lg:w-xl px-5 sm:px-8 py-16 sm:py-10 flex flex-col items-center">
+          <div className="mb-10 flex items-end justify-between">
+            <div className="w-[80%]">
+              <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
+              <p className="text-3xl font-bold mt-3">구현에 필요한 기능을 추천하고 있어요.</p>
+              <p className="text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">프로젝트에 꼭 필요한 기능만 추천해드릴께요.</p>
+            </div>
+          </div>
+
+          <div className="flex mt-24 md:mt-28 mb-64 md:mb-64">
+            <AIRecommendSkeleton isLoading={isRecommandFetch} />
+          </div>
+        </div>
+      )}
+
+      <div ref={targetRef} />
+
+      {!isRecommend && (
+        <div className="w-full h-full lg:w-xl sticky bottom-0 z-20 px-5 sm:px-8">
+          <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
+          <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
+            {currentStep > 1 && (
+              <Button
+                type="button"
+                className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
+                variant="secondary"
+                onClick={(e) => handlePrev(e)}
+                disabled={isLoading || isStepping} // isStepping 추가
+              >
+                이전
+              </Button>
+            )}
+            {currentStep < totalSteps ? (
+              <Button
+                className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
+                type="button"
+                onClick={(e) => handleNext(e)}
+                disabled={isLoading || isNextButtonDisabled} // isNextButtonDisabled에 isStepping 포함됨
+              >
+                다음
+              </Button>
+            ) : (
+              <Button
+                className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
+                disabled={isLoading || !isDirty || !isFormValid || isStepping} // isStepping 추가
+                onClick={handleSubmit(onSubmit)}
+              >
+                {isLoading ? "저장 중..." : "프로젝트 만들기"}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

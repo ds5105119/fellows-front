@@ -40,29 +40,29 @@ export default async function RootLayout({
         <SidebarProvider
           style={
             {
-              "--sidebar-width": "16rem",
-              "--sidebar-width-mobile": "16rem",
+              "--sidebar-width": "14rem",
+              "--sidebar-width-mobile": "14rem",
             } as React.CSSProperties
           }
         >
           <AppSidebar />
           <SidebarInset>
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col">
               <Header />
-              <main className="scrollbar-hide flex-1 break-keep">{children}</main>
+              <main className="w-full scrollbar-hide break-keep">{children}</main>
               <Footer />
             </div>
           </SidebarInset>
-
           <Analytics />
           <SpeedInsights />
         </SidebarProvider>
+
         <Toaster
-          position="bottom-center"
+          position="bottom-right"
           toastOptions={{
             classNames: {
               toast:
-                "group toast group-[.toaster]:!rounded-lg group-[.toaster]:!items-center group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:!border-0 group-[.toaster]:shadow-lg",
+                "group toast group-[.toaster]:!rounded-full group-[.toaster]:!px-5 group-[.toaster]:!items-center group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:!border-0 group-[.toaster]:shadow-lg",
               title: "group-[.toaster]:!text-sm group-[.toaster]:!font-bold",
               description: "group-[.toast]:!text-muted-foreground ",
               actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",

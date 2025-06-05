@@ -29,13 +29,12 @@ export async function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-4 md:p-0">
-        {session?.user.groups.some((group) => group.includes("/dev")) && <NavGroup items={headerData.development} name="개발 메뉴" />}{" "}
         <NavGroup items={headerData.navMain} name="메인 메뉴" />
         <NavDocuments items={headerData.documents} />
         <NavGroup items={headerData.navSecondary} className="mt-auto" />
       </SidebarContent>
 
-      <SidebarFooter className="px-6 md:p-0 md:pb-3 group-data-[collapsible=icon]:ml-2">
+      <SidebarFooter className="px-6 md:px-2 md:pb-3 group-data-[collapsible=icon]:ml-2">
         <NavUser session={session} />
       </SidebarFooter>
     </Sidebar>

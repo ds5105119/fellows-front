@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const PresignedPutUrlResponseSchema = z.object({
+export const PresignedUrlResponseSchema = z.object({
   presigned_url: z.string(),
   key: z.string(),
   algorithm: z.string(),
@@ -15,5 +15,5 @@ export const FileRecordSchema = z.object({
   sse_key: z.string(),
 });
 
-export type PresignedPutUrlResponseType = z.infer<typeof PresignedPutUrlResponseSchema>;
+export type PresignedUrlResponseType = z.infer<typeof PresignedUrlResponseSchema>;
 export type FileRecordType = z.infer<typeof FileRecordSchema>;

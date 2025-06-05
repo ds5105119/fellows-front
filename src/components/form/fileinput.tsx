@@ -2,17 +2,16 @@
 
 import { useRef, useCallback, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { FcFile, FcAudioFile, FcImageFile, FcVideoFile } from "react-icons/fc";
 import { motion, useAnimation } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { ProjectFileRecordsSchema, ProjectFileRecordsSchemaType } from "@/@types/service/project";
 import { getPresignedPutUrl, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
 import { UploadProgressIndicator } from "../ui/uploadprogressindicator";
+import { ERPNextProjectFileRowType, ERPNextProjectFileRowZod } from "@/@types/service/erpnext";
 
 interface FileInputProps {
-  onChange: (val: ProjectFileRecordsSchemaType[]) => void;
+  onChange: (val: ERPNextProjectFileRowType[]) => void;
 }
 
 export const fileIconMap: { [key: string]: React.ElementType } = {
@@ -57,7 +56,7 @@ export const formatFileSize = (bytes: number): string => {
 
 export default function FileInput({ onChange }: FileInputProps) {
   const [dragOver, setDragOver] = useState(false);
-  const [files, setFiles] = useState<{ record: ProjectFileRecordsSchemaType; name: string; size: number; progress: number }[]>([]);
+  const [files, setFiles] = useState<{ record: ERPNextProjectFileRowType; name: string; size: number; progress: number }[]>([]);
   const controls = useAnimation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const filesRef = useRef(files);
@@ -67,11 +66,6 @@ export default function FileInput({ onChange }: FileInputProps) {
       x: [0, -8, 8, -6, 6, -4, 4, -2, 2, 0],
       transition: { duration: 0.4 },
     });
-
-  useEffect(() => {
-    filesRef.current = files;
-    onChange(files.map((f) => f.record)); // 여기서 항상 최신값 반영
-  }, [files, onChange]);
 
   const uploadFiles = async (file: File) => {
     const isDuplicate = filesRef.current.some((f) => f.name === file.name && f.size === file.size);
@@ -83,9 +77,13 @@ export default function FileInput({ onChange }: FileInputProps) {
 
     try {
       const presigned = await getPresignedPutUrl(file.name);
-      const fileRecord = ProjectFileRecordsSchema.parse({
-        file_record_key: presigned.key,
-        file_record: { key: presigned.key, name: file.name, sse_key: presigned.sse_key },
+      const fileRecord = ERPNextProjectFileRowZod.parse({
+        doctype: "Files",
+        key: presigned.key,
+        file_name: file.name,
+        algorithm: "AES256",
+        sse_key: presigned.sse_key,
+        uploader: "user",
       });
 
       setFiles((prev) => [...prev, { record: fileRecord, name: file.name, size: file.size, progress: 0 }]);
@@ -97,8 +95,8 @@ export default function FileInput({ onChange }: FileInputProps) {
           setFiles((prev) => prev.map((f) => (f.name === file.name && f.size === file.size ? { ...f, progress: percent } : f)));
         },
       });
+      setFiles((prev) => prev.map((f) => (f.name === file.name && f.size === file.size ? { ...f, progress: 100 } : f)));
     } catch (err) {
-      console.log(err);
       toast.warning("업로드에 실패했어요.");
       setFiles((prev) => prev.filter((f) => f.name !== file.name || f.size !== file.size));
     }
@@ -107,8 +105,8 @@ export default function FileInput({ onChange }: FileInputProps) {
   const removeFile = async (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
     const params = new URLSearchParams();
-    params.append("key", files[index].record.file_record_key);
-    params.append("sse_key", files[index].record.file_record?.sse_key || "");
+    params.append("key", files[index].record.key);
+    params.append("sse_key", files[index].record.sse_key || "");
 
     await fetch(`/api/cloud/object?${params.toString()}`, {
       method: "DELETE",
@@ -138,6 +136,11 @@ export default function FileInput({ onChange }: FileInputProps) {
     setDragOver(false);
     await handleDropupload(e);
   }, []);
+
+  useEffect(() => {
+    filesRef.current = files;
+    onChange(files.map((f) => f.record));
+  }, [files, onChange]);
 
   return (
     <motion.div animate={controls} className="w-full rounded-2xl bg-gray-100 px-6 pt-5 pb-2 space-y-4 mt-6 ">
@@ -201,7 +204,7 @@ export default function FileInput({ onChange }: FileInputProps) {
           업로드
         </Button>
       </div>
-      <Input id="fileInput" ref={fileInputRef} type="file" onChange={handleChangeUpload} style={{ display: "none" }} />
+      <input id="fileInput" ref={fileInputRef} type="file" onChange={handleChangeUpload} style={{ display: "none" }} />
     </motion.div>
   );
 }

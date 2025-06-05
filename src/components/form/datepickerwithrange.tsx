@@ -1,32 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { DateRange } from "react-day-picker";
+import { DateRange, DayPicker } from "react-day-picker";
+import { ko } from "date-fns/locale";
+import classNames from "react-day-picker/style.module.css";
 
 interface DatePickerWithRangeProps {
   value?: DateRange;
-  onSelect: (range: DateRange) => void;
+  onSelect: (range: DateRange | undefined) => void;
   className?: string;
 }
 
 export default function DatePickerWithRange({ value, onSelect, className }: DatePickerWithRangeProps) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const disabledDays = { before: today };
+
+  const disabledDays = [
+    { before: today },
+    (date: Date) => {
+      const day = date.getDay();
+      return day === 0 || day === 6;
+    },
+  ];
+  const modifiers = {
+    single_selected: (currentCalendarDate: Date): boolean => {
+      if (value && value.from && !value.to) {
+        const fromDateAtMidnight = new Date(value.from);
+        fromDateAtMidnight.setHours(0, 0, 0, 0);
+
+        const calendarDateAtMidnight = new Date(currentCalendarDate);
+        calendarDateAtMidnight.setHours(0, 0, 0, 0);
+
+        return calendarDateAtMidnight.getTime() === fromDateAtMidnight.getTime();
+      }
+      return false;
+    },
+    saturday: (date: Date) => date.getDay() === 6,
+    sunday: (date: Date) => date.getDay() === 0,
+  };
 
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<number>(1);
-  const [internal, setInternal] = useState<DateRange | undefined>(value);
 
   const handleSelect = (range: DateRange | undefined) => {
-    if (!range) return;
-    setInternal(range);
     onSelect(range);
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      if (!value?.from) {
+        setSelected(1);
+      } else if (!value?.to) {
+        setSelected(2);
+      }
+    }
+  }, [isOpen, value]);
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -37,13 +68,12 @@ export default function DatePickerWithRange({ value, onSelect, className }: Date
               className={cn(
                 "h-full flex-1 flex flex-col justify-center items-start space-y-1 px-6 transition-colors duration-150",
                 isOpen && selected === 1 ? "bg-gray-300" : "bg-gray-100",
-                internal?.from && "bg-primary"
+                value?.from && "bg-primary"
               )}
-              onClick={() => setSelected(1)}
             >
-              <div className={cn("text-sm font-semibold", internal?.from ? "text-muted" : "text-muted-foreground")}>시작 예정일</div>
-              {internal?.from ? (
-                <div className={cn("text-base text-background font-medium")}>{format(internal.from, "yyyy. MM. dd.")}</div>
+              <div className={cn("text-sm font-semibold", value?.from ? "text-muted" : "text-muted-foreground")}>시작 예정일</div>
+              {value?.from instanceof Date && !isNaN(value.from.getTime()) ? (
+                <div className={cn("text-base text-background font-medium")}>{format(value.from, "yyyy. MM. dd.")}</div>
               ) : (
                 <div className="text-base text-neutral-500">날짜를 선택하세요</div>
               )}
@@ -52,13 +82,12 @@ export default function DatePickerWithRange({ value, onSelect, className }: Date
               className={cn(
                 "h-full flex-1 flex flex-col justify-center items-start space-y-1 px-6 transition-colors duration-150",
                 isOpen && selected === 2 ? "bg-gray-300" : "bg-gray-100",
-                internal?.to && "bg-primary"
+                value?.to && "bg-primary"
               )}
-              onClick={() => setSelected(2)}
             >
-              <div className={cn("text-sm font-semibold", internal?.to ? "text-muted" : "text-muted-foreground")}>종료 희망일</div>
-              {internal?.to ? (
-                <div className={cn("text-base text-background font-medium")}>{format(internal.to, "yyyy. MM. dd.")}</div>
+              <div className={cn("text-sm font-semibold", value?.to ? "text-muted" : "text-muted-foreground")}>종료 희망일</div>
+              {value?.to instanceof Date && !isNaN(value.to.getTime()) ? (
+                <div className={cn("text-base text-background font-medium")}>{format(value.to, "yyyy. MM. dd.")}</div>
               ) : (
                 <div className="text-base text-neutral-500">날짜를 선택하세요</div>
               )}
@@ -66,7 +95,32 @@ export default function DatePickerWithRange({ value, onSelect, className }: Date
           </div>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-4 rounded-xl" align="center">
-          <Calendar mode="range" defaultMonth={internal?.from} selected={internal} onSelect={handleSelect} numberOfMonths={2} disabled={disabledDays} />
+          <DayPicker
+            animate
+            mode="range"
+            captionLayout="label"
+            navLayout="around"
+            locale={ko}
+            defaultMonth={value?.from}
+            selected={value}
+            onSelect={handleSelect}
+            numberOfMonths={2}
+            disabled={disabledDays}
+            modifiers={modifiers}
+            modifiersClassNames={{
+              saturday: "text-blue-500",
+              sunday: "text-red-500",
+              today: "text-green-500",
+              single_selected: "rounded-md",
+              range_start: "rounded-l-md",
+              range_end: "rounded-r-md",
+              selected: "bg-primary hover:bg-primary/90 focus:bg-primary/90 border-0",
+            }}
+            classNames={{
+              ...classNames,
+            }}
+            required={false}
+          />
         </PopoverContent>
       </Popover>
     </div>

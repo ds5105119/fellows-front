@@ -7,7 +7,7 @@ import { NextRequest } from "next/server";
 export async function GET(request: NextRequest, { params }: { params: Promise<{ project_id: string }> }) {
   const session = await auth();
   const project_id = (await params).project_id;
-  const url = `${process.env.NEXT_PUBLIC_PROJECT_ESTIMATE_URL}/${project_id}`;
+  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}/estimate`;
 
   const response = await fetch(url, {
     method: "GET",

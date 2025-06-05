@@ -1,15 +1,14 @@
 import { auth, signIn } from "@/auth";
 import { SessionProvider } from "next-auth/react";
-import { Session } from "next-auth";
-import { ProjectSchema, ProjectSchemaType } from "@/@types/service/project";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShineBorder } from "@/components/magicui/shine-border";
+import { Session } from "next-auth";
+import { ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
 import ProjectDetailMain from "@/components/section/service/project/detail/projectdetailmain";
 import ProjectEstimator from "@/components/section/service/project/detail/projectestimator";
-import ProjectEditSheet from "@/components/section/service/project/detail/projecteditsheet";
 
-export const getProject = async ({ project_id, session }: { project_id: string; session: Session }): Promise<ProjectSchemaType> => {
+export const getProject = async ({ project_id, session }: { project_id: string; session: Session }): Promise<ERPNextProjectType> => {
   const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}`;
 
   try {
@@ -29,7 +28,7 @@ export const getProject = async ({ project_id, session }: { project_id: string; 
     }
 
     const responseData = await response.json();
-    const parsedData = ProjectSchema.parse(responseData);
+    const parsedData = ERPNextProjectZod.parse(responseData);
 
     return parsedData;
   } catch (error) {
@@ -48,7 +47,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   return (
     <SessionProvider session={session}>
       <div className="w-full h-full flex flex-col px-8 gap-6 mt-12 mb-8">
-        <div className="text-3xl md:text-4xl font-bold">{project.project_info.project_name}</div>
+        <div className="text-3xl md:text-4xl font-bold">{project.custom_project_title}</div>
         <Tabs defaultValue="default" className="w-full h-full">
           <TabsList className="w-96 grid grid-cols-3 mb-3">
             <TabsTrigger value="default">개요</TabsTrigger>
@@ -59,7 +58,6 @@ export default async function Page({ params, searchParams }: { params: Promise<{
             <div className="h-full grid grid-cols-4 md:grid-cols-12 gap-5">
               <div className="col-span-full flex space-x-2">
                 <Input placeholder="검색어를 입력하세요" className="w-80" />
-                <ProjectEditSheet project={project} opened={p == "edit"} />
               </div>
               <div className="min-h-[40rem] col-span-full p-8 md:col-span-6 md:col-start-1 border rounded-2xl flex flex-col">
                 <ProjectDetailMain project={project} />

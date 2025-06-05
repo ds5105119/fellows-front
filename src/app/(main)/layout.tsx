@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import MobileHeader from "@/components/header/mobileheader";
 import Footer from "@/components/footer/footer";
 import LenisProvider from "@/lib/lenisprovider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { auth } from "@/auth";
 import "../globals.css";
+import MainHeader from "@/components/header/mainheader";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
@@ -29,20 +28,15 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-  params,
 }: Readonly<{
   children: React.ReactNode;
-  params: { title?: string };
 }>) {
-  const headerText = params.title || "기본 헤더";
-  const session = await auth();
-
   return (
     <html lang="en">
       <body className={`${pretendard.variable} ${satoshi.variable}`}>
         <LenisProvider>
           <div className="relative overscroll-none">
-            <MobileHeader text={headerText} session={session} />
+            <MainHeader />
             <main className="scrollbar-hide break-keep">{children}</main>
             <Footer />
           </div>

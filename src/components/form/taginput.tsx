@@ -7,7 +7,15 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion, useAnimation } from "framer-motion";
 
-export function TagInput({ value, onChange, placeholder = "쉼표(,)로 구분" }: { value: string[]; onChange: (val: string[]) => void; placeholder?: string }) {
+export default function TagInput({
+  value,
+  onChange,
+  placeholder = "쉼표(,)로 구분",
+}: {
+  value: string[];
+  onChange: (val: string[]) => void;
+  placeholder?: string;
+}) {
   const [input, setInput] = useState("");
   const [isComposing, setIsComposing] = useState(false);
   const [pendingComma, setPendingComma] = useState(false);

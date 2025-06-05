@@ -16,18 +16,18 @@ export const ProjectFileRecordsSchema = z.object({
 export const ProjectInfoSchema = z.object({
   project_name: z.string().describe("프로젝트 이름 (예: 'ABC 쇼핑몰 구축')"),
   project_summary: z.string().describe("프로젝트의 주요 목표 및 기능에 대한 간략한 설명 (2-3 문장)"),
-  platforms: z.array(Platform).describe("개발 대상 플랫폼"),
+  platforms: z.array(Platform).describe("개발 대상 플랫폼").default([]),
   readiness_level: ReadinessLevel.describe("사전 준비도"),
 
   // --- 기술 및 환경 (선택적 정보) ---
   feature_list: z.array(z.string()).nullable().optional(),
   content_pages: z.number().int().nonnegative().nullable().optional(),
-  preferred_tech_stack: z.array(z.string()).nullable().optional(),
+  preferred_tech_stack: z.array(z.string()).nullable().optional().default([]),
 
   // --- 디자인 요구사항 ---
   design_requirements: z.string().nullable().optional(),
-  reference_design_url: z.array(z.string().url()).nullable().optional(),
-  files: z.array(ProjectFileRecordsSchema).nullable().optional(),
+  reference_design_url: z.array(z.string().url()).nullable().optional().default([]),
+  files: z.array(ProjectFileRecordsSchema).nullable().optional().default([]),
 
   // --- 일정 및 기타 ---
   start_date: z.string().date().nullable().optional(),
@@ -55,12 +55,7 @@ export const ProjectSchema = z.object({
   ai_estimate: z.string().nullable().optional(),
   emoji: z.string().nullable().optional(),
   total_amount: z.number().nullable().optional(),
-  created_at: z.preprocess((val) => {
-    if (typeof val === "string") {
-      return /([+\-]\d{2}:\d{2}|Z)$/.test(val) ? val : val + "Z";
-    }
-    return val;
-  }, z.coerce.date()),
+  created_at: z.coerce.date(),
   updated_at: z.coerce.date(),
   deletable: z.boolean().nullable().optional(),
 

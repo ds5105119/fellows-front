@@ -15,6 +15,7 @@ declare module "next-auth" {
     email: string;
     username: string;
     name: string;
+    phoneNumber: string;
     birthdate: string;
     sub_locality: string;
     email_verified: boolean;
@@ -52,6 +53,7 @@ declare module "next-auth/jwt" {
     email: string;
     username: string;
     name: string;
+    phoneNumber: string;
     birthdate: string;
     sub_locality: string;
     email_verified: boolean;
@@ -112,9 +114,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       account(account) {
         return account;
       },
-      checks: ["pkce"],
     }),
-    GitHub({ authorization: { params: { scope: "repo:status workflow" } } }),
   ],
   callbacks: {
     async jwt({ token, account, profile }) {
@@ -125,8 +125,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.refresh_token = account.refresh_token || "";
           token.expires_at = account.expires_at || 0;
           token.refresh_token_expires_at = expiresIntoAt(account.refresh_token_expires_at);
-        } else if (account.provider === "github") {
-          token.github_access_token = account.access_token || "";
         }
       } else {
         if (Date.now() >= (token.expires_at || 0) * 1000) {
@@ -152,6 +150,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.email = token.email;
       session.user.username = token.username;
       session.user.name = token.name;
+      session.user.phoneNumber = token.phoneNumber;
       session.user.birthdate = token.birthdate;
       session.user.sub_locality = token.sub_locality;
       session.user.email_verified = token.email_verified;

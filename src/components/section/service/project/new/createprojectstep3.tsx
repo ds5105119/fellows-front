@@ -5,21 +5,25 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { SwitchIndicator } from "@/components/ui/switch-indicator";
-import { ProjectInfoSchemaType } from "@/@types/service/project";
-import { DateRange } from "react-day-picker";
 import DatePickerWithRange from "@/components/form/datepickerwithrange";
-import { TagInput } from "../../../../form/taginput";
-import FileInput from "../../../../form/fileinput";
+import TagInput from "@/components/form/taginput";
+import FileInput from "@/components/form/fileinput";
+import { UserERPNextProjectType } from "@/@types/service/erpnext";
+
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/ko";
+dayjs.extend(relativeTime);
+dayjs.locale("ko");
 
 interface CreateProjectFormStep3Props {
-  form: UseFormReturn<ProjectInfoSchemaType>;
-  dateRange: DateRange | undefined;
-  handleDateSelect: (range: DateRange) => void;
+  form: UseFormReturn<UserERPNextProjectType>;
 }
 
-export default function CreateProjectFormStep3({ form, dateRange, handleDateSelect }: CreateProjectFormStep3Props) {
+export default function CreateProjectFormStep3({ form }: CreateProjectFormStep3Props) {
   const {
     control,
+    setValue,
     getValues,
     formState: { errors },
   } = form;
@@ -28,7 +32,7 @@ export default function CreateProjectFormStep3({ form, dateRange, handleDateSele
     <>
       <FormField
         control={control}
-        name="content_pages"
+        name="custom_content_pages"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-sm font-medium">콘텐츠 페이지 수</FormLabel>
@@ -52,7 +56,7 @@ export default function CreateProjectFormStep3({ form, dateRange, handleDateSele
       />
       <FormField
         control={control}
-        name="design_requirements"
+        name="custom_design_requirements"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-sm font-medium">디자인 요구사항</FormLabel>
@@ -71,14 +75,14 @@ export default function CreateProjectFormStep3({ form, dateRange, handleDateSele
       />
       <FormField
         control={control}
-        name="preferred_tech_stack"
+        name="custom_preferred_tech_stacks"
         render={({ field }) => (
           <FormItem>
             <FormLabel className="text-sm font-medium">선호 기술 스택</FormLabel>
             <FormControl>
               <TagInput
-                value={field.value || []}
-                onChange={field.onChange}
+                value={field.value ? field.value.map((item) => item.stack) : []}
+                onChange={(val) => field.onChange(val.map((v) => ({ stack: v })))}
                 placeholder={field.value && field.value.length > 0 ? "⌫ 키로 지울 수 있어요." : "쉼표(,)로 구분하여 입력해주세요. (얘시: Next.js)"}
               />
             </FormControl>
@@ -89,31 +93,52 @@ export default function CreateProjectFormStep3({ form, dateRange, handleDateSele
       <div className="w-full flex flex-col space-y-1">
         <FormField
           control={control}
-          name="start_date"
-          render={() => (
+          name="expected_start_date"
+          render={({ field }) => (
             <FormItem>
               <FormLabel className="text-sm font-medium">희망 일정 및 유지보수</FormLabel>
               <FormControl>
                 <div className="rounded-t-2xl overflow-hidden">
                   <DatePickerWithRange
-                    value={
-                      dateRange || {
-                        from: getValues("start_date") ? new Date(getValues("start_date")!) : undefined,
-                        to: getValues("desired_deadline") ? new Date(getValues("desired_deadline")!) : undefined,
+                    value={{
+                      from: getValues("expected_start_date") ? new Date(getValues("expected_start_date")!) : undefined,
+                      to: getValues("expected_end_date") ? new Date(getValues("expected_end_date")!) : undefined,
+                    }}
+                    onSelect={(range) => {
+                      const prevStartDateString = getValues("expected_start_date") || undefined;
+                      const newStartDateString =
+                        range?.from instanceof Date && !isNaN(range.from.getTime()) ? dayjs(range.from).format("YYYY-MM-DD") : undefined;
+                      const newDesiredDeadlineString =
+                        range?.to instanceof Date && !isNaN(range.to.getTime()) ? dayjs(range.to).format("YYYY-MM-DD") : undefined;
+
+                      setValue("expected_start_date", newStartDateString, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+
+                      if (prevStartDateString == newDesiredDeadlineString || newStartDateString == newDesiredDeadlineString) {
+                        setValue("expected_end_date", undefined, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
+                      } else if (prevStartDateString != newDesiredDeadlineString && !!prevStartDateString) {
+                        setValue("expected_end_date", newDesiredDeadlineString, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
                       }
-                    }
-                    onSelect={handleDateSelect}
+                    }}
                   />
                 </div>
               </FormControl>
-              <FormMessage>{errors.start_date?.message || errors.desired_deadline?.message}</FormMessage>
+              <FormMessage>{errors.expected_start_date?.message || errors.expected_end_date?.message}</FormMessage>
             </FormItem>
           )}
         />
 
         <FormField
           control={control}
-          name="maintenance_required"
+          name="custom_maintenance_required"
           render={({ field }) => (
             <FormItem>
               <FormControl>
@@ -135,7 +160,7 @@ export default function CreateProjectFormStep3({ form, dateRange, handleDateSele
                       </div>
                     )}
                   </div>
-                  <SwitchIndicator checked={field.value} />
+                  <SwitchIndicator checked={field.value || false} />
                 </button>
               </FormControl>
               <FormMessage />
@@ -145,7 +170,7 @@ export default function CreateProjectFormStep3({ form, dateRange, handleDateSele
 
         <FormField
           control={control}
-          name="files"
+          name="custom_files"
           render={({ field }) => (
             <FormItem>
               <FormControl>

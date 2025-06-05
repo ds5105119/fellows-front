@@ -1,21 +1,56 @@
+"use client";
+
 import { ProjectEstimateFeatureSchema, ProjectEstimateFeatureSchemaType } from "@/@types/service/project";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
+import useSWR, { SWRResponse } from "swr";
+
+export const getProject = ({ project_id }: { project_id: string }): SWRResponse<ERPNextProjectType | undefined, any, any> => {
+  const fetcher = async (url: string) => {
+    if (!url) return undefined;
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        redirect: "follow",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      const parsedData = ERPNextProjectZod.parse(responseData);
+
+      return parsedData;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  return useSWR(`/api/service/project/${project_id}`, fetcher);
+};
 
 export const getEstimateFeatures = async ({
   project_name,
   project_summary,
   readiness_level,
+  platforms,
 }: {
   project_name: string;
   project_summary: string;
   readiness_level: string;
+  platforms: string[];
 }) => {
   const params = new URLSearchParams();
   params.append("project_name", project_name);
   params.append("project_summary", project_summary);
   params.append("readiness_level", readiness_level);
+  platforms.forEach((platform) => params.append("platforms", platform));
 
   const url = `/api/service/project/estimate/feature?${params.toString()}`;
 
@@ -30,6 +65,7 @@ export const getEstimateFeatures = async ({
   if (response.ok) {
     const initalProject = await response.json();
     const projectEstimateFeature = ProjectEstimateFeatureSchema.parse(initalProject);
+    toast.success(`${ratelimit}회 남았어요.`);
     return { projectEstimateFeature, ratelimit, retryAfter };
   } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
     const errorData = await response.json().catch(() => ({ message: "Client error" }));
@@ -53,10 +89,12 @@ export const useGetEstimateFeatures = ({
   project_name,
   project_summary,
   readiness_level,
+  platforms,
 }: {
   project_name: string;
   project_summary: string;
   readiness_level: string;
+  platforms: string[];
 }) => {
   const [data, setData] = useState<ProjectEstimateFeatureSchemaType | null>(null);
   const [loading, setLoading] = useState(false);
@@ -66,7 +104,7 @@ export const useGetEstimateFeatures = ({
   const [retryAfter, setRetryAfter] = useState(0);
 
   const fetchData = useCallback(async () => {
-    if (!project_name || !project_summary || !readiness_level) {
+    if (!project_name || !project_summary || !readiness_level || platforms.length === 0) {
       setData(null);
       setLoading(false);
       setError(null);
@@ -80,12 +118,11 @@ export const useGetEstimateFeatures = ({
     setData(null);
 
     try {
-      const result = await getEstimateFeatures({ project_name, project_summary, readiness_level });
+      const result = await getEstimateFeatures({ project_name, project_summary, readiness_level, platforms });
       setData(result.projectEstimateFeature);
       setRatelimit(result.ratelimit);
       setRetryAfter(result.retryAfter);
       setSuccess(true);
-      console.log("3");
     } catch (err) {
       setError("An unexpected error occurred");
       setSuccess(false);

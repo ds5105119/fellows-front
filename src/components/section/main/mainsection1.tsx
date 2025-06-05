@@ -1,13 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-
 import { auth } from "@/auth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import { ChevronRight } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { BlurFade } from "@/components/magicui/blur-fade";
+import { motion } from "framer-motion";
+import { Pointer } from "@/components/magicui/pointer";
 
 export default async function MainSection1() {
   const session = await auth();
@@ -15,7 +15,7 @@ export default async function MainSection1() {
   return (
     <div className="relative grid grid-cols-1 lg:grid-cols-12">
       <div className="col-span-full">
-        <BlurFade className="relative w-full hidden md:block">
+        <div className="relative w-full hidden md:block">
           {/* Base image */}
           <AspectRatio ratio={3146 / 1332}>
             <Image src="/hero-desktop-2.jpg" fill alt="Image" className="rounded-md object-cover" priority />
@@ -71,8 +71,11 @@ export default async function MainSection1() {
               <Image src="/hero-desktop-filter.svg" fill alt="Filter" className="object-cover" priority />
             </AspectRatio>
           </div>
-        </BlurFade>
-        <BlurFade className="relative w-full block md:hidden">
+          <div className="pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
+            <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
+          </div>
+        </div>
+        <div className="relative w-full block md:hidden">
           {/* Base image */}
           <AspectRatio ratio={987 / 1040}>
             <Image src="/hero-desktop-2.jpg" fill alt="Image" className="rounded-md object-cover" priority />
@@ -104,13 +107,14 @@ export default async function MainSection1() {
                   </div>
                 </div>
 
-                <h1 className="text-3xl font-extrabold tracking-normal text-background">Web, App 개발</h1>
+                <h1 className="text-3xl font-extrabold tracking-normal text-background hidden">Web, App 개발</h1>
                 <h1 className="text-3xl font-extrabold tracking-normal text-background">
                   <span className="font-black">Fellows℠</span>와 함께 앞서나가세요
                 </h1>
 
                 <h4 className="scroll-m-20 text-sm font-semibold leading-tight text-muted ml-1 mt-2">
-                  최대 40% 더 적은 비용으로 해외의 개발팀을 사용하세요.<span className="text-[#e64646] font-black">*</span>
+                  홈페이지 제작부터 관리까지
+                  <br /> 최대 40% 더 적은 비용으로 해외의 개발팀을 사용하세요.<span className="text-[#e64646] font-black">*</span>
                 </h4>
               </div>
             </div>
@@ -121,9 +125,10 @@ export default async function MainSection1() {
               <Image src="/hero-mobile-filter.svg" fill alt="Filter" className="object-cover" priority />
             </AspectRatio>
           </div>
-        </BlurFade>
-        <div className="pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
-          <span className="text-[#e64646] font-black">*</span> 말레이시아, 인도네시아 글로벌 웹 에이전시
+
+          <div className="pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
+            <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
+          </div>
         </div>
       </div>
     </div>

@@ -1,28 +1,177 @@
 "use client";
 
-import dayjs from "dayjs";
-import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Clock, Copy, Download, FileText, SquareCode, ExternalLink, LinkIcon, Fullscreen } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { ProjectSchemaType } from "@/@types/service/project";
-import { Progress } from "@/components/ui/progress";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import MarkdownPreview from "@/components/ui/markdownpreview";
+import Flattabs from "@/components/ui/flattabs";
 import Link from "next/link";
+import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
+import { useState, useRef, useEffect } from "react";
+import { Session } from "next-auth";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Copy, Download, FileText, LinkIcon, Fullscreen, Info, ArrowUpRight, DownloadCloud, Plus, Check, X } from "lucide-react";
 import { fileIconMap, getFileExtension } from "@/components/form/fileinput";
 import { UploadProgressIndicator } from "@/components/ui/uploadprogressindicator";
+import { useInView } from "framer-motion";
+import { getProject } from "@/hooks/fetch/project";
 
-export default function ProjectDetailSheet({ project, onClose }: { project: ProjectSchemaType | null; onClose: () => void }) {
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/ko";
+import { ERPNextProjectFileRowZod, ERPNextProjectType, ERPNextTaskPaginatedResponseZod } from "@/@types/service/erpnext";
+import { downloadFilefromPresignedUrl, getPresignedGetUrl, getPresignedPutUrl, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
+import { toast } from "sonner";
+dayjs.extend(relativeTime);
+dayjs.locale("ko");
+
+interface getKeyFactoryProps {
+  project_id: string;
+  size?: string;
+}
+
+const getKeyFactory = ({ size, project_id }: getKeyFactoryProps): SWRInfiniteKeyLoader => {
+  return (index, previousPageData) => {
+    if (previousPageData && !previousPageData.items.length) return null;
+
+    const params = new URLSearchParams();
+    params.append("page", `${index * Number(size || 20)}`);
+
+    if (size) params.append("size", size);
+
+    return `/api/service/project/${project_id}/tasks?${params.toString()}`;
+  };
+};
+
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to load data");
+  const data = await res.json();
+  return ERPNextTaskPaginatedResponseZod.parse(data);
+};
+
+export default function ProjectDetailSheet({
+  project: _project,
+  onClose,
+  session,
+}: {
+  project: ERPNextProjectType | null;
+  onClose: () => void;
+  session: Session | null;
+}) {
+  if (!_project || !session) return null;
+
+  const detailedProject = getProject({ project_id: _project.project_name });
+  const [project, setProject] = useState<ERPNextProjectType>(_project);
+
+  const statusMapping: Record<string, string> = {
+    draft: "초안",
+    "process:1": "견적 확인중",
+    "process:2": "계약 진행중",
+    "process:3": "진행중",
+    maintenance: "유지보수",
+    complete: "완료",
+  };
+  const platformMapping: Record<string, string> = { web: "웹", android: "안드로이드 앱", ios: "iOS 앱" };
+
+  const tabs1 = [
+    session?.user.name && session?.user.phoneNumber && session?.user.email ? (
+      <div className="flex space-x-1.5 items-center">
+        <span>고객</span>
+        <div className="size-2.5 rounded-full bg-emerald-500" />
+      </div>
+    ) : (
+      <div className="flex space-x-1.5 items-center">
+        <span>고객</span>
+        <div className="size-2.5 rounded-full bg-red-500" />
+      </div>
+    ),
+    project ? (
+      <div className="flex space-x-1.5 items-center">
+        <span>회사</span>
+        <div className="size-2.5 rounded-full bg-emerald-500" />
+      </div>
+    ) : (
+      <div className="flex space-x-1.5 items-center">
+        <span className="text-yellow-500">매니저</span>
+        <div className="size-2.5 rounded-full bg-yellow-500" />
+      </div>
+    ),
+  ];
+  const [activeTab1, setActiveTab1] = useState(0);
+
+  const tabs2 = ["테스크", "파일", "팀원"];
+  const [activeTab2, setActiveTab2] = useState(0);
+
   const [valueToggle, setValueToggle] = useState(false);
-  const [activeRightTab, setActiveRightTab] = useState("지출");
-  const [files, setFiles] = useState(project?.project_info.files || []);
+  const [files, setFiles] = useState(project.custom_files || []);
+  const [fileProgress, setFileProgress] = useState<Record<string, number>>({});
 
-  if (!project) return null;
+  const getKey = getKeyFactory({ size: "20", project_id: project.project_name });
+  const { data, error, isLoading: _isLoading, size, setSize } = useSWRInfinite(getKey, fetcher);
+  const isReachedEnd = data && data.length > 0 && data[data.length - 1]?.items.length === 0;
+  const isLoading = !isReachedEnd && (_isLoading || (size > 0 && data && typeof data[size - 1] === "undefined"));
+  const taskInfRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const istaskInfRefView = useInView(taskInfRef);
 
-  const budgetProgress = project.total_amount ? 65 : 0; // 예산 진행률 예시
+  const getFile = async (algorithm: string, key: string, sse_key: string, filename: string) => {
+    const presigned = await getPresignedGetUrl(algorithm, key, sse_key);
+    return await downloadFilefromPresignedUrl(presigned, filename);
+  };
+
+  const uploadFiles = async (file: File) => {
+    const isDuplicate = files.some((f) => f.file_name === file.name);
+    if (isDuplicate) {
+      toast.info("이미 업로드된 파일입니다.");
+      return;
+    }
+
+    try {
+      const presigned = await getPresignedPutUrl(file.name);
+      const fileRecord = ERPNextProjectFileRowZod.parse({
+        doctype: "Files",
+        key: presigned.key,
+        file_name: file.name,
+        algorithm: "AES256",
+        sse_key: presigned.sse_key,
+        uploader: "user",
+      });
+
+      setFiles((prev) => [...prev, fileRecord]);
+
+      await uploadFileToPresignedUrl({
+        file,
+        presigned,
+        onProgress: ({ percent }) => {
+          setFileProgress((prev) => ({
+            ...prev,
+            [file.name]: percent,
+          }));
+        },
+      });
+
+      await fetch(`/api/service/project/${project.project_name}/files`, {
+        method: "PUT",
+        body: JSON.stringify(fileRecord),
+      });
+
+      setFileProgress((prev) => ({
+        ...prev,
+        [file.name]: 100,
+      }));
+    } catch (err) {
+      toast.warning("업로드에 실패했어요.");
+      setFiles((prev) => prev.filter((f) => f.file_name !== file.name));
+    }
+  };
+
+  const handleChangeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadFiles(file);
+  };
 
   const removeFile = async (key: string, sse_key: string) => {
     const params = new URLSearchParams();
@@ -34,9 +183,36 @@ export default function ProjectDetailSheet({ project, onClose }: { project: Proj
     });
 
     if (files) {
-      setFiles((prev) => prev.filter((file) => file.file_record.key !== key));
+      setFiles((prev) => prev.filter((file) => file.key !== key));
     }
   };
+
+  const submitProject = async () => {
+    await fetch(`/api/service/project/${project.project_name}/submit`, {
+      method: "POST",
+    });
+    window.location.reload();
+  };
+
+  const cancelSubmit = async () => {
+    await fetch(`/api/service/project/${project.project_name}/submit/cancel`, {
+      method: "POST",
+    });
+    window.location.reload();
+  };
+
+  useEffect(() => {
+    if (istaskInfRefView && !isReachedEnd && !isLoading) {
+      setSize((s) => s + 1);
+    }
+  }, [istaskInfRefView, isReachedEnd, isLoading, setSize, data]);
+
+  useEffect(() => {
+    if (!_project || !session || !detailedProject.data) return;
+
+    setProject(detailedProject.data);
+    setFiles(detailedProject.data.custom_files || []);
+  }, [_project, detailedProject.data, session]);
 
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
@@ -59,7 +235,7 @@ export default function ProjectDetailSheet({ project, onClose }: { project: Proj
             내보내기
           </Button>
           <Button variant="outline" size="icon" className="size-8 font-semibold rounded-sm border-gray-200 shadow-none" asChild>
-            <Link href={`./project/${project.project_id}`}>
+            <Link href={`./project/${project.project_name}`}>
               <Fullscreen className="h-4 w-4" />
             </Link>
           </Button>
@@ -76,36 +252,42 @@ export default function ProjectDetailSheet({ project, onClose }: { project: Proj
               <FileText className="!size-6 text-blue-500" strokeWidth={2.2} />
             </div>
             <span className="text-base font-bold text-blue-500">프로젝트 미리보기</span>
-            <span className="text-xs font-normal text-muted-foreground">{dayjs(project.created_at).format("YY.MM.DD HH시 mm분")} 생성</span>
+            <span className="text-xs font-normal text-muted-foreground">{dayjs(project.creation).format("YY.MM.DD HH시 mm분")} 생성</span>
           </div>
+
           {/* 프로젝트 이름 및 기본 정보 */}
           <div className="w-full flex flex-col pt-6 px-8 space-y-5">
             <h2 className="text-4xl font-bold break-keep">
-              {project.emoji} {project.project_info.project_name}
+              {project.custom_emoji} {project.custom_project_title}
             </h2>
             <div className="w-full flex items-center space-x-2">
               <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">계약 번호</div>
-              <div className="ml-1 flex-1 text-xs font-medium text-muted-foreground truncate overflow-hidden whitespace-nowrap">{project.project_id}</div>
+              <div className="ml-1 flex-1 text-xs font-medium text-muted-foreground truncate overflow-hidden whitespace-nowrap">{project.project_name}</div>
               <div className="size-6 flex items-center justify-center rounded-sm hover:bg-gray-300/40 transition-colors duration-200">
                 <Copy className="text-muted-foreground !size-4" strokeWidth={2.7} />
               </div>
             </div>
           </div>
+
           {/* 프로젝트 상태 및 종류 */}
           <div className="w-full flex items-center justify-between pt-6 pb-3 px-8 border-b-1 border-b-sidebar-border">
-            <h3 className="text-sm font-bold">상태</h3>
-            <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold truncate">{project.status}</div>
-          </div>
-          <div className="w-full flex items-center justify-between py-3 px-8 border-b-1 border-b-sidebar-border">
-            <h3 className="text-sm font-bold">종류</h3>
-            <div className="flex space-x-2">
-              {project.project_info.platforms.map((val, i) => (
-                <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
-                  {val}
-                </div>
-              ))}
+            <h3 className="text-sm font-bold">의뢰 상태</h3>
+            <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold truncate">
+              {project.custom_project_status ? statusMapping[project.custom_project_status] : "상태 없음"}
             </div>
           </div>
+          <div className="w-full flex items-center justify-between py-3 px-8 border-b-1 border-b-sidebar-border">
+            <h3 className="text-sm font-bold">플랫폼</h3>
+            <div className="flex space-x-2">
+              {project.custom_platforms &&
+                project.custom_platforms.map((val, i) => (
+                  <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
+                    {platformMapping[val.platform]}
+                  </div>
+                ))}
+            </div>
+          </div>
+
           {/* 프로젝트 설명 및 사용기술 */}
           <div className="w-full flex flex-col pt-6 pb-6 px-8 space-y-4 border-b-1 border-b-sidebar-border">
             <div className="w-full flex items-center space-x-2">
@@ -114,14 +296,14 @@ export default function ProjectDetailSheet({ project, onClose }: { project: Proj
             </div>
 
             <div className="w-full flex flex-col space-y-2">
-              <div className="text-sm font-semibold">{project.status === "draft" ? "얘상 금액" : "계약 금액"}</div>
-              {project.total_amount ? (
+              <div className="text-sm font-semibold">{project.custom_project_status === "draft" ? "얘상 금액" : "계약 금액"}</div>
+              {project.estimated_costing ? (
                 <div className="flex flex-col space-y-2">
                   <div>
                     <span className="text-lg font-bold">
-                      {valueToggle ? (project.total_amount * 1.1).toLocaleString() : project.total_amount.toLocaleString()}
+                      {valueToggle ? (project.estimated_costing * 1.1).toLocaleString() : project.estimated_costing.toLocaleString()}
                     </span>
-                    <span className="text-sm font-normal"> 원 (부가세 별도)</span>
+                    <span className="text-sm font-normal"> 원 (부가세 {valueToggle ? "포함" : "별도"})</span>
                   </div>
                   <Button size="sm" variant="outline" className="w-fit text-xs h-7 shadow-none" onClick={() => setValueToggle((prev) => !prev)}>
                     {valueToggle ? "부가세 미포함 금액으로 변경" : "부가세 포함된 금액으로 변경"}
@@ -134,21 +316,21 @@ export default function ProjectDetailSheet({ project, onClose }: { project: Proj
 
             <div className="w-full flex flex-col space-y-2">
               <div className="text-sm font-semibold">설명</div>
-              <div className="text-sm font-normal">{project.project_info.project_summary}</div>
+              <div className="text-sm font-normal whitespace-pre-wrap">{project.custom_project_summary}</div>
             </div>
 
             <div className="w-full flex flex-col space-y-2">
               <div className="text-sm font-semibold">디자인 요구사항</div>
-              <div className="text-sm font-normal">{project.project_info.design_requirements ?? "디자인 요구사항이 없어요."}</div>
+              <div className="text-sm font-normal whitespace-pre-wrap">{project.custom_design_requirements ?? "디자인 요구사항이 없어요."}</div>
             </div>
 
             <div className="w-full flex flex-col space-y-1.5">
-              <div className="text-sm font-semibold">{project.status === "draft" ? "희망 사용기술" : "계약 사용기술"}</div>
-              <div className="flex space-x-2">
-                {project.project_info.preferred_tech_stack && project.project_info.preferred_tech_stack.length > 0 ? (
-                  project.project_info.preferred_tech_stack.map((val, i) => (
+              <div className="text-sm font-semibold">{project.custom_project_status === "draft" ? "희망 사용기술" : "계약 사용기술"}</div>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {project.custom_preferred_tech_stacks && project.custom_preferred_tech_stacks.length > 0 ? (
+                  project.custom_preferred_tech_stacks.map((val, i) => (
                     <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
-                      {val}
+                      {val.stack}
                     </div>
                   ))
                 ) : (
@@ -159,49 +341,21 @@ export default function ProjectDetailSheet({ project, onClose }: { project: Proj
 
             <div className="w-full flex">
               <div className="w-1/2 flex flex-col space-y-1.5">
-                <div className="text-sm font-semibold">{project.status === "draft" ? "예상 시작일" : "계약 시작일"}</div>
-                <div className="text-sm font-normal">{project.project_info.start_date ?? "정해지지 않았어요"}</div>
+                <div className="text-sm font-semibold">{project.custom_project_status === "draft" ? "예상 시작일" : "계약 시작일"}</div>
+                <div className="text-sm font-normal">
+                  {project.expected_start_date ? dayjs(project.expected_start_date).format("YYYY-MM-DD") : "정해지지 않았어요"}
+                </div>
               </div>
 
               <div className="w-1/2 flex flex-col space-y-1.5">
-                <div className="text-sm font-semibold">{project.status === "draft" ? "예상 종료일" : "계약 종료일"}</div>
-                <div className="text-sm font-normal">{project.project_info.desired_deadline ?? "정해지지 않았어요"}</div>
-              </div>
-            </div>
-
-            <div className="w-full flex flex-col space-y-2">
-              <div className="text-sm font-semibold">파일</div>
-              <div className="grid grid-cols-1 gap-2">
-                {files && files.length > 0 ? (
-                  files.map((f, i) => {
-                    const extension = getFileExtension(f.file_record.name);
-                    const IconComponent = fileIconMap[extension] || fileIconMap.default;
-
-                    return (
-                      <div
-                        key={i}
-                        className="col-span-1 grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm bg-gray-100 px-4 py-2 text-sm font-medium hover:bg-gray-200 transition-colors duration-200"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <IconComponent className="!size-7" />
-
-                        <div className="min-w-0 overflow-hidden">
-                          <p className="truncate text-sm">{f.file_record.name}</p>
-                          <p className="truncate text-xs font-normal">{f.file_record.algorithm}로 암호화됐어요</p>
-                        </div>
-
-                        <div className="w-9 h-9 flex items-center justify-center">
-                          <UploadProgressIndicator progress={100} onRemove={() => removeFile(f.file_record.key, f.file_record.sse_key)} size={36} />
-                        </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <span className="text-sm font-normal">첨부된 파일이 없어요</span>
-                )}
+                <div className="text-sm font-semibold">{project.custom_project_status === "draft" ? "예상 종료일" : "계약 종료일"}</div>
+                <div className="text-sm font-normal">
+                  {project.expected_end_date ? dayjs(project.expected_end_date).format("YYYY-MM-DD") : "정해지지 않았어요"}
+                </div>
               </div>
             </div>
           </div>
+
           {/* AI 견적 */}
           <div className="w-full items-center justify-between pt-4 pb-3 px-8 flex">
             <div className="w-full flex flex-col space-y-3 pt-2">
@@ -216,232 +370,267 @@ export default function ProjectDetailSheet({ project, onClose }: { project: Proj
               </div>
 
               <div>
-                {project.ai_estimate && (
+                {project.custom_ai_estimate && (
                   <div className="pt-2 prose prose-h2:text-base prose-p:text-sm prose-a:text-sm">
-                    <MarkdownPreview loading={false}>{project.ai_estimate}</MarkdownPreview>
+                    <MarkdownPreview loading={false}>{project.custom_ai_estimate}</MarkdownPreview>
                   </div>
                 )}
               </div>
             </div>
           </div>
+
           {/* 계약 시작하기 버튼 */}
-          {(project.status === "draft" || project.status === "process:1") && (
+          {(project.custom_project_status === "draft" || project.custom_project_status === "process:1") && (
             <div className="sticky flex flex-col bottom-0 z-50 px-4">
               <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
               <div className="w-full flex pb-4 pt-3 bg-background">
-                {project.status === "draft" && project.ai_estimate ? (
-                  <Button size="lg" className="w-full px-16 h-[3.75rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500" asChild>
-                    <Link href="/service/dashboard">계약 시작하기</Link>
+                {project.custom_project_status === "draft" && project.custom_ai_estimate ? (
+                  <Button
+                    size="lg"
+                    className="w-full px-16 h-[3.75rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500"
+                    onClick={submitProject}
+                  >
+                    계약 문의하기
+                  </Button>
+                ) : project.custom_project_status === "process:1" ? (
+                  <Button
+                    size="lg"
+                    className="w-full px-16 h-[3.75rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500"
+                    onClick={cancelSubmit}
+                  >
+                    계약 문의 취소하기
                   </Button>
                 ) : (
                   <Button size="lg" className="w-full px-16 h-[3.75rem] rounded-2xl text-lg font-semibold" asChild>
-                    <Link href={`./project/${project.project_id}`}>지금 바로 예상 견적을 받아보세요 ✨</Link>
+                    <Link href={`./project/${project.project_name}`}>지금 바로 예상 견적을 받아보세요 ✨</Link>
                   </Button>
                 )}
               </div>
             </div>
           )}
+
+          {/* 주의사항 */}
+          <div className="w-full flex flex-col pt-2 pb-6 px-6 space-y-4">
+            <div className="flex space-x-1.5 text-muted-foreground">
+              <div className="pt-[1.75px]">
+                <Info className="!size-4" />
+              </div>
+              <p className="text-sm break-keep">
+                계약 문의 취소하기는 계약이 진행중이지 않은 상태에서만 신청할 수 있어요. 진행 중인 계약을 종료하고 싶은 경우 문의하기를 사용해주세요.
+              </p>
+            </div>
+            <div className="flex space-x-1.5 text-muted-foreground">
+              <div className="pt-[1.75px]">
+                <Info className="!size-4" />
+              </div>
+              <p className="text-sm break-keep">
+                세금계산서 발행은 6개월 이하로 진행되는 경우 프로젝트 완료 이후, 6개월 이상 진행되는 경우 계약금과 잔금 지급 후 각각 발행할 수 있어요.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* 오른쪽 패널 */}
         <div className="hidden md:block md:col-span-2 h-full overflow-y-auto scrollbar-hide">
-          {/* 상태 표시 */}
-          <div className="flex items-center px-6 py-3 bg-white">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                <span className="text-sm font-medium">고객</span>
+          {/* 상태 표시 탭 */}
+          <Flattabs tabs={tabs1} activeTab={activeTab1} handleTabChange={setActiveTab1} layoutId="projectdetailsheet-tabs1" />
+          {/* 탭 콘텐츠 */}
+          <div className="w-full bg-muted">
+            {activeTab1 == 0 && (
+              <div className="w-full flex space-x-2.5 px-6 py-4">
+                <div className="flex flex-col space-y-2">
+                  <div className="text-sm font-medium">성함</div>
+                  <div className="text-sm font-medium">휴대전화</div>
+                  <div className="text-sm font-medium">이메일</div>
+                </div>
+                <div className="flex flex-col space-y-2">
+                  {!session?.user.name ? (
+                    <Link href="/" className="flex items-center select-none space-x-0.5">
+                      <p className="text-sm font-bold text-blue-500">이름을 등록해주세요</p>
+                      <ArrowUpRight className="!size-4 text-blue-500" />
+                    </Link>
+                  ) : (
+                    <div className="text-sm font-bold">{session.user.name} </div>
+                  )}
+                  {!session?.user.phoneNumber ? (
+                    <Link href="/" className="flex items-center select-none space-x-0.5">
+                      <p className="text-sm font-bold text-blue-500">전화번호를 등록해주세요</p>
+                      <ArrowUpRight className="!size-4 text-blue-500" />
+                    </Link>
+                  ) : (
+                    <div className="text-sm font-bold">{session.user.phoneNumber} </div>
+                  )}
+                  {!session?.user.email ? (
+                    <Link href="/" className="flex items-center select-none space-x-0.5">
+                      <p className="text-sm font-bold text-blue-500">이메일을 등록해주세요</p>
+                      <ArrowUpRight className="!size-4 text-blue-500" />
+                    </Link>
+                  ) : (
+                    <div className="text-sm font-bold">{session.user.email} </div>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                <span className="text-sm font-medium">회사</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                <span className="text-sm font-medium">프로젝트</span>
-              </div>
-            </div>
-          </div>
-          <div className="p-6 space-y-6">
-            {/* 기본 정보 */}
-            <Card className="border-0 shadow-sm rounded-xl">
-              <CardContent className="p-6">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                  <div className="space-y-1.5">
-                    <div className="text-sm text-muted-foreground">프로젝트 ID</div>
-                    <div className="font-medium">{project.project_id}</div>
+            )}
+            {activeTab1 === 1 && (
+              <div>
+                <p className="text-gray-600">문서 관련 내용이 여기에 표시됩니다.</p>
+                <div className="mt-4 space-y-2">
+                  <div>
+                    <div className="font-medium">프로젝트 계획서</div>
+                    <div className="text-sm text-gray-500">PDF • 2.5MB</div>
                   </div>
-                  <div className="space-y-1.5">
-                    <div className="text-sm text-muted-foreground">상태</div>
-                    <div className="font-medium">{project.status}</div>
+                  <div>
+                    <div className="font-medium">요구사항 명세서</div>
+                    <div className="text-sm text-gray-500">DOCX • 1.2MB</div>
                   </div>
-                  <div className="space-y-1.5">
-                    <div className="text-sm text-muted-foreground">생성일</div>
-                    <div className="font-medium">{new Date(project.created_at).toLocaleDateString("ko-KR")}</div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="text-sm text-muted-foreground">준비 단계</div>
-                    <div className="font-medium">
-                      {project.project_info.readiness_level === "idea"
-                        ? "아이디어"
-                        : project.project_info.readiness_level === "requirements"
-                        ? "요구사항"
-                        : "와이어프레임"}
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="text-sm text-muted-foreground">유지보수 필요</div>
-                    <div className="font-medium">{project.project_info.maintenance_required ? "예" : "아니오"}</div>
+                  <div>
+                    <div className="font-medium">디자인 가이드</div>
+                    <div className="text-sm text-gray-500">PDF • 3.1MB</div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            )}
+          </div>
 
-            {/* 탭 */}
-            <div className="flex space-x-1 border-b">
-              <button
-                className={cn(
-                  "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
-                  activeRightTab === "지출" ? "border-blue-500 text-blue-600" : "border-transparent text-muted-foreground hover:text-foreground"
-                )}
-                onClick={() => setActiveRightTab("지출")}
-              >
-                지출
-              </button>
-              <button
-                className={cn(
-                  "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
-                  activeRightTab === "히스토리" ? "border-blue-500 text-blue-600" : "border-transparent text-muted-foreground hover:text-foreground"
-                )}
-                onClick={() => setActiveRightTab("히스토리")}
-              >
-                히스토리
-              </button>
-              <button
-                className={cn(
-                  "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
-                  activeRightTab === "문서" ? "border-blue-500 text-blue-600" : "border-transparent text-muted-foreground hover:text-foreground"
-                )}
-                onClick={() => setActiveRightTab("문서")}
-              >
-                문서
-              </button>
-              <button
-                className={cn(
-                  "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
-                  activeRightTab === "팀원" ? "border-blue-500 text-blue-600" : "border-transparent text-muted-foreground hover:text-foreground"
-                )}
-                onClick={() => setActiveRightTab("팀원")}
-              >
-                팀원
-              </button>
-            </div>
+          {/* 일반 정보 탭 */}
+          <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={setActiveTab2} layoutId="projectdetailsheet-tabs2" />
+          {/* 탭 콘텐츠 */}
+          <div className="w-full">
+            {activeTab2 === 0 && (
+              <div className="flex flex-col space-y-2 pt-4">
+                {error && <p className="px-6 py-4 text-sm text-red-500">테스크를 불러오는데 실패했습니다.</p>}
+                {data?.map((page, i) => {
+                  if (page.items.length === 0 && i === 0) {
+                    return (
+                      <p key="no-tasks" className="px-6 py-4 text-sm text-muted-foreground">
+                        등록된 테스크가 없습니다.
+                      </p>
+                    );
+                  }
+                  return page.items.map((task, j) => {
+                    return (
+                      <div key={task.subject || `${i}-${j}`} className="flex space-x-2 px-6 py-4 hover:bg-muted cursor-pointer transition-colors duration-200">
+                        <div className="mt-[5px] size-2.5 rounded-full shrink-0" style={{ backgroundColor: task.color ?? "#d1d5db" }}></div>
+                        <div className="flex flex-col space-y-1.5">
+                          <div className="pr-1 text-sm font-medium">{task.subject}</div>
+                          {task.description && <div className="text-sm whitespace-pre-wrap">{task.description}</div>}
+                          {task.exp_start_date && (
+                            <div className="text-xs text-muted-foreground flex space-x-1.5 items-center">
+                              {dayjs(task.exp_start_date).format("YYYY년 MM월 DD일")} {task.exp_end_date && "-"}{" "}
+                              {task.exp_end_date && dayjs(task.exp_end_date).format("YYYY년 MM월 DD일")}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  });
+                })}
+                {isLoading && <p className="px-6 py-4 text-sm text-muted-foreground">테스크 로딩 중...</p>}
+                <div ref={taskInfRef} />
+              </div>
+            )}
+            {activeTab2 === 1 && (
+              <div className="grid grid-cols-1 gap-3 px-4 py-6">
+                <div className="text-sm font-bold">파일 · {files.length}/50</div>
+                <div className="flex items-center space-x-1.5 w-full rounded-sm bg-gray-100 px-4 py-2 mb-1 text-sm">
+                  <Info className="!size-4" />
+                  <p>파일 첨부는 최대 30MB까지 가능해요.</p>
+                </div>
+                {files && files.length > 0 ? (
+                  files.map((f, i) => {
+                    const extension = getFileExtension(f.file_name);
+                    const IconComponent = fileIconMap[extension] || fileIconMap.default;
 
-            {/* 예산 게이지 */}
-            {project.total_amount && (
-              <Card className="border-0 shadow-sm rounded-xl">
-                <CardContent className="p-6 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-1">
-                      <span className="font-bold text-2xl">{Math.round((project.total_amount * budgetProgress) / 100).toLocaleString()}</span>
-                      <span>원</span>
-                    </div>
-                    <div className="text-sm text-muted-foreground">총예산 {project.total_amount.toLocaleString()}원</div>
-                  </div>
+                    return (
+                      <div
+                        key={i}
+                        className="col-span-1 grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 w-full rounded-sm outline-1 outline-gray-200 pl-4 pr-3 py-1 text-sm font-medium"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <IconComponent className="!size-5" />
 
-                  <div className="space-y-1">
-                    <div className="h-2.5 relative">
-                      <Progress value={budgetProgress} className="h-2.5 bg-gray-100" />
-                    </div>
-                    <div className="flex justify-between items-center text-xs text-muted-foreground">
-                      <div>진행률 {budgetProgress}%</div>
-                      <div className="flex items-center gap-1">
-                        <span>잔액</span>
-                        <span className="font-medium">{Math.round((project.total_amount * (100 - budgetProgress)) / 100).toLocaleString()}</span>
-                        <span>원</span>
+                        <div className="min-w-0 overflow-hidden">
+                          <p className="truncate text-sm">{f.file_name}</p>
+                        </div>
+
+                        <button
+                          className="w-8 h-8 flex items-center justify-center rounded-sm hover:bg-muted cursor-pointer transition-colors duration-200"
+                          onClick={() => getFile(f.algorithm, f.key, f.sse_key, f.file_name)}
+                        >
+                          <DownloadCloud className="!size-5 text-blue-500" />
+                        </button>
+
+                        <div className="w-8 h-8 flex items-center justify-center rounded-sm hover:bg-muted cursor-pointer transition-colors duration-200">
+                          {f.uploader == "user" && (
+                            <UploadProgressIndicator progress={fileProgress[f.key] ?? 100} size={32} onRemove={() => removeFile(f.key, f.sse_key)} />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="flex flex-col w-full">
+                    <div className="flex flex-col space-y-3 items-center w-full rounded-sm bg-gradient-to-b from-[#ffeee6] via-[#ffe5da] to-[#ffeee6] px-8 py-12 mb-1 text-sm select-none">
+                      <div className="flex items-center space-x-2 w-full rounded-sm bg-white px-3 py-2 text-xs font-medium drop-shadow-xl drop-shadow-black/5">
+                        <fileIconMap.default className="!size-4" />
+                        <p className="grow">Business Identity.zip</p>
+                        <DownloadCloud className="!size-4 text-blue-500" />
+                        <Check className="!size-4 text-emerald-500 ml-1" />
+                      </div>
+                      <div className="flex items-center space-x-2 w-full rounded-sm bg-white px-3 py-2 text-xs font-medium drop-shadow-xl drop-shadow-black/5">
+                        <fileIconMap.default className="!size-4" />
+                        <p className="grow">디자인 레퍼런스.docs</p>
+                        <DownloadCloud className="!size-4 text-blue-500" />
+                        <X className="!size-4 text-red-500 ml-1" />
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
-            {/* 플랫폼 정보 */}
-            <Card className="border-0 shadow-sm rounded-xl">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">개발 플랫폼</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {project.project_info.platforms.map((platform, index) => (
-                    <div key={index} className="flex items-center gap-2 bg-blue-500/15 text-blue-600 px-3 py-1.5 rounded-full">
-                      <SquareCode className="h-4 w-4" />
-                      <span>{platform === "web" ? "웹" : platform === "android" ? "안드로이드" : "iOS"}</span>
+                    <div className="flex flex-col space-y-2 pt-4 pb-2 text-center">
+                      <div className="text-base font-semibold">프로젝트 파일 관리하기</div>
+                      <div className="text-sm font-medium text-muted-foreground">프로젝트에 사용한 파일들을 정리해드릴께요.</div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* 디자인 요구사항 */}
-            {project.project_info.design_requirements && (
-              <Card className="border-0 shadow-sm rounded-xl">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">디자인 요구사항</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-sm">{project.project_info.design_requirements}</div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* 참조 디자인 URL */}
-            {project.project_info.reference_design_url && project.project_info.reference_design_url.length > 0 && (
-              <Card className="border-0 shadow-sm rounded-xl">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">참조 디자인</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {project.project_info.reference_design_url.map((url, index) => (
-                      <a key={index} href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-600 hover:underline">
-                        <ExternalLink className="h-4 w-4" />
-                        <span className="text-sm truncate">{url}</span>
-                      </a>
-                    ))}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                )}
 
-            {/* 그룹 정보 */}
-            {project.groups.length > 0 && (
-              <Card className="border-0 shadow-sm rounded-xl">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">그룹</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {project.groups.map((group, index) => (
-                      <Badge key={index} variant="outline" className="rounded-full px-3 py-1 border-gray-200 bg-transparent">
-                        {group}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                <button
+                  className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-blue-200 hover:bg-blue-300 text-blue-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Plus className="!size-5" strokeWidth={2} />
+                  <p>파일 추가하기</p>
+                </button>
 
-            {/* 마지막 업데이트 정보 */}
-            <div className="flex items-center justify-between text-xs text-muted-foreground mt-4">
-              <div className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" />
-                <span>{new Date(project.updated_at).toLocaleString("ko-KR")}</span>
+                <input id="fileInput" ref={fileInputRef} type="file" onChange={handleChangeUpload} style={{ display: "none" }} className="sr-only" />
               </div>
-              <Button variant="ghost" size="sm" className="text-xs h-7 rounded-full hover:bg-blue-500/10 border-0">
-                버전 전환
-              </Button>
-            </div>
+            )}
+            {activeTab2 === 2 && (
+              <div>
+                <p className="text-gray-600">팀원 관련 내용이 여기에 표시됩니다.</p>
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">김</div>
+                    <div>
+                      <div className="font-medium">김개발</div>
+                      <div className="text-sm text-gray-500">Frontend Developer</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">이</div>
+                    <div>
+                      <div className="font-medium">이디자인</div>
+                      <div className="text-sm text-gray-500">UI/UX Designer</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">박</div>
+                    <div>
+                      <div className="font-medium">박백엔드</div>
+                      <div className="text-sm text-gray-500">Backend Developer</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
