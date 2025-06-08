@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
 import useSWR, { SWRResponse } from "swr";
+import { Session } from "next-auth";
 
 export const useProject = ({ project_id }: { project_id: string }): SWRResponse<ERPNextProjectType | undefined> => {
   const fetcher = async (url: string) => {
@@ -36,11 +37,13 @@ export const useProject = ({ project_id }: { project_id: string }): SWRResponse<
 };
 
 export const getEstimateFeatures = async ({
+  session,
   project_name,
   project_summary,
   readiness_level,
   platforms,
 }: {
+  session: Session | null;
   project_name: string;
   project_summary: string;
   readiness_level: string;
@@ -52,11 +55,13 @@ export const getEstimateFeatures = async ({
   params.append("readiness_level", readiness_level);
   platforms.forEach((platform) => params.append("platforms", platform));
 
-  const url = `/api/service/project/estimate/feature?${params.toString()}`;
+  const url = `${process.env.NEXT_PUBLIC_PROJECT_ESTIMATE_FEATURE_URL}?${params.toString()}`;
 
   const response = await fetch(url, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }) },
+    redirect: "follow",
+    credentials: "include",
   });
 
   const ratelimit = parseInt(response.headers.get("x-ratelimit-remaining") ?? "0");
@@ -68,29 +73,24 @@ export const getEstimateFeatures = async ({
     toast.success(`${ratelimit}회 남았어요.`);
     return { projectEstimateFeature, ratelimit, retryAfter };
   } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
-    const errorData = await response.json().catch(() => ({ message: "Client error" }));
-    toast.error("API 호출에 실패했습니다.", {
-      description: errorData.message,
-    });
+    toast.error("API 호출에 실패했습니다.");
   } else if (response.status === 429) {
-    toast.warning("API 한도를 초과했습니다.", {
-      description: `${format(Date.now() + retryAfter * 1000, "yyyy-MM-dd:HH:mm:ss")} 부터 사용 가능합니다.`,
-    });
+    toast.warning("API 한도를 초과했습니다.");
   } else {
-    toast.error("API 호출에 실패했습니다.", {
-      description: "알 수 없는 에러가 발생했습니다.",
-    });
+    toast.error("API 호출에 실패했습니다.");
   }
 
   throw new Error("API 호출에 실패했습니다.");
 };
 
 export const useGetEstimateFeatures = ({
+  session,
   project_name,
   project_summary,
   readiness_level,
   platforms,
 }: {
+  session: Session | null;
   project_name: string;
   project_summary: string;
   readiness_level: string;
@@ -118,7 +118,7 @@ export const useGetEstimateFeatures = ({
     setData(null);
 
     try {
-      const result = await getEstimateFeatures({ project_name, project_summary, readiness_level, platforms });
+      const result = await getEstimateFeatures({ session, project_name, project_summary, readiness_level, platforms });
       setData(result.projectEstimateFeature);
       setRatelimit(result.ratelimit);
       setRetryAfter(result.retryAfter);

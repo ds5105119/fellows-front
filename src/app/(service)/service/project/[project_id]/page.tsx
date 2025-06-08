@@ -64,7 +64,7 @@ export default async function Page({ params }: { params: Promise<{ project_id: s
 
               <div className="relative min-h-[80rem] col-span-full p-1 md:col-span-6 gap-5 border rounded-2xl">
                 <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
-                <ProjectEstimator project={project} />
+                <ProjectEstimator project={project} session={session} />
               </div>
             </div>
           </TabsContent>

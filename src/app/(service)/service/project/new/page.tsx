@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { auth } from "@/auth";
 import CreateProject from "@/components/section/service/project/new/createproject";
 
 export const metadata: Metadata = {
@@ -7,5 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  return <CreateProject />;
+  const session = await auth();
+
+  return <CreateProject session={session} />;
 }

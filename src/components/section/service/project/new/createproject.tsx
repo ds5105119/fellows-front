@@ -10,14 +10,15 @@ import { useRouter } from "next/navigation";
 import { useGetEstimateFeatures } from "@/hooks/fetch/project";
 import { stepsMeta } from "@/components/resource/project";
 import { useInView } from "framer-motion";
+import { Session } from "next-auth";
+import { UserERPNextProjectType, UserERPNextProjectZod, ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
 import AIRecommendSkeleton from "@/components/skeleton/airecommendskeleton";
 import CreateProjectFormStep1 from "./createprojectstep1";
 import CreateProjectFormStep2 from "./createprojectstep2";
 import CreateProjectFormStep3 from "./createprojectstep3";
-import { UserERPNextProjectType, UserERPNextProjectZod, ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
 import CreateProjectSide from "./createprojectside";
 
-export default function CreateProject() {
+export default function CreateProject({ session }: { session: Session | null }) {
   const router = useRouter();
   const initalProjectInfo = UserERPNextProjectZod.parse({ custom_project_title: "", custom_project_summary: "" });
   const form = useForm<UserERPNextProjectType>({
@@ -166,7 +167,7 @@ export default function CreateProject() {
     readiness_level: "",
     platforms: [],
   });
-  const estimateFeatures = useGetEstimateFeatures(estimateFeaturesData);
+  const estimateFeatures = useGetEstimateFeatures({ session, ...estimateFeaturesData });
   const estimateFeaturesFields = useWatch({
     name: ["custom_project_title", "custom_project_summary", "custom_readiness_level", "custom_platforms"],
     control: form.control,
@@ -187,7 +188,7 @@ export default function CreateProject() {
     ) {
       estimateFeatures.fetchData();
     }
-  }, [estimateFeaturesData, estimateFeatures]);
+  }, [estimateFeaturesData, estimateFeatures.fetchData]);
 
   useEffect(() => {
     if (!isRecommend) {

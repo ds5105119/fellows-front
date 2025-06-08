@@ -8,12 +8,14 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ERPNextProjectType } from "@/@types/service/erpnext";
+import { Session } from "next-auth";
 
 interface Props {
   project: ERPNextProjectType;
+  session: Session | null;
 }
 
-export default function ProjectEstimator({ project }: Props) {
+export default function ProjectEstimator({ project, session }: Props) {
   const [markdown, setMarkdown] = useState<string>(project.custom_ai_estimate ?? "");
   const [lastMarkdown, setLastMarkdown] = useState<string>(project.custom_ai_estimate ?? "");
   const [ctrl, setCtrl] = useState<AbortController | null>(null);
@@ -26,15 +28,17 @@ export default function ProjectEstimator({ project }: Props) {
       ctrl.abort();
     }
 
+    const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project.project_name}/estimate`;
     const newCtrl = new AbortController();
     setIsLoading(true);
     setMarkdown("");
     setCtrl(newCtrl);
 
-    fetchEventSource(`/api/service/project/${project.project_name}/estimate`, {
+    fetchEventSource(url, {
       method: "GET",
       headers: {
         Accept: "text/event-stream",
+        ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
       },
       signal: newCtrl.signal,
       openWhenHidden: true,
