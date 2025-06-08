@@ -28,7 +28,7 @@ export default function ProjectEstimator({ project, session }: Props) {
       ctrl.abort();
     }
 
-    const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project.project_name}/estimate`;
+    const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}${project.project_name}/estimate`;
     const newCtrl = new AbortController();
     setIsLoading(true);
     setMarkdown("");
