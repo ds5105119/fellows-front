@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET({ params }: { params: Promise<{ project_id: string }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ project_id: string }> }) {
   const session = await auth();
 
   const project_id = (await params).project_id;
