@@ -45,7 +45,7 @@ export default async function MainSection1() {
                   <span className="font-black">Fellows℠</span>와 함께 앞서나가세요
                 </h1>
 
-                <h4 className="scroll-m-20 text-lg font-semibold leading-tight text-muted ml-1 mt-2">
+                <h4 className="scroll-m-20 text-lg font-semibold leading-tight text-muted ml-1 md:mt-2">
                   최대 40% 더 적은 비용으로 해외의 개발팀을 사용하세요.<span className="text-[#e64646] font-black">*</span>
                 </h4>
 
