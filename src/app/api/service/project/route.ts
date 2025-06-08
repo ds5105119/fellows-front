@@ -17,8 +17,6 @@ export async function GET(request: Request) {
   if (order_by) params.append("order_by", order_by);
   if (status) params.append("status", status);
 
-  console.log(session, session?.access_token);
-
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_PROJECT_URL}?${params.toString()}`, {
       method: "GET",
