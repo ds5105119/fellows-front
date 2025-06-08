@@ -24,7 +24,7 @@ export default function MainSection3() {
             </div>
           </div>
         </div>
-        <div className="col-span-1 md:pl-2 aspect-[7/9] md:aspect-[11/9] mb-10 md:mb-0">
+        <div className="col-span-1 md:pr-4 aspect-[7/9] md:aspect-[11/9] mb-10 md:mb-0">
           <div className="w-full h-full bg-muted rounded-3xl flex items-end justify-center overflow-hidden">
             <video
               width="100"
@@ -47,7 +47,7 @@ export default function MainSection3() {
             <p className="text-base font-normal text-foreground">프로젝트를 분석해 기능을 추천하고 예상 견적가를 확인해 드립니다.</p>
           </div>
         </div>
-        <div className="col-span-1 md:pr-2 aspect-[7/9] md:aspect-[11/9]">
+        <div className="col-span-1 md:pl-4 aspect-[7/9] md:aspect-[11/9]">
           <div className="w-full h-full bg-muted rounded-3xl flex items-start justify-center overflow-hidden">
             <video
               width="100"
