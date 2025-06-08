@@ -22,7 +22,7 @@ interface BentoCardProps extends ComponentPropsWithoutRef<"div"> {
 
 const BentoGrid = ({ children, className, ...props }: BentoGridProps) => {
   return (
-    <div className={cn("grid w-full auto-rows-[18rem] lg:auto-rows-[22rem] grid-cols-3 gap-5", className)} {...props}>
+    <div className={cn("grid w-full auto-rows-[18rem] lg:auto-rows-[26rem] grid-cols-3 gap-5", className)} {...props}>
       {children}
     </div>
   );
@@ -41,22 +41,16 @@ const BentoCard = ({ name, className, background, emoji, Icon, description, href
     )}
     {...props}
   >
-    <div>{background}</div>
-    <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-1 lg:gap-2 p-6 transition-all duration-300 group-hover:-translate-y-10">
-      {emoji ? (
-        <div className="h-12 w-12 mb-2 group-hover:mb-0 text-5xl origin-left transform-gpu text-neutral-700 transition-all duration-300 ease-in-out group-hover:text-4xl">
-          {emoji}
-        </div>
-      ) : (
-        <Icon className="h-12 w-12 origin-left transform-gpu text-neutral-700 transition-all duration-300 ease-in-out group-hover:scale-75" />
-      )}
+    <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-2 lg:gap-3 p-12 transition-all">
       <h3 className="text-xl lg:text-3xl font-bold text-neutral-700 dark:text-neutral-300">{name}</h3>
       <p className="max-w-lg font-medium text-neutral-400 whitespace-pre-wrap">{description}</p>
     </div>
 
+    <div>{background}</div>
+
     <div
       className={cn(
-        "pointer-events-none absolute bottom-0 flex w-full translate-y-10 transform-gpu flex-row items-center p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+        "pointer-events-none absolute bottom-0 flex w-full translate-y-10 transform-gpu flex-row items-center p-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
       )}
     >
       <Button variant="ghost" asChild size="sm" className="pointer-events-auto">
@@ -66,7 +60,7 @@ const BentoCard = ({ name, className, background, emoji, Icon, description, href
         </a>
       </Button>
     </div>
-    <div className="pointer-events-none absolute inset-0 transform-gpu transition-all duration-300 group-hover:bg-black/[.03] group-hover:dark:bg-neutral-800/10" />
+    <div className="pointer-events-none absolute inset-0 transform-gpu transition-all duration-300 group-hover:hover:bg-white/10 group-hover:dark:bg-neutral-800/10" />
   </div>
 );
 
