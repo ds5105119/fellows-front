@@ -24,10 +24,19 @@ export default function MainSection3() {
             </div>
           </div>
         </div>
-        <div className="col-span-1 px-4 md:pl-2 aspect-[7/9] md:aspect-[11/9] mb-10 md:mb-0">
+        <div className="col-span-1 md:pl-2 aspect-[7/9] md:aspect-[11/9] mb-10 md:mb-0">
           <div className="w-full h-full bg-muted rounded-3xl flex items-end justify-center overflow-hidden">
-            <video width="100" height="100" preload="none" className="w-3/5 md:w-1/3 rounded-t-2xl drop-shadow-2xl drop-shadow-gray-300" autoPlay loop muted>
-              <source src="/hero-description-1.webm" />
+            <video
+              width="100"
+              height="100"
+              preload="none"
+              className="w-1/2 md:w-1/3 rounded-t-2xl drop-shadow-2xl drop-shadow-gray-300"
+              autoPlay
+              loop
+              muted
+              playsInline
+            >
+              <source src="/hero-description-1.mp4" />
             </video>
           </div>
           <div className="pt-6 px-4 flex flex-col space-y-1.5">
@@ -38,10 +47,19 @@ export default function MainSection3() {
             <p className="text-base font-normal text-foreground">프로젝트를 분석해 기능을 추천하고 예상 견적가를 확인해 드립니다.</p>
           </div>
         </div>
-        <div className="col-span-1 px-4 md:pr-2 aspect-[7/9] md:aspect-[11/9]">
+        <div className="col-span-1 md:pr-2 aspect-[7/9] md:aspect-[11/9]">
           <div className="w-full h-full bg-muted rounded-3xl flex items-start justify-center overflow-hidden">
-            <video width="100" height="100" preload="none" className="w-3/5 md:w-1/3 rounded-b-2xl drop-shadow-2xl drop-shadow-gray-300" autoPlay loop muted>
-              <source src="/hero-description-1.webm" />
+            <video
+              width="100"
+              height="100"
+              preload="none"
+              className="w-1/2 md:w-1/3 rounded-b-2xl drop-shadow-2xl drop-shadow-gray-300"
+              autoPlay
+              loop
+              muted
+              playsInline
+            >
+              <source src="/hero-description-1.mp4" />
             </video>
           </div>
           <div className="pt-6 px-4 flex flex-col space-y-1.5">
