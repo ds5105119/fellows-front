@@ -5,7 +5,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
   const session = await auth();
 
   const project_id = (await params).project_id;
-  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}/submit/cancel`;
+  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}${project_id}/submit/cancel`;
 
   try {
     const response = await fetch(url, {

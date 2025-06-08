@@ -6,7 +6,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ proj
   const body = await request.json();
 
   const project_id = (await params).project_id;
-  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}/files`;
+  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}${project_id}/files`;
 
   try {
     await fetch(url, {
