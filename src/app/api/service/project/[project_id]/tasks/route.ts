@@ -13,7 +13,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ proj
   queryParams.append("size", url.searchParams.get("size") || "20");
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_PROJECT_URL}${project_id}/tasks?${queryParams.toString()}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}/tasks?${queryParams.toString()}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

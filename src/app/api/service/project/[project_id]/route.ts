@@ -5,7 +5,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const session = await auth();
 
   const project_id = (await params).project_id;
-  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}${project_id}`;
+  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}`;
 
   try {
     const response = await fetch(url, {

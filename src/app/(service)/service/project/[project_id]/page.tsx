@@ -9,7 +9,7 @@ import ProjectDetailMain from "@/components/section/service/project/detail/proje
 import ProjectEstimator from "@/components/section/service/project/detail/projectestimator";
 
 const getProject = async ({ project_id, session }: { project_id: string; session: Session }): Promise<ERPNextProjectType> => {
-  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}${project_id}`;
+  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}`;
 
   try {
     const response = await fetch(url, {
