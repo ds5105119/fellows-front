@@ -61,7 +61,7 @@ const getKeyFactory = ({ size, keyword, order_by, status }: getKeyFactoryProps):
     if (keyword) params.append("keyword", keyword);
     if (order_by) params.append("order_by", order_by);
     if (status) params.append("status", status);
-    return `/api/service/project/?${params.toString()}`;
+    return `/api/service/project?${params.toString()}`;
   };
 };
 
