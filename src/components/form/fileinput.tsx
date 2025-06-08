@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { FcFile, FcAudioFile, FcImageFile, FcVideoFile } from "react-icons/fc";
 import { motion, useAnimation } from "framer-motion";
@@ -95,8 +95,7 @@ export default function FileInput({ onChange }: FileInputProps) {
           setFiles((prev) => prev.map((f) => (f.name === file.name && f.size === file.size ? { ...f, progress: percent } : f)));
         },
       });
-      setFiles((prev) => prev.map((f) => (f.name === file.name && f.size === file.size ? { ...f, progress: 100 } : f)));
-    } catch (err) {
+    } catch {
       toast.warning("업로드에 실패했어요.");
       setFiles((prev) => prev.filter((f) => f.name !== file.name || f.size !== file.size));
     }
@@ -132,10 +131,10 @@ export default function FileInput({ onChange }: FileInputProps) {
     await uploadFiles(file);
   };
 
-  const handleDrop = useCallback(async (e: React.DragEvent<HTMLLabelElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLLabelElement>) => {
     setDragOver(false);
     await handleDropupload(e);
-  }, []);
+  };
 
   useEffect(() => {
     filesRef.current = files;

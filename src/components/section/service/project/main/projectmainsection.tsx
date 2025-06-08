@@ -5,7 +5,7 @@ import useThrottle from "@/lib/useThrottle";
 import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
 import ProjectContainer from "./projectcontainer";
 import useSWRInfinite, { SWRInfiniteKeyLoader, SWRInfiniteResponse } from "swr/infinite";
-import { useState, useEffect, useRef, RefObject } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Session } from "next-auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import { useInView } from "framer-motion";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
+// --- 타입 및 상수 정의 (기존과 동일) ---
 interface getKeyFactoryProps {
   size?: number;
   keyword?: string;
@@ -54,75 +55,91 @@ export type SWRMeta = {
 const getKeyFactory = ({ size, keyword, order_by, status }: getKeyFactoryProps): SWRInfiniteKeyLoader => {
   return (pageIndex, previousPageData) => {
     if (previousPageData && !previousPageData.items.length) return null;
-
     const params = new URLSearchParams();
     params.append("page", `${pageIndex}`);
-
     if (size) params.append("size", `${size}`);
     if (keyword) params.append("keyword", keyword);
     if (order_by) params.append("order_by", order_by);
     if (status) params.append("status", status);
-
     return `/api/service/project/?${params.toString()}`;
   };
 };
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);
-
-  if (!res.ok) {
-    const error = new Error("Fetch failed") as any;
-    error.status = res.status;
-    throw error;
-  }
-
+  if (!res.ok) throw new Error("Fetch failed");
   const data = await res.json();
   return ERPNextProjectPageSchema.parse(data);
 };
 
+/**
+ * 헬퍼 컴포넌트: 각 상태(status)별 컬럼을 담당합니다.
+ */
+const ProjectStatusColumn = ({
+  status,
+  keyword,
+  orderBy,
+  session,
+  onProcessCountChange,
+}: {
+  status: Status;
+  keyword: string;
+  orderBy: string;
+  session: Session | null;
+  onProcessCountChange?: (count: number) => void;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref);
+  const pageSize = 20;
+  const [hasError, setHasError] = useState(false);
+
+  const swr = useSWRInfinite<ERPNextProjectPageType>(getKeyFactory({ size: pageSize, keyword, order_by: orderBy, status }), fetcher, {
+    onError: () => setHasError(true),
+    refreshInterval: 60000,
+  });
+
+  const pages = swr.data?.flatMap((page) => page.items) || [];
+  const isReachedEnd = hasError || (swr.data && swr.data.length > 0 && swr.data[swr.data.length - 1].items.length === 0);
+  const isLoading = !isReachedEnd && swr.data && (swr.isLoading || (swr.size > 0 && typeof swr.data[swr.size - 1] === "undefined"));
+
+  const meta: SWRMeta = {
+    swr,
+    data: { items: pages },
+    isLoading,
+    isReachedEnd,
+  };
+
+  // 무한 스크롤을 위한 useEffect
+  useEffect(() => {
+    if (inView && !isLoading && !isReachedEnd) {
+      swr.setSize((s) => s + 1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView, isLoading, isReachedEnd]); // FIX: 의존성 배열에서 swr 객체를 제거하여 무한 루프를 방지합니다.
+
+  // 'process' 상태의 아이템 개수를 부모 컴포넌트로 전달하기 위한 useEffect
+  useEffect(() => {
+    if (status === "process" && onProcessCountChange) {
+      onProcessCountChange(pages.length);
+    }
+  }, [pages.length, status, onProcessCountChange]);
+
+  return (
+    <div className="flex flex-col">
+      <ProjectContainer meta={meta} status={status} session={session} {...containerProps[status]} />
+      <div className="w-full h-1" ref={ref} />
+    </div>
+  );
+};
+
+/**
+ * 메인 컴포넌트
+ */
 export default function ProjectMainSection({ session }: { session: Session | null }) {
   const [orderBy, setOrderBy] = useState<string>(orders[0].value);
   const [inputText, setInputText] = useState<string>("");
-  const [statusError, setStatusError] = useState<Record<Status, boolean>>({ draft: false, process: false, complete: false, maintenance: false });
-  const refs = statuses.reduce((acc, status) => ({ ...acc, [status]: useRef<HTMLDivElement>(null) }), {} as Record<Status, RefObject<HTMLDivElement>>);
-  const inViews = statuses.reduce((acc, status) => ({ ...acc, [status]: useInView(refs[status]) }), {} as Record<Status, boolean>);
+  const [processCount, setProcessCount] = useState(0);
   const keyword = useThrottle(inputText, 700);
-  const pageSize = 20;
-
-  const getKeyByStatus = (status: string) => getKeyFactory({ size: pageSize, keyword, order_by: orderBy, status });
-  const data: Record<Status, SWRInfiniteResponse<ERPNextProjectPageType>> = statuses.reduce((acc, status) => {
-    acc[status] = useSWRInfinite<ERPNextProjectPageType>(getKeyByStatus(status), fetcher, {
-      onError: () => {
-        setStatusError((prev) => ({ ...prev, [status]: true }));
-      },
-      refreshInterval: 60000,
-    });
-    return acc;
-  }, {} as Record<Status, SWRInfiniteResponse<ERPNextProjectPageType>>);
-
-  const getMeta = (status: Status): SWRMeta => {
-    const swr = data[status];
-    const pages = swr.data?.flatMap((page) => page.items) || [];
-    const isReachedEnd = swr.data && swr.data.length > 0 && swr.data[swr.data.length - 1].items.length === 0;
-    const isLoading = !isReachedEnd && swr.data && (swr.isLoading || (swr.size > 0 && data && typeof swr.data[swr.size - 1] === "undefined"));
-
-    return {
-      swr: swr,
-      data: { items: pages },
-      isLoading,
-      isReachedEnd,
-    };
-  };
-
-  statuses.forEach((status) => {
-    const meta = getMeta(status);
-
-    useEffect(() => {
-      if (!!meta.isLoading || !meta.isReachedEnd || statusError[status]) return;
-
-      if (inViews[status]) meta.swr.setSize((s) => s + 1);
-    }, [meta.isLoading, meta.swr.data, meta.isReachedEnd, statusError[status], inViews[status]]);
-  });
 
   return (
     <div className="flex flex-col w-full space-y-4">
@@ -147,14 +164,15 @@ export default function ProjectMainSection({ session }: { session: Session | nul
         </div>
       </div>
 
+      {/* 프로젝트 의뢰 수 프로그레스 바 */}
       <div className="w-full px-4 md:px-8">
         <div className="flex flex-col justify-center w-full h-20 rounded-lg space-y-1 bg-muted px-4 md:px-6">
           <div className="flex w-full items-center space-x-4">
             <div className="text-sm font-semibold">최대 프로젝트 의뢰 수</div>
             <div className="grow">
-              <Progress value={(getMeta("process").data.items.length / 15) * 100} />
+              <Progress value={(processCount / 15) * 100} />
             </div>
-            <div className="text-sm font-semibold">{getMeta("process").data.items.length}/15</div>
+            <div className="text-sm font-semibold">{processCount}/15</div>
           </div>
           <div className="flex w-full items-center space-x-1.5 text-muted-foreground">
             <Info className="!size-3.5" />
@@ -163,13 +181,17 @@ export default function ProjectMainSection({ session }: { session: Session | nul
         </div>
       </div>
 
+      {/* 프로젝트 컬럼 그리드 */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-5 gap-4 px-4 md:px-8">
-        {statuses.map((status, index) => (
-          <div key={index} className="flex flex-col">
-            <ProjectContainer meta={getMeta(status)} status={status} session={session} {...containerProps[status]} />
-            {/* 무한 로딩 컴포넌트 */}
-            <div className="w-full h-1" ref={refs[status]} />
-          </div>
+        {statuses.map((status) => (
+          <ProjectStatusColumn
+            key={status}
+            status={status}
+            keyword={keyword}
+            orderBy={orderBy}
+            session={session}
+            onProcessCountChange={status === "process" ? setProcessCount : undefined}
+          />
         ))}
       </div>
     </div>

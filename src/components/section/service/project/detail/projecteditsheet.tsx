@@ -98,9 +98,9 @@ export default function ProjectEditForm({ project, opened }: ProjectEditFormProp
     formState: { isDirty },
   } = form;
 
-  const handleDateSelect = (range: DateRange) => {
-    const start = range.from ? format(range.from, "yyyy-MM-dd") : "";
-    const end = range.to ? format(range.to, "yyyy-MM-dd") : "";
+  const handleDateSelect = (range: DateRange | undefined) => {
+    const start = range?.from ? format(range.from, "yyyy-MM-dd") : "";
+    const end = range?.to ? format(range.to, "yyyy-MM-dd") : "";
     if (start === initalProject.project_info.start_date || "") resetField("start_date", { defaultValue: initalProject.project_info.start_date });
     else setValue("start_date", start, { shouldDirty: true });
     if (end === initalProject.project_info.desired_deadline || "")
@@ -112,8 +112,13 @@ export default function ProjectEditForm({ project, opened }: ProjectEditFormProp
   const handleFeatureChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const index = feature.findIndex((item) => item.startsWith("기타:"));
     const updatedFeature = [...feature];
+
     if (index !== -1)
-      event.target.value ? (updatedFeature[index] = `기타: ${event.target.value}`) : [...updatedFeature.slice(0, index), ...updatedFeature.slice(index + 1)];
+      if (event.target.value) {
+        updatedFeature[index] = `기타: ${event.target.value}`;
+      } else {
+        updatedFeature.splice(index, 1);
+      }
 
     const initFeature = initalProject.project_info.feature_list || [];
     const areEqual = updatedFeature.length === initFeature.length && updatedFeature.every((item) => initFeature.includes(item));

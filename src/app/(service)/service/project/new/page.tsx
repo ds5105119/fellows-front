@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import CreateProjectForm from "@/components/section/service/project/new/createproject";
+import CreateProject from "@/components/section/service/project/new/createproject";
 
 export const metadata: Metadata = {
   title: "프로젝트",
@@ -7,11 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  return (
-    <div className="grid grid-cols-4 lg:grid-cols-12 h-full">
-      <div className="col-span-full">
-        <CreateProjectForm />
-      </div>
-    </div>
-  );
+  return <CreateProject />;
 }

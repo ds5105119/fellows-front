@@ -1,20 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check } from "lucide-react";
 
 export default function AIRecommendSkeleton({ isLoading }: { isLoading: boolean }) {
   const [cardKey, setCardKey] = useState(0);
-  const [key, setKey] = useState(0); // 애니메이션 리셋을 위한 키
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    // isLoading이 true일 때만 인터벌 시작
     if (isLoading) {
-      const cardInterval = setInterval(() => {
-        setCardKey((prev) => prev + 1);
-      }, 1500); // 1.5초마다 새 카드
+      intervalRef.current = setInterval(() => {
+        setCardKey((prev) => prev + 1); // 애니메이션 리셋
+      }, 1500);
     }
-  }, [key, isLoading]);
+
+    // cleanup 함수: isLoading이 false로 바뀌거나 컴포넌트 언마운트 시 인터벌 해제
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [isLoading]); // 🔑 key를 의존성에서 빼고 isLoading만
 
   const springTransition = {
     type: "spring",
@@ -27,7 +36,6 @@ export default function AIRecommendSkeleton({ isLoading }: { isLoading: boolean 
       <AnimatePresence mode="wait">
         {isLoading ? (
           <motion.div
-            key={`loading-${key}`}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
@@ -57,7 +65,6 @@ export default function AIRecommendSkeleton({ isLoading }: { isLoading: boolean 
           </motion.div>
         ) : (
           <motion.div
-            key={`complete-${key}`}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}

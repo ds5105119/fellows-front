@@ -8,7 +8,7 @@ import { ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext"
 import ProjectDetailMain from "@/components/section/service/project/detail/projectdetailmain";
 import ProjectEstimator from "@/components/section/service/project/detail/projectestimator";
 
-export const getProject = async ({ project_id, session }: { project_id: string; session: Session }): Promise<ERPNextProjectType> => {
+const getProject = async ({ project_id, session }: { project_id: string; session: Session }): Promise<ERPNextProjectType> => {
   const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}`;
 
   try {
@@ -36,9 +36,8 @@ export const getProject = async ({ project_id, session }: { project_id: string; 
   }
 };
 
-export default async function Page({ params, searchParams }: { params: Promise<{ project_id: string }>; searchParams: Promise<{ p?: string }> }) {
+export default async function Page({ params }: { params: Promise<{ project_id: string }> }) {
   const project_id = (await params).project_id;
-  const { p } = (await searchParams) ?? {};
   const session = await auth();
   if (!session) return signIn("keycloak", { redirectTo: `/service/project/${project_id}` });
 

@@ -1,14 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { TopProgressBar } from "@/components/animation/topprogressbar";
 import { useGetEstimateFeatures } from "@/hooks/fetch/project";
 import { stepsMeta } from "@/components/resource/project";
 import { useInView } from "framer-motion";
@@ -17,10 +15,7 @@ import CreateProjectFormStep1 from "./createprojectstep1";
 import CreateProjectFormStep2 from "./createprojectstep2";
 import CreateProjectFormStep3 from "./createprojectstep3";
 import { UserERPNextProjectType, UserERPNextProjectZod, ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
-
-export const getEnumValues = <T extends z.ZodEnum<[string, ...string[]]>>(enumType: T): z.infer<typeof enumType>[] => {
-  return Object.values(enumType.Values) as z.infer<typeof enumType>[];
-};
+import CreateProjectSide from "./createprojectside";
 
 export default function CreateProject() {
   const router = useRouter();
@@ -36,7 +31,6 @@ export default function CreateProject() {
     formState: { errors, isDirty, isValid: isFormValid },
     trigger,
     getValues,
-    watch,
     handleSubmit,
   } = form;
 
@@ -50,7 +44,7 @@ export default function CreateProject() {
   const totalSteps = stepsMeta.length;
   const currentStepMeta = useMemo(() => stepsMeta[currentStep - 1], [currentStep]);
   const currentStepFields = useMemo(() => currentStepMeta?.fields || [], [currentStepMeta]);
-  const watchedCurrentStepFields = watch(currentStepFields);
+  const watchedCurrentStepFields = useWatch({ name: currentStepFields, control: form.control });
 
   // 페이지 로드/단계 변경 시 유효성 검사
   useEffect(() => {
@@ -81,7 +75,6 @@ export default function CreateProject() {
 
     const maxScroll = target.offsetTop + target.offsetHeight - window.innerHeight + 93;
     const nextScrollTop = Math.min(window.scrollY + 500, maxScroll);
-    console.log(nextScrollTop, maxScroll);
 
     window.scrollTo({
       top: nextScrollTop,
@@ -145,19 +138,15 @@ export default function CreateProject() {
     if (hasZodError) return true;
 
     if (currentStepMeta?.uiRequiredFields) {
-      const formValues = getValues();
-      const uiRequiredFieldsEmpty = currentStepMeta.uiRequiredFields.some((fieldName) => {
-        const value = formValues[fieldName];
+      const uiRequiredFieldsEmpty = watchedCurrentStepFields.some((value) => {
         return value === undefined || value === null || (typeof value === "string" && value.trim() === "") || (Array.isArray(value) && value.length === 0);
       });
       if (uiRequiredFieldsEmpty) return true;
     }
     return false;
-  }, [errors, currentStepMeta, currentStepFields, watchedCurrentStepFields, getValues, isStepping]);
+  }, [errors, currentStepMeta, currentStepFields, watchedCurrentStepFields, isStepping]);
 
   // 기능 추가 관련
-
-  const [feature, setFeature] = useState<{ feature: string }[]>([]);
 
   const [isRecommend, setIsRecommend] = useState(false);
   const [isRecommandFetch, setIsRecommandFetch] = useState(false);
@@ -178,15 +167,16 @@ export default function CreateProject() {
     platforms: [],
   });
   const estimateFeatures = useGetEstimateFeatures(estimateFeaturesData);
+  const estimateFeaturesFields = useWatch({
+    name: ["custom_project_title", "custom_project_summary", "custom_readiness_level", "custom_platforms"],
+    control: form.control,
+  });
 
   const mergeEstimateFeatures = useCallback(() => {
-    const project_name = getValues("custom_project_title");
-    const project_summary = getValues("custom_project_summary");
-    const readiness_level = getValues("custom_readiness_level");
-    const platforms = getValues("custom_platforms");
+    const [project_name, project_summary, readiness_level, platforms] = estimateFeaturesFields;
     const platformsList = (platforms || []).map((platform) => platform.platform);
     setEstimateFeaturesData({ project_name, project_summary, readiness_level, platforms: platformsList });
-  }, [getValues, setEstimateFeaturesData]);
+  }, [setEstimateFeaturesData, estimateFeaturesFields]);
 
   useEffect(() => {
     if (
@@ -197,7 +187,7 @@ export default function CreateProject() {
     ) {
       estimateFeatures.fetchData();
     }
-  }, [estimateFeaturesData, estimateFeatures.fetchData]);
+  }, [estimateFeaturesData, estimateFeatures]);
 
   useEffect(() => {
     if (!isRecommend) {
@@ -210,7 +200,7 @@ export default function CreateProject() {
 
       return () => clearTimeout(timer);
     }
-  }, [isRecommend]);
+  }, [isRecommend, estimateFeatures.data?.feature_list, setValue]);
 
   useEffect(() => {
     if (firstInSecondStop === true && currentStep === 2) {
@@ -298,7 +288,7 @@ export default function CreateProject() {
     return true;
   }, [trigger, errors, currentStep, getValues, setIsStepping, setCurrentStep]);
 
-  const preparePayload = useCallback((values: UserERPNextProjectType): any => {
+  const preparePayload = useCallback((values: UserERPNextProjectType) => {
     const payload = { ...values };
 
     if (payload.custom_features) {
@@ -314,7 +304,7 @@ export default function CreateProject() {
     return payload;
   }, []);
 
-  const postProjectData = useCallback(async (payload: any): Promise<ERPNextProjectType> => {
+  const postProjectData = useCallback(async (payload: UserERPNextProjectType): Promise<ERPNextProjectType> => {
     const response = await fetch("/api/service/project", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -340,10 +330,9 @@ export default function CreateProject() {
       router.push(`/service/project/${project.project_name}`);
       router.refresh();
       reset(initalProjectInfo);
-      setFeature([]);
       setIsStepping(true);
     },
-    [router, reset, initalProjectInfo, setFeature, setIsStepping]
+    [router, reset, initalProjectInfo, setIsStepping]
   );
 
   const onSubmit = async (values: UserERPNextProjectType) => {
@@ -366,10 +355,9 @@ export default function CreateProject() {
     setIsLoading(true);
     try {
       const payload = preparePayload(values);
-      console.log(payload);
       const project = await postProjectData(payload);
       handleSuccessfulSubmission(project);
-    } catch (error: any) {
+    } catch {
       toast.error("프로젝트 업데이트 중 오류가 발생했어요", {
         description: "잠시 뒤 다시 시도해 주세요.",
       });
@@ -379,86 +367,90 @@ export default function CreateProject() {
   };
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <TopProgressBar className="w-full" progress={currentStep / totalSteps} />
+    <div className="flex w-full h-full">
+      <div className="hidden xl:flex h-full flex-col max-w-md shrink-0 scrollbar-hide pl-20 pr-10">
+        <CreateProjectSide />
+      </div>
 
-      {!isRecommend ? (
-        <div className="w-full lg:w-xl px-5 sm:px-8 py-16 sm:py-10">
-          <div className="mb-10 flex items-end justify-between">
-            <div className="w-full">
-              <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
-              <p className="text-3xl font-bold mt-3">{currentStepMeta?.title || "정보 입력"}</p>
-              <p className="text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">{currentStepMeta.description}</p>
+      <div className="w-full mx-auto xl:mx-0 lg:w-xl h-full scrollbar-hide shrink-0 flex flex-col items-center">
+        {!isRecommend ? (
+          <div className="w-full px-5 sm:px-8 py-16 sm:py-10">
+            <div className="mb-10 flex items-end justify-between">
+              <div className="w-full">
+                <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
+                <p className="text-3xl font-bold mt-3">{currentStepMeta?.title || "정보 입력"}</p>
+                <p className="text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">{currentStepMeta.description}</p>
+              </div>
+              {currentStep === 2 && (
+                <Button type="button" onClick={mergeEstimateFeatures} disabled={isRecommend} className="font-semibold text-background">
+                  다시 추천받기
+                </Button>
+              )}
             </div>
-            {currentStep === 2 && (
-              <Button type="button" onClick={mergeEstimateFeatures} disabled={isRecommend} className="font-semibold text-background">
-                다시 추천받기
-              </Button>
-            )}
-          </div>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
-              {currentStep === 1 && <CreateProjectFormStep1 form={form} />}
-              {currentStep === 2 && <CreateProjectFormStep2 form={form} />}
-              {currentStep === 3 && <CreateProjectFormStep3 form={form} />}
-            </form>
-          </Form>
-        </div>
-      ) : (
-        <div className="w-full h-full lg:w-xl px-5 sm:px-8 py-16 sm:py-10 flex flex-col items-center">
-          <div className="mb-10 flex items-end justify-between">
-            <div className="w-[80%]">
-              <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
-              <p className="text-3xl font-bold mt-3">구현에 필요한 기능을 추천하고 있어요.</p>
-              <p className="text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">프로젝트에 꼭 필요한 기능만 추천해드릴께요.</p>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
+                {currentStep === 1 && <CreateProjectFormStep1 form={form} />}
+                {currentStep === 2 && <CreateProjectFormStep2 form={form} />}
+                {currentStep === 3 && <CreateProjectFormStep3 form={form} />}
+              </form>
+            </Form>
+          </div>
+        ) : (
+          <div className="w-full h-full px-5 sm:px-8 py-16 sm:py-10 flex flex-col items-center">
+            <div className="mb-10 flex items-end justify-between">
+              <div className="w-[80%]">
+                <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
+                <p className="text-3xl font-bold mt-3">구현에 필요한 기능을 추천하고 있어요.</p>
+                <p className="text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">프로젝트에 꼭 필요한 기능만 추천해드릴께요.</p>
+              </div>
+            </div>
+
+            <div className="flex mt-24 md:mt-28 mb-64 md:mb-64">
+              <AIRecommendSkeleton isLoading={isRecommandFetch} />
             </div>
           </div>
+        )}
 
-          <div className="flex mt-24 md:mt-28 mb-64 md:mb-64">
-            <AIRecommendSkeleton isLoading={isRecommandFetch} />
+        <div ref={targetRef} />
+
+        {!isRecommend && (
+          <div className="w-full sticky bottom-0 z-20 px-5 sm:px-8">
+            <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
+            <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
+              {currentStep > 1 && (
+                <Button
+                  type="button"
+                  className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
+                  variant="secondary"
+                  onClick={(e) => handlePrev(e)}
+                  disabled={isLoading || isStepping} // isStepping 추가
+                >
+                  이전
+                </Button>
+              )}
+              {currentStep < totalSteps ? (
+                <Button
+                  className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
+                  type="button"
+                  onClick={(e) => handleNext(e)}
+                  disabled={isLoading || isNextButtonDisabled} // isNextButtonDisabled에 isStepping 포함됨
+                >
+                  다음
+                </Button>
+              ) : (
+                <Button
+                  className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
+                  disabled={isLoading || !isDirty || !isFormValid || isStepping} // isStepping 추가
+                  onClick={handleSubmit(onSubmit)}
+                >
+                  {isLoading ? "저장 중..." : "프로젝트 만들기"}
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      )}
-
-      <div ref={targetRef} />
-
-      {!isRecommend && (
-        <div className="w-full h-full lg:w-xl sticky bottom-0 z-20 px-5 sm:px-8">
-          <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
-          <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
-            {currentStep > 1 && (
-              <Button
-                type="button"
-                className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
-                variant="secondary"
-                onClick={(e) => handlePrev(e)}
-                disabled={isLoading || isStepping} // isStepping 추가
-              >
-                이전
-              </Button>
-            )}
-            {currentStep < totalSteps ? (
-              <Button
-                className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
-                type="button"
-                onClick={(e) => handleNext(e)}
-                disabled={isLoading || isNextButtonDisabled} // isNextButtonDisabled에 isStepping 포함됨
-              >
-                다음
-              </Button>
-            ) : (
-              <Button
-                className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
-                disabled={isLoading || !isDirty || !isFormValid || isStepping} // isStepping 추가
-                onClick={handleSubmit(onSubmit)}
-              >
-                {isLoading ? "저장 중..." : "프로젝트 만들기"}
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

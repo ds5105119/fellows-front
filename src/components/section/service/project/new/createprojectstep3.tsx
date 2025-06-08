@@ -94,7 +94,7 @@ export default function CreateProjectFormStep3({ form }: CreateProjectFormStep3P
         <FormField
           control={control}
           name="expected_start_date"
-          render={({ field }) => (
+          render={({}) => (
             <FormItem>
               <FormLabel className="text-sm font-medium">희망 일정 및 유지보수</FormLabel>
               <FormControl>

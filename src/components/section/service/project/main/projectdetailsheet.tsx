@@ -5,21 +5,22 @@ import MarkdownPreview from "@/components/ui/markdownpreview";
 import Flattabs from "@/components/ui/flattabs";
 import Link from "next/link";
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Session } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Copy, Download, FileText, LinkIcon, Fullscreen, Info, ArrowUpRight, DownloadCloud, Plus, Check, X } from "lucide-react";
 import { fileIconMap, getFileExtension } from "@/components/form/fileinput";
 import { UploadProgressIndicator } from "@/components/ui/uploadprogressindicator";
 import { useInView } from "framer-motion";
-import { getProject } from "@/hooks/fetch/project";
+import { useProject } from "@/hooks/fetch/project";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
-import { ERPNextProjectFileRowZod, ERPNextProjectType, ERPNextTaskPaginatedResponseZod } from "@/@types/service/erpnext";
+import { ERPNextProjectFileRowType, ERPNextProjectFileRowZod, ERPNextProjectType, ERPNextTaskPaginatedResponseZod } from "@/@types/service/erpnext";
 import { downloadFilefromPresignedUrl, getPresignedGetUrl, getPresignedPutUrl, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -49,7 +50,7 @@ const fetcher = async (url: string) => {
 };
 
 export default function ProjectDetailSheet({
-  project: _project,
+  project,
   onClose,
   session,
 }: {
@@ -57,9 +58,13 @@ export default function ProjectDetailSheet({
   onClose: () => void;
   session: Session | null;
 }) {
-  if (!_project || !session) return null;
+  if (!project || !session) return null;
 
-  const detailedProject = getProject({ project_id: _project.project_name });
+  return <ProjectDetailSheetInner project={project} onClose={onClose} session={session} />;
+}
+
+function ProjectDetailSheetInner({ project: _project, onClose, session }: { project: ERPNextProjectType; onClose: () => void; session: Session | null }) {
+  const detailedProject = useProject({ project_id: _project.project_name });
   const [project, setProject] = useState<ERPNextProjectType>(_project);
 
   const statusMapping: Record<string, string> = {
@@ -102,7 +107,6 @@ export default function ProjectDetailSheet({
   const [activeTab2, setActiveTab2] = useState(0);
 
   const [valueToggle, setValueToggle] = useState(false);
-  const [files, setFiles] = useState(project.custom_files || []);
   const [fileProgress, setFileProgress] = useState<Record<string, number>>({});
 
   const getKey = getKeyFactory({ size: "20", project_id: project.project_name });
@@ -113,13 +117,31 @@ export default function ProjectDetailSheet({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const istaskInfRefView = useInView(taskInfRef);
 
+  const groupedFiles = useMemo(() => {
+    if (!detailedProject.data?.custom_files) return [];
+
+    const reversedFiles = [...detailedProject.data.custom_files].reverse();
+
+    return reversedFiles.reduce<
+      {
+        uploader: string;
+        files: ERPNextProjectFileRowType[];
+      }[]
+    >((acc, f) => {
+      const last = acc[acc.length - 1];
+      return !last || last.uploader !== f.uploader
+        ? [...acc, { uploader: f.uploader, files: [f] }]
+        : [...acc.slice(0, -1), { ...last, files: [...last.files, f] }];
+    }, []);
+  }, [detailedProject.data?.custom_files]);
+
   const getFile = async (algorithm: string, key: string, sse_key: string, filename: string) => {
     const presigned = await getPresignedGetUrl(algorithm, key, sse_key);
     return await downloadFilefromPresignedUrl(presigned, filename);
   };
 
   const uploadFiles = async (file: File) => {
-    const isDuplicate = files.some((f) => f.file_name === file.name);
+    const isDuplicate = (detailedProject.data?.custom_files || []).some((f) => f.file_name === file.name);
     if (isDuplicate) {
       toast.info("이미 업로드된 파일입니다.");
       return;
@@ -136,7 +158,9 @@ export default function ProjectDetailSheet({
         uploader: "user",
       });
 
-      setFiles((prev) => [...prev, fileRecord]);
+      detailedProject.mutate((prev) => (prev ? { ...prev, ["custom_files"]: prev.custom_files ? [...prev.custom_files, fileRecord] : [fileRecord] } : prev), {
+        revalidate: false,
+      });
 
       await uploadFileToPresignedUrl({
         file,
@@ -154,13 +178,17 @@ export default function ProjectDetailSheet({
         body: JSON.stringify(fileRecord),
       });
 
-      setFileProgress((prev) => ({
-        ...prev,
-        [file.name]: 100,
-      }));
-    } catch (err) {
+      detailedProject.mutate();
+    } catch {
       toast.warning("업로드에 실패했어요.");
-      setFiles((prev) => prev.filter((f) => f.file_name !== file.name));
+      detailedProject.mutate((prev) =>
+        prev
+          ? {
+              ...prev,
+              custom_files: prev.custom_files?.filter((f) => f.file_name !== file.name) ?? [],
+            }
+          : prev
+      );
     }
   };
 
@@ -182,9 +210,14 @@ export default function ProjectDetailSheet({
       method: "DELETE",
     });
 
-    if (files) {
-      setFiles((prev) => prev.filter((file) => file.key !== key));
-    }
+    detailedProject.mutate((prev) =>
+      prev
+        ? {
+            ...prev,
+            custom_files: prev.custom_files?.filter((f) => f.key !== key) ?? [],
+          }
+        : prev
+    );
   };
 
   const submitProject = async () => {
@@ -211,13 +244,12 @@ export default function ProjectDetailSheet({
     if (!_project || !session || !detailedProject.data) return;
 
     setProject(detailedProject.data);
-    setFiles(detailedProject.data.custom_files || []);
   }, [_project, detailedProject.data, session]);
 
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
       {/* 헤더 */}
-      <div className="flex items-center justify-between min-h-16 border-b-1 border-b-sidebar-border px-4">
+      <div className="shrink-0 flex items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
             <ArrowLeft className="!size-5" />
@@ -243,7 +275,7 @@ export default function ProjectDetailSheet({
       </div>
 
       {/* 메인 콘텐츠 */}
-      <div className="grow overflow-hidden grid grid-cols-1 md:grid-cols-5">
+      <div className="grid grid-cols-1 md:grid-cols-5 h-[calc(100%-64px)]">
         {/* 왼쪽 패널 */}
         <div className="col-span-full md:col-span-3 h-full overflow-y-auto scrollbar-hide border-r-1 border-b-sidebar-border">
           {/* 프로젝트 헤더 */}
@@ -431,7 +463,7 @@ export default function ProjectDetailSheet({
         </div>
 
         {/* 오른쪽 패널 */}
-        <div className="hidden md:block md:col-span-2 h-full overflow-y-auto scrollbar-hide">
+        <div className="hidden md:flex md:flex-col md:col-span-2 h-full overflow-hidden">
           {/* 상태 표시 탭 */}
           <Flattabs tabs={tabs1} activeTab={activeTab1} handleTabChange={setActiveTab1} layoutId="projectdetailsheet-tabs1" />
           {/* 탭 콘텐츠 */}
@@ -495,80 +527,121 @@ export default function ProjectDetailSheet({
           {/* 일반 정보 탭 */}
           <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={setActiveTab2} layoutId="projectdetailsheet-tabs2" />
           {/* 탭 콘텐츠 */}
-          <div className="w-full">
+          <div className="w-full grow overflow-y-auto scrollbar-hide">
             {activeTab2 === 0 && (
-              <div className="flex flex-col space-y-2 pt-4">
+              <div className="flex flex-col space-y-2 pt-6">
+                <div className="text-sm font-bold mx-4">
+                  테스크:
+                  {data?.reduce((sum, page) => {
+                    return sum + (page.items?.length ?? 0);
+                  }, 0) ?? 0}
+                  개
+                </div>
+
                 {error && <p className="px-6 py-4 text-sm text-red-500">테스크를 불러오는데 실패했습니다.</p>}
-                {data?.map((page, i) => {
-                  if (page.items.length === 0 && i === 0) {
-                    return (
-                      <p key="no-tasks" className="px-6 py-4 text-sm text-muted-foreground">
-                        등록된 테스크가 없습니다.
-                      </p>
-                    );
-                  }
-                  return page.items.map((task, j) => {
-                    return (
-                      <div key={task.subject || `${i}-${j}`} className="flex space-x-2 px-6 py-4 hover:bg-muted cursor-pointer transition-colors duration-200">
-                        <div className="mt-[5px] size-2.5 rounded-full shrink-0" style={{ backgroundColor: task.color ?? "#d1d5db" }}></div>
-                        <div className="flex flex-col space-y-1.5">
-                          <div className="pr-1 text-sm font-medium">{task.subject}</div>
-                          {task.description && <div className="text-sm whitespace-pre-wrap">{task.description}</div>}
-                          {task.exp_start_date && (
-                            <div className="text-xs text-muted-foreground flex space-x-1.5 items-center">
-                              {dayjs(task.exp_start_date).format("YYYY년 MM월 DD일")} {task.exp_end_date && "-"}{" "}
-                              {task.exp_end_date && dayjs(task.exp_end_date).format("YYYY년 MM월 DD일")}
-                            </div>
-                          )}
+                {data?.map((page, i) =>
+                  page.items.map((task, j) => (
+                    <div key={task.subject || `${i}-${j}`} className="flex space-x-2 px-4 py-4 hover:bg-muted cursor-pointer transition-colors duration-200">
+                      <div className="mt-[5px] size-2.5 rounded-full shrink-0" style={{ backgroundColor: task.color ?? "#d1d5db" }}></div>
+                      <div className="flex flex-col space-y-1.5">
+                        <div className="pr-1 text-sm font-semibold">{task.subject}</div>
+                        {task.description && <div className="text-sm whitespace-pre-wrap">{task.description}</div>}
+                        {task.exp_start_date && (
+                          <div className="text-xs text-muted-foreground flex space-x-1.5 items-center">
+                            예상 마감일: {dayjs(task.exp_start_date).format("YYYY년 MM월 DD일")} {task.exp_end_date && "-"}{" "}
+                            {task.exp_end_date && dayjs(task.exp_end_date).format("YYYY년 MM월 DD일")}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+                {data?.map(
+                  (page, i) =>
+                    page.items.length === 0 &&
+                    i === 0 && (
+                      <div key={i} className="flex flex-col w-full px-4 mt-3">
+                        <div className="flex flex-col space-y-3 items-center w-full rounded-sm bg-gradient-to-b from-[#e5f2ff] via-[#daebff] to-[#e5f2ff] px-8 py-12 mb-1 text-sm select-none">
+                          <div className="flex items-center space-x-2 w-full rounded-sm bg-white px-3 py-2 text-xs font-medium drop-shadow-xl drop-shadow-black/5">
+                            <fileIconMap.default className="!size-4" />
+                            <p className="grow">Business Identity.zip</p>
+                            <DownloadCloud className="!size-4 text-blue-500" />
+                            <Check className="!size-4 text-emerald-500 ml-1" />
+                          </div>
+                          <div className="flex items-center space-x-2 w-full rounded-sm bg-white px-3 py-2 text-xs font-medium drop-shadow-xl drop-shadow-black/5">
+                            <fileIconMap.default className="!size-4" />
+                            <p className="grow">디자인 레퍼런스.docs</p>
+                            <DownloadCloud className="!size-4 text-blue-500" />
+                            <X className="!size-4 text-red-500 ml-1" />
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col space-y-2 pt-4 pb-2 text-center">
+                          <div className="text-base font-semibold">프로젝트 문의 시작하기</div>
+                          <div className="text-sm font-medium text-muted-foreground">계약을 문의하고 프로젝트 현황을 파악해보세요.</div>
                         </div>
                       </div>
-                    );
-                  });
-                })}
+                    )
+                )}
                 {isLoading && <p className="px-6 py-4 text-sm text-muted-foreground">테스크 로딩 중...</p>}
                 <div ref={taskInfRef} />
               </div>
             )}
             {activeTab2 === 1 && (
               <div className="grid grid-cols-1 gap-3 px-4 py-6">
-                <div className="text-sm font-bold">파일 · {files.length}/50</div>
+                <div className="text-sm font-bold">파일: {(detailedProject.data?.custom_files || []).length}/50</div>
                 <div className="flex items-center space-x-1.5 w-full rounded-sm bg-gray-100 px-4 py-2 mb-1 text-sm">
                   <Info className="!size-4" />
                   <p>파일 첨부는 최대 30MB까지 가능해요.</p>
                 </div>
-                {files && files.length > 0 ? (
-                  files.map((f, i) => {
-                    const extension = getFileExtension(f.file_name);
-                    const IconComponent = fileIconMap[extension] || fileIconMap.default;
+                {Array.from(groupedFiles.entries()).map(([idx, files]) => (
+                  <section key={idx} className="space-y-3">
+                    <p className="text-xs font-medium text-blue-600">{files.uploader === "user" ? "내가 올린 파일" : "from Fellows"}</p>
 
-                    return (
-                      <div
-                        key={i}
-                        className="col-span-1 grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 w-full rounded-sm outline-1 outline-gray-200 pl-4 pr-3 py-1 text-sm font-medium"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <IconComponent className="!size-5" />
+                    {/* 기존 grid row 재사용 */}
+                    {files.files.map((f, i) => {
+                      const extension = getFileExtension(f.file_name);
+                      const IconComponent = fileIconMap[extension] || fileIconMap.default;
 
-                        <div className="min-w-0 overflow-hidden">
-                          <p className="truncate text-sm">{f.file_name}</p>
-                        </div>
-
-                        <button
-                          className="w-8 h-8 flex items-center justify-center rounded-sm hover:bg-muted cursor-pointer transition-colors duration-200"
-                          onClick={() => getFile(f.algorithm, f.key, f.sse_key, f.file_name)}
-                        >
-                          <DownloadCloud className="!size-5 text-blue-500" />
-                        </button>
-
-                        <div className="w-8 h-8 flex items-center justify-center rounded-sm hover:bg-muted cursor-pointer transition-colors duration-200">
-                          {f.uploader == "user" && (
-                            <UploadProgressIndicator progress={fileProgress[f.key] ?? 100} size={32} onRemove={() => removeFile(f.key, f.sse_key)} />
+                      return (
+                        <div
+                          key={i}
+                          className={cn(
+                            "grid items-center gap-2 w-full rounded-sm outline-1 outline-gray-200 pl-4 pr-3 py-1 text-sm font-medium",
+                            f.uploader === "user" ? "grid-cols-[auto_1fr_auto_auto]" : "grid-cols-[auto_1fr_auto]"
                           )}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <IconComponent className="!size-5" />
+
+                          <div className="min-w-0 overflow-hidden">
+                            <p className="truncate text-sm">{f.file_name}</p>
+                          </div>
+
+                          <button
+                            className="w-8 h-8 flex items-center justify-center rounded-sm hover:bg-muted cursor-pointer transition-colors duration-200"
+                            onClick={() => getFile(f.algorithm, f.key, f.sse_key, f.file_name)}
+                          >
+                            <DownloadCloud className="!size-5 text-blue-500" />
+                          </button>
+
+                          <div
+                            className={cn(
+                              "flex items-center justify-center rounded-sm",
+                              f.uploader == "user" ? "w-8 h-8 hover:bg-muted cursor-pointer transition-colors duration-200" : "sr-only"
+                            )}
+                          >
+                            {f.uploader == "user" && (
+                              <UploadProgressIndicator progress={fileProgress[f.file_name] ?? 100} size={32} onRemove={() => removeFile(f.key, f.sse_key)} />
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })
-                ) : (
+                      );
+                    })}
+                  </section>
+                ))}
+
+                {detailedProject.data?.custom_files && detailedProject.data.custom_files.length === 0 && (
                   <div className="flex flex-col w-full">
                     <div className="flex flex-col space-y-3 items-center w-full rounded-sm bg-gradient-to-b from-[#ffeee6] via-[#ffe5da] to-[#ffeee6] px-8 py-12 mb-1 text-sm select-none">
                       <div className="flex items-center space-x-2 w-full rounded-sm bg-white px-3 py-2 text-xs font-medium drop-shadow-xl drop-shadow-black/5">

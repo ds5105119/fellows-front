@@ -16,7 +16,7 @@ export default function MobileHeader({ session }: { session: Session | null }) {
 
   const navItems = [
     { name: "Pricing", href: "#" },
-    { name: "Work", href: "#" },
+    { name: "Works", href: "#" },
   ];
 
   const BORDER_RADIUS = "28px";

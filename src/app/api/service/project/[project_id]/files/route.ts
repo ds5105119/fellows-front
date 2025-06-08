@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function PUT(request: Request, { params }: { params: Promise<{ project_id: string }> }) {
   const session = await auth();
@@ -9,7 +9,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ proj
   const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}/files`;
 
   try {
-    const response = await fetch(url, {
+    await fetch(url, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

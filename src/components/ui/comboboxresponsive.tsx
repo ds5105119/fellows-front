@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
@@ -19,13 +18,6 @@ interface ComboBoxResponsiveProps {
   placeholder?: string;
   initial?: string;
   statuses: Array<{ value: string; label: string }>;
-  callback?: (value: string) => void;
-}
-
-interface StatusListProps {
-  statuses: Array<{ value: string; label: string }>;
-  setOpen: (open: boolean) => void;
-  setSelectedStatus: (selectedStatus: Status | null) => void;
   callback?: (value: string) => void;
 }
 

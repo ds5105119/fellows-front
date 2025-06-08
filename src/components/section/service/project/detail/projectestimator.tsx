@@ -2,7 +2,7 @@
 
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import MarkdownPreview from "@/components/ui/markdownpreview";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { fetchEventSource, EventSourceMessage } from "@microsoft/fetch-event-source";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -21,7 +21,7 @@ export default function ProjectEstimator({ project }: Props) {
   const [remaining, setRemaining] = useState<number>(1);
   const initialized = useRef(false);
 
-  const onClick = () => {
+  const onClick = useCallback(() => {
     if (ctrl) {
       ctrl.abort();
     }
@@ -45,7 +45,7 @@ export default function ProjectEstimator({ project }: Props) {
         setRemaining(ratelimit);
 
         if (response.ok) {
-          toast.info("AI 견적이 생성 중 입니다.", { description: `남은 요청 횟수: ${remaining}` });
+          toast.info("AI 견적이 생성 중 입니다.", { description: `남은 요청 횟수: ${ratelimit}` });
         } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
           const errorData = await response.json().catch(() => ({ message: "Client error" }));
           toast.error("API 호출에 실패했습니다.", {
@@ -92,14 +92,14 @@ export default function ProjectEstimator({ project }: Props) {
         setCtrl(null);
       },
     });
-  };
+  }, [ctrl, lastMarkdown, markdown, project.project_name]);
 
   useEffect(() => {
     if (!initialized.current && !project.custom_ai_estimate) {
       initialized.current = true;
       onClick();
     }
-  }, []);
+  }, [project.custom_ai_estimate, onClick]);
 
   useEffect(() => {
     return () => {

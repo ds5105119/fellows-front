@@ -34,7 +34,7 @@ export async function GET(request: Request) {
   try {
     const data = await response.json();
     return NextResponse.json(data, { status: response.status, headers: response.headers });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch project data" }, { status: response.status, headers: response.headers });
   }
 }

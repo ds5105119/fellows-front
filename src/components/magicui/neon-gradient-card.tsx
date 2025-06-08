@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  CSSProperties,
-  ReactElement,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { CSSProperties, ReactElement, ReactNode, useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -64,6 +57,7 @@ interface NeonGradientCardProps {
    * */
   neonColors?: NeonColorsProps;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -122,10 +116,7 @@ export const NeonGradientCard: React.FC<NeonGradientCardProps> = ({
           "--after-blur": `${dimensions.width / 3}px`,
         } as CSSProperties
       }
-      className={cn(
-        "relative z-10 size-full rounded-[var(--border-radius)]",
-        className,
-      )}
+      className={cn("relative z-10 size-full rounded-[var(--border-radius)]", className)}
       {...props}
     >
       <div
@@ -139,7 +130,7 @@ export const NeonGradientCard: React.FC<NeonGradientCardProps> = ({
           "after:h-[var(--pseudo-element-height)] after:w-[var(--pseudo-element-width)] after:rounded-[var(--border-radius)] after:blur-[var(--after-blur)] after:content-['']",
           "after:bg-[linear-gradient(0deg,var(--neon-first-color),var(--neon-second-color))] after:bg-[length:100%_200%] after:opacity-80",
           "after:animate-background-position-spin",
-          "dark:bg-neutral-900",
+          "dark:bg-neutral-900"
         )}
       >
         {children}

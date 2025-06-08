@@ -62,6 +62,15 @@ export const ERPNextProjectDesignUrlRowZod = z.object({
 export type ERPNextProjectDesignUrlRowType = z.infer<typeof ERPNextProjectDesignUrlRowZod>;
 
 export const ERPNextProjectFileRowZod = z.object({
+  creation: z
+    .string()
+    .nullish()
+    .transform((val) => (val ? new Date(val) : null)),
+  modified: z
+    .string()
+    .nullish()
+    .transform((val) => (val ? new Date(val) : null)),
+
   doctype: z.string().default("Files"),
   key: z.string(),
   file_name: z.string(),
@@ -77,6 +86,66 @@ export const ERPNextProjectUserRowZod = z.object({
   welcome_email_sent: z.boolean().nullish().default(false),
 });
 export type ERPNextProjectUserRowType = z.infer<typeof ERPNextProjectUserRowZod>;
+
+// --- Task and ToDo Zod Schemas ---
+
+export const ERPNextTaskDependsOnRowZod = z
+  .object({
+    doctype: z.string().default("Task Depends On"),
+    task: z.string(),
+  })
+  .passthrough();
+export type ERPNextTaskDependsOnRowType = z.infer<typeof ERPNextTaskDependsOnRowZod>;
+
+export const ERPNextTaskRequestZod = z
+  .object({
+    subject: z.string(),
+    project: z.string().nullish(),
+    depends_on: z.array(ERPNextTaskDependsOnRowZod).nullish().default([]),
+  })
+  .passthrough();
+export type ERPNextTaskRequestType = z.infer<typeof ERPNextTaskRequestZod>;
+
+export const ERPNextTaskZod = z
+  .object({
+    subject: z.string(),
+    project: z.string(),
+    color: z.string().nullish(),
+    status: ERPNextTaskStatusEnumZod.nullish(),
+    exp_start_date: z.coerce.date().nullish(),
+    expected_time: z.number().nullish().default(0.0),
+    exp_end_date: z.coerce.date().nullish(),
+    progress: z.number().default(0.0),
+    description: z.string().nullish(),
+    closing_date: z.coerce.date().nullish(),
+  })
+  .passthrough();
+export type ERPNextTaskType = z.infer<typeof ERPNextTaskZod>;
+
+// ERPNextTaskForUser is identical to ERPNextTask in this Pydantic structure
+export const ERPNextTaskForUserZod = ERPNextTaskZod.extend({}); // Or define separately if they diverge
+export type ERPNextTaskForUserType = z.infer<typeof ERPNextTaskForUserZod>;
+
+export const ERPNextTaskPaginatedResponseZod = z.object({
+  items: z.array(ERPNextTaskForUserZod),
+});
+export type ERPNextTaskPaginatedResponseType = z.infer<typeof ERPNextTaskPaginatedResponseZod>;
+
+export const ERPNextToDoZod = z
+  .object({
+    status: ERPNextToDoStatusEnumZod.default(ERPNextToDoStatusEnumZod.Enum.Open),
+    priority: ERPNextToDoPriorityEnumZod.default(ERPNextToDoPriorityEnumZod.Enum.Medium),
+    color: z.string().nullish(),
+    date: z.coerce.date().nullish(),
+    allocated_to: z.string().nullish(),
+    description: z.string(),
+    reference_type: z.string().nullish(),
+    reference_name: z.string().nullish(),
+    role: z.string().nullish(),
+    assigned_by: z.string().nullish(),
+  })
+  .passthrough();
+export type ERPNextToDoType = z.infer<typeof ERPNextToDoZod>;
 
 // --- Main Project Zod Schema ---
 
@@ -98,6 +167,7 @@ export const ERPNextProjectZod = z.object({
   percent_complete_method: PercentCompleteMethodEnumZod.nullish().default(PercentCompleteMethodEnumZod.Enum["Task Completion"]),
   percent_complete: z.number().nullish(),
   custom_deletable: z.boolean().nullish().default(true),
+  tasks: z.array(ERPNextTaskZod).nullish().default([]),
 
   project_template: z.string().nullish(),
   expected_start_date: z.coerce.date().nullish(),
@@ -184,63 +254,3 @@ export const ProjectsPaginatedResponseZod = z.object({
   items: z.array(ERPNextProjectZod),
 });
 export type ProjectsPaginatedResponseType = z.infer<typeof ProjectsPaginatedResponseZod>;
-
-// --- Task and ToDo Zod Schemas ---
-
-export const ERPNextTaskDependsOnRowZod = z
-  .object({
-    doctype: z.string().default("Task Depends On"),
-    task: z.string(),
-  })
-  .passthrough();
-export type ERPNextTaskDependsOnRowType = z.infer<typeof ERPNextTaskDependsOnRowZod>;
-
-export const ERPNextTaskRequestZod = z
-  .object({
-    subject: z.string(),
-    project: z.string().nullish(),
-    depends_on: z.array(ERPNextTaskDependsOnRowZod).nullish().default([]),
-  })
-  .passthrough();
-export type ERPNextTaskRequestType = z.infer<typeof ERPNextTaskRequestZod>;
-
-export const ERPNextTaskZod = z
-  .object({
-    subject: z.string(),
-    project: z.string(),
-    color: z.string().nullish(),
-    status: ERPNextTaskStatusEnumZod.nullish(),
-    exp_start_date: z.coerce.date().nullish(),
-    expected_time: z.number().nullish().default(0.0),
-    exp_end_date: z.coerce.date().nullish(),
-    progress: z.number().default(0.0),
-    description: z.string().nullish(),
-    closing_date: z.coerce.date().nullish(),
-  })
-  .passthrough();
-export type ERPNextTaskType = z.infer<typeof ERPNextTaskZod>;
-
-// ERPNextTaskForUser is identical to ERPNextTask in this Pydantic structure
-export const ERPNextTaskForUserZod = ERPNextTaskZod.extend({}); // Or define separately if they diverge
-export type ERPNextTaskForUserType = z.infer<typeof ERPNextTaskForUserZod>;
-
-export const ERPNextTaskPaginatedResponseZod = z.object({
-  items: z.array(ERPNextTaskForUserZod),
-});
-export type ERPNextTaskPaginatedResponseType = z.infer<typeof ERPNextTaskPaginatedResponseZod>;
-
-export const ERPNextToDoZod = z
-  .object({
-    status: ERPNextToDoStatusEnumZod.default(ERPNextToDoStatusEnumZod.Enum.Open),
-    priority: ERPNextToDoPriorityEnumZod.default(ERPNextToDoPriorityEnumZod.Enum.Medium),
-    color: z.string().nullish(),
-    date: z.coerce.date().nullish(),
-    allocated_to: z.string().nullish(),
-    description: z.string(),
-    reference_type: z.string().nullish(),
-    reference_name: z.string().nullish(),
-    role: z.string().nullish(),
-    assigned_by: z.string().nullish(),
-  })
-  .passthrough();
-export type ERPNextToDoType = z.infer<typeof ERPNextToDoZod>;

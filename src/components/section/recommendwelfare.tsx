@@ -16,7 +16,7 @@ const fetcher = async (url: string) => {
 };
 
 export default function RecommendWelfareSection() {
-  const { data, error, isLoading: _isLoading, size, setSize } = useSWRInfinite(getKey, fetcher);
+  const { data, error, isLoading: _isLoading, size } = useSWRInfinite(getKey, fetcher);
   const isLoading = _isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
 
   if (error) return "error";

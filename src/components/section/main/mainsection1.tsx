@@ -1,17 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { auth } from "@/auth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import { ChevronRight } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { motion } from "framer-motion";
-import { Pointer } from "@/components/magicui/pointer";
 
 export default async function MainSection1() {
-  const session = await auth();
-
   return (
     <div className="relative grid grid-cols-1 lg:grid-cols-12">
       <div className="col-span-full">
@@ -71,6 +66,7 @@ export default async function MainSection1() {
               <Image src="/hero-desktop-filter.svg" fill alt="Filter" className="object-cover" priority />
             </AspectRatio>
           </div>
+
           <div className="pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
             <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
           </div>

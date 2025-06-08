@@ -1,6 +1,7 @@
 // src/components/HeroCardSection.tsx
 "use client";
 
+import Image from "next/image";
 import React, { useRef, useState } from "react";
 import { motion, useScroll, useTransform, MotionValue, useMotionValueEvent, AnimatePresence, HTMLMotionProps } from "framer-motion";
 import { useLenis } from "lenis/react";
@@ -199,7 +200,7 @@ const CenterCard = ({ data }: CenterCardProps) => {
     <motion.div className="w-[500px] h-[600px] mx-auto" variants={cardVariants} initial="hidden" animate="visible" exit="hidden">
       <div className="w-full h-full bg-gray-100 rounded-3xl overflow-hidden flex items-center justify-center">
         {data.image ? (
-          <img src={data.image} alt={data.title} className="w-full h-full object-cover" />
+          <Image src={data.image} alt={data.title} className="w-full h-full object-cover" />
         ) : (
           <div className="text-gray-400">{data.icon || <Smartphone size={48} />}</div>
         )}

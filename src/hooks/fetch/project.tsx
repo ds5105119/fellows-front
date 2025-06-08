@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import { ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
 import useSWR, { SWRResponse } from "swr";
 
-export const getProject = ({ project_id }: { project_id: string }): SWRResponse<ERPNextProjectType | undefined, any, any> => {
+export const useProject = ({ project_id }: { project_id: string }): SWRResponse<ERPNextProjectType | undefined> => {
   const fetcher = async (url: string) => {
     if (!url) return undefined;
 
@@ -123,13 +123,13 @@ export const useGetEstimateFeatures = ({
       setRatelimit(result.ratelimit);
       setRetryAfter(result.retryAfter);
       setSuccess(true);
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
       setSuccess(false);
     } finally {
       setLoading(false);
     }
-  }, [project_name, project_summary]);
+  }, [project_name, project_summary, platforms, readiness_level]);
 
   useEffect(() => {
     if (success || error) {

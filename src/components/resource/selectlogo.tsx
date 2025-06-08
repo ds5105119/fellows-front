@@ -6,9 +6,7 @@ import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } 
 import { Copyright, ScanText } from "lucide-react";
 import { motion } from "framer-motion";
 
-interface NavLogoProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export default function SelectLogo({ ...props }: NavLogoProps) {
+export default function SelectLogo({ ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const handleCopySVGLogo = async () => {
     try {
       const res = await fetch("/fellows/logo.svg");

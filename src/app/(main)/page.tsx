@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 import { auth } from "@/auth";
-import { Button } from "@/components/ui/button";
 import { BlurFade } from "@/components/magicui/blur-fade";
-import Link from "next/link";
 import MainSection1 from "@/components/section/main/mainsection1";
 import MainSection2 from "@/components/section/main/mainsection2";
 import MainSection3 from "@/components/section/main/mainsection3";
+import MainSection4 from "@/components/section/main/mainsection4";
+import MainQnaSection from "@/components/section/main/mainqnasection";
 
 export const metadata: Metadata = {
   title: "서비스",
@@ -22,20 +22,18 @@ export default async function Home() {
       <BlurFade className="col-span-full">
         <MainSection1 />
       </BlurFade>
-      <BlurFade className="col-span-full lg:col-span-10 lg:col-start-2">
+      <BlurFade className="col-span-full">
         <MainSection2 />
       </BlurFade>
-      <BlurFade className="col-span-full lg:col-span-10 lg:col-start-2">
+      <BlurFade className="col-span-full">
         <MainSection3 />
       </BlurFade>
-      <div className="col-span-full sticky flex flex-col bottom-0 z-20 md:hidden">
-        <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
-        <div className="w-full flex pb-4 pt-3 bg-background">
-          <Button size="lg" className="w-full px-16 h-[3.75rem] rounded-2xl text-lg font-semibold bg-black" asChild>
-            <Link href="/service/dashboard">시작하기</Link>
-          </Button>
-        </div>
-      </div>
+      <BlurFade className="col-span-full">
+        <MainQnaSection />
+      </BlurFade>
+      <BlurFade className="col-span-full">
+        <MainSection4 />
+      </BlurFade>
     </div>
   );
 }

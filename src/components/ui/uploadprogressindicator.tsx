@@ -22,7 +22,12 @@ export function UploadProgressIndicator({ progress, onRemove, size = 36 }: Uploa
   const strokeDashoffset = circumference - (progress / 100) * circumference;
   const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    isComplete && onRemove?.();
+
+    if (isComplete) {
+      onRemove?.();
+    }
+
+    return;
   };
 
   return (

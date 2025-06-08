@@ -6,7 +6,6 @@
 
 import NextAuth from "next-auth";
 import Keycloak from "next-auth/providers/keycloak";
-import GitHub from "next-auth/providers/github";
 import { JWT } from "next-auth/jwt";
 import { redirect } from "next/navigation";
 
@@ -76,7 +75,7 @@ declare module "next-auth/jwt" {
   }
 }
 
-const expiresIntoAt = (expiresIn: any) => (typeof expiresIn == "number" ? Date.now() / 1000 + expiresIn - 10 : 0);
+const expiresIntoAt = (expiresIn: number | undefined) => (typeof expiresIn == "number" ? Date.now() / 1000 + expiresIn - 10 : 0);
 
 async function refreshAccessToken(token: JWT) {
   if (!token.refresh_token) throw new TypeError("Missing refresh_token");
@@ -124,13 +123,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.access_token = account.access_token || "";
           token.refresh_token = account.refresh_token || "";
           token.expires_at = account.expires_at || 0;
-          token.refresh_token_expires_at = expiresIntoAt(account.refresh_token_expires_at);
+          token.refresh_token_expires_at = expiresIntoAt(
+            typeof account.refresh_token_expires_at === "undefined" ? 0 : (account.refresh_token_expires_at as number)
+          );
         }
       } else {
         if (Date.now() >= (token.expires_at || 0) * 1000) {
           try {
             return await refreshAccessToken(token);
-          } catch (error) {
+          } catch {
             token.error = "RefreshTokenError";
           }
         }

@@ -1,5 +1,6 @@
 "use client";
 
+import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -7,11 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { readinessLevelLabels } from "@/components/resource/project";
-import { getEnumValues } from "@/components/section/service/project/new/createproject";
 import { PlatformEnumZod, ReadinessLevelEnumZod, UserERPNextProjectType } from "@/@types/service/erpnext";
 interface CreateProjectFormStep1Props {
   form: UseFormReturn<UserERPNextProjectType>;
 }
+
+const getEnumValues = <T extends z.ZodEnum<[string, ...string[]]>>(enumType: T): z.infer<typeof enumType>[] => {
+  return Object.values(enumType.Values) as z.infer<typeof enumType>[];
+};
 
 export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1Props) {
   const { control } = form;
@@ -65,7 +69,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                 <Button
                   className={cn(
                     "col-span-1 h-12 hover:bg-gray-300 font-semibold transition-colors duration-200 ease-in-out rounded-2xl",
-                    (field.value || []).some((p) => p.platform == platform) ? "!bg-primary text-white" : "bg-gray-100"
+                    (field.value || []).some((p) => p.platform == platform) ? "!bg-blue-100 text-blue-600" : "bg-gray-100"
                   )}
                   type="button"
                   key={platform as string}
@@ -98,7 +102,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                     key={level as string}
                     className={cn(
                       "col-span-1 border-none shadow-none bg-gray-100 p-2.5 rounded-2xl h-12",
-                      level === field.value ? "bg-primary text-white" : "bg-gray-100"
+                      level === field.value ? "!bg-blue-100 text-blue-600" : "bg-gray-100"
                     )}
                     onClick={() => field.onChange(level)}
                   >

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Compass, Phone } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface getKeyFactoryProps {
@@ -203,8 +203,7 @@ export default function BusinessRecommendWelfareSection() {
   const [selected, setSelected] = useState<Welfare | null>(null);
   const keyword = useThrottle(inputText, 1000);
   const getKey = getKeyFactory({ tag, keyword: keyword, order_by: orderBy });
-  const { data, error, isLoading: _isLoading, size, setSize } = useSWRInfinite(getKey, fetcher);
-  const isLoading = _isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
+  const { data, error, size, setSize } = useSWRInfinite(getKey, fetcher);
 
   if (error) return "error";
 

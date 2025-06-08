@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Footer from "@/components/footer/footer";
 import LenisProvider from "@/lib/lenisprovider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import "../globals.css";
 import MainHeader from "@/components/header/mainheader";
+import MainFooter from "@/components/footer/mainfooter";
+import "../globals.css";
+import "lenis/dist/lenis.css";
+import MainStartButton from "@/components/section/main/mainstartbutton";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
@@ -33,12 +35,13 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pretendard.variable} ${satoshi.variable}`}>
+      <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-y-auto`}>
         <LenisProvider>
           <div className="relative overscroll-none">
             <MainHeader />
             <main className="scrollbar-hide break-keep">{children}</main>
-            <Footer />
+            <MainStartButton />
+            <MainFooter />
           </div>
         </LenisProvider>
         <Analytics />

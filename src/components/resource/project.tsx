@@ -106,4 +106,4 @@ export const stepsMeta: {
       "custom_maintenance_required",
     ],
   },
-];
+] as const;

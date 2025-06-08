@@ -12,18 +12,7 @@ export const headerData = {
     { title: "개발 상황", url: "#", icon: "FcCableRelease" },
   ],
   navSecondary: [
-    {
-      title: "설정",
-      url: "#",
-      icon: "FcSettings",
-      items: [
-        { title: "정보 관리", url: "#" },
-        { title: "그룹 관리", url: "#" },
-        { title: "결제 관리", url: "#" },
-        { title: "구독 설정", url: "#" },
-        { title: "알림 설정", url: "#" },
-      ],
-    },
+    { title: "설정", url: "/service/settings", icon: "FcSettings" },
     { title: "고객센터", url: "#", icon: "FcOnlineSupport" },
   ],
 };

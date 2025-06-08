@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Header from "@/components/sidebar/header";
-import Footer from "@/components/footer/footer";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
@@ -9,6 +7,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
 import "../globals.css";
+import SettingsSidebar from "@/components/sidebar/settings-sidebar";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
@@ -36,7 +35,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-y-auto`}>
+      <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-hidden`}>
         <SidebarProvider
           style={
             {
@@ -47,10 +46,11 @@ export default async function RootLayout({
         >
           <AppSidebar />
           <SidebarInset>
-            <div className="flex flex-col">
-              <Header />
-              <main className="w-full scrollbar-hide break-keep">{children}</main>
-              <Footer />
+            <div className="flex flex-1 h-full">
+              <SettingsSidebar />
+              <div className="flex flex-col h-full grow overflow-y-auto">
+                <main className="w-full break-keep">{children}</main>
+              </div>
             </div>
           </SidebarInset>
           <Analytics />

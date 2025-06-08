@@ -11,7 +11,7 @@ export async function DELETE(request: Request) {
   const sse_key = url.searchParams.get("sse_key");
 
   if (!key || !sse_key) {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    throw new Error("Invalid request");
   }
 
   if (key) params.append("key", key);
@@ -21,12 +21,16 @@ export async function DELETE(request: Request) {
     const response = await fetch(`${process.env.NEXT_PUBLIC_CLOUD_URL}?${params.toString()}`, {
       method: "DELETE",
       redirect: "follow",
+      headers: {
+        "Content-Type": "application/json",
+        ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+      },
     });
 
     if (!response.ok) {
       throw new Error("Failed to fetch file data");
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch file data" }, { status: 400 });
   }
 

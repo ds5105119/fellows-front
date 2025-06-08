@@ -1,4 +1,5 @@
 import { PresignedUrlResponseSchema, PresignedUrlResponseType } from "@/@types/accounts/cloud";
+import { toast } from "sonner";
 
 const PREVIEWABLE = [
   /^image\//, // png, jpg, webp …
@@ -104,7 +105,8 @@ export async function uploadFileToPresignedUrl({
   const MAX_SIZE = 30 * 1024 * 1024; // 30MB
 
   if (file.size > MAX_SIZE) {
-    throw new Error("파일 용량은 30MB 이하만 업로드할 수 있어요.");
+    toast.error("파일 용량은 30MB 이하만 업로드할 수 있어요.");
+    return;
   }
 
   const headers = {

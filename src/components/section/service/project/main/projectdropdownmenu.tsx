@@ -31,11 +31,11 @@ const ProjectDropdownMenu = ({
     e.stopPropagation();
 
     if (window.confirm("프로젝트를 삭제하면 모든 정보가 삭제됩니다. 계속 진행하시겠습니까?")) {
+      meta.swr.mutate((pages) => pages && pages.map((page) => ({ items: page.items.filter((item) => item.project_name !== project.project_name) })), false);
+
       await fetch(`/api/service/project/${project.project_name}`, {
         method: "DELETE",
       });
-
-      meta.swr.mutate((pages) => pages && pages.map((page) => ({ items: page.items.filter((item) => item.project_name !== project.project_name) })), false);
     }
   };
 
@@ -57,7 +57,7 @@ const ProjectDropdownMenu = ({
             e.stopPropagation();
           }}
         >
-          <EllipsisVertical className="!size-5" />
+          <EllipsisVertical className="!size-4" />
         </div>
       </DropdownMenuTrigger>
 

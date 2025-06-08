@@ -64,7 +64,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}`;
 
   try {
-    const response = await fetch(url, {
+    await fetch(url, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
