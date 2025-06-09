@@ -284,7 +284,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
 
   // 개요 탭 콘텐츠 (원래 왼쪽 패널 내용)
   const OverviewContent = () => (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full">
       {/* 프로젝트 헤더 */}
       <div className="w-full flex items-center pt-12 px-5 md:px-8 space-x-3">
         <div className="flex items-center justify-center size-8 md:size-9 rounded-sm bg-blue-500/15 ">
@@ -406,9 +406,9 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
             </Button>
           </div>
 
-          <div>
+          <div className="w-full">
             {project.custom_ai_estimate && (
-              <div className="pt-2 prose prose-h2:text-base prose-p:text-sm prose-a:text-sm">
+              <div className="w-full pt-2 prose prose-h2:text-base prose-p:text-sm prose-a:text-sm">
                 <MarkdownPreview loading={false}>{project.custom_ai_estimate}</MarkdownPreview>
               </div>
             )}
