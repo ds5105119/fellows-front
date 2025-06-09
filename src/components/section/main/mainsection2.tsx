@@ -66,7 +66,7 @@ const features = [
     className: "col-span-3 lg:col-span-2 bg-zinc-100 hover:bg-blue-100 transition-colors duration-300 ease-in-out",
     background: (
       <div className="absolute top-0 w-full h-full transition-all duration-300 ease-out group-hover:scale-110">
-        <Image src="/bento2.png" alt="Image" className="rounded-md object-cover" fill priority style={{ objectFit: "cover", objectPosition: "top" }} />
+        <Image src="/bento2.png" alt="Image" className="rounded-md object-cover" fill priority style={{ objectFit: "cover", objectPosition: "top left" }} />
       </div>
     ),
   },
