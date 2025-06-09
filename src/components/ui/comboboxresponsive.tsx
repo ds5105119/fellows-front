@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useSidebar } from "@/components/ui/sidebar";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { Drawer, DrawerContent, DrawerTrigger, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTrigger, DrawerHeader, DrawerTitle, DrawerFooter, DrawerClose, DrawerDescription } from "@/components/ui/drawer";
 
 type Status = {
   value: string;
@@ -75,14 +75,22 @@ export default function ComboBoxResponsive({ placeholder, initial, statuses, cal
       <DrawerContent>
         <VisuallyHidden>
           <DrawerHeader>
-            <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+            <DrawerTitle className="sr-only" />
+            <DrawerDescription className="sr-only" />
           </DrawerHeader>
         </VisuallyHidden>
         <div className="p-2 pb-0 gap-3">
           <Command>
             <CommandList>
               <CommandGroup>
-                {statuses.map((status) => (
+                {(selectedStatus
+                  ? [
+                      selectedStatus,
+                      ...statuses.slice(0, statuses.indexOf(selectedStatus)),
+                      ...statuses.slice(statuses.indexOf(selectedStatus) + 1, statuses.length),
+                    ]
+                  : statuses
+                ).map((status) => (
                   <CommandItem
                     key={status.value}
                     value={status.value}
@@ -101,7 +109,7 @@ export default function ComboBoxResponsive({ placeholder, initial, statuses, cal
         </div>
         <DrawerFooter>
           <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline">취소</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

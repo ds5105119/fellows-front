@@ -29,7 +29,11 @@ export default function BreadCrumb() {
       <BreadcrumbList>
         {pathNames.map((segment, index) => {
           const href = "/" + pathNames.slice(0, index + 1).join("/");
-          const name = nameMapping[segment] || segment;
+          const name = nameMapping[segment];
+
+          if (!name) {
+            return null;
+          }
 
           return index === pathNames.length - 1 ? (
             <BreadcrumbPage key={index}>{name}</BreadcrumbPage>

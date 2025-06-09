@@ -9,7 +9,6 @@ import { useState, useEffect, useRef } from "react";
 import { Session } from "next-auth";
 import { cn } from "@/lib/utils";
 import { useInView } from "framer-motion";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Plus, Info } from "lucide-react";
@@ -146,10 +145,12 @@ export default function ProjectMainSection({ session }: { session: Session | nul
       <div className="sticky z-30 top-16 bg-background w-full flex flex-col">
         <div className="flex w-full h-12 justify-between items-center px-4 md:px-8 border-b-1 border-b-sidebar-border space-x-2">
           <div className="flex grow md:max-w-1/2 space-x-2">
-            <ComboBoxResponsive statuses={orders} initial={orderBy} callback={setOrderBy} />
-            <Input
+            <div className="hidden lg:block">
+              <ComboBoxResponsive statuses={orders} initial={orderBy} callback={setOrderBy} />
+            </div>
+            <input
               placeholder="검색어를 입력하세요"
-              className="max-w-96 px-4 border-0 shadow-none rounded-full focus-visible:ring-0 bg-muted"
+              className="w-full max-w-96 h-9 px-4 border-0 shadow-none rounded-full focus-visible:ring-0 bg-muted text-sm font-medium"
               onChange={(e) => setInputText(e.target.value)}
             />
           </div>
@@ -207,13 +208,15 @@ export default function ProjectMainSection({ session }: { session: Session | nul
       </div>
 
       {/* 모바일 프로젝트 컬럼 그리드 */}
-      <div className="flex flex-col w-full lg:hidden space-y-4 px-4 md:px-8">
-        <div className="flex h-full space-x-1 overflow-x-scroll scrollbar-hide">
+      <div className="flex flex-col w-full lg:hidden px-4 md:px-8 space-y-4">
+        <div className="flex h-full space-x-1 overflow-x-auto scrollbar-hide">
+          <ComboBoxResponsive statuses={orders} initial={orderBy} callback={setOrderBy} />
+
           {statuses.map((status) => (
             <button
               key={status}
               className={cn(
-                "flex items-center space-x-2 text-sm font-light rounded-sm py-1.5 px-3",
+                "shrink-0 flex items-center space-x-2 text-sm font-light rounded-sm py-1.5 px-3",
                 status === statuses[tabIndex] ? `${containerProps[statuses[tabIndex]].text} ${containerProps[statuses[tabIndex]].bg}` : "hover:bg-muted/50"
               )}
               onClick={() => setTabIndex(statuses.indexOf(status))}
@@ -224,6 +227,7 @@ export default function ProjectMainSection({ session }: { session: Session | nul
             </button>
           ))}
         </div>
+
         <ProjectStatusColumn
           status={statuses[tabIndex]}
           keyword={keyword}
