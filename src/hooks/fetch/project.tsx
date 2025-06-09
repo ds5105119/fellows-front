@@ -128,7 +128,7 @@ export const useGetEstimateFeatures = ({
     } finally {
       setLoading(false);
     }
-  }, [project_name, project_summary, platforms, readiness_level]);
+  }, [project_name, project_summary, platforms, readiness_level, session]);
 
   useEffect(() => {
     if (success || error) {

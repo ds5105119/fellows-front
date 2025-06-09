@@ -13,8 +13,6 @@ interface BentoCardProps extends ComponentPropsWithoutRef<"div"> {
   name: string;
   className: string;
   background: ReactNode;
-  emoji?: string;
-  Icon: React.ElementType;
   description: string;
   href: string;
   cta: string;
@@ -28,7 +26,7 @@ const BentoGrid = ({ children, className, ...props }: BentoGridProps) => {
   );
 };
 
-const BentoCard = ({ name, className, background, emoji, Icon, description, href, cta, ...props }: BentoCardProps) => (
+const BentoCard = ({ name, className, background, description, href, cta, ...props }: BentoCardProps) => (
   <div
     key={name}
     className={cn(
@@ -41,19 +39,25 @@ const BentoCard = ({ name, className, background, emoji, Icon, description, href
     )}
     {...props}
   >
-    <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-2 lg:gap-3 p-12 transition-all">
-      <h3 className="text-xl lg:text-3xl font-bold text-neutral-700 dark:text-neutral-300">{name}</h3>
-      <p className="max-w-lg font-medium text-neutral-400 whitespace-pre-wrap">{description}</p>
+    <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-2 lg:gap-3 p-8 lg:p-12 transition-all">
+      <h3 className="text-xl lg:text-4xl font-extrabold text-white dark:text-neutral-300">{name}</h3>
+      <p className="max-w-lg text-lg font-semibold text-muted whitespace-pre-wrap hidden lg:block">{description}</p>
+      <div className="block lg:hidden">
+        <a href={href} className="pointer-events-auto text-white py-1 flex items-center">
+          {cta}
+          <ArrowRightIcon className="ms-2 h-4 w-4 rtl:rotate-180" />
+        </a>
+      </div>
     </div>
 
     <div>{background}</div>
 
     <div
       className={cn(
-        "pointer-events-none absolute bottom-0 flex w-full translate-y-10 transform-gpu flex-row items-center p-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+        "pointer-events-none absolute bottom-0 hidden lg:flex w-full translate-y-10 transform-gpu flex-row items-center p-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
       )}
     >
-      <Button variant="ghost" asChild size="sm" className="pointer-events-auto">
+      <Button variant="ghost" asChild size="sm" className="pointer-events-auto text-white">
         <a href={href}>
           {cta}
           <ArrowRightIcon className="ms-2 h-4 w-4 rtl:rotate-180" />

@@ -172,6 +172,7 @@ export default function CreateProject({ session }: { session: Session | null }) 
     name: ["custom_project_title", "custom_project_summary", "custom_readiness_level", "custom_platforms"],
     control: form.control,
   });
+  const { fetchData: estimateFeturesFetch } = estimateFeatures;
 
   const mergeEstimateFeatures = useCallback(() => {
     const [project_name, project_summary, readiness_level, platforms] = estimateFeaturesFields;
@@ -186,9 +187,9 @@ export default function CreateProject({ session }: { session: Session | null }) 
       estimateFeaturesData.readiness_level ||
       estimateFeaturesData.platforms.length > 0
     ) {
-      estimateFeatures.fetchData();
+      estimateFeturesFetch();
     }
-  }, [estimateFeaturesData, estimateFeatures.fetchData]);
+  }, [estimateFeaturesData, estimateFeturesFetch]);
 
   useEffect(() => {
     if (!isRecommend) {

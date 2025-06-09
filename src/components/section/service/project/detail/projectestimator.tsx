@@ -96,7 +96,7 @@ export default function ProjectEstimator({ project, session }: Props) {
         setCtrl(null);
       },
     });
-  }, [ctrl, lastMarkdown, markdown, project.project_name]);
+  }, [ctrl, lastMarkdown, markdown, project.project_name, session?.access_token]);
 
   useEffect(() => {
     if (!initialized.current && !project.custom_ai_estimate) {
