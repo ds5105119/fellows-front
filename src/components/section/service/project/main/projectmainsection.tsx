@@ -9,6 +9,7 @@ import { useState, useEffect, useRef } from "react";
 import { Session } from "next-auth";
 import { cn } from "@/lib/utils";
 import { useInView } from "framer-motion";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Plus, Info } from "lucide-react";
@@ -148,7 +149,7 @@ export default function ProjectMainSection({ session }: { session: Session | nul
             <div className="hidden lg:block">
               <ComboBoxResponsive statuses={orders} initial={orderBy} callback={setOrderBy} />
             </div>
-            <input
+            <Input
               placeholder="검색어를 입력하세요"
               className="w-full max-w-96 h-9 px-4 border-0 shadow-none rounded-full focus-visible:ring-0 bg-muted text-sm font-medium"
               onChange={(e) => setInputText(e.target.value)}
