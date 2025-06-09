@@ -78,7 +78,7 @@ const features = [
     className: "col-span-3 lg:col-span-2 bg-zinc-100 hover:bg-blue-100 transition-colors duration-300 ease-in-out",
     background: (
       <div className="absolute right-10 top-10 origin-top-right rounded-md border transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)] group-hover:scale-110">
-        <Image src="/funnel.png" alt="Image" className="rounded-md object-cover" width={500} height={500} priority />
+        <Image src="/funnel.png" alt="Image" className="rounded-md object-cover" width={800} height={800} priority />
       </div>
     ),
   },
