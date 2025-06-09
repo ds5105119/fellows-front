@@ -8,11 +8,10 @@ import type { Session } from "next-auth";
 import { cn } from "@/lib/utils";
 import type { SWRMeta } from "./projectmainsection";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Plus, PencilLine, Receipt, Calendar, ArrowRight, Clock5, ClipboardList, Trash2, SquareMousePointer } from "lucide-react";
+import { Plus, PencilLine, Receipt, Calendar, ArrowRight, Clock5, ClipboardList, Trash2, SquareMousePointer, Loader2 } from "lucide-react";
 import {
   DndContext,
   type DragEndEvent,
-  DragOverlay,
   type DragStartEvent,
   type DragOverEvent,
   PointerSensor,
@@ -20,13 +19,14 @@ import {
   useSensors,
   useDraggable,
   useDroppable,
+  DragOverlay,
 } from "@dnd-kit/core";
 import { motion, AnimatePresence } from "framer-motion";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
-import { ERPNextProjectType } from "@/@types/service/erpnext";
+import type { ERPNextProjectType } from "@/@types/service/erpnext";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -49,7 +49,8 @@ export default function ProjectContainer({
   className?: string;
   session: Session | null;
 }) {
-  const projects = meta.data.items;
+  const projects = meta.data?.items || [];
+  const isLoading = meta.swr.isLoading;
   const [selectedProject, setSelectedProject] = useState<(typeof projects)[0] | null>(null);
   const [openSheet, setOpenSheet] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -58,6 +59,7 @@ export default function ProjectContainer({
   const [isDragging, setIsDragging] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isOverTrash, setIsOverTrash] = useState(false);
+  const [justDropped, setJustDropped] = useState<string | null>(null);
 
   // 센서 설정 - 드래그 감지를 위한 설정
   const sensors = useSensors(
@@ -78,6 +80,7 @@ export default function ProjectContainer({
     const { active } = event;
     setActiveId(active.id as string);
     setIsDragging(true);
+    setJustDropped(null);
   };
 
   // 드래그 오버 핸들러
@@ -90,6 +93,7 @@ export default function ProjectContainer({
   // 드래그 종료 핸들러
   const handleDragEnd = (event: DragEndEvent) => {
     const { over } = event;
+    const droppedId = activeId;
 
     // 쓰레기통 위에서 드래그가 끝났다면 삭제 처리
     if (over && over.id === "trash-zone") {
@@ -99,6 +103,13 @@ export default function ProjectContainer({
     setActiveId(null);
     setIsDragging(false);
     setIsOverTrash(false);
+
+    // 드롭된 아이템 표시 (애니메이션 비활성화용)
+    if (droppedId) {
+      setJustDropped(droppedId);
+      // 짧은 시간 후 상태 리셋
+      setTimeout(() => setJustDropped(null), 100);
+    }
   };
 
   // 프로젝트 삭제 핸들러
@@ -126,33 +137,68 @@ export default function ProjectContainer({
           </div>
         </div>
         <div className={cn("w-full flex flex-col rounded-sm space-y-1.5 p-1.5", bg, text)}>
-          {/* 프로젝트 정보 박스 */}
-          {projects.map((project, idx) => (
-            <ProjectItem
-              key={idx}
-              project={project}
-              idx={idx}
-              openMenu={openMenu}
-              setOpenMenu={setOpenMenu}
-              meta={meta}
-              onSelect={() => {
-                setSelectedProject(project);
-                setOpenSheet(true);
-              }}
-              id={`project-${idx}`}
-            />
-          ))}
+          {/* 로딩 상태 */}
+          {isLoading && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center justify-center"
+            >
+              <Loader2 className="size-4 text-blue-500 animate-spin" strokeWidth={2.5} />
+            </motion.div>
+          )}
 
-          {projects.length === 0 && <p className={cn("text-center text-xs", text)}>없음</p>}
+          {/* 프로젝트 정보 박스 */}
+          {!isLoading && (
+            <AnimatePresence mode="popLayout">
+              {projects.map((project, idx) => (
+                <motion.div
+                  key={project.project_name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{
+                    delay: idx * 0.05,
+                    // 드롭된 아이템은 애니메이션 비활성화
+                    duration: justDropped === `project-${idx}` ? 0 : undefined,
+                  }}
+                  layout={justDropped !== `project-${idx}`} // 드롭된 아이템은 layout 애니메이션 비활성화
+                >
+                  <ProjectItem
+                    project={project}
+                    idx={idx}
+                    openMenu={openMenu}
+                    setOpenMenu={setOpenMenu}
+                    meta={meta}
+                    onSelect={() => {
+                      setSelectedProject(project);
+                      setOpenSheet(true);
+                    }}
+                    id={`project-${idx}`}
+                    justDropped={justDropped === `project-${idx}`}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )}
+
+          {!isLoading && projects.length === 0 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+              <p className={cn("text-center text-xs", text)}>없음</p>
+            </motion.div>
+          )}
 
           {/* 신규 프로젝트 생성*/}
-          {status === "draft" && (
-            <Link
-              href="./project/new"
-              className="cursor-pointer flex items-center justify-center w-full rounded-xs bg-white outline-[1px] outline-dashed py-2 hover:bg-muted transition-colors duration-200"
-            >
-              <Plus className="!size-6" strokeWidth={2.5} />
-            </Link>
+          {!isLoading && status === "draft" && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: projects.length * 0.05 + 0.1 }}>
+              <Link
+                href="./project/new"
+                className="cursor-pointer flex items-center justify-center w-full rounded-xs bg-white outline-[1px] outline-dashed py-2 hover:bg-muted transition-colors duration-200"
+              >
+                <Plus className="!size-6" strokeWidth={2.5} />
+              </Link>
+            </motion.div>
           )}
 
           {/* 프로젝트 선택 시 팝업 */}
@@ -176,28 +222,34 @@ export default function ProjectContainer({
         {activeId && activeProject && (
           <div
             className={cn(
-              "w-fit rounded-sm overflow-clip transition-all duration-300 outline-[5px] outline-gray-900/10 border-1",
+              "w-fit rounded-sm overflow-clip outline-[5px] outline-gray-900/10 border-1",
               isOverTrash ? "scale-90 opacity-70" : "scale-105 drop-shadow-xl",
               border
             )}
+            style={{
+              // CSS transition 대신 즉시 변화
+              transform: isOverTrash ? "scale(0.9)" : "scale(1.05)",
+              opacity: isOverTrash ? 0.7 : 1,
+              transition: "none", // 애니메이션 완전 제거
+            }}
           >
             <div className="relative flex flex-col space-y-1.5 rounded-xs bg-white items-center p-4">
               <div className="w-full flex justify-between">
-                <div className="w-[83%] flex space-x-1.5 items-center text-sm">
+                <div className="flex space-x-1.5 items-center text-sm min-w-0 flex-1">
                   {activeProject.custom_emoji ? (
-                    <div className="size-4 flex items-center justify-center">
+                    <div className="size-4 flex items-center justify-center flex-shrink-0">
                       <span className="text-center">{activeProject.custom_emoji}</span>
                     </div>
                   ) : (
-                    <PencilLine className="!size-4" />
+                    <PencilLine className="!size-4 flex-shrink-0" />
                   )}
-                  <div className="truncate break-all font-bold">{activeProject.custom_project_title}</div>
+                  <div className="truncate font-bold min-w-0">{activeProject.custom_project_title}</div>
                 </div>
               </div>
 
               <div className={cn("w-full flex mt-1 space-x-2 items-center font-medium", activeProject.estimated_costing ? "text-zinc-700" : "text-zinc-400")}>
                 <Receipt className="!size-3.5 shrink-0" />
-                <div className="truncate text-xs">
+                <div className="truncate text-xs min-w-0 flex-1">
                   {activeProject.estimated_costing ? (
                     <p>
                       <span className="font-bold">{activeProject.estimated_costing.toLocaleString()}</span> 원
@@ -212,17 +264,21 @@ export default function ProjectContainer({
 
               <div className={cn("w-full flex space-x-2 items-center font-medium", activeProject.expected_start_date ? "text-zinc-700" : "text-zinc-400")}>
                 <Calendar className="!size-3.5 shrink-0" />
-                {activeProject.expected_start_date && (
-                  <div className="truncate text-xs">{dayjs(activeProject.expected_start_date).format("YYYY-MM-DD") ?? "정해지지 않았어요"}</div>
-                )}
-                {activeProject.expected_start_date && !activeProject.expected_end_date && (
-                  <div className="truncate text-xs font-normal text-zinc-400">시작</div>
-                )}
-                {activeProject.expected_end_date && <ArrowRight className="!size-3" />}
-                {activeProject.expected_end_date && (
-                  <div className="truncate text-xs">{dayjs(activeProject.expected_end_date).format("YYYY-MM-DD") ?? "정해지지 않았어요"}</div>
-                )}
-                {!activeProject.expected_start_date && !activeProject.expected_end_date && <div className="truncate text-xs">마감 목표를 설정할 수 있어요</div>}
+                <div className="flex items-center space-x-2 min-w-0 flex-1">
+                  {activeProject.expected_start_date && (
+                    <div className="truncate text-xs">{dayjs(activeProject.expected_start_date).format("YYYY-MM-DD") ?? "정해지지 않았어요"}</div>
+                  )}
+                  {activeProject.expected_start_date && !activeProject.expected_end_date && (
+                    <div className="text-xs font-normal text-zinc-400 flex-shrink-0">시작</div>
+                  )}
+                  {activeProject.expected_end_date && <ArrowRight className="!size-3 flex-shrink-0" />}
+                  {activeProject.expected_end_date && (
+                    <div className="truncate text-xs">{dayjs(activeProject.expected_end_date).format("YYYY-MM-DD") ?? "정해지지 않았어요"}</div>
+                  )}
+                  {!activeProject.expected_start_date && !activeProject.expected_end_date && (
+                    <div className="truncate text-xs">마감 목표를 설정할 수 있어요</div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -268,6 +324,7 @@ function ProjectItem({
   meta,
   onSelect,
   id,
+  justDropped,
 }: {
   project: ERPNextProjectType;
   idx: number;
@@ -276,6 +333,7 @@ function ProjectItem({
   meta: SWRMeta;
   onSelect: () => void;
   id: string;
+  justDropped?: boolean;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: id,
@@ -291,22 +349,28 @@ function ProjectItem({
   }
 
   return (
-    <div className="relative w-full text-gray-900 select-none">
+    <div className="w-full text-gray-900 select-none">
       {/* 프로젝트 내용 - 클릭 가능 */}
-      <div className="relative flex flex-col space-y-1.5 rounded-xs bg-white items-center p-4 hover:bg-muted transition-colors duration-200" onClick={onSelect}>
+      <div
+        className={cn(
+          "w-full flex flex-col space-y-1.5 rounded-xs bg-white items-center p-4 hover:bg-muted",
+          justDropped ? "" : "transition-colors duration-200" // 드롭된 아이템은 transition 제거
+        )}
+        onClick={onSelect}
+      >
         <div className="w-full flex justify-between">
-          <div className="w-[83%] flex space-x-1.5 items-center text-sm">
+          <div className="flex space-x-1.5 items-center text-sm min-w-0 flex-1">
             {project.custom_emoji ? (
-              <div className="size-4 flex items-center justify-center">
+              <div className="size-4 flex items-center justify-center flex-shrink-0">
                 <span className="text-center">{project.custom_emoji}</span>
               </div>
             ) : (
-              <PencilLine className="!size-4" />
+              <PencilLine className="!size-4 flex-shrink-0" />
             )}
-            <div className="truncate break-all font-bold">{project.custom_project_title}</div>
+            <div className="truncate font-bold min-w-0">{project.custom_project_title}</div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 flex-shrink-0">
             <div
               className="size-6 rounded-sm flex items-center justify-center hover:bg-neutral-200 cursor-grab active:cursor-grabbing"
               ref={setNodeRef}
@@ -324,8 +388,7 @@ function ProjectItem({
 
         <div className={cn("w-full flex mt-1 space-x-2 items-center font-medium", project.estimated_costing ? "text-zinc-700" : "text-zinc-400")}>
           <Receipt className="!size-3.5 shrink-0" />
-
-          <div className="truncate text-xs">
+          <div className="truncate text-xs min-w-0 flex-1">
             {project.estimated_costing ? (
               <p>
                 <span className="font-bold">{project.estimated_costing.toLocaleString()}</span> 원
@@ -340,25 +403,29 @@ function ProjectItem({
 
         <div className={cn("w-full flex space-x-2 items-center font-medium", project.expected_start_date ? "text-zinc-700" : "text-zinc-400")}>
           <Calendar className="!size-3.5 shrink-0" />
-          {project.expected_start_date && (
-            <div className="truncate text-xs">{dayjs(project.expected_start_date).format("YYYY-MM-DD") ?? "정해지지 않았어요"}</div>
-          )}
-          {project.expected_start_date && !project.expected_end_date && <div className="truncate text-xs font-normal text-zinc-400">시작</div>}
-          {project.expected_end_date && <ArrowRight className="!size-3" />}
-          {project.expected_end_date && <div className="truncate text-xs">{dayjs(project.expected_end_date).format("YYYY-MM-DD") ?? "정해지지 않았어요"}</div>}
-          {!project.expected_start_date && !project.expected_end_date && <div className="truncate text-xs">마감 목표를 설정할 수 있어요</div>}
+          <div className="flex items-center space-x-2 min-w-0 flex-1">
+            {project.expected_start_date && (
+              <div className="truncate text-xs">{dayjs(project.expected_start_date).format("YYYY-MM-DD") ?? "정해지지 않았어요"}</div>
+            )}
+            {project.expected_start_date && !project.expected_end_date && <div className="text-xs font-normal text-zinc-400 flex-shrink-0">시작</div>}
+            {project.expected_end_date && <ArrowRight className="!size-3 flex-shrink-0" />}
+            {project.expected_end_date && (
+              <div className="truncate text-xs">{dayjs(project.expected_end_date).format("YYYY-MM-DD") ?? "정해지지 않았어요"}</div>
+            )}
+            {!project.expected_start_date && !project.expected_end_date && <div className="truncate text-xs">마감 목표를 설정할 수 있어요</div>}
+          </div>
         </div>
 
         <div className={cn("w-full flex space-x-2 items-center font-medium", project.tasks && project.tasks.length > 0 ? "text-zinc-700" : "text-zinc-400")}>
           <ClipboardList className="!size-3.5 shrink-0" />
-          <div className="truncate text-xs">
+          <div className="truncate text-xs min-w-0 flex-1">
             {project.tasks && project.tasks.length > 0 ? project.tasks[project.tasks.length - 1].subject : "할당된 테스크가 없어요"}
           </div>
         </div>
 
         <div className={cn("w-full flex space-x-2 items-center font-medium", project.creation ? "text-zinc-700" : "text-zinc-400")}>
           <Clock5 className="!size-3.5 shrink-0" />
-          <div className="truncate text-xs">{dayjs(project.creation).fromNow()}</div>
+          <div className="truncate text-xs min-w-0 flex-1">{dayjs(project.creation).fromNow()}</div>
         </div>
       </div>
     </div>

@@ -44,7 +44,7 @@ export function NavGroup({
             <Collapsible key={item.title} asChild defaultOpen={pathname.startsWith(item.url)} className="group/collapsible">
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title} className="[&>svg]:size-5 hover:text-primary data-[active=true]:text-primary">
+                  <SidebarMenuButton tooltip={item.title} className="[&>svg]:size-5 hover:text-primary data-[active=true]:text-primary active:text-primary">
                     {item.icon && (
                       <DynamicFcIcon
                         name={item.icon}
@@ -59,7 +59,11 @@ export function NavGroup({
                   <SidebarMenuSub>
                     {item.items?.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton isActive={pathname.startsWith(item.url)} className="hover:text-primary data-[active=true]:text-primary" asChild>
+                        <SidebarMenuSubButton
+                          isActive={pathname.startsWith(item.url)}
+                          className="hover:text-primary data-[active=true]:text-primary active:text-primary"
+                          asChild
+                        >
                           <Link href={subItem.url}>
                             <span>{subItem.title}</span>
                           </Link>
@@ -74,7 +78,7 @@ export function NavGroup({
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 tooltip={item.title}
-                className="[&>svg]:size-5 hover:text-primary data-[active=true]:text-primary"
+                className="[&>svg]:size-5 hover:text-primary data-[active=true]:text-primary active:text-primary"
                 isActive={pathname.startsWith(item.url)}
                 asChild
               >

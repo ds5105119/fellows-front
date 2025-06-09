@@ -26,7 +26,7 @@ export function NavDocuments({
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton
-              className="[&>svg]:size-5 group-data-[collapsible=icon]:[&>svg]:-ml-0.5 hover:text-primary data-[active=true]:text-primary"
+              className="[&>svg]:size-5 group-data-[collapsible=icon]:[&>svg]:-ml-0.5 hover:text-primary data-[active=true]:text-primary active:text-primary"
               isActive={pathname.startsWith(item.url)}
               asChild
             >
@@ -56,7 +56,7 @@ export function NavDocuments({
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
+          <SidebarMenuButton className="text-sidebar-foreground/70 active:text-primary">
             <MoreHorizontalIcon className="text-sidebar-foreground/70" />
             <span>More</span>
           </SidebarMenuButton>
