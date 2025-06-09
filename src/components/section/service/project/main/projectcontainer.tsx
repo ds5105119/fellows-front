@@ -249,12 +249,11 @@ function TrashZone({ isOverTrash }: { isOverTrash: boolean }) {
     >
       <div
         className={cn(
-          "flex items-center justify-center px-8 py-3 rounded-full transition-all duration-300 border-2 border-dashed",
+          "flex items-center justify-center px-8 py-3 rounded-lg transition-all duration-300 border-2 border-dashed",
           isOverTrash ? "bg-red-500/30 scale-110 border-red-500" : "bg-red-500/10 border-red-300"
         )}
       >
         <Trash2 className={cn("transition-all duration-300", isOverTrash ? "text-red-600 size-8" : "text-red-500 size-6")} />
-        <span className={cn("ml-2 font-medium transition-all duration-300", isOverTrash ? "text-red-600" : "text-red-500")}>여기에 드래그하여 삭제</span>
       </div>
     </motion.div>
   );

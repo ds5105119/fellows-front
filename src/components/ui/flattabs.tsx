@@ -2,7 +2,15 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { type ReactElement, type ReactNode, useRef, useEffect, useState } from "react";
+import {
+  type ReactElement,
+  type ReactNode,
+  useRef,
+  useEffect,
+  useState,
+  useCallback, // ✅
+  useLayoutEffect, // ✅
+} from "react";
 
 const springTransition = {
   type: "spring",
@@ -21,76 +29,69 @@ interface FlattabsProps {
 
 export default function Flattabs({ tabs, activeTab, handleTabChange }: FlattabsProps) {
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // 초기화 시 refs 배열 크기 설정
+  // refs 배열 길이 맞추기
   useEffect(() => {
     tabRefs.current = tabRefs.current.slice(0, tabs.length);
   }, [tabs.length]);
 
-  const updateIndicator = () => {
-    const activeTabElement = tabRefs.current[activeTab];
+  /** 🔧  메모이즈된 인디케이터 위치 계산 함수 */
+  const updateIndicator = useCallback(() => {
+    const activeEl = tabRefs.current[activeTab];
     const container = containerRef.current;
+    if (!activeEl || !container) return;
 
-    if (activeTabElement && container) {
-      const containerRect = container.getBoundingClientRect();
-      const tabRect = activeTabElement.getBoundingClientRect();
+    const { left: cLeft } = container.getBoundingClientRect();
+    const { left, width } = activeEl.getBoundingClientRect();
 
-      setIndicatorStyle({
-        left: tabRect.left - containerRect.left,
-        width: tabRect.width,
-      });
-    }
-  };
+    setIndicatorStyle((prev) =>
+      prev.left === left - cLeft && prev.width === width
+        ? prev // 값이 같으면 setState 생략
+        : { left: left - cLeft, width }
+    );
+  }, [activeTab]); // ← activeTab 바뀔 때만 새 함수
 
+  /* 활성 탭이 바뀌면 즉시 계산 (레이아웃 깜빡임 방지) */
+  useLayoutEffect(updateIndicator, [updateIndicator]);
+
+  /* 탭 배열이 바뀌면 한 프레임 뒤에 계산 */
   useEffect(() => {
-    updateIndicator();
-  }, [activeTab, updateIndicator]);
+    const id = requestAnimationFrame(updateIndicator);
+    return () => cancelAnimationFrame(id);
+  }, [tabs, updateIndicator]);
 
-  useEffect(() => {
-    // 탭 내용이 변경될 때도 업데이트
-    const timeoutId = setTimeout(updateIndicator, 0);
-    return () => clearTimeout(timeoutId);
-  }, [tabs]);
-
-  // 윈도우 크기 변경 시 업데이트
+  /* 윈도 크기 변경에 대응 */
   useEffect(() => {
     window.addEventListener("resize", updateIndicator);
     return () => window.removeEventListener("resize", updateIndicator);
-  }, []);
+  }, [updateIndicator]);
 
   return (
-    <div ref={containerRef} className="relative flex space-x-1 border-b px-2">
-      {tabs.map((tab, idx) => {
-        return (
-          <button
-            key={idx}
-            ref={(el) => {
-              // void 반환을 명시적으로 표시
-              tabRefs.current[idx] = el;
-            }}
-            className={cn(
-              "relative px-3 py-2.5 text-sm font-medium transition-colors outline-none whitespace-nowrap",
-              activeTab === idx ? "text-blue-600" : "text-muted-foreground hover:text-foreground"
-            )}
-            onClick={() => handleTabChange(idx)}
-          >
-            {tab}
-          </button>
-        );
-      })}
+    <div ref={containerRef} className="relative flex space-x-1 border-b px-2 overflow-x-auto">
+      {tabs.map((tab, idx) => (
+        <button
+          key={idx}
+          ref={(el) => {
+            tabRefs.current[idx] = el;
+          }}
+          className={cn(
+            "relative px-3 py-2.5 text-sm font-medium transition-colors whitespace-nowrap outline-none",
+            activeTab === idx ? "text-blue-600" : "text-muted-foreground hover:text-foreground"
+          )}
+          onClick={() => handleTabChange(idx)}
+        >
+          {tab}
+        </button>
+      ))}
+
       <motion.div
         className="absolute bottom-0 h-0.5 bg-blue-500"
-        animate={{
-          left: indicatorStyle.left,
-          width: indicatorStyle.width,
-        }}
+        animate={{ left: indicatorStyle.left, width: indicatorStyle.width }}
         transition={springTransition}
-        style={{
-          left: indicatorStyle.left,
-          width: indicatorStyle.width,
-        }}
+        style={{ left: indicatorStyle.left, width: indicatorStyle.width }}
       />
     </div>
   );

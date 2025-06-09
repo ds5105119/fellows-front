@@ -471,7 +471,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
   return (
     <div className="flex flex-col w-full h-full overflow-y-auto md:overflow-hidden">
       {/* 헤더 */}
-      <div className="shrink-0 flex items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4">
+      <div className="sticky top-0 shrink-0 flex items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4 bg-background z-20">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
             <ArrowLeft className="!size-5" />
