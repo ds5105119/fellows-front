@@ -44,7 +44,7 @@ export default function ProjectEstimator({ project, session }: Props) {
       openWhenHidden: true,
 
       onopen: async (response) => {
-        const ratelimit = parseInt(response.headers.get("x-ratelimit-remaining") ?? "0");
+        const ratelimit = parseInt(response.headers.get("x-ratelimit-remaining") ?? "1");
         const retryAfter = parseInt(response.headers.get("Retry-After") ?? "0");
         setRemaining(ratelimit);
 
