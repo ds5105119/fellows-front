@@ -151,7 +151,7 @@ export default function ProjectMainSection({ session }: { session: Session | nul
             </div>
             <Input
               placeholder="검색어를 입력하세요"
-              className="w-full max-w-96 h-9 px-4 border-0 shadow-none rounded-full focus-visible:ring-0 bg-muted text-sm font-medium"
+              className="w-full max-w-96 h-9 px-4 border-0 shadow-none rounded-full focus-visible:ring-0 bg-muted font-medium"
               onChange={(e) => setInputText(e.target.value)}
             />
           </div>
