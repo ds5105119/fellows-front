@@ -149,7 +149,7 @@ export default function ProjectContainer({
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
       <div className={cn("flex flex-col space-y-1.5", className)}>
-        <div className={cn("w-full flex flex-col rounded-sm space-y-1.5 p-1.5", bg, text)}>
+        <div className={cn("w-full flex flex-col justify-center rounded-sm space-y-1.5 p-1.5", bg, text)}>
           {/* 로딩 상태 */}
           {isLoading && (
             <motion.div
