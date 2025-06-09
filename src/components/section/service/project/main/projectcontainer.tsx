@@ -32,7 +32,6 @@ dayjs.locale("ko");
 
 export default function ProjectContainer({
   meta,
-  name,
   status,
   bg,
   text,
@@ -41,7 +40,6 @@ export default function ProjectContainer({
   session,
 }: {
   meta: SWRMeta;
-  name: string;
   status: string;
   bg: string;
   text: string;
@@ -60,6 +58,7 @@ export default function ProjectContainer({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isOverTrash, setIsOverTrash] = useState(false);
   const [justDropped, setJustDropped] = useState<string | null>(null);
+  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
 
   // 센서 설정 - 드래그 감지를 위한 설정
   const sensors = useSensors(
@@ -81,6 +80,25 @@ export default function ProjectContainer({
     setActiveId(active.id as string);
     setIsDragging(true);
     setJustDropped(null);
+
+    // 실제 드래그된 요소 (드래그 핸들) 찾기
+    const dragHandle = event.activatorEvent?.target as HTMLElement;
+
+    if (dragHandle && event.activatorEvent) {
+      // 드래그 핸들의 부모 컴포넌트 찾기
+      const projectCard = dragHandle.closest("[data-dnd-id]") as HTMLElement;
+
+      if (projectCard && "clientX" in event.activatorEvent && "clientY" in event.activatorEvent) {
+        const mouseEvent = event.activatorEvent as MouseEvent;
+        const cardRect = projectCard.getBoundingClientRect();
+
+        // 컴포넌트 기준 마우스 상대 위치 계산
+        const offsetX = mouseEvent.clientX - cardRect.left - 10;
+        const offsetY = mouseEvent.clientY - cardRect.top - 10;
+
+        setMouseOffset({ x: offsetX, y: offsetY });
+      }
+    }
   };
 
   // 드래그 오버 핸들러
@@ -103,6 +121,7 @@ export default function ProjectContainer({
     setActiveId(null);
     setIsDragging(false);
     setIsOverTrash(false);
+    setMouseOffset({ x: 0, y: 0 }); // 마우스 오프셋 리셋
 
     // 드롭된 아이템 표시 (애니메이션 비활성화용)
     if (droppedId) {
@@ -130,12 +149,6 @@ export default function ProjectContainer({
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
       <div className={cn("flex flex-col space-y-1.5", className)}>
-        <div className="w-full flex items-center space-x-2 text-sm font-light rounded-sm py-2 px-2">
-          {name == "계획 중" ? <div className="size-3 rounded-full border-2 border-dashed border-gray-400" /> : <div className={cn(text)}>●</div>}
-          <div className="grow">
-            <h2 className="text-base font-bold text-muted-foreground">{name}</h2>
-          </div>
-        </div>
         <div className={cn("w-full flex flex-col rounded-sm space-y-1.5 p-1.5", bg, text)}>
           {/* 로딩 상태 */}
           {isLoading && (
@@ -222,15 +235,14 @@ export default function ProjectContainer({
         {activeId && activeProject && (
           <div
             className={cn(
-              "w-fit rounded-sm overflow-clip outline-[5px] outline-gray-900/10 border-1",
-              isOverTrash ? "scale-90 opacity-70" : "scale-105 drop-shadow-xl",
+              "w-[16rem] rounded-sm overflow-clip outline-[5px] outline-gray-900/10 border-1",
+              isOverTrash ? "scale-90 opacity-70" : "drop-shadow-xl",
               border
             )}
             style={{
-              // CSS transition 대신 즉시 변화
-              transform: isOverTrash ? "scale(0.9)" : "scale(1.05)",
+              transform: `translate(-${mouseOffset.x}px, -${mouseOffset.y}px) ${isOverTrash ? "scale(0.9)" : "scale(1.0)"}`,
               opacity: isOverTrash ? 0.7 : 1,
-              transition: "none", // 애니메이션 완전 제거
+              transition: "none",
             }}
           >
             <div className="relative flex flex-col space-y-1.5 rounded-xs bg-white items-center p-4">
@@ -279,6 +291,25 @@ export default function ProjectContainer({
                     <div className="truncate text-xs">마감 목표를 설정할 수 있어요</div>
                   )}
                 </div>
+              </div>
+
+              <div
+                className={cn(
+                  "w-full flex space-x-2 items-center font-medium",
+                  activeProject.tasks && activeProject.tasks.length > 0 ? "text-zinc-700" : "text-zinc-400"
+                )}
+              >
+                <ClipboardList className="!size-3.5 shrink-0" />
+                <div className="truncate text-xs min-w-0 flex-1">
+                  {activeProject.tasks && activeProject.tasks.length > 0
+                    ? activeProject.tasks[activeProject.tasks.length - 1].subject
+                    : "할당된 테스크가 없어요"}
+                </div>
+              </div>
+
+              <div className={cn("w-full flex space-x-2 items-center font-medium", activeProject.creation ? "text-zinc-700" : "text-zinc-400")}>
+                <Clock5 className="!size-3.5 shrink-0" />
+                <div className="truncate text-xs min-w-0 flex-1">{dayjs(activeProject.creation).fromNow()}</div>
               </div>
             </div>
           </div>
@@ -349,7 +380,7 @@ function ProjectItem({
   }
 
   return (
-    <div className="w-full text-gray-900 select-none">
+    <div className="w-full text-gray-900 select-none" data-dnd-id={id}>
       {/* 프로젝트 내용 - 클릭 가능 */}
       <div
         className={cn(
@@ -372,7 +403,7 @@ function ProjectItem({
 
           <div className="flex items-center space-x-2 flex-shrink-0">
             <div
-              className="size-6 rounded-sm flex items-center justify-center hover:bg-neutral-200 cursor-grab active:cursor-grabbing"
+              className="size-6 rounded-sm items-center justify-center hover:bg-neutral-200 cursor-grab active:cursor-grabbing hidden lg:flex"
               ref={setNodeRef}
               {...attributes}
               {...listeners}

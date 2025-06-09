@@ -24,9 +24,7 @@ export default function ProjectEstimator({ project, session }: Props) {
   const initialized = useRef(false);
 
   const onClick = useCallback(() => {
-    if (ctrl) {
-      ctrl.abort();
-    }
+    if (ctrl) ctrl.abort();
 
     const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project.project_name}/estimate`;
     const newCtrl = new AbortController();
@@ -49,7 +47,7 @@ export default function ProjectEstimator({ project, session }: Props) {
         setRemaining(ratelimit);
 
         if (response.ok) {
-          toast.info("AI 견적이 생성 중 입니다.", { description: `남은 요청 횟수: ${ratelimit}` });
+          toast.info("AI 견적이 생성 중 입니다.");
         } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
           const errorData = await response.json().catch(() => ({ message: "Client error" }));
           toast.error("API 호출에 실패했습니다.", {

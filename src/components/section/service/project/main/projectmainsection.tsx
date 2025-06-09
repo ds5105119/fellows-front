@@ -7,6 +7,8 @@ import ProjectContainer from "./projectcontainer";
 import useSWRInfinite, { SWRInfiniteKeyLoader, SWRInfiniteResponse } from "swr/infinite";
 import { useState, useEffect, useRef } from "react";
 import { Session } from "next-auth";
+import { cn } from "@/lib/utils";
+import { useInView } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -16,7 +18,6 @@ import { ERPNextProjectPageSchema, ERPNextProjectPageType } from "@/@types/servi
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
-import { useInView } from "framer-motion";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -132,13 +133,11 @@ const ProjectStatusColumn = ({
   );
 };
 
-/**
- * 메인 컴포넌트
- */
 export default function ProjectMainSection({ session }: { session: Session | null }) {
   const [orderBy, setOrderBy] = useState<string>(orders[0].value);
   const [inputText, setInputText] = useState<string>("");
   const [processCount, setProcessCount] = useState(0);
+  const [tabIndex, setTabIndex] = useState<number>(0);
   const keyword = useThrottle(inputText, 700);
 
   return (
@@ -181,18 +180,57 @@ export default function ProjectMainSection({ session }: { session: Session | nul
         </div>
       </div>
 
-      {/* 프로젝트 컬럼 그리드 */}
-      <div className="w-full grid grid-cols-1 lg:grid-cols-5 gap-4 px-4 md:px-8">
+      {/* PC 프로젝트 컬럼 그리드 */}
+      <div className="w-full hidden lg:grid lg:grid-cols-[repeat(auto-fit,minmax(16rem,16rem))] gap-4 px-4 md:px-8">
         {statuses.map((status) => (
-          <ProjectStatusColumn
-            key={status}
-            status={status}
-            keyword={keyword}
-            orderBy={orderBy}
-            session={session}
-            onProcessCountChange={status === "process" ? setProcessCount : undefined}
-          />
+          <div key={status} className="w-full space-y-1">
+            <div className="w-full flex items-center space-x-2 text-sm font-light rounded-sm py-2 px-2">
+              {containerProps[status].name == "계획 중" ? (
+                <div className="size-3 rounded-full border-2 border-dashed border-gray-400" />
+              ) : (
+                <div className={containerProps[status].text}>●</div>
+              )}
+              <div className="grow">
+                <h2 className="text-base font-bold text-muted-foreground">{containerProps[status].name}</h2>
+              </div>
+            </div>
+
+            <ProjectStatusColumn
+              status={status}
+              keyword={keyword}
+              orderBy={orderBy}
+              session={session}
+              onProcessCountChange={status === "process" ? setProcessCount : undefined}
+            />
+          </div>
         ))}
+      </div>
+
+      {/* 모바일 프로젝트 컬럼 그리드 */}
+      <div className="flex flex-col w-full lg:hidden space-y-4 px-4 md:px-8">
+        <div className="flex h-full space-x-1 overflow-x-scroll scrollbar-hide">
+          {statuses.map((status) => (
+            <button
+              key={status}
+              className={cn(
+                "flex items-center space-x-2 text-sm font-light rounded-sm py-1.5 px-3",
+                status === statuses[tabIndex] ? `${containerProps[statuses[tabIndex]].text} ${containerProps[statuses[tabIndex]].bg}` : "hover:bg-muted/50"
+              )}
+              onClick={() => setTabIndex(statuses.indexOf(status))}
+            >
+              <div className="grow">
+                <h2 className="text-base font-bold">{containerProps[status].name}</h2>
+              </div>
+            </button>
+          ))}
+        </div>
+        <ProjectStatusColumn
+          status={statuses[tabIndex]}
+          keyword={keyword}
+          orderBy={orderBy}
+          session={session}
+          onProcessCountChange={statuses[tabIndex] === "process" ? setProcessCount : undefined}
+        />
       </div>
     </div>
   );
