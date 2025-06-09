@@ -249,7 +249,7 @@ function TrashZone({ isOverTrash }: { isOverTrash: boolean }) {
     >
       <div
         className={cn(
-          "flex items-center justify-center px-8 py-3 rounded-lg transition-all duration-300 border-2 border-dashed",
+          "flex items-center justify-center px-4 py-4 rounded-lg transition-all duration-300 border-2 border-dashed",
           isOverTrash ? "bg-red-500/30 scale-110 border-red-500" : "bg-red-500/10 border-red-300"
         )}
       >
