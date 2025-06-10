@@ -171,11 +171,6 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
     }, []);
   }, [detailedProject.data?.custom_files]);
 
-  const getFile = async (algorithm: string, key: string, sse_key: string, filename: string) => {
-    const presigned = await getPresignedGetUrl(algorithm, key, sse_key);
-    return await downloadFilefromPresignedUrl(presigned);
-  };
-
   const uploadFiles = async (file: File) => {
     const isDuplicate = (detailedProject.data?.custom_files || []).some((f) => f.file_name === file.name);
     if (isDuplicate) {
@@ -843,12 +838,9 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
                             <p className="truncate text-sm">{f.file_name}</p>
                           </div>
 
-                          <button
-                            className="w-8 h-8 flex items-center justify-center rounded-sm hover:bg-muted cursor-pointer transition-colors duration-200"
-                            onClick={() => getFile(f.algorithm, f.key, f.sse_key, f.file_name)}
-                          >
+                          <FileDownloadButton file={f}>
                             <DownloadCloud className="!size-5 text-blue-500" />
-                          </button>
+                          </FileDownloadButton>
 
                           <div
                             className={cn(
