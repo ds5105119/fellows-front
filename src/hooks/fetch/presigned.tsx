@@ -169,7 +169,7 @@ export function FileDownloadButton({ file, children, className }: { file: ERPNex
       const presigned = await getPresignedGetUrl(file.algorithm, file.key, file.sse_key);
       const { blob, mime } = await downloadFilefromPresignedUrl(presigned);
       handleFileDownloadOrPreview(blob, mime, file.file_name);
-    } catch (err) {
+    } catch {
       toast("다운로드에 실패했어요");
     } finally {
       setLoading(false);
