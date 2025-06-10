@@ -2,7 +2,7 @@
 
 import { PresignedUrlResponseSchema, PresignedUrlResponseType } from "@/@types/accounts/cloud";
 import { ERPNextProjectFileRowType } from "@/@types/service/erpnext";
-import { cn } from "@/lib/utils";
+import { cn, isIOS } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -19,11 +19,6 @@ function canPreview(mime = "", ext = ""): boolean {
   const okByExt = ["png", "jpg", "jpeg", "gif", "webp", "svg", "txt", "md", "pdf", "mp4", "mp3"].includes(ext.toLowerCase());
   return okByMime || okByExt;
 }
-
-const isIOS = (): boolean => {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-};
-
 export interface UploadProgress {
   percent: number;
   loaded: number;
