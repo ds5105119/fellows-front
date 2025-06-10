@@ -352,12 +352,12 @@ export default function CreateProject({ session }: { session: Session | null }) 
   };
 
   return (
-    <div className="flex w-full h-full">
+    <div className="flex w-full h-full min-h-screen">
       <div className="hidden xl:flex h-full flex-col max-w-md shrink-0 scrollbar-hide pl-20 pr-10">
         <CreateProjectSide />
       </div>
 
-      <div className="w-full mx-auto xl:mx-0 lg:w-xl h-full scrollbar-hide shrink-0 flex flex-col items-center">
+      <div className="flex flex-col w-full mx-auto xl:mx-0 lg:w-xl h-full scrollbar-hide shrink-0">
         {!isRecommend ? (
           <div className="w-full px-5 md:px-8 py-6 md:py-10">
             <div className="mb-10 flex items-end justify-between">
@@ -397,7 +397,7 @@ export default function CreateProject({ session }: { session: Session | null }) 
           </div>
         )}
 
-        <div ref={targetRef} />
+        <div ref={targetRef} className="grow" />
 
         {!isRecommend && (
           <div className="w-full sticky bottom-0 z-20 px-5 sm:px-8">

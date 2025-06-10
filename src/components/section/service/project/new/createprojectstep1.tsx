@@ -59,8 +59,8 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
               {getEnumValues(PlatformEnumZod).map((platform) => (
                 <Button
                   className={cn(
-                    "col-span-1 h-12 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-xl",
-                    (field.value || []).some((p) => p.platform == platform) ? "bg-blue-100" : "bg-gray-100 hover:bg-gray-300"
+                    "col-span-1 h-11 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-md",
+                    (field.value || []).some((p) => p.platform == platform) ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
                   )}
                   type="button"
                   key={platform as string}
@@ -92,8 +92,8 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                     type="button"
                     key={level as string}
                     className={cn(
-                      "col-span-1 border-none shadow-none p-2.5 rounded-xl h-12",
-                      level === field.value ? "bg-blue-100" : "bg-gray-100 hover:bg-gray-300"
+                      "col-span-1 h-11 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-md",
+                      level === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
                     )}
                     onClick={() => field.onChange(level)}
                   >
