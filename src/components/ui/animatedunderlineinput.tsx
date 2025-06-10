@@ -23,7 +23,7 @@ const AnimatedUnderlineInput = forwardRef<HTMLInputElement, ComponentProps<"inpu
           setFocused(false);
           props.onBlur?.(e);
         }}
-        className={cn("font-medium border-0 border-b-2 rounded-none shadow-none px-1 h-10 focus-visible:ring-0", className)}
+        className={cn("font-medium border-0 border-b-2 rounded-none shadow-none px-0 h-10 focus-visible:ring-0", className)}
       />
 
       {/* 회색 기본 밑줄 */}

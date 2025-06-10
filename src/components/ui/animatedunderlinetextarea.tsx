@@ -74,7 +74,7 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
         }}
         wrap="soft"
         className={cn(
-          "!max-w-full font-medium border-0 border-b-2 rounded-none shadow-none px-1 h-10 min-h-10 focus-visible:ring-0",
+          "!max-w-full font-medium border-0 border-b-2 rounded-none shadow-none px-0 h-10 min-h-10 focus-visible:ring-0",
           "resize-none whitespace-pre-line break-all transition-all duration-200 ease-in-out",
           "leading-normal py-2", // 명시적인 padding과 line-height 설정
           isAtMaxHeight ? "overflow-y-auto" : "overflow-hidden",
