@@ -290,22 +290,6 @@ export default function CreateProject({ session }: { session: Session | null }) 
     return true;
   }, [trigger, errors, currentStep, getValues, setIsStepping, setCurrentStep]);
 
-  const preparePayload = useCallback((values: UserERPNextProjectType) => {
-    const payload = { ...values };
-
-    if (payload.custom_features) {
-      const etcFeatureIndex = payload.custom_features.findIndex((f) => f.feature.startsWith("기타:"));
-      if (etcFeatureIndex > -1 && payload.custom_features[etcFeatureIndex].feature.replace("기타:", "").trim() === "") {
-        payload.custom_features.splice(etcFeatureIndex, 1);
-      }
-      if (payload.custom_features.length === 0) {
-        payload.custom_features = null;
-      }
-    }
-
-    return payload;
-  }, []);
-
   const postProjectData = useCallback(async (payload: UserERPNextProjectType): Promise<ERPNextProjectType> => {
     const response = await fetch("/api/service/project", {
       method: "POST",
@@ -356,8 +340,7 @@ export default function CreateProject({ session }: { session: Session | null }) 
 
     setIsLoading(true);
     try {
-      const payload = preparePayload(values);
-      const project = await postProjectData(payload);
+      const project = await postProjectData(values);
       handleSuccessfulSubmission(project);
     } catch {
       toast.error("프로젝트 업데이트 중 오류가 발생했어요", {
