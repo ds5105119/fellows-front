@@ -376,7 +376,7 @@ export default function CreateProject({ session }: { session: Session | null }) 
 
       <div className="w-full mx-auto xl:mx-0 lg:w-xl h-full scrollbar-hide shrink-0 flex flex-col items-center">
         {!isRecommend ? (
-          <div className="w-full px-5 sm:px-8 py-16 sm:py-10">
+          <div className="w-full px-5 md:px-8 py-6 md:py-10">
             <div className="mb-10 flex items-end justify-between">
               <div className="w-full">
                 <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
