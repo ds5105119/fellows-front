@@ -396,7 +396,7 @@ export default function CreateProject({ session }: { session: Session | null }) 
                     </div>
                   </div>
 
-                  <div className="w-full flex space-x-2">
+                  <div className="w-full flex space-x-1.5">
                     <CheckIcon className="mt-[0.25rem] !size-5 text-blue-500" strokeWidth={3} />
                     <div className="space-x-1">
                       <span className="text-sm font-bold text-blue-500">필수</span>
