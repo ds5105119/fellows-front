@@ -171,6 +171,15 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
     }, []);
   }, [detailedProject.data?.custom_files]);
 
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast("프로젝트 링크가 복사되었습니다.");
+    } catch {
+      toast("프로젝트 링크 복사에 실패했습니다.");
+    }
+  };
+
   const uploadFiles = async (file: File) => {
     const isDuplicate = (detailedProject.data?.custom_files || []).some((f) => f.file_name === file.name);
     if (isDuplicate) {
@@ -471,7 +480,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
           <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
             <ArrowLeft className="!size-5" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
+          <Button variant="ghost" size="icon" onClick={handleCopy} className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
             <LinkIcon className="!size-5" />
           </Button>
         </div>

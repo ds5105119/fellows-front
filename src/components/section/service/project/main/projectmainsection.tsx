@@ -4,16 +4,19 @@ import Link from "next/link";
 import useThrottle from "@/lib/useThrottle";
 import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
 import ProjectContainer from "./projectcontainer";
+import ProjectDetailSheet from "./projectdetailsheet";
 import useSWRInfinite, { SWRInfiniteKeyLoader, SWRInfiniteResponse } from "swr/infinite";
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { Session } from "next-auth";
 import { cn } from "@/lib/utils";
 import { useInView } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Plus, Info } from "lucide-react";
-import { ERPNextProjectPageSchema, ERPNextProjectPageType } from "@/@types/service/erpnext";
+import { ERPNextProjectPageSchema, ERPNextProjectPageType, ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -80,13 +83,13 @@ const ProjectStatusColumn = ({
   status,
   keyword,
   orderBy,
-  session,
+  setSelectedProject,
   onProcessCountChange,
 }: {
   status: Status;
   keyword: string;
   orderBy: string;
-  session: Session | null;
+  setSelectedProject: (project: ERPNextProjectType | null) => void;
   onProcessCountChange?: (count: number) => void;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -127,18 +130,54 @@ const ProjectStatusColumn = ({
 
   return (
     <div className="flex flex-col">
-      <ProjectContainer meta={meta} status={status} session={session} {...containerProps[status]} />
+      <ProjectContainer meta={meta} status={status} {...containerProps[status]} setSelectedProject={setSelectedProject} />
       <div className="w-full h-1" ref={ref} />
     </div>
   );
 };
 
-export default function ProjectMainSection({ session }: { session: Session | null }) {
+export default function ProjectMainSection({ session, project_id }: { session: Session | null; project_id?: string }) {
   const [orderBy, setOrderBy] = useState<string>(orders[0].value);
   const [inputText, setInputText] = useState<string>("");
   const [processCount, setProcessCount] = useState(0);
   const [tabIndex, setTabIndex] = useState<number>(0);
+  const [selectedProject, setSelectedProject] = useState<ERPNextProjectType | null>(null);
+  const [openSheet, setOpenSheet] = useState(false);
   const keyword = useThrottle(inputText, 700);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (selectedProject) {
+      const segments = pathname.split("/");
+
+      if (segments[segments.length - 1] === "project") segments.push(selectedProject.project_name);
+      else segments[segments.length - 1] = selectedProject.project_name;
+
+      const newPath = segments.join("/");
+
+      window.history.replaceState(null, "", newPath);
+      setOpenSheet(true);
+    }
+  }, [selectedProject]);
+
+  useEffect(() => {
+    if (!!project_id) {
+      const emptyProject = ERPNextProjectZod.parse({ project_name: project_id });
+      setSelectedProject(emptyProject);
+    }
+  }, [project_id]);
+
+  useEffect(() => {
+    if (!openSheet) {
+      const segments = pathname.split("/");
+
+      if (segments[segments.length - 1] === "project") return;
+
+      const newPath = segments.slice(0, -1).join("/");
+
+      window.history.replaceState(null, "", newPath);
+    }
+  }, [openSheet]);
 
   return (
     <div className="flex flex-col w-full space-y-4">
@@ -201,7 +240,7 @@ export default function ProjectMainSection({ session }: { session: Session | nul
               status={status}
               keyword={keyword}
               orderBy={orderBy}
-              session={session}
+              setSelectedProject={setSelectedProject}
               onProcessCountChange={status === "process" ? setProcessCount : undefined}
             />
           </div>
@@ -233,10 +272,21 @@ export default function ProjectMainSection({ session }: { session: Session | nul
           status={statuses[tabIndex]}
           keyword={keyword}
           orderBy={orderBy}
-          session={session}
+          setSelectedProject={setSelectedProject}
           onProcessCountChange={statuses[tabIndex] === "process" ? setProcessCount : undefined}
         />
       </div>
+
+      {/* 프로젝트 선택 시 팝업 */}
+      <Sheet open={openSheet} onOpenChange={setOpenSheet}>
+        <SheetContent className="w-full sm:max-w-full md:w-3/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0">
+          <SheetHeader className="sr-only">
+            <SheetTitle>{selectedProject?.custom_project_title ?? "프로젝트가 선택되지 않았습니다."}</SheetTitle>
+          </SheetHeader>
+          <ProjectDetailSheet project={selectedProject} onClose={() => setOpenSheet(false)} session={session} />
+          <SheetDescription className="sr-only" />
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

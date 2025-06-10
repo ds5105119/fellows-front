@@ -2,12 +2,9 @@
 
 import Link from "next/link";
 import ProjectDropdownMenu from "./projectdropdownmenu";
-import ProjectDetailSheet from "./projectdetailsheet";
 import { useState } from "react";
-import type { Session } from "next-auth";
 import { cn } from "@/lib/utils";
 import type { SWRMeta } from "./projectmainsection";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Plus, PencilLine, Receipt, Calendar, ArrowRight, Clock5, ClipboardList, Trash2, SquareMousePointer, Loader2 } from "lucide-react";
 import {
   DndContext,
@@ -37,7 +34,7 @@ export default function ProjectContainer({
   text,
   border,
   className,
-  session,
+  setSelectedProject,
 }: {
   meta: SWRMeta;
   status: string;
@@ -45,12 +42,10 @@ export default function ProjectContainer({
   text: string;
   border: string;
   className?: string;
-  session: Session | null;
+  setSelectedProject: (project: ERPNextProjectType | null) => void;
 }) {
   const projects = meta.data?.items || [];
   const isLoading = meta.swr.isLoading;
-  const [selectedProject, setSelectedProject] = useState<(typeof projects)[0] | null>(null);
-  const [openSheet, setOpenSheet] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   // DnD 관련 상태
@@ -186,7 +181,6 @@ export default function ProjectContainer({
                     meta={meta}
                     onSelect={() => {
                       setSelectedProject(project);
-                      setOpenSheet(true);
                     }}
                     id={`project-${idx}`}
                     justDropped={justDropped === `project-${idx}`}
@@ -213,17 +207,6 @@ export default function ProjectContainer({
               </Link>
             </motion.div>
           )}
-
-          {/* 프로젝트 선택 시 팝업 */}
-          <Sheet open={openSheet} onOpenChange={setOpenSheet}>
-            <SheetContent className="w-full sm:max-w-full md:w-3/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0">
-              <SheetHeader className="sr-only">
-                <SheetTitle>{selectedProject?.custom_project_title ?? "프로젝트가 선택되지 않았습니다."}</SheetTitle>
-              </SheetHeader>
-              <ProjectDetailSheet project={selectedProject} onClose={() => setOpenSheet(false)} session={session} />
-              <SheetDescription className="sr-only" />
-            </SheetContent>
-          </Sheet>
         </div>
       </div>
 

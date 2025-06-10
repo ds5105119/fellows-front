@@ -159,7 +159,7 @@ export const ERPNextProjectZod = z.object({
     .nullish()
     .transform((val) => (val ? new Date(val) : null)),
 
-  naming_series: z.string().default("PROJ-.####"),
+  naming_series: z.string().nullish().default("PROJ-.####"),
   project_name: z.string(),
   status: ERPNextProjectStatusEnumZod.nullish().default(ERPNextProjectStatusEnumZod.Enum.Open),
   project_type: z.string().nullish(),

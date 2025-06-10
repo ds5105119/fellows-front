@@ -11,8 +11,8 @@ export default async function Page() {
   const session = await auth();
 
   return (
-    <div className="grid grid-cols-4 md:grid-cols-12 gap-6 mb-8">
-      <div className="col-span-full">
+    <div className="w-full mb-8">
+      <div className="w-full">
         <ProjectMainSection session={session} />
       </div>
     </div>
