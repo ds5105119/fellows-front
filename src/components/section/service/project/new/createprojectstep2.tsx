@@ -2,7 +2,6 @@
 
 import { UseFormReturn } from "react-hook-form";
 import { FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import { categorizedFeatures } from "@/components/resource/project";
 import { FeatureItemWithTooltip } from "@/components/form/featureitemwithtooltip";
 import { UserERPNextProjectType } from "@/@types/service/erpnext";
@@ -13,7 +12,6 @@ interface CreateProjectFormStep2Props {
 
 export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2Props) {
   const { control } = form;
-  const prefix = "기타:";
 
   return (
     <>

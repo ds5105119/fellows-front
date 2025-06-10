@@ -4,11 +4,12 @@ import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { readinessLevelLabels } from "@/components/resource/project";
 import { PlatformEnumZod, ReadinessLevelEnumZod, UserERPNextProjectType } from "@/@types/service/erpnext";
+import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
+import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
+
 interface CreateProjectFormStep1Props {
   form: UseFormReturn<UserERPNextProjectType>;
 }
@@ -29,12 +30,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
           <FormItem>
             <FormLabel className="text-sm font-medium">프로젝트 이름</FormLabel>
             <FormControl>
-              <Input
-                placeholder="프로젝트의 이름을 입력해주세요. (예: 쇼핑몰 구축)"
-                className="font-medium focus-visible:ring-0 rounded-xl bg-gray-100 border-0 px-6 h-12"
-                {...field}
-                value={field.value ?? ""}
-              />
+              <AnimatedUnderlineInput placeholder="프로젝트의 이름을 입력해주세요. (예: 쇼핑몰 구축)" {...field} value={field.value ?? ""} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -47,12 +43,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
           <FormItem>
             <FormLabel className="text-sm font-medium">프로젝트 개요</FormLabel>
             <FormControl>
-              <Textarea
-                placeholder="프로젝트의 주요 구현 목표에 대해 설명해주세요."
-                className="font-medium focus-visible:ring-0 rounded-xl bg-gray-100 border-0 px-6 py-4 min-h-36"
-                {...field}
-                value={field.value ?? ""}
-              />
+              <AnimatedUnderlineTextarea placeholder="프로젝트의 주요 구현 목표에 대해 설명해주세요." {...field} value={field.value ?? ""} />
             </FormControl>
             <FormMessage />
           </FormItem>
