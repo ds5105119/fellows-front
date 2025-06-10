@@ -48,7 +48,7 @@ export default function MarkdownPreview({
   ) : (
     <motion.div
       ref={containerRef}
-      className="relative overflow-hidden"
+      className="relative overflow-hidden w-full"
       animate={{ maxHeight: clipHeight }}
       initial={false}
       transition={{ duration: 0.5, ease: "linear" }}

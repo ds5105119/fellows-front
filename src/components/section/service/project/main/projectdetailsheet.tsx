@@ -408,7 +408,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
 
           <div className="w-full">
             {project.custom_ai_estimate && (
-              <div className="w-full pt-2 prose prose-h2:text-base prose-p:text-sm prose-a:text-sm">
+              <div className="w-full max-w-full pt-2 prose prose-h2:text-base prose-p:text-sm prose-a:text-sm">
                 <MarkdownPreview loading={false}>{project.custom_ai_estimate}</MarkdownPreview>
               </div>
             )}
