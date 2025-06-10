@@ -31,7 +31,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
             <FormControl>
               <Input
                 placeholder="프로젝트의 이름을 입력해주세요. (예: 쇼핑몰 구축)"
-                className="text-base font-semibold focus-visible:ring-0 rounded-2xl bg-gray-100 border-0 px-6 h-12"
+                className="font-medium focus-visible:ring-0 rounded-2xl bg-gray-100 border-0 px-6 h-12"
                 {...field}
                 value={field.value ?? ""}
               />
@@ -49,7 +49,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
             <FormControl>
               <Textarea
                 placeholder="프로젝트의 주요 구현 목표에 대해 설명해주세요."
-                className="text-base font-semibold focus-visible:ring-0 rounded-2xl bg-gray-100 border-0 px-6 py-4 min-h-36"
+                className="font-medium focus-visible:ring-0 rounded-2xl bg-gray-100 border-0 px-6 py-4 min-h-36"
                 {...field}
                 value={field.value ?? ""}
               />
@@ -68,8 +68,8 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
               {getEnumValues(PlatformEnumZod).map((platform) => (
                 <Button
                   className={cn(
-                    "col-span-1 h-12 hover:bg-gray-300 font-semibold transition-colors duration-200 ease-in-out rounded-2xl",
-                    (field.value || []).some((p) => p.platform == platform) ? "!bg-blue-100 text-blue-600" : "bg-gray-100"
+                    "col-span-1 h-12 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-2xl",
+                    (field.value || []).some((p) => p.platform == platform) ? "bg-blue-100" : "bg-gray-100 hover:bg-gray-300"
                   )}
                   type="button"
                   key={platform as string}
@@ -101,14 +101,12 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                     type="button"
                     key={level as string}
                     className={cn(
-                      "col-span-1 border-none shadow-none bg-gray-100 p-2.5 rounded-2xl h-12",
-                      level === field.value ? "!bg-blue-100 text-blue-600" : "bg-gray-100"
+                      "col-span-1 border-none shadow-none p-2.5 rounded-2xl h-12",
+                      level === field.value ? "bg-blue-100" : "bg-gray-100 hover:bg-gray-300"
                     )}
                     onClick={() => field.onChange(level)}
                   >
-                    <div className="text-sm font-semibold">
-                      {readinessLevelLabels[level]?.icon} {readinessLevelLabels[level]?.title || level}
-                    </div>
+                    <div className="text-sm font-semibold">{readinessLevelLabels[level]?.title || level}</div>
                   </button>
                 ))}
               </div>

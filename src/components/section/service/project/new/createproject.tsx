@@ -408,7 +408,7 @@ export default function CreateProject({ session }: { session: Session | null }) 
               </div>
             </div>
 
-            <div className="flex mt-24 md:mt-28 mb-64 md:mb-64">
+            <div className="flex mt-16 md:mt-28 mb-64 md:mb-64">
               <AIRecommendSkeleton isLoading={isRecommandFetch} />
             </div>
           </div>
@@ -423,7 +423,7 @@ export default function CreateProject({ session }: { session: Session | null }) 
               {currentStep > 1 && (
                 <Button
                   type="button"
-                  className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
+                  className="flex-1 w-1/2 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-base md:text-lg font-semibold"
                   variant="secondary"
                   onClick={(e) => handlePrev(e)}
                   disabled={isLoading || isStepping} // isStepping 추가
@@ -433,7 +433,7 @@ export default function CreateProject({ session }: { session: Session | null }) 
               )}
               {currentStep < totalSteps ? (
                 <Button
-                  className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
+                  className="flex-1 w-1/2 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-base md:text-lg font-semibold"
                   type="button"
                   onClick={(e) => handleNext(e)}
                   disabled={isLoading || isNextButtonDisabled} // isNextButtonDisabled에 isStepping 포함됨
@@ -442,7 +442,7 @@ export default function CreateProject({ session }: { session: Session | null }) 
                 </Button>
               ) : (
                 <Button
-                  className="flex-1 w-1/2 h-[3.75rem] rounded-2xl text-lg font-semibold"
+                  className="flex-1 w-1/2 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-base md:text-lg font-semibold"
                   disabled={isLoading || !isDirty || !isFormValid || isStepping} // isStepping 추가
                   onClick={handleSubmit(onSubmit)}
                 >

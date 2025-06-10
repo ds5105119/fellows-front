@@ -44,12 +44,6 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
             <Textarea
               className="text-base font-semibold focus-visible:ring-0 rounded-2xl bg-gray-100 border-0 px-6 py-4 min-h-36 mt-6"
               placeholder="혹시 더 필요한 기능이 있다면 적어주세요."
-              value={
-                (field.value || [])
-                  .find((f) => f.feature.startsWith(prefix))
-                  ?.feature.replace(prefix, "")
-                  .trim() || ""
-              }
               onChange={(e) => {
                 const current = field.value || [];
                 const value = e.target.value;

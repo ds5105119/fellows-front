@@ -3,7 +3,6 @@
 import { UseFormReturn } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { SwitchIndicator } from "@/components/ui/switch-indicator";
 import DatePickerWithRange from "@/components/form/datepickerwithrange";
 import TagInput from "@/components/form/taginput";
@@ -41,32 +40,14 @@ export default function CreateProjectFormStep3({ form }: CreateProjectFormStep3P
                 className="text-base font-semibold focus-visible:ring-0 rounded-2xl bg-gray-100 border-0 px-6 h-12"
                 type="number"
                 min="0"
+                max="200"
                 placeholder="예상 페이지 수를 적어주세요."
                 {...field}
                 value={field.value ?? ""}
                 onChange={(e) => {
                   const val = e.target.value;
-                  field.onChange(val === "" ? null : parseInt(val, 10));
+                  field.onChange(!val ? undefined : parseInt(val, 10));
                 }}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name="custom_design_requirements"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm font-medium">디자인 요구사항</FormLabel>
-            <FormControl>
-              <Textarea
-                placeholder="디자인 관련 요구사항을 입력해주세요. (예: Figma 시안 보유, 특정 스타일 선호 등)"
-                className="text-base font-semibold focus-visible:ring-0 rounded-2xl bg-gray-100 border-0 px-6 py-4 min-h-36"
-                {...field}
-                value={field.value ?? ""}
-                onChange={(e) => field.onChange(e.target.value || null)}
               />
             </FormControl>
             <FormMessage />
@@ -148,17 +129,10 @@ export default function CreateProjectFormStep3({ form }: CreateProjectFormStep3P
                   onClick={() => field.onChange(!field.value)}
                 >
                   <div className="text-sm font-semibold whitespace-pre-wrap text-left">
-                    {field.value ? (
-                      <div className="flex flex-col space-y-0.5">
-                        <span>출시 후 정기적인 유지보수가 필요해요.</span>
-                        <span className="font-normal text-neutral-500">유지보수 비용은 프로젝트의 크기에 따라 달라집니다.</span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col space-y-0.5">
-                        <span>출시 후 유지보수가 필요하지 않아요.</span>
-                        <span className="font-normal text-neutral-500">1개월동안만 무상 유지보수가 지원됩니다.</span>
-                      </div>
-                    )}
+                    <div className="flex flex-col space-y-0.5">
+                      <span>유지보수</span>
+                      <span className="font-normal text-neutral-500">유지보수 비용은 프로젝트의 크기에 따라 달라집니다.</span>
+                    </div>
                   </div>
                   <SwitchIndicator checked={field.value || false} />
                 </button>

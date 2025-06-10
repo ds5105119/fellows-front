@@ -424,7 +424,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
             {project.custom_project_status === "draft" && project.custom_ai_estimate ? (
               <Button
                 size="lg"
-                className="w-full px-16 h-[3.75rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500"
+                className="w-full px-16 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500"
                 onClick={submitProject}
               >
                 계약 문의하기
@@ -432,13 +432,13 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
             ) : project.custom_project_status === "process:1" ? (
               <Button
                 size="lg"
-                className="w-full px-16 h-[3.75rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500"
+                className="w-full px-16 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500"
                 onClick={cancelSubmit}
               >
                 계약 문의 취소하기
               </Button>
             ) : (
-              <Button size="lg" className="w-full px-16 h-[3.75rem] rounded-2xl text-lg font-semibold" asChild>
+              <Button size="lg" className="w-full px-16 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-lg font-semibold" asChild>
                 <Link href={`./project/${project.project_name}`}>지금 바로 예상 견적을 받아보세요 ✨</Link>
               </Button>
             )}

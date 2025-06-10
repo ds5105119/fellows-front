@@ -31,7 +31,7 @@ export default function MainStartButton() {
       >
         <div className="w-full h-4" />
         <div className="w-full flex pb-4 pt-3">
-          <Button size="lg" className="w-full px-16 h-[3.75rem] rounded-2xl text-lg font-semibold bg-black hover:bg-zinc-800" asChild>
+          <Button size="lg" className="w-full px-16 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-lg font-semibold bg-black hover:bg-zinc-800" asChild>
             <Link href="/service/dashboard">시작하기</Link>
           </Button>
         </div>
