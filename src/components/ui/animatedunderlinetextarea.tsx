@@ -22,12 +22,15 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
   const adjustHeight = () => {
     const textarea = internalRef.current;
     if (textarea) {
-      textarea.style.height = "auto";
+      // 초기 높이를 명시적으로 설정 (한 줄 높이와 동일하게)
+      const initialHeight = 40; // h-10과 동일한 40px
+
+      textarea.style.height = `${initialHeight}px`;
       const scrollHeight = textarea.scrollHeight;
 
       if (scrollHeight <= maxHeight) {
         // 최대 높이보다 작으면 스크롤바 숨기고 높이 자동 조절
-        textarea.style.height = `${scrollHeight}px`;
+        textarea.style.height = `${Math.max(initialHeight, scrollHeight)}px`;
         setIsAtMaxHeight(false);
       } else {
         // 최대 높이에 도달하면 스크롤바 표시
@@ -73,11 +76,13 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
         className={cn(
           "!max-w-full font-medium border-0 border-b-2 rounded-none shadow-none px-1 h-10 min-h-10 focus-visible:ring-0",
           "resize-none whitespace-pre-line break-all transition-all duration-200 ease-in-out",
+          "leading-normal py-2", // 명시적인 padding과 line-height 설정
           isAtMaxHeight ? "overflow-y-auto" : "overflow-hidden",
           className
         )}
         style={{
           maxHeight: `${maxHeight}px`,
+          boxSizing: "border-box", // 명시적으로 box-sizing 설정
           ...props.style,
         }}
       />
