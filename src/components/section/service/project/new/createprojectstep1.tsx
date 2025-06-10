@@ -31,7 +31,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
             <FormControl>
               <Input
                 placeholder="프로젝트의 이름을 입력해주세요. (예: 쇼핑몰 구축)"
-                className="font-medium focus-visible:ring-0 rounded-2xl bg-gray-100 border-0 px-6 h-12"
+                className="font-medium focus-visible:ring-0 rounded-xl bg-gray-100 border-0 px-6 h-12"
                 {...field}
                 value={field.value ?? ""}
               />
@@ -49,7 +49,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
             <FormControl>
               <Textarea
                 placeholder="프로젝트의 주요 구현 목표에 대해 설명해주세요."
-                className="font-medium focus-visible:ring-0 rounded-2xl bg-gray-100 border-0 px-6 py-4 min-h-36"
+                className="font-medium focus-visible:ring-0 rounded-xl bg-gray-100 border-0 px-6 py-4 min-h-36"
                 {...field}
                 value={field.value ?? ""}
               />
@@ -68,7 +68,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
               {getEnumValues(PlatformEnumZod).map((platform) => (
                 <Button
                   className={cn(
-                    "col-span-1 h-12 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-2xl",
+                    "col-span-1 h-12 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-xl",
                     (field.value || []).some((p) => p.platform == platform) ? "bg-blue-100" : "bg-gray-100 hover:bg-gray-300"
                   )}
                   type="button"
@@ -101,7 +101,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                     type="button"
                     key={level as string}
                     className={cn(
-                      "col-span-1 border-none shadow-none p-2.5 rounded-2xl h-12",
+                      "col-span-1 border-none shadow-none p-2.5 rounded-xl h-12",
                       level === field.value ? "bg-blue-100" : "bg-gray-100 hover:bg-gray-300"
                     )}
                     onClick={() => field.onChange(level)}

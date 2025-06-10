@@ -380,8 +380,8 @@ export default function CreateProject({ session }: { session: Session | null }) 
             <div className="mb-10 flex items-end justify-between">
               <div className="w-full">
                 <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
-                <p className="text-3xl font-bold mt-3">{currentStepMeta?.title || "정보 입력"}</p>
-                <p className="text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">{currentStepMeta.description}</p>
+                <p className="text-2xl md:text-3xl font-bold mt-3">{currentStepMeta?.title || "정보 입력"}</p>
+                <p className="text-sm md:text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">{currentStepMeta.description}</p>
               </div>
               {currentStep === 2 && (
                 <Button type="button" onClick={mergeEstimateFeatures} disabled={isRecommend} className="font-semibold text-background">
@@ -399,12 +399,12 @@ export default function CreateProject({ session }: { session: Session | null }) 
             </Form>
           </div>
         ) : (
-          <div className="w-full h-full px-5 sm:px-8 py-16 sm:py-10 flex flex-col items-center">
+          <div className="w-full h-full px-5 sm:px-8 py-6 md:py-10 flex flex-col items-center">
             <div className="mb-10 flex items-end justify-between">
               <div className="w-[80%]">
                 <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
-                <p className="text-3xl font-bold mt-3">구현에 필요한 기능을 추천하고 있어요.</p>
-                <p className="text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">프로젝트에 꼭 필요한 기능만 추천해드릴께요.</p>
+                <p className="text-2xl md:text-3xl font-bold mt-3">구현에 필요한 기능을 추천하고 있어요.</p>
+                <p className="text-sm md:text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">프로젝트에 꼭 필요한 기능만 추천해드릴께요.</p>
               </div>
             </div>
 

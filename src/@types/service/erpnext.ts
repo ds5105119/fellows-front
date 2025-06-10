@@ -228,7 +228,6 @@ export const UserERPNextProjectZod = z.object({
   expected_start_date: z.string().nullish(),
   expected_end_date: z.string().nullish(),
 
-  custom_design_requirements: z.string().nullish(),
   custom_content_pages: z.number().int().nullish(),
   custom_maintenance_required: z.boolean().nullish().default(false),
 
