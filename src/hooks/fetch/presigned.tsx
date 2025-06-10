@@ -177,17 +177,17 @@ export function FileDownloadButton({ file, children, className }: { file: ERPNex
   };
 
   return (
-    <a
-      href="#"
-      role="button"
+    <button
+      type="button"
       onClick={handleClick}
+      disabled={loading}
       className={cn(
         "w-8 h-8 flex items-center justify-center rounded-sm transition-colors duration-200",
-        "hover:bg-muted cursor-pointer touch-manipulation select-auto",
-        className
+        "hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed",
+        className,
       )}
     >
       {children}
-    </a>
+    </button>
   );
 }
