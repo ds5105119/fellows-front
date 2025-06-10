@@ -147,14 +147,19 @@ export const handleFileDownloadOrPreview = (blob: Blob, mime: string, filename: 
   const ext = filename.split(".").pop() ?? "";
   const url = URL.createObjectURL(blob);
 
+  const a = document.createElement("a");
+  a.href = url;
+
   if (canPreview(mime, ext)) {
-    window.open(url, "_blank", "noopener,noreferrer");
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
   } else {
-    const a = document.createElement("a");
-    a.href = url;
     a.download = filename;
-    a.click();
   }
+
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
 };
@@ -184,7 +189,7 @@ export function FileDownloadButton({ file, children, className }: { file: ERPNex
       className={cn(
         "w-8 h-8 flex items-center justify-center rounded-sm transition-colors duration-200",
         "hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed",
-        className,
+        className
       )}
     >
       {children}
