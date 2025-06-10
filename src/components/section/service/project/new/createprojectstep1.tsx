@@ -30,7 +30,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
           <FormItem>
             <FormLabel className="text-sm font-medium">프로젝트 이름</FormLabel>
             <FormControl>
-              <AnimatedUnderlineInput placeholder="프로젝트의 이름을 입력해주세요. (예: 쇼핑몰 구축)" {...field} value={field.value ?? ""} />
+              <AnimatedUnderlineInput placeholder="이름을 입력해주세요. (예: 쇼핑몰 구축)" {...field} value={field.value ?? ""} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -43,7 +43,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
           <FormItem>
             <FormLabel className="text-sm font-medium">프로젝트 개요</FormLabel>
             <FormControl>
-              <AnimatedUnderlineTextarea placeholder="프로젝트의 주요 구현 목표에 대해 설명해주세요." {...field} value={field.value ?? ""} />
+              <AnimatedUnderlineTextarea placeholder="주요 구현 목표에 대해 설명해주세요." {...field} value={field.value ?? ""} />
             </FormControl>
             <FormMessage />
           </FormItem>
