@@ -91,12 +91,13 @@ export const stepsMeta: {
     number: 2,
     title: "필요한 기능을 선택해주세요.",
     description: "나중에 프로젝트 컨설턴트가 직접 프로젝트를 확인하고, \n부족한 기능은 보완해 드릴께요.",
-    fields: ["custom_features"],
-  },
-  {
-    number: 3,
-    title: "추가 사항을 알려주세요.",
-    description: "프로젝트 진행이 더 빨라질 수 있어요.",
-    fields: ["custom_content_pages", "custom_preferred_tech_stacks", "expected_start_date", "expected_end_date", "custom_maintenance_required"],
+    fields: [
+      "custom_features",
+      "custom_content_pages",
+      "custom_preferred_tech_stacks",
+      "expected_start_date",
+      "expected_end_date",
+      "custom_maintenance_required",
+    ],
   },
 ] as const;

@@ -36,7 +36,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-y-auto`}>
+      <body className={`${pretendard.variable} ${satoshi.variable} overflow-y-auto`}>
         <SidebarProvider
           style={
             {
@@ -47,11 +47,9 @@ export default async function RootLayout({
         >
           <AppSidebar />
           <SidebarInset>
-            <div className="flex flex-col">
-              <Header />
-              <main className="w-full scrollbar-hide break-keep">{children}</main>
-              <Footer />
-            </div>
+            <Header />
+            <div className="w-full scrollbar-hide break-keep">{children}</div>
+            <Footer />
           </SidebarInset>
           <Analytics />
           <SpeedInsights />

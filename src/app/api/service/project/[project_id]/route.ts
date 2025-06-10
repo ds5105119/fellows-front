@@ -33,7 +33,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ proj
   const body = await request.json();
 
   const project_id = (await params).project_id;
-  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}${project_id}`;
+  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}`;
 
   try {
     const response = await fetch(url, {
@@ -61,7 +61,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   const session = await auth();
 
   const project_id = (await params).project_id;
-  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}${project_id}`;
+  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}`;
 
   try {
     await fetch(url, {

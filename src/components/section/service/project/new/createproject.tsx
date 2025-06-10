@@ -12,12 +12,11 @@ import { stepsMeta } from "@/components/resource/project";
 import { useInView } from "framer-motion";
 import { Session } from "next-auth";
 import { UserERPNextProjectType, UserERPNextProjectZod, ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
+import { CheckIcon } from "lucide-react";
 import AIRecommendSkeleton from "@/components/skeleton/airecommendskeleton";
 import CreateProjectFormStep1 from "./createprojectstep1";
 import CreateProjectFormStep2 from "./createprojectstep2";
-import CreateProjectFormStep3 from "./createprojectstep3";
 import CreateProjectSide from "./createprojectside";
-import { CheckIcon } from "lucide-react";
 
 export default function CreateProject({ session }: { session: Session | null }) {
   const router = useRouter();
@@ -378,7 +377,6 @@ export default function CreateProject({ session }: { session: Session | null }) 
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
                 {currentStep === 1 && <CreateProjectFormStep1 form={form} />}
                 {currentStep === 2 && <CreateProjectFormStep2 form={form} />}
-                {currentStep === 3 && <CreateProjectFormStep3 form={form} />}
               </form>
             </Form>
 

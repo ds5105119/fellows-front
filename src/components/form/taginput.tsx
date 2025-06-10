@@ -3,9 +3,9 @@
 import { useState, KeyboardEvent } from "react";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion, useAnimation } from "framer-motion";
+import { Input } from "@/components/ui/input";
 
 export default function TagInput({
   value,
@@ -17,6 +17,7 @@ export default function TagInput({
   placeholder?: string;
 }) {
   const [input, setInput] = useState("");
+  const [focused, setFocused] = useState(false);
   const [isComposing, setIsComposing] = useState(false);
   const [pendingComma, setPendingComma] = useState(false);
   const controls = useAnimation();
@@ -62,7 +63,7 @@ export default function TagInput({
   };
 
   return (
-    <motion.div animate={controls} className="flex flex-wrap items-center gap-1 py-4 px-4 rounded-2xl bg-gray-100 border-0 min-h-12">
+    <motion.div animate={controls} className="relative flex flex-wrap items-center gap-1 border-0 min-h-12">
       {value.map((tag, i) => (
         <Badge key={i} variant="secondary" className="flex items-center gap-1 font-bold bg-blue-500/15 max-w-[150px] overflow-hidden">
           <p className="truncate whitespace-nowrap" title={tag}>
@@ -83,13 +84,30 @@ export default function TagInput({
       ))}
       <Input
         type="text"
-        className="grow min-w-[120px] border-none shadow-none focus-visible:ring-0 focus:outline-none font-semibold pl-1 h-fit w-fit"
+        className="grow min-w-[120px] font-semibold pl-1 w-fit h-fit border-0 shadow-none focus-visible:ring-0 bg-transparent"
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
         onCompositionStart={() => setIsComposing(true)}
         onCompositionEnd={handleCompositionEnd}
         placeholder={placeholder}
+        onFocus={() => {
+          setFocused(true);
+        }}
+        onBlur={() => {
+          setFocused(false);
+        }}
+      />
+
+      {/* 회색 기본 밑줄 */}
+      <span className="pointer-events-none absolute left-0 bottom-0 block h-0.5 w-full bg-gray-200" />
+
+      {/* 파란색 애니메이션 밑줄 */}
+      <motion.span
+        className="pointer-events-none absolute left-0 bottom-0 h-0.5 w-full bg-blue-500"
+        style={{ scaleX: 0, originX: 0 }} // origin-left
+        animate={{ scaleX: focused ? 1 : 0 }}
+        transition={{ type: "spring", stiffness: 260, damping: 30, mass: 0.6, duration: 0.2 }}
       />
     </motion.div>
   );

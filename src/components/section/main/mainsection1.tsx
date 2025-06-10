@@ -61,9 +61,9 @@ export default async function MainSection1() {
             </div>
           </AspectRatio>
           {/* Filter image layered above */}
-          <div className="absolute inset-0 z-20 pointer-events-none">
+          <div className="absolute -inset-[1px] z-20 pointer-events-none">
             <AspectRatio ratio={3146 / 1332} className="hidden md:block">
-              <Image src="/hero-desktop-filter.svg" fill alt="Filter" className="object-cover" priority />
+              <img src="/hero-desktop-filter.svg" alt="Filter" className="object-cover w-full h-full" />
             </AspectRatio>
           </div>
 
@@ -116,12 +116,11 @@ export default async function MainSection1() {
             </div>
           </AspectRatio>
           {/* Filter image layered above */}
-          <div className="absolute inset-0 z-20 pointer-events-none">
+          <div className="absolute -inset-[1px] z-20 pointer-events-none">
             <AspectRatio ratio={987 / 1040} className="block md:hidden">
-              <Image src="/hero-mobile-filter.svg" fill alt="Filter" className="object-cover" priority />
+              <img src="/hero-mobile-filter.svg" alt="Filter" className="object-cover w-full h-full" />
             </AspectRatio>
           </div>
-
           <div className="pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
             <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
           </div>
