@@ -1,4 +1,9 @@
+"use client";
+
 import { PresignedUrlResponseSchema, PresignedUrlResponseType } from "@/@types/accounts/cloud";
+import { ERPNextProjectFileRowType } from "@/@types/service/erpnext";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const PREVIEWABLE = [
@@ -43,7 +48,7 @@ export async function getPresignedGetUrl(algorithm: string, key: string, sse_key
   return PresignedUrlResponseSchema.parse(data);
 }
 
-export const downloadFilefromPresignedUrl = async (presigned: PresignedUrlResponseType, filename: string) => {
+export const downloadFilefromPresignedUrl = async (presigned: PresignedUrlResponseType) => {
   const headers = {
     "x-amz-server-side-encryption-customer-algorithm": presigned.algorithm,
     "x-amz-server-side-encryption-customer-key": presigned.sse_key,
@@ -61,20 +66,8 @@ export const downloadFilefromPresignedUrl = async (presigned: PresignedUrlRespon
 
   const blob = await response.blob();
   const mime = response.headers.get("Content-Type") || blob.type || "";
-  const ext = filename.split(".").pop() ?? "";
 
-  const url = URL.createObjectURL(blob);
-
-  if (canPreview(mime, ext)) {
-    window.open(url, "_blank", "noopener,noreferrer");
-  } else {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-  }
-
-  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+  return { blob, mime };
 };
 
 export async function getPresignedPutUrl(name: string): Promise<PresignedUrlResponseType> {
@@ -148,4 +141,53 @@ export async function uploadFileToPresignedUrl({
 
     xhr.send(file);
   });
+}
+
+export const handleFileDownloadOrPreview = (blob: Blob, mime: string, filename: string) => {
+  const ext = filename.split(".").pop() ?? "";
+  const url = URL.createObjectURL(blob);
+
+  if (canPreview(mime, ext)) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  } else {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+  }
+
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+};
+
+export function FileDownloadButton({ file, children, className }: { file: ERPNextProjectFileRowType; children: React.ReactNode; className?: string }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = async () => {
+    if (loading) return;
+    try {
+      setLoading(true);
+      const presigned = await getPresignedGetUrl(file.algorithm, file.key, file.sse_key);
+      const { blob, mime } = await downloadFilefromPresignedUrl(presigned);
+      handleFileDownloadOrPreview(blob, mime, file.file_name);
+    } catch (err) {
+      toast("다운로드에 실패했어요");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <a
+      href="#"
+      role="button"
+      onClick={handleClick}
+      className={cn(
+        "w-8 h-8 flex items-center justify-center rounded-sm transition-colors duration-200",
+        "hover:bg-muted cursor-pointer touch-manipulation select-auto",
+        className
+      )}
+    >
+      {children}
+    </a>
+  );
 }
