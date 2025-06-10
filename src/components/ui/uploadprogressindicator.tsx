@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import type React from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X } from "lucide-react";
 
@@ -8,22 +9,36 @@ interface UploadProgressIndicatorProps {
   progress: number;
   onRemove?: () => void;
   size?: number;
+  checkDisplayDuration?: number;
 }
 
-export function UploadProgressIndicator({ progress, onRemove, size = 36 }: UploadProgressIndicatorProps) {
-  const [isHovering, setIsHovering] = useState(false);
-  const isComplete = progress >= 100;
+export function UploadProgressIndicator({ progress, onRemove, size = 36, checkDisplayDuration = 1500 }: UploadProgressIndicatorProps) {
+  const [displayState, setDisplayState] = useState<"progress" | "check" | "remove">(progress >= 99 ? "remove" : "progress");
+  const isComplete = progress >= 99;
 
-  // Calculate the circumference of the circle
   const radius = size / 2 - 2;
   const circumference = 2 * Math.PI * radius;
 
-  // Calculate the stroke-dashoffset based on progress
   const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  useEffect(() => {
+    if (isComplete) {
+      setDisplayState("check");
+
+      const timer = setTimeout(() => {
+        setDisplayState("remove");
+      }, checkDisplayDuration);
+
+      return () => clearTimeout(timer);
+    } else if (!isComplete) {
+      setDisplayState("progress");
+    }
+  }, [isComplete, checkDisplayDuration]);
+
   const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
 
-    if (isComplete) {
+    if (displayState === "remove") {
       onRemove?.();
     }
 
@@ -34,15 +49,13 @@ export function UploadProgressIndicator({ progress, onRemove, size = 36 }: Uploa
     <motion.div
       className="relative inline-flex items-center justify-center"
       style={{ width: size, height: size }}
-      onHoverStart={() => isComplete && setIsHovering(true)}
-      onHoverEnd={() => setIsHovering(false)}
       onClick={(e) => onClick(e)}
-      whileHover={isComplete ? { scale: 1.1 } : undefined}
+      whileHover={displayState === "remove" ? { scale: 1.1 } : undefined}
       transition={{ scale: { type: "spring", stiffness: 400, damping: 17 } }}
     >
       {/* Progress Circle */}
       <AnimatePresence>
-        {!isComplete && (
+        {displayState === "progress" && (
           <motion.svg
             width={size}
             height={size}
@@ -79,7 +92,7 @@ export function UploadProgressIndicator({ progress, onRemove, size = 36 }: Uploa
 
       {/* Completion Check Icon */}
       <AnimatePresence>
-        {isComplete && !isHovering && (
+        {displayState === "check" && (
           <motion.div
             className="text-green-500 absolute inset-0 flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
@@ -95,7 +108,7 @@ export function UploadProgressIndicator({ progress, onRemove, size = 36 }: Uploa
             exit={{
               opacity: 0,
               scale: 0.8,
-              transition: { duration: 0.15 },
+              transition: { duration: 0.3 },
             }}
           >
             <Check size={size * 0.6} strokeWidth={2.5} />
@@ -103,11 +116,11 @@ export function UploadProgressIndicator({ progress, onRemove, size = 36 }: Uploa
         )}
       </AnimatePresence>
 
-      {/* Remove X Icon (on hover) */}
+      {/* Remove X Icon */}
       <AnimatePresence>
-        {isComplete && isHovering && (
+        {displayState === "remove" && (
           <motion.div
-            className="text-red-500 absolute inset-0 flex items-center justify-center cursor-pointer"
+            className="absolute inset-0 flex items-center justify-center cursor-pointer transition-colors duration-200 text-red-500"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{
               opacity: 1,
@@ -130,7 +143,7 @@ export function UploadProgressIndicator({ progress, onRemove, size = 36 }: Uploa
       </AnimatePresence>
 
       {/* Progress Text (optional) */}
-      {!isComplete && (
+      {displayState === "progress" && (
         <motion.div className="absolute text-xs font-medium text-gray-700" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
           {Math.round(progress)}
         </motion.div>
