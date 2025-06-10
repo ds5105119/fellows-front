@@ -97,13 +97,6 @@ export const stepsMeta: {
     number: 3,
     title: "추가 사항을 알려주세요.",
     description: "프로젝트 진행이 더 빨라질 수 있어요.",
-    fields: [
-      "custom_content_pages",
-      "custom_design_requirements",
-      "custom_preferred_tech_stacks",
-      "expected_start_date",
-      "expected_end_date",
-      "custom_maintenance_required",
-    ],
+    fields: ["custom_content_pages", "custom_preferred_tech_stacks", "expected_start_date", "expected_end_date", "custom_maintenance_required"],
   },
 ] as const;

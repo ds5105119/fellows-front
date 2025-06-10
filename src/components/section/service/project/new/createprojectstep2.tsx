@@ -41,29 +41,6 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                 </div>
               ))}
             </div>
-            <Textarea
-              className="text-base font-semibold focus-visible:ring-0 rounded-2xl bg-gray-100 border-0 px-6 py-4 min-h-36 mt-6"
-              placeholder="혹시 더 필요한 기능이 있다면 적어주세요."
-              onChange={(e) => {
-                const current = field.value || [];
-                const value = e.target.value;
-                const index = (current || []).findIndex((f) => f.feature.startsWith(prefix));
-
-                if (value) {
-                  if (index !== -1) {
-                    current[index] = { doctype: "Features", feature: `${prefix} ${value}` };
-                    field.onChange(current);
-                  } else {
-                    field.onChange([...current, { doctype: "Features", feature: `${prefix} ${value}` }]);
-                  }
-                } else {
-                  if (index !== -1) {
-                    field.onChange(current.splice(index, 1));
-                  }
-                }
-              }}
-              rows={3}
-            />
             <FormMessage />
           </FormItem>
         )}
