@@ -27,11 +27,11 @@ export default function MainStartButton() {
           y: isInView ? { duration: 0.5, ease: "easeIn" } : { duration: 0.5, ease: "easeOut" },
           opacity: isInView ? { duration: 0.2 } : { duration: 0.8 },
         }}
-        className="px-3 w-full sticky flex flex-col bottom-0 z-20 md:hidden"
+        className="col-span-full w-full sticky flex flex-col bottom-0 z-20 md:hidden"
       >
         <div className="w-full h-4" />
         <div className="w-full flex pb-4 pt-3">
-          <Button size="lg" className="w-full px-16 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-lg font-semibold bg-black hover:bg-zinc-800" asChild>
+          <Button size="lg" className="w-full px-16 h-[3.5rem] md:h-[3.75rem] text-lg font-semibold rounded-lg bg-black active:bg-black" asChild>
             <Link href="/service/dashboard">시작하기</Link>
           </Button>
         </div>

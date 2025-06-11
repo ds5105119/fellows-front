@@ -7,7 +7,6 @@ import MainHeader from "@/components/header/mainheader";
 import MainFooter from "@/components/footer/mainfooter";
 import "../globals.css";
 import "lenis/dist/lenis.css";
-import MainStartButton from "@/components/section/main/mainstartbutton";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
@@ -40,7 +39,6 @@ export default async function RootLayout({
           <div className="relative overscroll-none">
             <MainHeader />
             <main className="scrollbar-hide break-keep">{children}</main>
-            <MainStartButton />
             <MainFooter />
           </div>
         </LenisProvider>

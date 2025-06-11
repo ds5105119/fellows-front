@@ -6,6 +6,7 @@ import MainSection2 from "@/components/section/main/mainsection2";
 import MainSection3 from "@/components/section/main/mainsection3";
 import MainSection4 from "@/components/section/main/mainsection4";
 import MainQnaSection from "@/components/section/main/mainqnasection";
+import MainStartButton from "@/components/section/main/mainstartbutton";
 
 export const metadata: Metadata = {
   title: "서비스",
@@ -18,7 +19,7 @@ export default async function Home() {
   console.log(session);
 
   return (
-    <div className="grid grid-cols-4 lg:grid-cols-12 px-3 lg:px-12 pt-28 md:pt-40 space-y-14 lg:space-y-36">
+    <div className="grid grid-cols-4 lg:grid-cols-12 px-3 lg:px-12 pt-24 md:pt-40 space-y-14 lg:space-y-36">
       <BlurFade className="col-span-full">
         <MainSection1 />
       </BlurFade>
@@ -34,6 +35,7 @@ export default async function Home() {
       <BlurFade className="col-span-full">
         <MainSection4 />
       </BlurFade>
+      <MainStartButton />
     </div>
   );
 }
