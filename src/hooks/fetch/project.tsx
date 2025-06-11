@@ -5,9 +5,8 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
 import useSWR, { SWRResponse } from "swr";
-import { Session } from "next-auth";
 
-export const useProject = ({ project_id }: { project_id: string }): SWRResponse<ERPNextProjectType | undefined> => {
+export const useProject = (project_id: string): SWRResponse<ERPNextProjectType | undefined> => {
   const fetcher = async (url: string) => {
     if (!url) return undefined;
 
@@ -36,13 +35,11 @@ export const useProject = ({ project_id }: { project_id: string }): SWRResponse<
 };
 
 export const getEstimateFeatures = async ({
-  session,
   project_name,
   project_summary,
   readiness_level,
   platforms,
 }: {
-  session: Session | null;
   project_name: string;
   project_summary: string;
   readiness_level: string;
@@ -54,13 +51,10 @@ export const getEstimateFeatures = async ({
   params.append("readiness_level", readiness_level);
   platforms.forEach((platform) => params.append("platforms", platform));
 
-  const url = `${process.env.NEXT_PUBLIC_PROJECT_ESTIMATE_FEATURE_URL}?${params.toString()}`;
+  const url = `/api/service/project/estimate/feature?${params.toString()}`;
 
   const response = await fetch(url, {
     method: "GET",
-    headers: { "Content-Type": "application/json", ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }) },
-    redirect: "follow",
-    credentials: "include",
   });
 
   const ratelimit = parseInt(response.headers.get("x-ratelimit-remaining") ?? "0");
@@ -83,13 +77,11 @@ export const getEstimateFeatures = async ({
 };
 
 export const useGetEstimateFeatures = ({
-  session,
   project_name,
   project_summary,
   readiness_level,
   platforms,
 }: {
-  session: Session | null;
   project_name: string;
   project_summary: string;
   readiness_level: string;
@@ -117,7 +109,7 @@ export const useGetEstimateFeatures = ({
     setData(null);
 
     try {
-      const result = await getEstimateFeatures({ session, project_name, project_summary, readiness_level, platforms });
+      const result = await getEstimateFeatures({ project_name, project_summary, readiness_level, platforms });
       setData(result.projectEstimateFeature);
       setRatelimit(result.ratelimit);
       setRetryAfter(result.retryAfter);
@@ -128,7 +120,7 @@ export const useGetEstimateFeatures = ({
     } finally {
       setLoading(false);
     }
-  }, [project_name, project_summary, platforms, readiness_level, session]);
+  }, [project_name, project_summary, platforms, readiness_level]);
 
   useEffect(() => {
     if (success || error) {
@@ -141,4 +133,16 @@ export const useGetEstimateFeatures = ({
   }, [success, error]);
 
   return { data, loading, error, success, ratelimit, retryAfter, fetchData };
+};
+
+export const submitProject = async (project_id: string) => {
+  await fetch(`/api/service/project/${project_id}/submit`, {
+    method: "POST",
+  });
+};
+
+export const cancelSubmitProject = async (project_id: string) => {
+  await fetch(`/api/service/project/${project_id}/submit/cancel`, {
+    method: "POST",
+  });
 };

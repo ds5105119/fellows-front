@@ -34,9 +34,6 @@ export async function getPresignedGetUrl(algorithm: string, key: string, sse_key
 
   const response = await fetch(`/api/cloud/object/presigned/get?${params.toString()}`, {
     method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
 
   if (!response.ok) {
@@ -72,9 +69,6 @@ export const downloadFilefromPresignedUrl = async (presigned: PresignedUrlRespon
 export async function getPresignedPutUrl(name: string): Promise<PresignedUrlResponseType> {
   const response = await fetch(`/api/cloud/object/presigned/put?name=${name}`, {
     method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
 
   if (!response.ok) {
@@ -195,3 +189,13 @@ export function FileDownloadButton({ file, children, className }: { file: ERPNex
     </button>
   );
 }
+
+export const removeFile = async (key: string, sse_key: string) => {
+  const params = new URLSearchParams();
+  params.append("key", key);
+  params.append("sse_key", sse_key);
+
+  await fetch(`/api/cloud/object?${params.toString()}`, {
+    method: "DELETE",
+  });
+};

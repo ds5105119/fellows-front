@@ -136,7 +136,7 @@ const ProjectStatusColumn = ({
   );
 };
 
-export default function ProjectMainSection({ session, project_id }: { session: Session | null; project_id?: string }) {
+export default function ProjectMainSection({ session, project_id }: { session: Session; project_id?: string }) {
   const [orderBy, setOrderBy] = useState<string>(orders[0].value);
   const [inputText, setInputText] = useState<string>("");
   const [processCount, setProcessCount] = useState(0);
@@ -176,6 +176,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
       const newPath = segments.slice(0, -1).join("/");
 
       window.history.replaceState(null, "", newPath);
+      setSelectedProject(null);
     }
   }, [openSheet]);
 

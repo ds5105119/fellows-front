@@ -6,7 +6,7 @@ import { FcFile, FcAudioFile, FcImageFile, FcVideoFile } from "react-icons/fc";
 import { motion, useAnimation } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { getPresignedPutUrl, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
+import { getPresignedPutUrl, uploadFileToPresignedUrl, removeFile } from "@/hooks/fetch/presigned";
 import { UploadProgressIndicator } from "../ui/uploadprogressindicator";
 import { ERPNextProjectFileRowType, ERPNextProjectFileRowZod } from "@/@types/service/erpnext";
 
@@ -101,15 +101,9 @@ export default function FileInput({ onChange }: FileInputProps) {
     }
   };
 
-  const removeFile = async (index: number) => {
+  const handleRemoveFile = async (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
-    const params = new URLSearchParams();
-    params.append("key", files[index].record.key);
-    params.append("sse_key", files[index].record.sse_key || "");
-
-    await fetch(`/api/cloud/object?${params.toString()}`, {
-      method: "DELETE",
-    });
+    await removeFile(files[index].record.key, files[index].record.sse_key);
   };
 
   const handleChangeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -183,7 +177,7 @@ export default function FileInput({ onChange }: FileInputProps) {
                 </div>
 
                 <div className="w-9 h-9 flex items-center justify-center">
-                  <UploadProgressIndicator progress={f.progress} onRemove={() => removeFile(idx)} size={36} />
+                  <UploadProgressIndicator progress={f.progress} onRemove={() => handleRemoveFile(idx)} size={36} />
                 </div>
               </div>
             );

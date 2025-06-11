@@ -18,7 +18,7 @@ export async function GET(request: Request) {
   params.append("suffix", suffix);
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_CLOUD_PRESIGNED_PUT_URL}?${params.toString()}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_CLOUD_SSE_C_PRESIGNED_PUT_URL}?${params.toString()}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

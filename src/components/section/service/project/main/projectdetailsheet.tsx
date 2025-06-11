@@ -16,13 +16,13 @@ import { ArrowLeft, Copy, Download, FileText, LinkIcon, Fullscreen, Info, ArrowU
 import { fileIconMap, getFileExtension } from "@/components/form/fileinput";
 import { UploadProgressIndicator } from "@/components/ui/uploadprogressindicator";
 import { useInView } from "framer-motion";
-import { useProject } from "@/hooks/fetch/project";
+import { useProject, submitProject, cancelSubmitProject } from "@/hooks/fetch/project";
+import { FileDownloadButton, getPresignedPutUrl, uploadFileToPresignedUrl, removeFile } from "@/hooks/fetch/presigned";
+import { type ERPNextProjectFileRowType, ERPNextProjectFileRowZod, type ERPNextProjectType, ERPNextTaskPaginatedResponseZod } from "@/@types/service/erpnext";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
-import { type ERPNextProjectFileRowType, ERPNextProjectFileRowZod, type ERPNextProjectType, ERPNextTaskPaginatedResponseZod } from "@/@types/service/erpnext";
-import { FileDownloadButton, getPresignedPutUrl, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -51,22 +51,14 @@ const fetcher = async (url: string) => {
   return ERPNextTaskPaginatedResponseZod.parse(data);
 };
 
-export default function ProjectDetailSheet({
-  project,
-  onClose,
-  session,
-}: {
-  project: ERPNextProjectType | null;
-  onClose: () => void;
-  session: Session | null;
-}) {
-  if (!project || !session) return null;
+export default function ProjectDetailSheet({ project, onClose, session }: { project: ERPNextProjectType | null; onClose: () => void; session: Session }) {
+  if (!project) return null;
 
   return <ProjectDetailSheetInner project={project} onClose={onClose} session={session} />;
 }
 
-function ProjectDetailSheetInner({ project: _project, onClose, session }: { project: ERPNextProjectType; onClose: () => void; session: Session | null }) {
-  const detailedProject = useProject({ project_id: _project.project_name });
+function ProjectDetailSheetInner({ project: _project, onClose, session }: { project: ERPNextProjectType; onClose: () => void; session: Session }) {
+  const detailedProject = useProject(_project.project_name);
   const [project, setProject] = useState<ERPNextProjectType>(_project);
   const [valueToggle, setValueToggle] = useState(false);
   const [fileProgress, setFileProgress] = useState<Record<string, number>>({});
@@ -241,15 +233,8 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
     await uploadFiles(file);
   };
 
-  const removeFile = async (key: string, sse_key: string) => {
-    const params = new URLSearchParams();
-    params.append("key", key);
-    params.append("sse_key", sse_key);
-
-    await fetch(`/api/cloud/object?${params.toString()}`, {
-      method: "DELETE",
-    });
-
+  const handleRemoveFile = async (key: string, sse_key: string) => {
+    await removeFile(key, sse_key);
     detailedProject.mutate((prev) =>
       prev
         ? {
@@ -260,17 +245,13 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
     );
   };
 
-  const submitProject = async () => {
-    await fetch(`/api/service/project/${project.project_name}/submit`, {
-      method: "POST",
-    });
+  const handleSubmitProject = async () => {
+    await submitProject(project.project_name);
     window.location.reload();
   };
 
-  const cancelSubmit = async () => {
-    await fetch(`/api/service/project/${project.project_name}/submit/cancel`, {
-      method: "POST",
-    });
+  const handleCancelSubmitProject = async () => {
+    await cancelSubmitProject(project.project_name);
     window.location.reload();
   };
 
@@ -429,7 +410,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
               <Button
                 size="lg"
                 className="w-full px-16 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500"
-                onClick={submitProject}
+                onClick={handleSubmitProject}
               >
                 계약 문의하기
               </Button>
@@ -437,7 +418,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
               <Button
                 size="lg"
                 className="w-full px-16 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500"
-                onClick={cancelSubmit}
+                onClick={handleCancelSubmitProject}
               >
                 계약 문의 취소하기
               </Button>
@@ -493,7 +474,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
             내보내기
           </Button>
           <Button variant="outline" size="icon" className="size-8 font-semibold rounded-sm border-gray-200 shadow-none" asChild>
-            <Link href={`./project/${project.project_name}`}>
+            <Link href={`./${project.project_name}/detail`}>
               <Fullscreen className="h-4 w-4" />
             </Link>
           </Button>
@@ -674,7 +655,11 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
                               )}
                             >
                               {f.uploader == "user" && (
-                                <UploadProgressIndicator progress={fileProgress[f.file_name] ?? 100} size={32} onRemove={() => removeFile(f.key, f.sse_key)} />
+                                <UploadProgressIndicator
+                                  progress={fileProgress[f.file_name] ?? 100}
+                                  size={32}
+                                  onRemove={() => handleRemoveFile(f.key, f.sse_key)}
+                                />
                               )}
                             </div>
                           </div>
@@ -858,7 +843,11 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
                             )}
                           >
                             {f.uploader == "user" && (
-                              <UploadProgressIndicator progress={fileProgress[f.file_name] ?? 100} size={32} onRemove={() => removeFile(f.key, f.sse_key)} />
+                              <UploadProgressIndicator
+                                progress={fileProgress[f.file_name] ?? 100}
+                                size={32}
+                                onRemove={() => handleRemoveFile(f.key, f.sse_key)}
+                              />
                             )}
                           </div>
                         </div>

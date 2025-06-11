@@ -10,5 +10,6 @@ export const metadata: Metadata = {
 export default async function Page() {
   const session = await auth();
 
-  return <CreateProject session={session} />;
+  if (!session) return null;
+  return <CreateProject />;
 }

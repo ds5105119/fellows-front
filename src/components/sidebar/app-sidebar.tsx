@@ -13,7 +13,7 @@ export async function AppSidebar() {
   return (
     <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader className="px-6 md:px-0 md:pt-3">
-        <SidebarMenu>
+        <SidebarMenu className="space-y-2">
           <SidebarMenuItem className="md:px-3">
             <SidebarMenuButton
               asChild

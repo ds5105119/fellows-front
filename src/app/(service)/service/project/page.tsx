@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { auth } from "@/auth";
+import { auth, signIn } from "@/auth";
 import ProjectMainSection from "@/components/section/service/project/main/projectmainsection";
 
 export const metadata: Metadata = {
@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const session = await auth();
+  if (!session) return signIn("keycloak", { redirectTo: "/service/project" });
 
   return (
     <div className="w-full mb-8">
