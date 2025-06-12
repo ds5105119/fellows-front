@@ -6,7 +6,6 @@ import BreathingSparkles from "@/components/resource/breathingsparkles";
 import MarkdownPreview from "@/components/ui/markdownpreview";
 import Flattabs from "@/components/ui/flattabs";
 import Link from "next/link";
-import useSWRInfinite, { type SWRInfiniteKeyLoader } from "swr/infinite";
 import { useState, useRef, useEffect, useMemo } from "react";
 import type { Session } from "next-auth";
 import { toast } from "sonner";
@@ -16,40 +15,15 @@ import { ArrowLeft, Copy, Download, FileText, LinkIcon, Fullscreen, Info, ArrowU
 import { fileIconMap, getFileExtension } from "@/components/form/fileinput";
 import { UploadProgressIndicator } from "@/components/ui/uploadprogressindicator";
 import { useInView } from "framer-motion";
-import { useProject, submitProject, cancelSubmitProject } from "@/hooks/fetch/project";
-import { FileDownloadButton, getPresignedPutUrl, uploadFileToPresignedUrl, removeFile } from "@/hooks/fetch/presigned";
-import { type ERPNextProjectFileRowType, ERPNextProjectFileRowZod, type ERPNextProjectType, ERPNextTaskPaginatedResponseZod } from "@/@types/service/erpnext";
+import { useProject, submitProject, cancelSubmitProject, useTasks, addFileToProject } from "@/hooks/fetch/project";
+import { SSECFileDownloadButton, getSSECPresignedPutUrl, uploadFileToSSECPresignedUrl, removeFile } from "@/hooks/fetch/presigned";
+import { type ERPNextProjectFileRowType, ERPNextProjectFileRowZod, type ERPNextProjectType } from "@/@types/service/project";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
-
-interface getKeyFactoryProps {
-  project_id: string;
-  size?: string;
-}
-
-const getKeyFactory = ({ size, project_id }: getKeyFactoryProps): SWRInfiniteKeyLoader => {
-  return (index, previousPageData) => {
-    if (previousPageData && !previousPageData.items.length) return null;
-
-    const params = new URLSearchParams();
-    params.append("page", `${index * Number(size || 20)}`);
-
-    if (size) params.append("size", size);
-
-    return `/api/service/project/${project_id}/tasks?${params.toString()}`;
-  };
-};
-
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to load data");
-  const data = await res.json();
-  return ERPNextTaskPaginatedResponseZod.parse(data);
-};
 
 export default function ProjectDetailSheet({ project, onClose, session }: { project: ERPNextProjectType | null; onClose: () => void; session: Session }) {
   if (!project) return null;
@@ -63,8 +37,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
   const [valueToggle, setValueToggle] = useState(false);
   const [fileProgress, setFileProgress] = useState<Record<string, number>>({});
 
-  const getKey = getKeyFactory({ size: "20", project_id: project.project_name });
-  const { data, error, isLoading: _isLoading, size, setSize } = useSWRInfinite(getKey, fetcher);
+  const { data, error, isLoading: _isLoading, size, setSize } = useTasks("20", project.project_name);
   const isReachedEnd = data && data.length > 0 && data[data.length - 1]?.items.length === 0;
   const isLoading = !isReachedEnd && (_isLoading || (size > 0 && data && typeof data[size - 1] === "undefined"));
   const taskInfRef = useRef<HTMLDivElement>(null);
@@ -180,7 +153,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
     }
 
     try {
-      const presigned = await getPresignedPutUrl(file.name);
+      const presigned = await getSSECPresignedPutUrl(file.name);
       const fileRecord = ERPNextProjectFileRowZod.parse({
         doctype: "Files",
         key: presigned.key,
@@ -194,7 +167,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
         revalidate: false,
       });
 
-      await uploadFileToPresignedUrl({
+      await uploadFileToSSECPresignedUrl({
         file,
         presigned,
         onProgress: ({ percent }) => {
@@ -205,10 +178,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
         },
       });
 
-      await fetch(`/api/service/project/${project.project_name}/files`, {
-        method: "PUT",
-        body: JSON.stringify(fileRecord),
-      });
+      await addFileToProject(project.project_name, fileRecord);
 
       detailedProject.mutate();
     } catch {
@@ -644,9 +614,9 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
                               <p className="truncate text-sm">{f.file_name}</p>
                             </div>
 
-                            <FileDownloadButton file={f}>
+                            <SSECFileDownloadButton file={f}>
                               <DownloadCloud className="!size-5 text-blue-500" />
-                            </FileDownloadButton>
+                            </SSECFileDownloadButton>
 
                             <div
                               className={cn(
@@ -832,9 +802,9 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
                             <p className="truncate text-sm">{f.file_name}</p>
                           </div>
 
-                          <FileDownloadButton file={f}>
+                          <SSECFileDownloadButton file={f}>
                             <DownloadCloud className="!size-5 text-blue-500" />
-                          </FileDownloadButton>
+                          </SSECFileDownloadButton>
 
                           <div
                             className={cn(

@@ -44,11 +44,14 @@ export default function NavButtonGroup({ session, ...props }: NavButtonGroupProp
           transition={{ type: "spring", duration: 0.5 }}
           className="flex space-x-7 font-bold"
         >
-          <Link href="/abc" className="hover:opacity-80">
+          <Link href="#" className="hover:opacity-80">
             Price
           </Link>
-          <Link href="/df" className="hover:opacity-80">
+          <Link href="/works" className="hover:opacity-80">
             Works
+          </Link>
+          <Link href="/blog" className="hover:opacity-80">
+            Blog
           </Link>
           <button style={{ cursor: "pointer" }} onClick={() => (session?.user ? signOut() : signIn("keycloak", { redirectTo: "/service/dashboard" }))}>
             {session?.user ? "Sign Out" : "Sign In"}

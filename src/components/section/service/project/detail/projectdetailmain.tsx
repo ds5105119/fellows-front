@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { ERPNextProjectType } from "@/@types/service/erpnext";
+import { ERPNextProjectType } from "@/@types/service/project";
 
 interface ProjectDetailMainProps {
   project: ERPNextProjectType;

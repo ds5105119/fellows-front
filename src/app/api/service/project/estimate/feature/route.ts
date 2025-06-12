@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   params.append("readiness_level", readiness_level);
   platforms.forEach((platform) => params.append("platforms", platform));
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_PROJECT_ESTIMATE_FEATURE_URL}?${params.toString()}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_PROJECT_URL}/estimate/feature?${params.toString()}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

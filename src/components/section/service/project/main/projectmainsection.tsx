@@ -5,7 +5,7 @@ import useThrottle from "@/lib/useThrottle";
 import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
 import ProjectContainer from "./projectcontainer";
 import ProjectDetailSheet from "./projectdetailsheet";
-import useSWRInfinite, { SWRInfiniteKeyLoader, SWRInfiniteResponse } from "swr/infinite";
+import { SWRInfiniteResponse } from "swr/infinite";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Session } from "next-auth";
@@ -16,21 +16,16 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Plus, Info } from "lucide-react";
-import { ERPNextProjectPageSchema, ERPNextProjectPageType, ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
+import { ERPNextProjectPageType, ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/project";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
+import { useProjects } from "@/hooks/fetch/project";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
-// --- 타입 및 상수 정의 (기존과 동일) ---
-interface getKeyFactoryProps {
-  size?: number;
-  keyword?: string;
-  order_by?: string;
-  status?: string;
-}
+// --- 타입 및 상수 정의 ---
 
 type Status = "draft" | "process" | "complete" | "maintenance";
 
@@ -56,26 +51,6 @@ export type SWRMeta = {
   isReachedEnd?: boolean;
 };
 
-const getKeyFactory = ({ size, keyword, order_by, status }: getKeyFactoryProps): SWRInfiniteKeyLoader => {
-  return (pageIndex, previousPageData) => {
-    if (previousPageData && !previousPageData.items.length) return null;
-    const params = new URLSearchParams();
-    params.append("page", `${pageIndex}`);
-    if (size) params.append("size", `${size}`);
-    if (keyword) params.append("keyword", keyword);
-    if (order_by) params.append("order_by", order_by);
-    if (status) params.append("status", status);
-    return `/api/service/project?${params.toString()}`;
-  };
-};
-
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Fetch failed");
-  const data = await res.json();
-  return ERPNextProjectPageSchema.parse(data);
-};
-
 /**
  * 헬퍼 컴포넌트: 각 상태(status)별 컬럼을 담당합니다.
  */
@@ -95,15 +70,10 @@ const ProjectStatusColumn = ({
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref);
   const pageSize = 20;
-  const [hasError, setHasError] = useState(false);
 
-  const swr = useSWRInfinite<ERPNextProjectPageType>(getKeyFactory({ size: pageSize, keyword, order_by: orderBy, status }), fetcher, {
-    onError: () => setHasError(true),
-    refreshInterval: 60000,
-  });
-
+  const swr = useProjects(pageSize, keyword, orderBy, status);
   const pages = swr.data?.flatMap((page) => page.items) || [];
-  const isReachedEnd = hasError || (swr.data && swr.data.length > 0 && swr.data[swr.data.length - 1].items.length === 0);
+  const isReachedEnd = swr.data && swr.data.length > 0 && swr.data[swr.data.length - 1].items.length === 0;
   const isLoading = !isReachedEnd && swr.data && (swr.isLoading || (swr.size > 0 && typeof swr.data[swr.size - 1] === "undefined"));
 
   const meta: SWRMeta = {

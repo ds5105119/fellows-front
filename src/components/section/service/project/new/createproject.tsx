@@ -7,10 +7,10 @@ import { Form } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useGetEstimateFeatures } from "@/hooks/fetch/project";
+import { createProject, useGetEstimateFeatures } from "@/hooks/fetch/project";
 import { stepsMeta } from "@/components/resource/project";
 import { useInView } from "framer-motion";
-import { UserERPNextProjectType, UserERPNextProjectZod, ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
+import { UserERPNextProjectType, UserERPNextProjectZod, ERPNextProjectType } from "@/@types/service/project";
 import { CheckIcon } from "lucide-react";
 import AIRecommendSkeleton from "@/components/skeleton/airecommendskeleton";
 import CreateProjectFormStep1 from "./createprojectstep1";
@@ -289,26 +289,6 @@ export default function CreateProject() {
     return true;
   }, [trigger, errors, currentStep, getValues, setIsStepping, setCurrentStep]);
 
-  const postProjectData = useCallback(async (payload: UserERPNextProjectType): Promise<ERPNextProjectType> => {
-    const response = await fetch("/api/service/project", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: "프로젝트 정보 저장 중 응답 분석에 실패했어요." }));
-      throw new Error(errorData.message || "프로젝트 정보 저장에 문제가 밣생했어요.");
-    }
-
-    try {
-      const responseData = await response.json();
-      return ERPNextProjectZod.parse(responseData);
-    } catch {
-      throw new Error("프로젝트 정보 저장에 문제가 밣생했어요.");
-    }
-  }, []);
-
   const handleSuccessfulSubmission = useCallback(
     (project: ERPNextProjectType) => {
       toast.success("프로젝트 정보가 성공적으로 저장되었습니다.");
@@ -339,12 +319,11 @@ export default function CreateProject() {
 
     setIsLoading(true);
     try {
-      const project = await postProjectData(values);
+      const project = await createProject(values);
+      if (!project) throw new Error();
       handleSuccessfulSubmission(project);
     } catch {
-      toast.error("프로젝트 업데이트 중 오류가 발생했어요", {
-        description: "잠시 뒤 다시 시도해 주세요.",
-      });
+      toast.error("프로젝트 저장 중 오류가 발생했어요");
     } finally {
       setIsLoading(false);
     }

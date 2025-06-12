@@ -1,4 +1,4 @@
-import { UserERPNextProjectType } from "@/@types/service/erpnext";
+import { UserERPNextProjectType } from "@/@types/service/project";
 
 export const categorizedFeatures = [
   {

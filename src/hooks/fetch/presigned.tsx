@@ -1,7 +1,12 @@
 "use client";
 
-import { PresignedUrlResponseSchema, PresignedUrlResponseType } from "@/@types/accounts/cloud";
-import { ERPNextProjectFileRowType } from "@/@types/service/erpnext";
+import {
+  SSECPresignedUrlResponseSchema,
+  SSECPresignedUrlResponseType,
+  PresignedPutUrlResponseType,
+  PresignedPutUrlResponseSchema,
+} from "@/@types/accounts/cloud";
+import { ERPNextProjectFileRowType } from "@/@types/service/project";
 import { cn, isIOS } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -25,14 +30,14 @@ export interface UploadProgress {
   total: number;
 }
 
-export async function getPresignedGetUrl(algorithm: string, key: string, sse_key: string): Promise<PresignedUrlResponseType> {
+export async function getSSECPresignedGetUrl(algorithm: string, key: string, sse_key: string): Promise<SSECPresignedUrlResponseType> {
   const params = new URLSearchParams();
 
   params.append("algorithm", algorithm);
   params.append("key", key);
   params.append("sse_key", sse_key);
 
-  const response = await fetch(`/api/cloud/object/presigned/get?${params.toString()}`, {
+  const response = await fetch(`/api/cloud/object/presigned/get/sse/c?${params.toString()}`, {
     method: "get",
   });
 
@@ -41,10 +46,10 @@ export async function getPresignedGetUrl(algorithm: string, key: string, sse_key
   }
 
   const data = await response.json();
-  return PresignedUrlResponseSchema.parse(data);
+  return SSECPresignedUrlResponseSchema.parse(data);
 }
 
-export const downloadFilefromPresignedUrl = async (presigned: PresignedUrlResponseType) => {
+export const downloadFilefromSSECPresignedUrl = async (presigned: SSECPresignedUrlResponseType) => {
   const headers = {
     "x-amz-server-side-encryption-customer-algorithm": presigned.algorithm,
     "x-amz-server-side-encryption-customer-key": presigned.sse_key,
@@ -66,8 +71,8 @@ export const downloadFilefromPresignedUrl = async (presigned: PresignedUrlRespon
   return { blob, mime };
 };
 
-export async function getPresignedPutUrl(name: string): Promise<PresignedUrlResponseType> {
-  const response = await fetch(`/api/cloud/object/presigned/put?name=${name}`, {
+export async function getPresignedPutUrl(): Promise<PresignedPutUrlResponseType> {
+  const response = await fetch(`/api/cloud/object/presigned/put`, {
     method: "get",
   });
 
@@ -76,7 +81,21 @@ export async function getPresignedPutUrl(name: string): Promise<PresignedUrlResp
   }
 
   const data = await response.json();
-  return PresignedUrlResponseSchema.parse(data);
+  console.log(data);
+  return PresignedPutUrlResponseSchema.parse(data);
+}
+
+export async function getSSECPresignedPutUrl(name: string): Promise<SSECPresignedUrlResponseType> {
+  const response = await fetch(`/api/cloud/object/presigned/put/sse/c?name=${name}`, {
+    method: "get",
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const data = await response.json();
+  return SSECPresignedUrlResponseSchema.parse(data);
 }
 
 export async function uploadFileToPresignedUrl({
@@ -85,7 +104,54 @@ export async function uploadFileToPresignedUrl({
   onProgress,
 }: {
   file: File;
-  presigned: PresignedUrlResponseType;
+  presigned: PresignedPutUrlResponseType;
+  onProgress?: (progress: UploadProgress) => void;
+}): Promise<void> {
+  const MAX_SIZE = 30 * 1024 * 1024; // 30MB
+
+  if (file.size > MAX_SIZE) {
+    toast.error("파일 용량은 30MB 이하만 업로드할 수 있어요.");
+    return;
+  }
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", presigned.presigned_url, true);
+
+    xhr.upload.addEventListener("progress", (event) => {
+      if (event.lengthComputable && onProgress) {
+        const percent = Math.round((event.loaded / event.total) * 100);
+        onProgress({
+          percent,
+          loaded: event.loaded,
+          total: event.total,
+        });
+      }
+    });
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        resolve();
+      } else {
+        reject(new Error(`업로드 실패 (status ${xhr.status})`));
+      }
+    };
+
+    xhr.onerror = () => {
+      reject(new Error("업로드 중 오류가 발생했어요."));
+    };
+
+    xhr.send(file);
+  });
+}
+
+export async function uploadFileToSSECPresignedUrl({
+  file,
+  presigned,
+  onProgress,
+}: {
+  file: File;
+  presigned: SSECPresignedUrlResponseType;
   onProgress?: (progress: UploadProgress) => void;
 }): Promise<void> {
   const MAX_SIZE = 30 * 1024 * 1024; // 30MB
@@ -157,15 +223,15 @@ export const handleFileDownloadOrPreview = (blob: Blob, mime: string, filename: 
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
 };
 
-export function FileDownloadButton({ file, children, className }: { file: ERPNextProjectFileRowType; children: React.ReactNode; className?: string }) {
+export function SSECFileDownloadButton({ file, children, className }: { file: ERPNextProjectFileRowType; children: React.ReactNode; className?: string }) {
   const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
     if (loading) return;
     try {
       setLoading(true);
-      const presigned = await getPresignedGetUrl(file.algorithm, file.key, file.sse_key);
-      const { blob, mime } = await downloadFilefromPresignedUrl(presigned);
+      const presigned = await getSSECPresignedGetUrl(file.algorithm, file.key, file.sse_key);
+      const { blob, mime } = await downloadFilefromSSECPresignedUrl(presigned);
       handleFileDownloadOrPreview(blob, mime, file.file_name);
     } catch {
       toast("다운로드에 실패했어요");

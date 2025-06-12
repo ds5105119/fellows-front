@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { readinessLevelLabels } from "@/components/resource/project";
-import { PlatformEnumZod, ReadinessLevelEnumZod, UserERPNextProjectType } from "@/@types/service/erpnext";
+import { PlatformEnumZod, ReadinessLevelEnumZod, UserERPNextProjectType } from "@/@types/service/project";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
 

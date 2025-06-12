@@ -4,7 +4,7 @@ import { UseFormReturn } from "react-hook-form";
 import { FormField, FormItem, FormMessage, FormLabel, FormControl } from "@/components/ui/form";
 import { categorizedFeatures } from "@/components/resource/project";
 import { FeatureItemWithTooltip } from "@/components/form/featureitemwithtooltip";
-import { UserERPNextProjectType } from "@/@types/service/erpnext";
+import { UserERPNextProjectType } from "@/@types/service/project";
 import { SwitchIndicator } from "@/components/ui/switch-indicator";
 import FileInput from "@/components/form/fileinput";
 import DatePickerWithRange from "@/components/form/datepickerwithrange";

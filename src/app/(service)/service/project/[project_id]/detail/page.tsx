@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShineBorder } from "@/components/magicui/shine-border";
 import { Session } from "next-auth";
-import { ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/erpnext";
+import { ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/project";
 import ProjectDetailMain from "@/components/section/service/project/detail/projectdetailmain";
 import ProjectEstimator from "@/components/section/service/project/detail/projectestimator";
 
@@ -64,7 +64,7 @@ export default async function Page({ params }: { params: Promise<{ project_id: s
 
               <div className="relative min-h-[80rem] col-span-full p-1 md:col-span-6 gap-5 border rounded-2xl">
                 <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
-                <ProjectEstimator project={project} session={session} />
+                <ProjectEstimator project={project} />
               </div>
             </div>
           </TabsContent>

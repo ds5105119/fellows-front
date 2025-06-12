@@ -6,9 +6,9 @@ import { FcFile, FcAudioFile, FcImageFile, FcVideoFile } from "react-icons/fc";
 import { motion, useAnimation } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { getPresignedPutUrl, uploadFileToPresignedUrl, removeFile } from "@/hooks/fetch/presigned";
+import { getSSECPresignedPutUrl, uploadFileToSSECPresignedUrl, removeFile } from "@/hooks/fetch/presigned";
 import { UploadProgressIndicator } from "../ui/uploadprogressindicator";
-import { ERPNextProjectFileRowType, ERPNextProjectFileRowZod } from "@/@types/service/erpnext";
+import { ERPNextProjectFileRowType, ERPNextProjectFileRowZod } from "@/@types/service/project";
 
 interface FileInputProps {
   onChange: (val: ERPNextProjectFileRowType[]) => void;
@@ -76,7 +76,7 @@ export default function FileInput({ onChange }: FileInputProps) {
     }
 
     try {
-      const presigned = await getPresignedPutUrl(file.name);
+      const presigned = await getSSECPresignedPutUrl(file.name);
       const fileRecord = ERPNextProjectFileRowZod.parse({
         doctype: "Files",
         key: presigned.key,
@@ -88,7 +88,7 @@ export default function FileInput({ onChange }: FileInputProps) {
 
       setFiles((prev) => [...prev, { record: fileRecord, name: file.name, size: file.size, progress: 0 }]);
 
-      await uploadFileToPresignedUrl({
+      await uploadFileToSSECPresignedUrl({
         file,
         presigned,
         onProgress: ({ percent }) => {

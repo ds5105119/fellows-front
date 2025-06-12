@@ -23,7 +23,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
-import type { ERPNextProjectType } from "@/@types/service/erpnext";
+import type { ERPNextProjectType } from "@/@types/service/project";
+import { deleteProject } from "@/hooks/fetch/project";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -134,10 +135,7 @@ export default function ProjectContainer({
       meta.swr.mutate((pages) => pages && pages.map((page) => ({ items: page.items.filter((item) => item.project_name !== project.project_name) })), {
         revalidate: false,
       });
-
-      await fetch(`/api/service/project/${project.project_name}`, {
-        method: "DELETE",
-      });
+      await deleteProject(project.project_name);
     }
   };
 
