@@ -44,13 +44,6 @@ export function BlogHeader() {
             ))}
           </div>
         </div>
-
-        <a
-          href="/blog/write"
-          className="relative px-4 py-2 md:px-6 md:py-3 text-base md:text-lg font-bold transition-all whitespace-nowrap rounded-xl text-blue-500 bg-blue-50 hover:bg-blue-100"
-        >
-          글쓰기
-        </a>
       </div>
     </motion.header>
   );
