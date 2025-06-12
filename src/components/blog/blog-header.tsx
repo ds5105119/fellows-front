@@ -34,7 +34,7 @@ export function BlogHeader() {
                 transition={{ delay: 0.4 + index * 0.05 }}
                 onClick={() => setActiveTab(item)}
                 className={`relative px-4 py-2 md:px-6 md:py-3 text-base md:text-lg font-bold transition-all whitespace-nowrap rounded-xl ${
-                  activeTab === item ? "text-blue-500 bg-blue-50" : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  activeTab === item ? "text-blue-500 bg-blue-50" : "bg-gray-50 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

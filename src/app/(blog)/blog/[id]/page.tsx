@@ -4,6 +4,9 @@ import MarkdownPreview from "@/components/ui/markdownpreview";
 import dayjs from "dayjs";
 import Image from "next/image";
 
+export const revalidate = 60;
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BLOG_URL}/path`);
   const posts = await res.json();
