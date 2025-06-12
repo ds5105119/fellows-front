@@ -32,6 +32,7 @@ export const UpsertBlogPostDto = z.object({
 
 // BlogPostDto
 export const BlogPostDto = z.object({
+  id: z.string(),
   title: z.string(),
   title_image: z.string(),
   content: z.string(),

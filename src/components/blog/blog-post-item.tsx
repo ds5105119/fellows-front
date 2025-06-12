@@ -10,11 +10,10 @@ import Image from "next/image";
 interface BlogPostItemProps {
   post: BlogPostDtoType;
   featured?: boolean;
-  onClick?: () => void;
   index?: number;
 }
 
-export function BlogPostItem({ post, featured = false, onClick, index = 0 }: BlogPostItemProps) {
+export function BlogPostItem({ post, featured = false, index = 0 }: BlogPostItemProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, {
     once: false,
@@ -29,10 +28,10 @@ export function BlogPostItem({ post, featured = false, onClick, index = 0 }: Blo
 
   if (featured) {
     return (
-      <motion.article
+      <motion.a
+        href={`/blog/${post.id}`}
         ref={ref}
         className="group cursor-pointer md:max-w-xs min-[70rem]:max-w-[62.25rem] min-[70rem]:col-span-full"
-        onClick={onClick}
         initial={{
           opacity: 0,
           y: 30,
@@ -117,15 +116,15 @@ export function BlogPostItem({ post, featured = false, onClick, index = 0 }: Blo
             </div>
           </div>
         </div>
-      </motion.article>
+      </motion.a>
     );
   }
 
   return (
-    <motion.article
+    <motion.a
       ref={ref}
+      href={`/blog/${post.id}`}
       className="group cursor-pointer"
-      onClick={onClick}
       initial={{
         opacity: 0,
         y: 30,
@@ -175,6 +174,6 @@ export function BlogPostItem({ post, featured = false, onClick, index = 0 }: Blo
           </div>
         </div>
       </div>
-    </motion.article>
+    </motion.a>
   );
 }

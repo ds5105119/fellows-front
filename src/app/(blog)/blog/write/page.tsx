@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, Eye } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PostMetadata } from "@/components/blog/post-metadata";
 import Editor from "@/components/editor/editor";
@@ -21,7 +21,6 @@ export default function WritePage() {
     titleImage: "",
   });
 
-  const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
@@ -73,21 +72,10 @@ export default function WritePage() {
 
             <div className="flex items-center space-x-3">
               <button
-                onClick={() => setIsPreviewMode(!isPreviewMode)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                  isPreviewMode ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                <Eye className="w-4 h-4" />
-                <span className="text-sm font-medium">{isPreviewMode ? "편집" : "미리보기"}</span>
-              </button>
-
-              <button
                 onClick={handleSave}
                 disabled={isSaving}
                 className="flex items-center space-x-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors disabled:opacity-50"
               >
-                <Save className="w-4 h-4" />
                 <span className="text-sm font-medium">{isSaving ? "저장 중..." : "저장"}</span>
               </button>
 
@@ -110,7 +98,7 @@ export default function WritePage() {
               markdown={content}
               placeholder="글을 작성하세요. 이미지는 드래그 앤 드롭으로도 올릴 수 있습니다..."
               onChange={setContent}
-              className="w-full h-full overflow-auto"
+              className="w-full h-full overflow-auto min-h-96"
             />
           </motion.div>
 

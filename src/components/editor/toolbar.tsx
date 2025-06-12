@@ -6,7 +6,6 @@ import {
   BoldItalicUnderlineToggles,
   CodeToggle,
   ChangeCodeMirrorLanguage,
-  BlockTypeSelect,
   CreateLink,
   InsertCodeBlock,
   InsertImage,
@@ -35,7 +34,6 @@ const Toolbar = () => (
             <InsertCodeBlock />
             <Separator />
 
-            <BlockTypeSelect />
             <InsertImage />
             <CreateLink />
           </>

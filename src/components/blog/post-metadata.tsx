@@ -6,6 +6,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { X, Plus, Upload } from "lucide-react";
 import imageUploadHandler from "@/lib/imageUploadHandler";
+import AnimatedUnderlineInput from "../ui/animatedunderlineinput";
+import AnimatedUnderlineTextarea from "../ui/animatedunderlinetextarea";
 
 interface PostMetadataProps {
   metadata: {
@@ -52,34 +54,30 @@ export function PostMetadata({ metadata, onChange }: PostMetadataProps) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50 space-y-6"
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <h3 className="text-lg font-semibold text-slate-900">포스트 설정</h3>
 
       {/* Title */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">제목</label>
-        <input
+        <AnimatedUnderlineInput
           type="text"
           value={metadata.title}
           onChange={(e) => onChange({ ...metadata, title: e.target.value })}
           placeholder="포스트 제목을 입력하세요"
-          className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full focus:outline-none"
         />
       </div>
 
       {/* Summary */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">요약</label>
-        <textarea
+        <AnimatedUnderlineTextarea
           value={metadata.summary}
           onChange={(e) => onChange({ ...metadata, summary: e.target.value })}
           placeholder="포스트 요약을 입력하세요"
           rows={3}
-          className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          className="w-full focus:outline-none !h-28 !max-h-28"
         />
       </div>
 
