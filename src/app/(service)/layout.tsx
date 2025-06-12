@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Header from "@/components/sidebar/header";
 import Footer from "@/components/footer/footer";
+import Toaster from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/sonner";
 
 import "../globals.css";
 
@@ -55,24 +55,7 @@ export default async function RootLayout({
           <SpeedInsights />
         </SidebarProvider>
 
-        <Toaster
-          position="bottom-right"
-          toastOptions={{
-            classNames: {
-              toast:
-                "group toast group-[.toaster]:!rounded-full group-[.toaster]:!px-5 group-[.toaster]:!items-center group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:!border-0 group-[.toaster]:shadow-lg",
-              title: "group-[.toaster]:!text-sm group-[.toaster]:!font-bold",
-              description: "group-[.toast]:!text-muted-foreground ",
-              actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-              cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
-            },
-          }}
-          icons={{
-            info: null,
-          }}
-          visibleToasts={1}
-          expand
-        />
+        <Toaster />
       </body>
     </html>
   );

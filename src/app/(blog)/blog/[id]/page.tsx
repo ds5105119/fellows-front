@@ -1,6 +1,7 @@
 import { BlogPostDto } from "@/@types/service/blog";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import MarkdownPreview from "@/components/ui/markdownpreview";
+import BlogShare from "@/components/blog/blog-share";
 import dayjs from "dayjs";
 import Image from "next/image";
 
@@ -31,7 +32,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const post = BlogPostDto.parse(post_json);
 
   return (
-    <main className="w-full pt-13">
+    <main className="relative w-full pt-13">
       <div className="mx-auto px-6 lg:px-0 w-full md:w-lg lg:w-2xl flex flex-col space-y-6 py-20">
         <div className="space-y-2">
           <p className="text-xs font-semibold text-muted-foreground">{post.category?.name ?? "카테고리 없음"}</p>
@@ -39,9 +40,11 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         </div>
         <h1 className="text-4xl md:text-5xl font-extrabold">{post.summary}</h1>
         <h2 className="text-xl md:text-2xl font-semibold">{post.title}</h2>
+
+        <BlogShare title="Fellows 블로그" text={post.title} />
       </div>
 
-      <div className="mx-auto w-full md:w-xl lg:w-4xl">
+      <div className="mx-auto w-full md:w-xl lg:w-4xl min-[70rem]:w-[62.25rem]">
         <AspectRatio ratio={16 / 10} className="md:rounded-2xl overflow-hidden">
           <Image src={post.title_image} alt={post.title} fill className="object-cover" />
         </AspectRatio>

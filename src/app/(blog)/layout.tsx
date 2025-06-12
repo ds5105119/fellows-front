@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import FullHeader from "@/components/header/fullheader";
 import MainFooter from "@/components/footer/mainfooter";
+import Toaster from "@/components/ui/toaster";
 import "../globals.css";
 import "lenis/dist/lenis.css";
 
@@ -43,6 +44,7 @@ export default async function RootLayout({
             <main className="scrollbar-hide break-keep">{children}</main>
             <MainFooter />
           </div>
+          <Toaster />
         </LenisProvider>
         <Analytics />
         <SpeedInsights />

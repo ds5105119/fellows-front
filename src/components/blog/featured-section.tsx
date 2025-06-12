@@ -17,7 +17,6 @@ export function FeaturedSection() {
 
   const swr = usePosts(20);
   const posts = swr.data?.flatMap((i) => i.items) ?? [];
-  console.log(swr.data);
 
   const featuredPost = posts[0];
   const sidebarPosts = posts.slice(1, posts.length);
