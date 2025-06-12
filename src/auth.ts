@@ -14,6 +14,7 @@ declare module "next-auth" {
     email: string;
     username: string;
     name: string;
+    bio: string;
     phoneNumber: string;
     birthdate: string;
     sub_locality: string;
@@ -53,6 +54,7 @@ declare module "next-auth/jwt" {
     username: string;
     name: string;
     phoneNumber: string;
+    bio: string;
     birthdate: string;
     sub_locality: string;
     email_verified: boolean;
@@ -151,6 +153,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.email = token.email;
       session.user.username = token.username;
       session.user.name = token.name;
+      session.user.bio = token.bio;
       session.user.phoneNumber = token.phoneNumber;
       session.user.birthdate = token.birthdate;
       session.user.sub_locality = token.sub_locality;

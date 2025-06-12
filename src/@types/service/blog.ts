@@ -11,12 +11,24 @@ export const AuthorInlineDto = z.object({
 // CategoryInlineDto
 export const CategoryInlineDto = z.object({
   name: z.string(),
-  description: z.string().nullable().optional(),
 });
 
 // TagInlineDto
 export const TagInlineDto = z.object({
   name: z.string(),
+});
+
+// BlogPostDto
+export const UpsertBlogPostDto = z.object({
+  title: z.string(),
+  title_image: z.string(),
+  content: z.string(),
+  summary: z.string().nullable().optional(),
+  is_published: z.boolean().default(false),
+  published_at: z.coerce.date().nullable().optional(),
+
+  category: CategoryInlineDto.nullable().optional(),
+  tags: z.array(TagInlineDto).default([]),
 });
 
 // BlogPostDto
@@ -29,19 +41,6 @@ export const BlogPostDto = z.object({
   published_at: z.coerce.date().nullable().optional(),
 
   author: AuthorInlineDto,
-  category: CategoryInlineDto.nullable().optional(),
-  tags: z.array(TagInlineDto).default([]),
-});
-
-// UpdateBlogPostDto
-export const UpdateBlogPostDto = z.object({
-  title: z.string().optional().nullable(),
-  title_image: z.string().optional().nullable(),
-  content: z.string().optional().nullable(),
-  summary: z.string().optional().nullable(),
-  is_published: z.boolean().default(false),
-  published_at: z.coerce.date().nullable().optional(),
-
   category: CategoryInlineDto.nullable().optional(),
   tags: z.array(TagInlineDto).default([]),
 });
@@ -67,7 +66,7 @@ export const BlogPostPaginatedResponse = z.object({
 export type AuthorInlineDtoType = z.infer<typeof AuthorInlineDto>;
 export type CategoryInlineDtoType = z.infer<typeof CategoryInlineDto>;
 export type TagInlineDtoType = z.infer<typeof TagInlineDto>;
+export type UpsertBlogPostType = z.infer<typeof UpsertBlogPostDto>;
 export type BlogPostDtoType = z.infer<typeof BlogPostDto>;
-export type UpdateBlogPostDtoType = z.infer<typeof UpdateBlogPostDto>;
 export type BlogPostListQueryDtoType = z.infer<typeof BlogPostListQueryDto>;
 export type BlogPostPaginatedResponseType = z.infer<typeof BlogPostPaginatedResponse>;

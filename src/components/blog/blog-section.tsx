@@ -2,22 +2,25 @@
 
 import { motion, useInView } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { BlogPostDtoType } from "@/@types/service/blog";
+import { usePosts } from "@/hooks/fetch/blog";
 import { BlogPostItem } from "./blog-post-item";
 import { useRef } from "react";
 import Link from "next/link";
 
 interface BlogSectionProps {
   title: string;
-  posts: BlogPostDtoType[];
 }
 
-export function BlogSection({ title, posts }: BlogSectionProps) {
+export function BlogSection({ title }: BlogSectionProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, {
     once: false,
     margin: "-50px 0px -50px 0px",
   });
+
+  const swr = usePosts(20);
+  const posts = swr.data?.flatMap((i) => i.items) ?? [];
+
   return (
     <motion.section
       ref={ref}
@@ -56,7 +59,7 @@ export function BlogSection({ title, posts }: BlogSectionProps) {
           </Link>
         </div>
 
-        <BlogPostItem post={posts[0]} featured={true} />
+        {posts.length > 0 && <BlogPostItem post={posts[0]} featured={true} />}
         {posts.slice(1, posts.length).map((post, index) => (
           <BlogPostItem key={index} post={post} index={index + 1} />
         ))}

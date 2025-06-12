@@ -1,22 +1,23 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { BlogPostDtoType } from "@/@types/service/blog";
+import { usePosts } from "@/hooks/fetch/blog";
+
 import { useRef } from "react";
 import dayjs from "dayjs";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 
-interface FeaturedSectionProps {
-  posts: BlogPostDtoType[];
-}
-
-export function FeaturedSection({ posts }: FeaturedSectionProps) {
+export function FeaturedSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, {
     once: false,
     margin: "-100px 0px -100px 0px",
   });
+
+  const swr = usePosts(20);
+  const posts = swr.data?.flatMap((i) => i.items) ?? [];
+  console.log(swr.data);
 
   const featuredPost = posts[0];
   const sidebarPosts = posts.slice(1, posts.length);
@@ -54,61 +55,63 @@ export function FeaturedSection({ posts }: FeaturedSectionProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {/* Main Featured Post */}
-        <div className="lg:col-span-3">
-          <motion.article
-            ref={ref}
-            className="group cursor-pointer"
-            initial={{
-              opacity: 0,
-              y: 30,
-              filter: "blur(8px)",
-            }}
-            animate={{
-              opacity: isInView ? 1 : 0,
-              y: isInView ? 0 : 30,
-              filter: isInView ? "blur(0px)" : "blur(8px)",
-            }}
-            exit={{
-              opacity: 0,
-              y: -30,
-              filter: "blur(8px)",
-            }}
-            transition={{
-              duration: 0.6,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-          >
-            <div className="rounded-3xl min-[70rem]:rounded-4xl overflow-hidden">
-              <motion.div className="relative aspect-[4/3]">
-                <Image
-                  src={featuredPost.title_image || "/placeholder.svg?height=400&width=600"}
-                  alt={featuredPost.title}
-                  className="h-full w-full object-cover group-hover:scale-105 transition-all duration-1000"
-                  fill
-                />
-                <div className="absolute bottom-6 right-6 rounded-full size-14 bg-white/70 flex items-center justify-center">
-                  <ArrowUpRight strokeWidth={2.5} />
+        {featuredPost && (
+          <div className="lg:col-span-3">
+            <motion.article
+              ref={ref}
+              className="group cursor-pointer"
+              initial={{
+                opacity: 0,
+                y: 30,
+                filter: "blur(8px)",
+              }}
+              animate={{
+                opacity: isInView ? 1 : 0,
+                y: isInView ? 0 : 30,
+                filter: isInView ? "blur(0px)" : "blur(8px)",
+              }}
+              exit={{
+                opacity: 0,
+                y: -30,
+                filter: "blur(8px)",
+              }}
+              transition={{
+                duration: 0.6,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
+              <div className="rounded-3xl min-[70rem]:rounded-4xl overflow-hidden">
+                <motion.div className="relative aspect-[4/3]">
+                  <Image
+                    src={featuredPost.title_image || "/placeholder.svg?height=400&width=600"}
+                    alt={featuredPost.title}
+                    className="h-full w-full object-cover group-hover:scale-105 transition-all duration-1000"
+                    fill
+                  />
+                  <div className="absolute bottom-6 right-6 rounded-full size-14 bg-white/70 flex items-center justify-center">
+                    <ArrowUpRight strokeWidth={2.5} />
+                  </div>
+                </motion.div>
+              </div>
+
+              <div className="rounded-b-3xl min-[70rem]:rounded-b-4xl bg-white space-y-4 px-8 py-8 flex flex-col h-44 min-[70rem]:h-52">
+                <div className="flex space-x-2">
+                  <h4 className="text-muted-foreground font-bold text-xs min-[70rem]:text-sm">{featuredPost?.category?.name ?? "인사이트"}</h4>{" "}
                 </div>
-              </motion.div>
-            </div>
 
-            <div className="rounded-b-3xl min-[70rem]:rounded-b-4xl bg-white space-y-4 px-8 py-8 flex flex-col h-44 min-[70rem]:h-52">
-              <div className="flex space-x-2">
-                <h4 className="text-muted-foreground font-bold text-xs min-[70rem]:text-sm">{featuredPost?.category?.name ?? "인사이트"}</h4>{" "}
+                <h3 className="text-xl min-[70rem]:text-2xl font-extrabold text-slate-900 leading-tight group-hover:text-blue-500 transition-colors duration-500 grow">
+                  {featuredPost.title}
+                </h3>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-xs min-[70rem]:text-base font-semibold text-gray-500">
+                    {featuredPost.published_at ? dayjs(featuredPost.published_at).format("LL") : ""}
+                  </span>
+                </div>
               </div>
-
-              <h3 className="text-xl min-[70rem]:text-2xl font-extrabold text-slate-900 leading-tight group-hover:text-blue-500 transition-colors duration-500 grow">
-                {featuredPost.title}
-              </h3>
-
-              <div className="flex items-center justify-between">
-                <span className="text-xs min-[70rem]:text-base font-semibold text-gray-500">
-                  {featuredPost.published_at ? dayjs(featuredPost.published_at).format("LL") : ""}
-                </span>
-              </div>
-            </div>
-          </motion.article>
-        </div>
+            </motion.article>
+          </div>
+        )}
 
         {/* Sidebar Posts */}
         <div className="lg:col-span-2 space-y-6">

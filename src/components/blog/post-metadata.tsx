@@ -5,6 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { X, Plus, Upload } from "lucide-react";
+import imageUploadHandler from "@/lib/imageUploadHandler";
 
 interface PostMetadataProps {
   metadata: {
@@ -39,11 +40,10 @@ export function PostMetadata({ metadata, onChange }: PostMetadataProps) {
     });
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // 실제로는 파일 업로드 로직 구현
-      const imageUrl = URL.createObjectURL(file);
+      const imageUrl = await imageUploadHandler(file);
       onChange({
         ...metadata,
         titleImage: imageUrl,

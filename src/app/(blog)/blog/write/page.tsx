@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, Eye, ImageIcon, Code, Table, List } from "lucide-react";
+import { ArrowLeft, Save, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PostMetadata } from "@/components/blog/post-metadata";
 import Editor from "@/components/editor/editor";
+import { UpsertBlogPostDto } from "@/@types/service/blog";
+import { createPost } from "@/hooks/fetch/blog";
 
 export default function WritePage() {
   const router = useRouter();
@@ -24,17 +26,32 @@ export default function WritePage() {
 
   const handleSave = async () => {
     setIsSaving(true);
-
-    // 여기에 실제 저장 로직 구현
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
+    const payload = UpsertBlogPostDto.parse({
+      content: content,
+      title: metadata.title,
+      title_image: metadata.titleImage,
+      summary: metadata.summary,
+      category: { name: metadata.category },
+      tags: metadata.tags.map((tag) => ({ name: tag })),
+    });
+    await createPost(payload);
     setIsSaving(false);
-    // 성공 알림 등 추가 가능
   };
 
   const handlePublish = async () => {
-    // 발행 로직
-    console.log("Publishing post...", { metadata, content });
+    setIsSaving(true);
+    const payload = UpsertBlogPostDto.parse({
+      content: content,
+      title: metadata.title,
+      title_image: metadata.titleImage,
+      summary: metadata.summary,
+      category: { name: metadata.category },
+      tags: metadata.tags.map((tag) => ({ name: tag })),
+      is_published: true,
+      published_at: new Date(),
+    });
+    await createPost(payload);
+    setIsSaving(false);
   };
 
   return (
@@ -100,41 +117,6 @@ export default function WritePage() {
           {/* Sidebar */}
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="lg:col-span-1 space-y-6">
             <PostMetadata metadata={metadata} onChange={setMetadata} />
-
-            {/* Quick Actions */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">빠른 삽입</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <button className="flex flex-col items-center space-y-2 p-3 hover:bg-slate-50 rounded-lg transition-colors">
-                  <ImageIcon className="w-5 h-5 text-slate-600" />
-                  <span className="text-xs text-slate-600">이미지</span>
-                </button>
-                <button className="flex flex-col items-center space-y-2 p-3 hover:bg-slate-50 rounded-lg transition-colors">
-                  <Code className="w-5 h-5 text-slate-600" />
-                  <span className="text-xs text-slate-600">코드</span>
-                </button>
-                <button className="flex flex-col items-center space-y-2 p-3 hover:bg-slate-50 rounded-lg transition-colors">
-                  <Table className="w-5 h-5 text-slate-600" />
-                  <span className="text-xs text-slate-600">테이블</span>
-                </button>
-                <button className="flex flex-col items-center space-y-2 p-3 hover:bg-slate-50 rounded-lg transition-colors">
-                  <List className="w-5 h-5 text-slate-600" />
-                  <span className="text-xs text-slate-600">리스트</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Writing Tips */}
-            <div className="bg-blue-50 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-blue-900 mb-3">작성 팁</h3>
-              <ul className="space-y-2 text-sm text-blue-800">
-                <li>• # 제목, ## 부제목으로 구조화</li>
-                <li>• **굵게**, *기울임*으로 강조</li>
-                <li>• \`\`\`로 코드 블록 생성</li>
-                <li>• &gt; 인용구 사용</li>
-                <li>• - 또는 * 로 리스트 생성</li>
-              </ul>
-            </div>
           </motion.div>
         </div>
       </div>

@@ -2,12 +2,12 @@
 
 import useSWR, { SWRResponse } from "swr";
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
-import { BlogPostPaginatedResponse, BlogPostDto, BlogPostDtoType, UpdateBlogPostDtoType } from "@/@types/service/blog";
+import { BlogPostPaginatedResponse, BlogPostDto, BlogPostDtoType, UpsertBlogPostType } from "@/@types/service/blog";
 import { toast } from "sonner";
 
 // CRREATE
 
-export const createPost = async (payload: BlogPostDtoType): Promise<BlogPostDtoType | undefined> => {
+export const createPost = async (payload: UpsertBlogPostType): Promise<BlogPostDtoType | undefined> => {
   const response = await fetch("/api/blog", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -28,7 +28,7 @@ export const createPost = async (payload: BlogPostDtoType): Promise<BlogPostDtoT
 
 // READ
 
-export const useProject = (post_id: string): SWRResponse<BlogPostDtoType | undefined> => {
+export const usePost = (post_id: string): SWRResponse<BlogPostDtoType | undefined> => {
   const fetcher = async (url: string) => {
     if (!url) return undefined;
 
@@ -94,7 +94,7 @@ const blogsFetcher = async (url: string) => {
   return BlogPostPaginatedResponse.parse(data);
 };
 
-export const useBlogs = (size?: number, category?: string, tag?: string, keyword?: string, order_by?: string, descending?: boolean) => {
+export const usePosts = (size?: number, category?: string, tag?: string, keyword?: string, order_by?: string, descending?: boolean) => {
   const getKey = blogsGetKeyFactory({ size, category, tag, keyword, order_by, descending });
   return useSWRInfinite(getKey, blogsFetcher, {
     refreshInterval: 60000,
@@ -103,7 +103,7 @@ export const useBlogs = (size?: number, category?: string, tag?: string, keyword
 
 // PUT
 
-export const updatePost = async (post_id: string, payload: UpdateBlogPostDtoType) => {
+export const updatePost = async (post_id: string, payload: UpsertBlogPostType) => {
   await fetch(`/api/blog${post_id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
