@@ -25,7 +25,6 @@ export const UpsertBlogPostDto = z.object({
   content: z.string(),
   summary: z.string().nullable().optional(),
   is_published: z.boolean().default(false),
-  published_at: z.coerce.date().nullable().optional(),
 
   category: CategoryInlineDto.nullable().optional(),
   tags: z.array(TagInlineDto).default([]),
