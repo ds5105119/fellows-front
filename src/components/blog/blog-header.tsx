@@ -22,10 +22,10 @@ export function BlogHeader() {
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="bg-white/80 backdrop-blur-xl"
     >
-      <div className="w-full flex items-center justify-between">
+      <div className="w-full overflow-x-auto flex items-center justify-between scrollbar-hide">
         {/* Navigation Tabs */}
         <div className="relative">
-          <div className="flex space-x-2 overflow-x-auto overflow-y-hidden scrollbar-hide">
+          <div className="flex space-x-2 overflow-y-hidden">
             {tabs.map((item, index) => (
               <motion.button
                 key={item}
