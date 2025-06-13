@@ -1,5 +1,32 @@
-//robots.txt
-  
+# robots.txt for https://fellows.my
+
 # Allow all crawlers
 User-agent: *
+Disallow: /api/
+Disallow: /service/
 Allow: /
+
+# Crawl delay (optional, some bots respect this)
+Crawl-delay: 10
+
+# Clean URLs (prevent double indexing)
+Disallow: /*?*
+Disallow: /*&*
+
+# Sitemap location (very important for indexing)
+Sitemap: https://fellows.my/sitemap.xml
+
+# Optional: Block specific crawlers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+# Optional: Block image indexing
+# User-agent: Googlebot-Image
+# Disallow: /
+
+# Optional: Block translation bots (e.g., Google Translate)
+# User-agent: Google-Translate
+# Disallow: /
