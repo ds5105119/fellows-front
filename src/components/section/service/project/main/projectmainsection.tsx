@@ -8,6 +8,7 @@ import ProjectDetailSheet from "./projectdetailsheet";
 import { SWRInfiniteResponse } from "swr/infinite";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { cn } from "@/lib/utils";
 import { useInView } from "framer-motion";
@@ -115,6 +116,8 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const [openSheet, setOpenSheet] = useState(false);
   const keyword = useThrottle(inputText, 700);
   const pathname = usePathname();
+  const router = useRouter();
+  const project = useProjects(1);
 
   useEffect(() => {
     if (selectedProject) {
@@ -149,6 +152,12 @@ export default function ProjectMainSection({ session, project_id }: { session: S
       setSelectedProject(null);
     }
   }, [openSheet]);
+
+  useEffect(() => {
+    if (!project.isLoading && !project.error && !project.isValidating && project.data && project.data.length > 0 && project.data[0].items.length == 0) {
+      router.push("/service/project/new");
+    }
+  }, [project]);
 
   return (
     <div className="flex flex-col w-full space-y-4">

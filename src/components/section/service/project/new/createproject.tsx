@@ -292,7 +292,7 @@ export default function CreateProject() {
   const handleSuccessfulSubmission = useCallback(
     (project: ERPNextProjectType) => {
       toast.success("프로젝트 정보가 성공적으로 저장되었습니다.");
-      router.push(`/service/project/${project.project_name}`);
+      router.push(`/service/project/${project.project_name}/detail`);
       router.refresh();
       reset(initalProjectInfo);
       setIsStepping(true);

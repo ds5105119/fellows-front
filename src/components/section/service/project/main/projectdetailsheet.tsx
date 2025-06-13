@@ -394,7 +394,7 @@ function ProjectDetailSheetInner({ project: _project, onClose, session }: { proj
               </Button>
             ) : (
               <Button size="lg" className="w-full px-16 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-lg font-semibold" asChild>
-                <Link href={`./project/${project.project_name}`}>지금 바로 예상 견적을 받아보세요 ✨</Link>
+                <Link href={`./${project.project_name}/detail`}>지금 바로 예상 견적을 받아보세요 ✨</Link>
               </Button>
             )}
           </div>
