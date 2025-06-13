@@ -42,7 +42,7 @@ export default function BlogPostItem({ post, featured = false, index = 0 }: Blog
     transition: {
       duration: featured ? 0.8 : 0.6,
       delay: featured ? 0.2 : index * 0.1,
-      ease: [0.16, 1, 0.3, 1],
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
     },
   };
 
@@ -78,7 +78,7 @@ export default function BlogPostItem({ post, featured = false, index = 0 }: Blog
   );
 
   return (
-    <motion.a href={`/blog/${post.id}`} ref={ref} className={`group cursor-pointer ${featured ? "md:col-span-full" : ""}`} {...animationProps}>
+    <motion.a href={`/blog/${post.id}`} ref={ref} className={cn("sm:group cursor-pointer", featured ? "md:col-span-full" : "")} {...animationProps}>
       {featured ? (
         <>
           {/* Featured post - horizontal layout for large screens */}

@@ -3,10 +3,11 @@
 import { motion, useInView } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { usePosts } from "@/hooks/fetch/blog";
+import { useEffect, useRef } from "react";
 import BlogPostItem from "./blog-post-item";
 import BlogPostSkeleton from "./blog-post-skeleton";
-import { useEffect, useRef } from "react";
 import Link from "next/link";
+import BlogNavigation from "./blog-navigation";
 
 interface BlogSectionProps {
   title: string;
@@ -28,7 +29,7 @@ export function BlogSection({ title }: BlogSectionProps) {
   const swr = usePosts(20);
   const posts = swr.data?.flatMap((i) => i.items) ?? [];
   const isReachedEnd = swr.data && swr.data.length > 0 && swr.data[swr.data.length - 1].items.length === 0;
-  const isLoading = !isReachedEnd && swr.data && (swr.isLoading || (swr.size > 0 && typeof swr.data[swr.size - 1] === "undefined"));
+  const isLoading = !isReachedEnd && (swr.isLoading || (swr.data && swr.size > 0 && typeof swr.data[swr.size - 1] === "undefined"));
 
   useEffect(() => {
     if (isReachingEnd && !isLoading && !isReachedEnd) {
@@ -59,15 +60,19 @@ export function BlogSection({ title }: BlogSectionProps) {
       {/* Posts Grid */}
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-9">
         {/* Section Header */}
-        <div className="col-span-full flex items-center justify-between mb-3">
+        <div className="col-span-full flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center justify-between">
           <div className="space-y-2">
-            <h2 className="text-2xl lg:text-3xl font-extrabold text-slate-900">{title}</h2>
+            <h2 className="text-3xl lg:text-4xl font-extrabold text-slate-900">{title}</h2>
           </div>
 
           <Link href="/" className="flex items-center space-x-1.5 md:px-3 md:py-1.5 md:rounded-sm md:hover:bg-gray-200 select-none">
-            <ArrowUpRight className="!size-7 text-blue-500" />
-            <p className="text-lg md:text-xl font-semibold text-blue-500">더 확인하기</p>
+            <ArrowUpRight className="!size-5 md:!size-7 text-blue-500" />
+            <p className="text-base md:text-xl font-semibold text-blue-500">더 확인하기</p>
           </Link>
+        </div>
+
+        <div className="mb-2">
+          <BlogNavigation />
         </div>
 
         {posts.length > 0 && <BlogPostItem post={posts[0]} featured={true} />}

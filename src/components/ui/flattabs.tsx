@@ -2,18 +2,10 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import {
-  type ReactElement,
-  type ReactNode,
-  useRef,
-  useEffect,
-  useState,
-  useCallback, // ✅
-  useLayoutEffect, // ✅
-} from "react";
+import { type ReactElement, type ReactNode, useRef, useEffect, useState, useCallback, useLayoutEffect } from "react";
 
 const springTransition = {
-  type: "spring",
+  type: "spring" as const,
   stiffness: 400,
   damping: 40,
   mass: 0.6,

@@ -10,12 +10,12 @@ export default function BlogPostSkeleton({ featured = false }: BlogPostSkeletonP
   // 펄스 애니메이션 속성
   const pulseAnimation = {
     animate: {
-      opacity: [0.4, 0.7, 0.4],
+      opacity: [0.4, 0.7, 0.4] as [number, number, number],
     },
     transition: {
       duration: 1.5,
       repeat: Number.POSITIVE_INFINITY,
-      ease: "easeInOut",
+      ease: "easeInOut" as const,
     },
   };
 

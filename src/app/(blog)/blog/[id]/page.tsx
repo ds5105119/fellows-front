@@ -37,7 +37,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <main className="relative w-full pt-13">
-      <div className="mx-auto px-6 lg:px-0 w-full md:w-lg lg:w-2xl flex flex-col space-y-6 py-20">
+      <div className="mx-auto px-10 lg:px-0 w-full md:w-lg lg:w-2xl flex flex-col space-y-6 py-20">
         <div className="space-y-2">
           <p className="text-xs font-semibold text-muted-foreground">{post.category?.name ?? "카테고리 없음"}</p>
           <p className="text-sm font-semibold text-muted-foreground">{post.published_at ? dayjs(post.published_at).format("YYYY-MM-DD") : "발행 전"}</p>
@@ -67,16 +67,25 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <BlogShare title="Fellows 블로그" text={post.title} />
       </div>
 
-      <div className="mx-auto w-full md:max-w-[42.25rem] min-[70rem]:max-w-[62.25rem]">
-        <AspectRatio ratio={16 / 10} className="md:rounded-2xl overflow-hidden">
+      <div className="mx-auto px-6 md:px-0 w-full md:max-w-[42.25rem] min-[70rem]:max-w-[62.25rem]">
+        <AspectRatio ratio={16 / 10} className="rounded-xl md:rounded-2xl overflow-hidden">
           <Image src={post.title_image} alt={post.title} fill className="object-cover" />
         </AspectRatio>
       </div>
 
-      <div className="mx-auto px-6 lg:px-0 w-full md:w-lg lg:w-2xl py-20">
-        <div className="w-full prose prose-base md:prose-lg prose-headings:font-medium prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-a:text-primary prose-img:rounded-md prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl">
+      <div className="mx-auto px-10 lg:px-0 w-full max-w-full md:w-lg lg:w-2xl py-20">
+        <div
+          className="w-full overflow-hidden prose prose-base md:prose-lg
+  prose-headings:font-medium
+  prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg
+  prose-a:text-primary
+  prose-img:rounded-md
+  prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl
+  [&_*]:max-w-full [&_*]:break-words [&_*]:overflow-hidden
+"
+        >
           <MarkdownPreview loading={false}>{post.content}</MarkdownPreview>
-        </div>
+        </div>{" "}
       </div>
       <BlogToolbar session={session} post={post} />
     </main>

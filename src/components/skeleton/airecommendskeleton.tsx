@@ -26,7 +26,7 @@ export default function AIRecommendSkeleton({ isLoading }: { isLoading: boolean 
   }, [isLoading]); // 🔑 key를 의존성에서 빼고 isLoading만
 
   const springTransition = {
-    type: "spring",
+    type: "spring" as const,
     stiffness: 400,
     damping: 30,
   };

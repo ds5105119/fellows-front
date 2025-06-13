@@ -2,38 +2,67 @@
 
 import { motion, useInView } from "framer-motion";
 import { usePosts } from "@/hooks/fetch/blog";
-
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { FastAverageColor } from "fast-average-color";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
+import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
 
 export function FeaturedSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, {
-    once: false,
+    once: true,
     margin: "-100px 0px -100px 0px",
   });
 
-  const swr = usePosts(4);
+  const swr = usePosts(3);
   const posts = swr.data?.flatMap((i) => i.items) ?? [];
 
   const featuredPost = posts[0];
-  const sidebarPosts = posts.slice(1, posts.length);
+
+  const sidebarPost1 = posts[1];
+  const sidebarPost1ImageRef = useRef(null);
+  const [sidebarPost1ImageRefHex, setSidebarPost1ImageRefHex] = useState("#fffff");
+  const [sidebarPost1ImageRefIsDark, setSidebarPost1ImageRefIsDark] = useState(false);
+
+  const sidebarPost2 = posts[2];
+  const sidebarPost2ImageRef = useRef(null);
+  const [sidebarPost2ImageRefIsDark, setSidebarPost2ImageRefIsDark] = useState(false);
+
+  useEffect(() => {
+    const fac = new FastAverageColor();
+    if (sidebarPost1ImageRef.current) {
+      fac.getColorAsync(sidebarPost1ImageRef.current).then((color) => {
+        setSidebarPost1ImageRefHex(color.hex);
+        setSidebarPost1ImageRefIsDark(color.isDark);
+      });
+    }
+  }, [sidebarPost1ImageRef, sidebarPost1]);
+
+  useEffect(() => {
+    const fac = new FastAverageColor();
+    if (sidebarPost2ImageRef.current) {
+      fac.getColorAsync(sidebarPost2ImageRef.current).then((color) => {
+        setSidebarPost2ImageRefIsDark(color.isDark);
+      });
+    }
+  }, [sidebarPost2ImageRef, sidebarPost2]);
 
   return (
     <motion.section ref={ref} className="flex flex-col">
       {/* Section Header */}
       <div className="col-span-full flex items-center justify-between mb-6 md:mb-9">
         <div className="space-y-2">
-          <h2 className="text-2xl lg:text-3xl font-extrabold text-slate-900">최신 글</h2>
+          <h2 className="text-3xl lg:text-4xl font-extrabold text-slate-900">최신 글</h2>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-8 h-fit">
         {/* Main Featured Post */}
         {featuredPost && (
-          <div className="lg:col-span-3">
+          <Link href={`/blog/${featuredPost.id}`} className="lg:col-span-4">
             <motion.article
               ref={ref}
               className="group cursor-pointer"
@@ -68,33 +97,42 @@ export function FeaturedSection() {
                   <div className="absolute bottom-6 right-6 rounded-full size-14 bg-white/70 flex items-center justify-center">
                     <ArrowUpRight strokeWidth={2.5} />
                   </div>
+
+                  <div className="absolute top-8 left-8 flex flex-col space-y-3">
+                    <div className="rounded-full py-1 px-4.5 font-medium w-fit bg-white/70">
+                      {featuredPost.published_at ? dayjs(featuredPost.published_at).format("YYYY-MM-DD") : "발행 전"}
+                    </div>
+                    <div className="rounded-full py-1 px-4.5 font-medium w-fit flex items-center space-x-2 border border-white text-white">
+                      {featuredPost.tags && (
+                        <>
+                          <div className="size-1 rounded-full bg-white" />
+                          <div>{featuredPost.tags[0].name}</div>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </motion.div>
               </div>
 
-              <div className="rounded-b-3xl min-[70rem]:rounded-b-4xl bg-white space-y-4 px-8 py-8 flex flex-col h-44 min-[70rem]:h-52">
+              <div className="rounded-b-3xl min-[70rem]:rounded-b-4xl bg-white space-y-4 px-8 pt-8 flex flex-col">
                 <div className="flex space-x-2">
-                  <h4 className="text-muted-foreground font-bold text-xs min-[70rem]:text-sm">{featuredPost?.category?.name ?? "인사이트"}</h4>{" "}
+                  <h4 className="text-muted-foreground font-bold text-xs min-[70rem]:text-sm">{featuredPost?.category?.name ?? "인사이트"}</h4>
                 </div>
 
                 <h3 className="text-xl min-[70rem]:text-2xl font-extrabold text-slate-900 leading-tight group-hover:text-blue-500 transition-colors duration-500 grow">
                   {featuredPost.title}
                 </h3>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-xs min-[70rem]:text-base font-semibold text-gray-500">
-                    {featuredPost.published_at ? dayjs(featuredPost.published_at).format("LL") : ""}
-                  </span>
-                </div>
+                <h4 className="text-base min-[70rem]:text-xl font-semibold text-muted-foreground leading-tight grow">{featuredPost.summary}</h4>
               </div>
             </motion.article>
-          </div>
+          </Link>
         )}
 
         {/* Sidebar Posts */}
-        <div className="lg:col-span-2 space-y-6">
-          {sidebarPosts.map((post, index) => (
+        <div className="lg:col-span-2 space-y-8 w-full h-full min-h-0">
+          {sidebarPost1 && (
             <motion.article
-              key={index}
               initial={{
                 opacity: 0,
                 x: 40,
@@ -107,31 +145,111 @@ export function FeaturedSection() {
               }}
               transition={{
                 duration: 0.6,
-                delay: 0.4 + index * 0.1,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="group cursor-pointer"
+              className="group cursor-pointer overflow-hidden w-full aspect-[4/3] rounded-3xl min-[70rem]:rounded-4xl"
+              style={{ backgroundColor: sidebarPost1ImageRefHex }}
             >
-              <div className="flex space-x-4 p-4 rounded-3xl transition-all duration-300 glass">
-                <div className="relative overflow-hidden rounded-xl flex-shrink-0">
-                  <motion.img
-                    src={post.title_image || "/placeholder.svg?height=80&width=80"}
-                    alt={post.title}
-                    className="w-20 h-20 object-cover"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.3 }}
-                  />
+              <div className="relative h-full overflow-hidden p-8 flex flex-col justify-between">
+                <Image
+                  ref={sidebarPost1ImageRef}
+                  src={sidebarPost1.title_image || "/placeholder.svg?height=80&width=80"}
+                  alt={sidebarPost1.title}
+                  className="sr-only"
+                  width={0}
+                  height={0}
+                />
+
+                <div className="flex flex-col space-y-3">
+                  <div
+                    className={cn(
+                      "rounded-full py-1 px-4.5 font-medium w-fit flex items-center space-x-2 border",
+                      sidebarPost1ImageRefIsDark ? "border-white text-white" : "border-slate-900 text-slate-900"
+                    )}
+                  >
+                    {sidebarPost1.category?.name && (
+                      <>
+                        <div className={cn("size-1 rounded-full", sidebarPost1ImageRefIsDark ? "bg-white" : "bg-slate-900")} />
+                        <div>{sidebarPost1.category.name}</div>
+                      </>
+                    )}
+                  </div>
+                  <p className={cn("mt-2 font-semibold line-clamp-2 text-lg leading-tight", sidebarPost1ImageRefIsDark ? "text-white" : "text-slate-900")}>
+                    {sidebarPost1.summary}
+                  </p>
+                  <p className={cn("font-semibold line-clamp-2 text-2xl leading-tight", sidebarPost1ImageRefIsDark ? "text-white" : "text-slate-900")}>
+                    {sidebarPost1.title}
+                  </p>
                 </div>
-                <div className="flex-1 min-w-0 space-y-2">
-                  <span className="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">
-                    {post.category?.name || "인사이트"}
-                  </span>
-                  <h4 className="font-semibold text-slate-900 line-clamp-2 text-sm leading-tight group-hover:text-blue-600 transition-colors">{post.title}</h4>
-                  <p className="text-xs text-slate-500">{new Date(post.published_at || new Date()).toLocaleDateString("ko-KR")}</p>
+                <Link href={`/blog/${sidebarPost1.id}`} className="flex justify-end">
+                  <div className={cn("flex items-center space-x-2", sidebarPost1ImageRefIsDark ? "text-white" : "text-slate-900")}>
+                    <p>더 읽어보기</p>
+                    <ArrowRight />
+                  </div>
+                </Link>
+              </div>
+            </motion.article>
+          )}
+
+          {sidebarPost2 && (
+            <motion.article
+              initial={{
+                opacity: 0,
+                x: 40,
+                filter: "blur(6px)",
+              }}
+              animate={{
+                opacity: isInView ? 1 : 0,
+                x: isInView ? 0 : 40,
+                filter: isInView ? "blur(0px)" : "blur(6px)",
+              }}
+              transition={{
+                duration: 0.6,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="group cursor-pointer overflow-hidden w-full aspect-[4/3] md:aspect-[4/4] rounded-3xl min-[70rem]:rounded-4xl"
+            >
+              <div className="relative h-full">
+                <Image
+                  ref={sidebarPost2ImageRef}
+                  src={sidebarPost2.title_image || "/placeholder.svg?height=80&width=80"}
+                  alt={sidebarPost2.title}
+                  className="h-full w-full object-cover group-hover:scale-105 transition-all duration-1000 overflow-hidden"
+                  fill
+                />
+                <div className="absolute inset-8 flex flex-col justify-between">
+                  <div className="flex flex-col space-y-3">
+                    <div
+                      className={cn(
+                        "rounded-full py-1 px-4.5 font-medium w-fit flex items-center space-x-2 border",
+                        sidebarPost2ImageRefIsDark ? "border-white text-white" : "border-slate-900 text-slate-900"
+                      )}
+                    >
+                      {sidebarPost2.category?.name && (
+                        <>
+                          <div className={cn("size-1 rounded-full", sidebarPost2ImageRefIsDark ? "bg-white" : "bg-slate-900")} />
+                          <div>{sidebarPost2.category.name}</div>
+                        </>
+                      )}
+                    </div>
+                    <p className={cn("mt-2 font-semibold line-clamp-2 text-lg leading-tight", sidebarPost2ImageRefIsDark ? "text-white" : "text-slate-900")}>
+                      {sidebarPost2.summary}
+                    </p>
+                    <p className={cn("font-semibold line-clamp-2 text-2xl leading-tight", sidebarPost2ImageRefIsDark ? "text-white" : "text-slate-900")}>
+                      {sidebarPost2.title}
+                    </p>
+                  </div>
+
+                  <Link href={`/blog/${sidebarPost2.id}`} className="flex justify-end">
+                    <div className={cn("flex items-center space-x-2", sidebarPost2ImageRefIsDark ? "text-white" : "text-slate-900")}>
+                      <p>더 읽어보기</p>
+                      <ArrowRight />
+                    </div>
+                  </Link>
                 </div>
               </div>
             </motion.article>
-          ))}
+          )}
         </div>
       </div>
     </motion.section>
