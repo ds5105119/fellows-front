@@ -26,7 +26,7 @@ export default function WritePage() {
 
   const handleSave = async () => {
     setIsSaving(true);
-    if (!metadata.title || metadata.summary || metadata.category || metadata.titleImage) {
+    if (!metadata.title || !metadata.summary || !metadata.category || !metadata.titleImage) {
       toast.error("누락된 항목이 있어요");
       setIsSaving(false);
       return;
@@ -47,7 +47,7 @@ export default function WritePage() {
   const handlePublish = async () => {
     setIsSaving(true);
 
-    if (!metadata.title || metadata.summary || metadata.category || metadata.titleImage) {
+    if (!metadata.title || !metadata.summary || !metadata.category || !metadata.titleImage) {
       toast.error("누락된 항목이 있어요");
       setIsSaving(false);
       return;
