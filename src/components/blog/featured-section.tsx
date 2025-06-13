@@ -122,11 +122,11 @@ export function FeaturedSection() {
                   <h4 className="text-muted-foreground font-bold text-xs min-[70rem]:text-sm">{featuredPost?.category?.name ?? "인사이트"}</h4>
                 </div>
 
-                <h3 className="text-xl min-[70rem]:text-2xl font-extrabold text-slate-900 leading-tight group-hover:text-blue-500 transition-colors duration-500 grow">
+                <h3 className="text-xl min-[70rem]:text-3xl font-extrabold text-slate-900 leading-tight group-hover:text-blue-500 transition-colors duration-500 grow">
                   {featuredPost.title}
                 </h3>
 
-                <h4 className="text-base min-[70rem]:text-xl font-semibold text-muted-foreground leading-tight grow">{featuredPost.summary}</h4>
+                <h4 className="text-base min-[70rem]:text-xl font-medium text-muted-foreground leading-tight grow">{featuredPost.summary}</h4>
               </div>
             </motion.article>
           </Link>
@@ -180,7 +180,7 @@ export function FeaturedSection() {
                   <p className={cn("mt-2 font-semibold line-clamp-2 text-lg leading-tight", sidebarPost1ImageRefIsDark ? "text-white" : "text-slate-900")}>
                     {sidebarPost1.summary}
                   </p>
-                  <p className={cn("font-semibold line-clamp-2 text-2xl leading-tight", sidebarPost1ImageRefIsDark ? "text-white" : "text-slate-900")}>
+                  <p className={cn("font-extrabold line-clamp-2 text-2xl leading-tight", sidebarPost1ImageRefIsDark ? "text-white" : "text-slate-900")}>
                     {sidebarPost1.title}
                   </p>
                 </div>
@@ -238,7 +238,7 @@ export function FeaturedSection() {
                     <p className={cn("mt-2 font-semibold line-clamp-2 text-lg leading-tight", sidebarPost2ImageRefIsDark ? "text-white" : "text-slate-900")}>
                       {sidebarPost2.summary}
                     </p>
-                    <p className={cn("font-semibold line-clamp-2 text-2xl leading-tight", sidebarPost2ImageRefIsDark ? "text-white" : "text-slate-900")}>
+                    <p className={cn("font-extrabold line-clamp-2 text-2xl leading-tight", sidebarPost2ImageRefIsDark ? "text-white" : "text-slate-900")}>
                       {sidebarPost2.title}
                     </p>
                   </div>
