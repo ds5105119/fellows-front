@@ -6,6 +6,9 @@ import { useEffect, useRef, useState } from "react";
 import BlogPostItem from "./blog-post-item";
 import BlogPostSkeleton from "./blog-post-skeleton";
 import BlogNavigation from "./blog-navigation";
+import { AnimatedGradientText } from "../magicui/animated-gradient-text";
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 interface BlogSectionProps {
   title: string;
@@ -68,7 +71,23 @@ export function BlogSection({ title }: BlogSectionProps) {
 
         {posts.length > 0 && <BlogPostItem post={posts[0]} featured={true} />}
 
-        {posts.slice(1, posts.length).map((post, index) => (
+        {posts.slice(1, 3).map((post, index) => (
+          <BlogPostItem key={index} post={post} />
+        ))}
+
+        <Link
+          href="/service/dashboard"
+          className="group col-span-full py-8 rounded-xl hidden md:flex items-center justify-center bg-zinc-200/80 border border-zinc-200"
+        >
+          <AnimatedGradientText speed={2} colorFrom="#4ade80" colorTo="#06b6d4" className="flex items-center text-2xl font-bold tracking-tight">
+            <span>Fellows</span>
+            <span className="font-medium">가 궁금하다면?&nbsp;</span>
+            <span>지금 무료로 체험해보세요</span>
+            <ChevronRight className="ml-2 size-6 stroke-[#06b6d4] transition-transform duration-500 ease-in-out group-hover:translate-x-1" />
+          </AnimatedGradientText>
+        </Link>
+
+        {posts.slice(3, posts.length).map((post, index) => (
           <BlogPostItem key={index} post={post} />
         ))}
 

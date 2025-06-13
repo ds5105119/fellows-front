@@ -84,7 +84,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 "
         >
           <MarkdownPreview loading={false}>{post.content}</MarkdownPreview>
-        </div>{" "}
+        </div>
       </div>
       <BlogToolbar session={session} post={post} />
     </main>
