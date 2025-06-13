@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
 import Link from "next/link";
 import Image from "next/image";
+import FeaturedSectionSkeleton from "./featured-section-skeleton";
 
 export function FeaturedSection() {
   const ref = useRef(null);
@@ -58,6 +59,8 @@ export function FeaturedSection() {
           <h2 className="text-3xl lg:text-4xl font-extrabold text-slate-900">최신 글</h2>
         </div>
       </div>
+
+      {swr.isLoading && <FeaturedSectionSkeleton />}
 
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-8 h-fit">
         {/* Main Featured Post */}

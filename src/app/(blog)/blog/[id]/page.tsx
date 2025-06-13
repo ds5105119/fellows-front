@@ -77,7 +77,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <div
           className="w-full overflow-hidden prose prose-base md:prose-lg
   prose-headings:font-medium
-  prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg
   prose-a:text-primary
   prose-img:rounded-md
   prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl

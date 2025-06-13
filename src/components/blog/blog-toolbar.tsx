@@ -141,7 +141,7 @@ export default function BlogToolbar({ session, post }: { session: Session | null
     );
   } else if (session?.user.groups.includes("/manager")) {
     return (
-      <div className="fixed bottom-10 left-10 md:bottom-10 md:left-10 flex flex-col space-y-4 w-fit z-40">
+      <div className="fixed bottom-10 left-10 md:bottom-8 md:left-8  flex flex-col space-y-4 w-fit z-40">
         <motion.div whileHover={{ scale: 1.1 }} transition={{ type: "spring", stiffness: 500, damping: 25 }}>
           <Link
             href="/blog/write"

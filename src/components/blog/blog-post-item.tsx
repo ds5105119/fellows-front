@@ -21,7 +21,7 @@ export default function BlogPostItem({ post, featured = false }: BlogPostItemPro
   });
 
   const estimateReadingTime = (content: string) => {
-    const wordsPerMinute = 200;
+    const wordsPerMinute = 100;
     const words = content.split(/\s+/).length;
     return Math.ceil(words / wordsPerMinute);
   };

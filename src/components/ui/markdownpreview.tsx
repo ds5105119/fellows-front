@@ -5,8 +5,6 @@ import type { ComponentProps } from "react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 interface MarkdownPreviewProps extends Omit<ComponentProps<typeof ReactMarkdown>, "children"> {
   /** Loading state controls the blurred gradient overlay and clip animation */
@@ -44,7 +42,7 @@ export default function MarkdownPreview({
   }, [children, loading]);
 
   return !loading && children ? (
-    <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={[rehypeSlug, [rehypeAutolinkHeadings, { behavior: "wrap" }]]} {...restProps}>
+    <ReactMarkdown remarkPlugins={remarkPlugins} {...restProps}>
       {children}
     </ReactMarkdown>
   ) : (
