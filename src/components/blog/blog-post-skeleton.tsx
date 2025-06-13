@@ -4,10 +4,9 @@ import { motion } from "framer-motion";
 
 interface BlogPostSkeletonProps {
   featured?: boolean;
-  index?: number;
 }
 
-export default function BlogPostSkeleton({ featured = false, index = 0 }: BlogPostSkeletonProps) {
+export default function BlogPostSkeleton({ featured = false }: BlogPostSkeletonProps) {
   // 펄스 애니메이션 속성
   const pulseAnimation = {
     animate: {

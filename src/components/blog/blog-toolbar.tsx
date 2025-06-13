@@ -35,7 +35,7 @@ export default function BlogToolbar({ session, post }: { session: Session | null
     };
 
     return (
-      <div className="sticky bottom-10 left-10 md:bottom-8 md:left-8 flex flex-col items-center w-fit z-40">
+      <div className="fixed bottom-10 left-10 md:bottom-8 md:left-8 flex flex-col items-center w-fit z-40">
         <AnimatePresence>
           {isExpanded && (
             <>
@@ -61,7 +61,7 @@ export default function BlogToolbar({ session, post }: { session: Session | null
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                    className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-4 py-2 rounded-full whitespace-nowrap"
+                    className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-4 py-2 rounded-full whitespace-nowrap"
                   >
                     포스트를 삭제합니다
                   </motion.div>
@@ -90,7 +90,7 @@ export default function BlogToolbar({ session, post }: { session: Session | null
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                    className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-4 py-2 rounded-full whitespace-nowrap"
+                    className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-4 py-2 rounded-full whitespace-nowrap"
                   >
                     {post.is_published ? "포스트를 비공개로 전환합니다" : "포스트를 공개로 전환합니다"}
                   </motion.div>
@@ -119,7 +119,7 @@ export default function BlogToolbar({ session, post }: { session: Session | null
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                    className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-4 py-2 rounded-full whitespace-nowrap"
+                    className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-4 py-2 rounded-full whitespace-nowrap"
                   >
                     포스트를 수정합니다
                   </motion.div>
@@ -141,7 +141,7 @@ export default function BlogToolbar({ session, post }: { session: Session | null
     );
   } else if (session?.user.groups.includes("/manager")) {
     return (
-      <div className="sticky bottom-10 left-10 md:bottom-10 md:left-10 flex flex-col space-y-4 w-fit z-40">
+      <div className="fixed bottom-10 left-10 md:bottom-10 md:left-10 flex flex-col space-y-4 w-fit z-40">
         <motion.div whileHover={{ scale: 1.1 }} transition={{ type: "spring", stiffness: 500, damping: 25 }}>
           <Link
             href="/blog/write"

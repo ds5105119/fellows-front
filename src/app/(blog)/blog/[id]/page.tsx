@@ -40,10 +40,21 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <div className="mx-auto px-6 lg:px-0 w-full md:w-lg lg:w-2xl flex flex-col space-y-6 py-20">
         <div className="space-y-2">
           <p className="text-xs font-semibold text-muted-foreground">{post.category?.name ?? "카테고리 없음"}</p>
-          <p className="text-sm font-semibold text-muted-foreground">{dayjs(post.published_at).format("YYYY-MM-DD")}</p>
+          <p className="text-sm font-semibold text-muted-foreground">{post.published_at ? dayjs(post.published_at).format("YYYY-MM-DD") : "발행 전"}</p>
         </div>
+
         <h1 className="text-4xl md:text-5xl font-extrabold">{post.summary}</h1>
         <h2 className="text-xl md:text-2xl font-semibold">{post.title}</h2>
+
+        <div className="flex flex-wrap gap-2 items-center">
+          {post.tags.map((tag, idx) => (
+            <div className="flex text-sm font-semibold text-blue-500" key={idx}>
+              <p className="mr-[1px]">#</p>
+              {tag.name}
+            </div>
+          ))}
+        </div>
+
         <div className="flex space-x-2 items-center">
           <p>by</p>
           <Avatar className="h-8 w-8 rounded-full">

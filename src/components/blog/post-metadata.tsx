@@ -81,6 +81,30 @@ export function PostMetadata({ metadata, onChange }: PostMetadataProps) {
         />
       </div>
 
+      {/* Title Image */}
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-2">대표 이미지</label>
+        {metadata.titleImage ? (
+          <div className="relative">
+            <img src={metadata.titleImage || "/placeholder.svg"} alt="Title" className="w-full h-32 object-cover rounded-lg" />
+            <button
+              onClick={() => onChange({ ...metadata, titleImage: "" })}
+              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        ) : (
+          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-lg cursor-pointer hover:bg-slate-50">
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <Upload className="w-8 h-8 mb-2 text-slate-400" />
+              <p className="text-sm text-slate-500">이미지 업로드</p>
+            </div>
+            <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+          </label>
+        )}
+      </div>
+
       {/* Category */}
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-2">카테고리</label>
@@ -124,30 +148,6 @@ export function PostMetadata({ metadata, onChange }: PostMetadataProps) {
             <Plus className="w-4 h-4" />
           </button>
         </div>
-      </div>
-
-      {/* Title Image */}
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">대표 이미지</label>
-        {metadata.titleImage ? (
-          <div className="relative">
-            <img src={metadata.titleImage || "/placeholder.svg"} alt="Title" className="w-full h-32 object-cover rounded-lg" />
-            <button
-              onClick={() => onChange({ ...metadata, titleImage: "" })}
-              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          </div>
-        ) : (
-          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-lg cursor-pointer hover:bg-slate-50">
-            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-              <Upload className="w-8 h-8 mb-2 text-slate-400" />
-              <p className="text-sm text-slate-500">이미지 업로드</p>
-            </div>
-            <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
-          </label>
-        )}
       </div>
     </motion.div>
   );

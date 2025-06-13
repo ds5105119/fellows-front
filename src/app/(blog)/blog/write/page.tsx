@@ -8,6 +8,7 @@ import { PostMetadata } from "@/components/blog/post-metadata";
 import Editor from "@/components/editor/editor";
 import { CreateBlogPostDto } from "@/@types/service/blog";
 import { createPost } from "@/hooks/fetch/blog";
+import { toast } from "sonner";
 
 export default function WritePage() {
   const router = useRouter();
@@ -25,6 +26,11 @@ export default function WritePage() {
 
   const handleSave = async () => {
     setIsSaving(true);
+    if (!metadata.title || metadata.summary || metadata.category || metadata.titleImage) {
+      toast.error("누락된 항목이 있어요");
+      setIsSaving(false);
+      return;
+    }
     const payload = CreateBlogPostDto.parse({
       content: content,
       title: metadata.title,
@@ -34,11 +40,19 @@ export default function WritePage() {
       tags: metadata.tags.map((tag) => ({ name: tag })),
     });
     await createPost(payload);
+
     setIsSaving(false);
   };
 
   const handlePublish = async () => {
     setIsSaving(true);
+
+    if (!metadata.title || metadata.summary || metadata.category || metadata.titleImage) {
+      toast.error("누락된 항목이 있어요");
+      setIsSaving(false);
+      return;
+    }
+
     const payload = CreateBlogPostDto.parse({
       content: content,
       title: metadata.title,
@@ -50,6 +64,7 @@ export default function WritePage() {
       published_at: new Date(),
     });
     await createPost(payload);
+
     setIsSaving(false);
   };
 
@@ -81,6 +96,7 @@ export default function WritePage() {
 
               <button
                 onClick={handlePublish}
+                disabled={isSaving}
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
                 <span className="text-sm font-medium">발행</span>
