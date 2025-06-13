@@ -21,11 +21,43 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const post_id = (await params).id;
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BLOG_URL}/${post_id}`);
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const post_id = params.id;
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BLOG_URL}/${post_id}`, {
+    next: { revalidate: 60 },
+  });
+
   const post_json = await response.json();
   const post = BlogPostDto.parse(post_json);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    alternativeHeadline: post.summary,
+    image: [post.title_image],
+    author: {
+      "@type": "Person",
+      name: post.author.name,
+      image: post.author.picture || undefined,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Fellows 블로그",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://fellows.my/logo-favicon.svg",
+      },
+    },
+    datePublished: post.published_at,
+    dateModified: post.published_at,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://fellows.my/blog/${post_id}`,
+    },
+    description: post.summary,
+  };
 
   return {
     title: post.title,
@@ -33,17 +65,22 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     openGraph: {
       title: post.title,
       description: post.summary,
+      type: "article",
+      url: `https://fellows.my/blog/${post_id}`,
       images: [post.title_image],
     },
     twitter: {
+      card: "summary_large_image",
       title: post.title,
       description: post.summary,
       images: [post.title_image],
-      card: "summary_large_image",
+    },
+    other: {
+      "script:type": "application/ld+json",
+      "script:dangerouslySetInnerHTML": JSON.stringify(jsonLd),
     },
   };
 }
-
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const post_id = (await params).id;
   const session = await auth();
