@@ -17,7 +17,7 @@ export default function FullHeader() {
             <p className="text-xl font-black">Blog</p>
           </Link>
 
-          <div className="flex items-center space-x-10">
+          <div className="flex items-center space-x-6 md:space-x-10">
             <Link href="/" className="flex space-x-2 group">
               <p className="text-sm font-medium">홈</p>
             </Link>

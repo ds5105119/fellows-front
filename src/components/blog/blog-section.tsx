@@ -3,7 +3,8 @@
 import { motion, useInView } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { usePosts } from "@/hooks/fetch/blog";
-import { BlogPostItem } from "./blog-post-item";
+import BlogPostItem from "./blog-post-item";
+import BlogPostSkeleton from "./blog-post-skeleton";
 import { useRef } from "react";
 import Link from "next/link";
 
@@ -41,7 +42,7 @@ export function BlogSection({ title }: BlogSectionProps) {
       }}
     >
       {/* Posts Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-9">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-9">
         {/* Section Header */}
         <div className="col-span-full flex items-center justify-between mb-3">
           <div className="space-y-2">
@@ -55,9 +56,19 @@ export function BlogSection({ title }: BlogSectionProps) {
         </div>
 
         {posts.length > 0 && <BlogPostItem post={posts[0]} featured={true} />}
+
         {posts.slice(1, posts.length).map((post, index) => (
           <BlogPostItem key={index} post={post} index={index + 1} />
         ))}
+
+        {swr.isLoading && (
+          <>
+            <BlogPostSkeleton featured={true} />
+            <BlogPostSkeleton />
+            <BlogPostSkeleton />
+            <BlogPostSkeleton />
+          </>
+        )}
       </div>
     </motion.section>
   );
