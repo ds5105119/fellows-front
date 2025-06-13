@@ -1,14 +1,11 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
-export default function BlogNavigation() {
+export default function BlogNavigation({ tabs, activeTab, setActiveTab }: { tabs: string[]; activeTab: string; setActiveTab: (tab: string) => void }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
-  const [activeTab, setActiveTab] = useState("전체");
-
-  const tabs = ["전체", "인사이트", "고객 사례", "가이드북"];
 
   return (
     <motion.div
