@@ -2,6 +2,7 @@ import { BlogPostDto } from "@/@types/service/blog";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { auth } from "@/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { notFound } from "next/navigation";
 import MarkdownPreview from "@/components/ui/markdownpreview";
 import BlogShare from "@/components/blog/blog-share";
 import dayjs from "dayjs";
@@ -20,6 +21,29 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const post_id = (await params).id;
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BLOG_URL}/${post_id}`);
+  const post_json = await response.json();
+  const post = BlogPostDto.parse(post_json);
+
+  return {
+    title: post.title,
+    description: post.summary,
+    openGraph: {
+      title: post.title,
+      description: post.summary,
+      images: [post.title_image],
+    },
+    twitter: {
+      title: post.title,
+      description: post.summary,
+      images: [post.title_image],
+      card: "summary_large_image",
+    },
+  };
+}
+
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const post_id = (await params).id;
   const session = await auth();
@@ -29,7 +53,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   });
 
   if (!response.ok) {
-    return <div>Post not found</div>;
+    return notFound();
   }
 
   const post_json = await response.json();
