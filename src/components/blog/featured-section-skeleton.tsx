@@ -17,13 +17,6 @@ export default function FeaturedSectionSkeleton() {
 
   return (
     <section className="flex flex-col">
-      {/* Section Header */}
-      <div className="col-span-full flex items-center justify-between mb-6 md:mb-9">
-        <div className="space-y-2">
-          <motion.div className="h-10 w-32 bg-slate-200 rounded-lg" {...pulseAnimation} />
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-8 h-fit">
         {/* Main Featured Post Skeleton */}
         <div className="lg:col-span-4">
