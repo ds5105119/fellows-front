@@ -109,7 +109,7 @@ export function FeaturedSection() {
                       {featuredPost.tags && (
                         <>
                           <div className="size-1 rounded-full bg-white" />
-                          <div>{featuredPost.tags[0].name}</div>
+                          <div>{featuredPost.tags.length > 0 && featuredPost.tags[0].name}</div>
                         </>
                       )}
                     </div>
