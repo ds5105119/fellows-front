@@ -1,4 +1,3 @@
-import { Metadata } from "next";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import MainSection1 from "@/components/section/main/mainsection1";
 import MainSection2 from "@/components/section/main/mainsection2";
@@ -6,11 +5,6 @@ import MainSection3 from "@/components/section/main/mainsection3";
 import MainSection4 from "@/components/section/main/mainsection4";
 import MainQnaSection from "@/components/section/main/mainqnasection";
 import MainStartButton from "@/components/section/main/mainstartbutton";
-
-export const metadata: Metadata = {
-  title: "서비스",
-  description: "이메일로 회원가입하고 맞춤형 복지 정책 정보를 받아보세요.",
-};
 
 export default async function Home() {
   return (
