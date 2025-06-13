@@ -1,19 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PostMetadata } from "@/components/blog/post-metadata";
 import Editor from "@/components/editor/editor";
-import { CreateBlogPostDto } from "@/@types/service/blog";
-import { createPost } from "@/hooks/fetch/blog";
+import { UpdateBlogPostDto } from "@/@types/service/blog";
+import { updatePost, usePost } from "@/hooks/fetch/blog";
 import { toast } from "sonner";
 
-export default function Page() {
+export default function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id: post_id } = use(params);
+  const post = usePost(post_id);
   const router = useRouter();
-  const [content, setContent] = useState("");
 
+  const [content, setContent] = useState("");
   const [metadata, setMetadata] = useState({
     title: "",
     summary: "",
@@ -31,15 +33,15 @@ export default function Page() {
       setIsSaving(false);
       return;
     }
-    const payload = CreateBlogPostDto.parse({
+    const payload = UpdateBlogPostDto.parse({
       content: content,
       title: metadata.title,
       title_image: metadata.titleImage,
       summary: metadata.summary,
       category: { name: metadata.category },
-      tags: metadata.tags.map((tag) => ({ name: tag })),
+      tags: metadata.tags?.map((tag) => ({ name: tag })),
     });
-    await createPost(payload);
+    await updatePost(post_id, payload);
 
     setIsSaving(false);
   };
@@ -53,20 +55,45 @@ export default function Page() {
       return;
     }
 
-    const payload = CreateBlogPostDto.parse({
+    const payload = UpdateBlogPostDto.parse({
       content: content,
       title: metadata.title,
       title_image: metadata.titleImage,
       summary: metadata.summary,
       category: { name: metadata.category },
-      tags: metadata.tags.map((tag) => ({ name: tag })),
+      tags: metadata.tags?.map((tag) => ({ name: tag })),
       is_published: true,
       published_at: new Date(),
     });
-    await createPost(payload);
+    await updatePost(post_id, payload);
 
     setIsSaving(false);
   };
+
+  useEffect(() => {
+    if (post.data) {
+      console.log(post.data.content);
+      setContent(post.data.content ?? "");
+      setMetadata({
+        title: post.data.title ?? "",
+        summary: post.data.summary ?? "",
+        category: post.data.category?.name ?? "",
+        tags: post.data.tags?.map((i) => i.name) ?? [],
+        titleImage: post.data.title_image ?? "",
+      });
+    }
+  }, [post.data]);
+
+  if (!post.data) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 animate-spin text-blue-500 mx-auto mb-4" />
+          <p className="text-slate-600 font-medium">포스트를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-13 bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
@@ -120,7 +147,7 @@ export default function Page() {
 
           {/* Sidebar */}
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="lg:col-span-1 space-y-6">
-            <PostMetadata metadata={metadata} onChange={setMetadata} />
+            <PostMetadata key={post.data?.id} metadata={metadata} onChange={setMetadata} />
           </motion.div>
         </div>
       </div>

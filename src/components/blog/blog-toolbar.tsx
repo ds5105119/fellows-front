@@ -108,7 +108,7 @@ export default function BlogToolbar({ session, post }: { session: Session | null
               >
                 <motion.div whileHover={{ scale: 1.1 }} transition={{ type: "spring", stiffness: 500, damping: 25 }}>
                   <Link
-                    href="/blog/write"
+                    href={`/blog/${post.id}/edit`}
                     className="size-14 md:size-16 text-base md:text-lg font-bold transition-all flex items-center justify-center rounded-full text-blue-500 bg-blue-200 hover:bg-blue-300"
                   >
                     <Edit />
