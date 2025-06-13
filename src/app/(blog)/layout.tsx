@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import ClientLocaleInit from "@/lib/clientlocaleinit";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import GoogleAnalytics from "@/lib/googleanalytics";
 import FullHeader from "@/components/header/fullheader";
 import Footer from "@/components/footer/footer";
 import Toaster from "@/components/ui/toaster";
@@ -45,6 +46,7 @@ export default async function RootLayout({
         <Toaster />
         <Analytics />
         <SpeedInsights />
+        <GoogleAnalytics />
       </body>
     </html>
   );

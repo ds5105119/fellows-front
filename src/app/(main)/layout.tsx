@@ -7,6 +7,7 @@ import MainHeader from "@/components/header/mainheader";
 import MainFooter from "@/components/footer/mainfooter";
 import "../globals.css";
 import "lenis/dist/lenis.css";
+import GoogleAnalytics from "@/lib/googleanalytics";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
@@ -44,6 +45,7 @@ export default async function RootLayout({
         </LenisProvider>
         <Analytics />
         <SpeedInsights />
+        <GoogleAnalytics />
       </body>
     </html>
   );

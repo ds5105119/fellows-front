@@ -9,6 +9,7 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import "../globals.css";
+import GoogleAnalytics from "@/lib/googleanalytics";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
@@ -51,10 +52,10 @@ export default async function RootLayout({
             <div className="w-full scrollbar-hide break-keep">{children}</div>
             <Footer />
           </SidebarInset>
-          <Analytics />
-          <SpeedInsights />
         </SidebarProvider>
-
+        <Analytics />
+        <SpeedInsights />
+        <GoogleAnalytics />
         <Toaster />
       </body>
     </html>
