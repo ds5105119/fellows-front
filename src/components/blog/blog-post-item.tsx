@@ -11,10 +11,9 @@ import { cn } from "@/lib/utils";
 interface BlogPostItemProps {
   post: BlogPostDtoType;
   featured?: boolean;
-  index?: number;
 }
 
-export default function BlogPostItem({ post, featured = false, index = 0 }: BlogPostItemProps) {
+export default function BlogPostItem({ post, featured = false }: BlogPostItemProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, {
     once: true,
@@ -41,7 +40,6 @@ export default function BlogPostItem({ post, featured = false, index = 0 }: Blog
     },
     transition: {
       duration: featured ? 0.8 : 0.6,
-      delay: featured ? 0.2 : index * 0.1,
       ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
     },
   };

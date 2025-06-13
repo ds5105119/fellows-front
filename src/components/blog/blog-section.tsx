@@ -78,7 +78,7 @@ export function BlogSection({ title }: BlogSectionProps) {
         {posts.length > 0 && <BlogPostItem post={posts[0]} featured={true} />}
 
         {posts.slice(1, posts.length).map((post, index) => (
-          <BlogPostItem key={index} post={post} index={index + 1} />
+          <BlogPostItem key={index} post={post} />
         ))}
 
         {isLoading && posts.length == 0 && <BlogPostSkeleton featured={true} />}
