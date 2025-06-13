@@ -2,8 +2,7 @@ import { auth } from "@/auth";
 import { BlogHeader } from "@/components/blog/blog-header";
 import { FeaturedSection } from "@/components/blog/featured-section";
 import { BlogSection } from "@/components/blog/blog-section";
-import { Plus } from "lucide-react";
-import Link from "next/link";
+import BlogToolbar from "@/components/blog/blog-toolbar";
 
 export default async function Page() {
   const session = await auth();
@@ -26,14 +25,7 @@ export default async function Page() {
         </div>
       </div>
 
-      {session?.user.groups.includes("/manager") && (
-        <Link
-          href="/blog/write"
-          className="sticky bottom-16 left-16 md:bottom-8 md:left-8 z-40 size-14 md:size-16 text-base md:text-lg font-bold transition-all flex items-center justify-center rounded-full text-blue-500 bg-blue-200 hover:bg-blue-300"
-        >
-          <Plus />
-        </Link>
-      )}
+      <BlogToolbar session={session} />
     </div>
   );
 }

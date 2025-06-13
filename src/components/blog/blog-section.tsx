@@ -14,7 +14,7 @@ interface BlogSectionProps {
 export function BlogSection({ title }: BlogSectionProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, {
-    once: false,
+    once: true,
     margin: "-50px 0px -50px 0px",
   });
 
@@ -34,11 +34,6 @@ export function BlogSection({ title }: BlogSectionProps) {
         opacity: isInView ? 1 : 0,
         y: isInView ? 0 : 40,
         filter: isInView ? "blur(0px)" : "blur(10px)",
-      }}
-      exit={{
-        opacity: 0,
-        y: -40,
-        filter: "blur(10px)",
       }}
       transition={{
         duration: 0.8,

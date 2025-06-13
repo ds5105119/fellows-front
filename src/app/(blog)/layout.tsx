@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import LenisProvider from "@/lib/lenisprovider";
 import ClientLocaleInit from "@/lib/clientlocaleinit";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -38,14 +37,12 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-y-auto`}>
         <ClientLocaleInit />
-        <LenisProvider>
-          <div className="relative overscroll-none">
-            <FullHeader />
-            <main className="scrollbar-hide break-keep">{children}</main>
-            <MainFooter />
-          </div>
-          <Toaster />
-        </LenisProvider>
+        <div className="relative overscroll-none">
+          <FullHeader />
+          <main className="scrollbar-hide break-keep">{children}</main>
+          <MainFooter />
+        </div>
+        <Toaster />
         <Analytics />
         <SpeedInsights />
       </body>

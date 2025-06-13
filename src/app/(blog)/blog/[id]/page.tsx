@@ -1,10 +1,12 @@
 import { BlogPostDto } from "@/@types/service/blog";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { auth } from "@/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import MarkdownPreview from "@/components/ui/markdownpreview";
 import BlogShare from "@/components/blog/blog-share";
 import dayjs from "dayjs";
 import Image from "next/image";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import BlogToolbar from "@/components/blog/blog-toolbar";
 
 export const revalidate = 60;
 export const dynamicParams = true;
@@ -20,6 +22,7 @@ export async function generateStaticParams() {
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const post_id = (await params).id;
+  const session = await auth();
 
   const response = await fetch(`${process.env.NEXT_PUBLIC_BLOG_URL}/${post_id}`, {
     next: { revalidate: 60 },
@@ -64,6 +67,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <MarkdownPreview loading={false}>{post.content}</MarkdownPreview>
         </div>
       </div>
+      <BlogToolbar session={session} post={post} />
     </main>
   );
 }

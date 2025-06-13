@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ post_id: string }> }) {
   const session = await auth();
@@ -36,7 +37,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ post
   const url = `${process.env.NEXT_PUBLIC_BLOG_URL}/${post_id}`;
 
   try {
-    const response = await fetch(url, {
+    await fetch(url, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -46,10 +47,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ post
       redirect: "follow",
       credentials: "include",
     });
+    revalidatePath(`/blog/${post_id}`);
 
-    const data = await response.json();
-
-    return NextResponse.json(data);
+    return NextResponse.json("sucess");
   } catch (error) {
     console.error("API error:", error);
 
@@ -73,11 +73,11 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
       redirect: "follow",
       credentials: "include",
     });
+
+    return NextResponse.json("sucess");
   } catch (error) {
     console.error("API error:", error);
 
     return NextResponse.json({ error: "Failed to fetch project data" }, { status: 500 });
   }
-
-  return NextResponse.json({ message: "Project deleted successfully" });
 }

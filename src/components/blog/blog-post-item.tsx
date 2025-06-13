@@ -16,7 +16,7 @@ interface BlogPostItemProps {
 export function BlogPostItem({ post, featured = false, index = 0 }: BlogPostItemProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, {
-    once: false,
+    once: true,
     margin: "-100px 0px -100px 0px",
   });
 
@@ -39,13 +39,8 @@ export function BlogPostItem({ post, featured = false, index = 0 }: BlogPostItem
         }}
         animate={{
           opacity: isInView ? 1 : 0,
-          y: isInView ? 0 : 30,
-          filter: isInView ? "blur(0px)" : "blur(10px)",
-        }}
-        exit={{
-          opacity: 0,
-          y: -30,
-          filter: "blur(10px)",
+          y: isInView ? 0 : 20,
+          filter: isInView ? "blur(0px)" : "blur(5px)",
         }}
         transition={{
           duration: 0.8,
@@ -132,13 +127,8 @@ export function BlogPostItem({ post, featured = false, index = 0 }: BlogPostItem
       }}
       animate={{
         opacity: isInView ? 1 : 0,
-        y: isInView ? 0 : 30,
-        filter: isInView ? "blur(0px)" : "blur(8px)",
-      }}
-      exit={{
-        opacity: 0,
-        y: -30,
-        filter: "blur(8px)",
+        y: isInView ? 0 : 20,
+        filter: isInView ? "blur(0px)" : "blur(5px)",
       }}
       transition={{
         duration: 0.6,

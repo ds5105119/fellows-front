@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PostMetadata } from "@/components/blog/post-metadata";
 import Editor from "@/components/editor/editor";
-import { UpsertBlogPostDto } from "@/@types/service/blog";
+import { CreateBlogPostDto } from "@/@types/service/blog";
 import { createPost } from "@/hooks/fetch/blog";
 
 export default function WritePage() {
@@ -25,7 +25,7 @@ export default function WritePage() {
 
   const handleSave = async () => {
     setIsSaving(true);
-    const payload = UpsertBlogPostDto.parse({
+    const payload = CreateBlogPostDto.parse({
       content: content,
       title: metadata.title,
       title_image: metadata.titleImage,
@@ -39,7 +39,7 @@ export default function WritePage() {
 
   const handlePublish = async () => {
     setIsSaving(true);
-    const payload = UpsertBlogPostDto.parse({
+    const payload = CreateBlogPostDto.parse({
       content: content,
       title: metadata.title,
       title_image: metadata.titleImage,
