@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { auth } from "@/auth";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import MainSection1 from "@/components/section/main/mainsection1";
 import MainSection2 from "@/components/section/main/mainsection2";
@@ -14,8 +13,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const session = await auth();
-
   return (
     <div className="grid grid-cols-4 lg:grid-cols-12 px-3 lg:px-12 pt-24 md:pt-40 space-y-14 lg:space-y-36">
       <BlurFade className="col-span-full">
