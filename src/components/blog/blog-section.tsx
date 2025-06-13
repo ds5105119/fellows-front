@@ -5,7 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 import { usePosts } from "@/hooks/fetch/blog";
 import BlogPostItem from "./blog-post-item";
 import BlogPostSkeleton from "./blog-post-skeleton";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 
 interface BlogSectionProps {
@@ -14,13 +14,28 @@ interface BlogSectionProps {
 
 export function BlogSection({ title }: BlogSectionProps) {
   const ref = useRef(null);
+  const infinitRef = useRef<HTMLDivElement>(null);
+
   const isInView = useInView(ref, {
     once: true,
+    margin: "-50px 0px -50px 0px",
+  });
+  const isReachingEnd = useInView(infinitRef, {
+    once: false,
     margin: "-50px 0px -50px 0px",
   });
 
   const swr = usePosts(20);
   const posts = swr.data?.flatMap((i) => i.items) ?? [];
+  const isReachedEnd = swr.data && swr.data.length > 0 && swr.data[swr.data.length - 1].items.length === 0;
+  const isLoading = !isReachedEnd && swr.data && (swr.isLoading || (swr.size > 0 && typeof swr.data[swr.size - 1] === "undefined"));
+
+  useEffect(() => {
+    if (isReachingEnd && !isLoading && !isReachedEnd) {
+      swr.setSize((s) => s + 1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReachingEnd, isLoading, isReachedEnd]);
 
   return (
     <motion.section
@@ -61,14 +76,16 @@ export function BlogSection({ title }: BlogSectionProps) {
           <BlogPostItem key={index} post={post} index={index + 1} />
         ))}
 
-        {swr.isLoading && (
+        {isLoading && posts.length == 0 && <BlogPostSkeleton featured={true} />}
+        {isLoading && (
           <>
-            <BlogPostSkeleton featured={true} />
             <BlogPostSkeleton />
             <BlogPostSkeleton />
             <BlogPostSkeleton />
           </>
         )}
+
+        <div className="col-span-full h-1" ref={infinitRef} />
       </div>
     </motion.section>
   );
