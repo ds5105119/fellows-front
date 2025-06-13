@@ -138,6 +138,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           {/* Main Editor */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-3">
             <Editor
+              key={post.data?.id}
               markdown={content}
               placeholder="글을 작성하세요. 이미지는 드래그 앤 드롭으로도 올릴 수 있습니다..."
               onChange={setContent}
@@ -147,7 +148,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
           {/* Sidebar */}
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="lg:col-span-1 space-y-6">
-            <PostMetadata key={post.data?.id} metadata={metadata} onChange={setMetadata} />
+            <PostMetadata metadata={metadata} onChange={setMetadata} />
           </motion.div>
         </div>
       </div>
