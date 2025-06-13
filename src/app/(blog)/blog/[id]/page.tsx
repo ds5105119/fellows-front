@@ -4,6 +4,7 @@ import MarkdownPreview from "@/components/ui/markdownpreview";
 import BlogShare from "@/components/blog/blog-share";
 import dayjs from "dayjs";
 import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const revalidate = 60;
 export const dynamicParams = true;
@@ -40,11 +41,19 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         </div>
         <h1 className="text-4xl md:text-5xl font-extrabold">{post.summary}</h1>
         <h2 className="text-xl md:text-2xl font-semibold">{post.title}</h2>
+        <div className="flex space-x-2 items-center">
+          <p>by</p>
+          <Avatar className="h-8 w-8 rounded-full">
+            <AvatarImage src={post.author.picture ?? ""} alt={post.author.name} />
+            <AvatarFallback className="text-sm font-bold">{post.author.name[0]}</AvatarFallback>
+          </Avatar>
+          <p>{post.author.name}</p>
+        </div>
 
         <BlogShare title="Fellows 블로그" text={post.title} />
       </div>
 
-      <div className="mx-auto w-full md:w-xl lg:w-4xl min-[70rem]:w-[62.25rem]">
+      <div className="mx-auto w-full md:max-w-[42.25rem] min-[70rem]:max-w-[62.25rem]">
         <AspectRatio ratio={16 / 10} className="md:rounded-2xl overflow-hidden">
           <Image src={post.title_image} alt={post.title} fill className="object-cover" />
         </AspectRatio>

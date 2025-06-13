@@ -15,40 +15,18 @@ export function FeaturedSection() {
     margin: "-100px 0px -100px 0px",
   });
 
-  const swr = usePosts(20);
+  const swr = usePosts(4);
   const posts = swr.data?.flatMap((i) => i.items) ?? [];
 
   const featuredPost = posts[0];
   const sidebarPosts = posts.slice(1, posts.length);
 
   return (
-    <motion.section
-      ref={ref}
-      className="flex flex-col"
-      initial={{
-        opacity: 0,
-        y: 80,
-        filter: "blur(12px)",
-      }}
-      animate={{
-        opacity: isInView ? 1 : 0,
-        y: isInView ? 0 : 80,
-        filter: isInView ? "blur(0px)" : "blur(12px)",
-      }}
-      exit={{
-        opacity: 0,
-        y: -80,
-        filter: "blur(12px)",
-      }}
-      transition={{
-        duration: 1,
-        ease: [0.16, 1, 0.3, 1],
-      }}
-    >
+    <motion.section ref={ref} className="flex flex-col">
       {/* Section Header */}
       <div className="col-span-full flex items-center justify-between mb-6 md:mb-9">
         <div className="space-y-2">
-          <h2 className="text-2xl lg:text-3xl font-extrabold text-slate-900">추천</h2>
+          <h2 className="text-2xl lg:text-3xl font-extrabold text-slate-900">최신 글</h2>
         </div>
       </div>
 

@@ -22,7 +22,7 @@ export default async function Page() {
 
       <div className="bg-gray-100 py-20">
         <div className="px-6 md:px-0 mx-auto w-full md:max-w-[42.25rem] min-[70rem]:max-w-[62.25rem]">
-          <BlogSection title="인사이트" />
+          <BlogSection title="전체 글" />
         </div>
       </div>
 
