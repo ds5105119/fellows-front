@@ -16,8 +16,6 @@ export const metadata: Metadata = {
 export default async function Home() {
   const session = await auth();
 
-  console.log(session);
-
   return (
     <div className="grid grid-cols-4 lg:grid-cols-12 px-3 lg:px-12 pt-24 md:pt-40 space-y-14 lg:space-y-36">
       <BlurFade className="col-span-full">
