@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   if (keyword) params.append("keyword", keyword);
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_RECOMMEND_BUSINESS_WELFARE_URL}?${params.toString()}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_WELFARE_URL}/business?${params.toString()}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

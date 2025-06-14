@@ -6,6 +6,7 @@ import { type UserBusinessData, type UserBusinessDataNullable, UserBusinessDataS
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { createBusinessUserData, updateBusinessUserData } from "@/hooks/fetch/user";
 
 interface UserBusinessDataFormProps {
   data: UserBusinessDataNullable;
@@ -72,21 +73,11 @@ export default function UserBusinessDataForm({ data }: UserBusinessDataFormProps
   });
 
   const onSubmit = async (value: UserBusinessData) => {
-    if (!data?.sub) {
-      fetch("/api/user/user-data/business", {
-        method: "POST",
-        body: JSON.stringify(value),
-        redirect: "follow",
-        credentials: "include",
-      });
-      location.reload();
+    if (data?.sub) {
+      console.log(data);
+      await updateBusinessUserData(value);
     } else {
-      await fetch("/api/user/user-data/business", {
-        method: "PATCH",
-        body: JSON.stringify(value),
-        redirect: "follow",
-        credentials: "include",
-      });
+      await createBusinessUserData(value);
     }
   };
 

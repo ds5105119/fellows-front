@@ -1,13 +1,12 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request) {
+export async function GET() {
   // 요청 정보
-  console.log(request);
   const session = await auth();
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BUSINESS_DATA_URL}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/business`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
   const body = await request.json();
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BUSINESS_DATA_URL}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/business`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -59,7 +58,7 @@ export async function PATCH(request: Request) {
   const body = await request.json();
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BUSINESS_DATA_URL}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BUSINESS_DATA_URL}/welfare/business`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

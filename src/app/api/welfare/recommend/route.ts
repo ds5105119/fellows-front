@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   if (order_by) params.append("order_by", order_by);
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_RECOMMEND_WELFARE_URL}?${params.toString()}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_RECOMMEND_WELFARE_URL}/recommend?${params.toString()}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

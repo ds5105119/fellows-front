@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const session = await auth();
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/personal`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   const body = await request.json();
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/personal`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -59,7 +59,7 @@ export async function PATCH(request: Request) {
   const body = await request.json();
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/personal`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

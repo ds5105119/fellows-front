@@ -1,9 +1,8 @@
 import { Metadata } from "next";
-import { auth } from "@/auth";
-import { UserBusinessDataNullableSchema } from "@/@types/accounts/userdata";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import BusinessRecommendWelfareSection from "@/components/section/service/businessrecommendwelfaresection";
+import BusinessRecommendWelfareSection from "@/components/section/service/welfare/businessrecommendwelfaresection";
+import { getBusinessUserData } from "@/hooks/fetch/user";
 
 export const metadata: Metadata = {
   title: "회원가입 | 복지 정책 서비스",
@@ -11,24 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const session = await auth();
-
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BUSINESS_DATA_URL}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
-    },
-    redirect: "follow",
-    credentials: "include",
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  const data = await response.json();
-  const businessData = UserBusinessDataNullableSchema.parse(data);
+  const businessData = await getBusinessUserData();
 
   return (
     <div className="flex flex-col w-full h-full items-center space-y-10 px-8 py-10">
