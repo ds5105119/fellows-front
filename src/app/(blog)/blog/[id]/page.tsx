@@ -129,15 +129,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       </div>
 
       <div className="mx-auto px-6 md:px-0 w-full md:max-w-[42.25rem] min-[70rem]:max-w-[62.25rem]">
-        <AspectRatio ratio={16 / 10} className="rounded-xl md:rounded-2xl overflow-hidden">
+        <AspectRatio ratio={16 / 9} className="rounded-xl md:rounded-2xl overflow-hidden">
           <Image src={post.title_image} alt={post.title} fill className="object-cover" />
         </AspectRatio>
       </div>
 
       <div className="mx-auto px-10 lg:px-0 w-full max-w-full md:w-lg lg:w-2xl py-20">
         <div
-          className="w-full overflow-hidden prose prose-base md:prose-lg
-  prose-headings:font-medium
+          className="w-full overflow-hidden prose prose-base prose-headings:font-bold md:prose-lg
   prose-a:text-primary
   prose-img:rounded-md
   prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl
