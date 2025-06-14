@@ -61,7 +61,7 @@ export default function Page() {
       category: { name: metadata.category },
       tags: metadata.tags.map((tag) => ({ name: tag })),
       is_published: true,
-      published_at: new Date(),
+      published_at: new Date().toISOString().slice(0, 19),
     });
     await createPost(payload);
 

@@ -25,7 +25,7 @@ export const CreateBlogPostDto = z.object({
   content: z.string(),
   summary: z.string(),
   is_published: z.boolean().default(false),
-  published_at: z.string().datetime().nullable().optional(),
+  published_at: z.string(),
 
   category: CategoryInlineDto.nullable().default(null),
   tags: z.array(TagInlineDto).nullish().default([]),
@@ -37,7 +37,7 @@ export const UpdateBlogPostDto = z.object({
   content: z.string().optional().nullable(),
   summary: z.string().optional().nullable(),
   is_published: z.boolean().default(false),
-  published_at: z.string().datetime().nullable().optional(),
+  published_at: z.string(),
 
   category: CategoryInlineDto.nullable().optional(),
   tags: z.array(TagInlineDto).nullish().default([]),
