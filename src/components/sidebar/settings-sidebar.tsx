@@ -2,6 +2,7 @@
 
 import type React from "react";
 import Link from "next/link";
+import SettingHeader from "@/components/header/settingheader";
 
 import { signOut } from "next-auth/react";
 import { User, Bell, CreditCard, Shield, Smartphone, Download, Building2, LogOut, ChevronRight } from "lucide-react";
@@ -99,14 +100,15 @@ export default function SettingsSidebar() {
       )}
     >
       {/* Header */}
-      <div className="p-6 border-b border-gray-100">
+      <SettingHeader />
+      <div className="p-6 border-b border-gray-100 hidden md:block">
         <h2 className="text-xl font-semibold text-gray-900">설정</h2>
         <p className="text-sm text-gray-500 mt-1">계정 및 앱 설정을 관리하세요</p>
       </div>
 
       {/* Settings Sections */}
       <div className="grow">
-        <div className="p-4 space-y-6">
+        <div className="px-4 py-6 md:p-4 space-y-6">
           {settingsSections.map((section) => (
             <div key={section.title}>
               <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3 px-2">{section.title}</h3>

@@ -25,7 +25,7 @@ const satoshi = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "블로그 Fellows",
+  title: "블로그 - Fellows",
   description: "Fellow Blog에서 보도자료를 읽고, 업데이트를 받고, 영상을 보고, 이미지를 다운로드 받을 수 있습니다.",
 };
 

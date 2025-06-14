@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 import "../globals.css";
 import SettingsSidebar from "@/components/sidebar/settings-sidebar";
+import SettingHeader from "@/components/header/settingheader";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
@@ -49,6 +50,7 @@ export default async function RootLayout({
             <div className="flex flex-1 h-full">
               <SettingsSidebar />
               <div className="flex flex-col h-full grow overflow-y-auto">
+                <SettingHeader />
                 <main className="w-full break-keep">{children}</main>
               </div>
             </div>
