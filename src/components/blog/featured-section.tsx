@@ -179,7 +179,7 @@ export function FeaturedSection() {
                   </div>
                   <p
                     className={cn(
-                      "hidden md:block mt-2 font-semibold line-clamp-2 text-lg leading-tight",
+                      "md:hidden mt-2 font-semibold line-clamp-2 text-lg leading-tight",
                       sidebarPost1ImageRefIsDark ? "text-white" : "text-slate-900"
                     )}
                   >
