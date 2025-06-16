@@ -274,9 +274,10 @@ export const useEstimateProject = (project_id: string, _markdown: string) => {
   const [remaining, setRemaining] = useState<number>(1);
 
   const url = `/api/service/project/${project_id}/estimate`;
-  const newCtrl = new AbortController();
 
   const estimate = () => {
+    const newCtrl = new AbortController();
+
     setIsLoading(true);
     setMarkdown("");
     setCtrl(newCtrl);
@@ -330,6 +331,8 @@ export const useEstimateProject = (project_id: string, _markdown: string) => {
         setIsLoading(false);
         newCtrl.abort();
         setCtrl(null);
+
+        throw err;
       },
     });
   };

@@ -30,6 +30,7 @@ export function FeaturedSection() {
 
   const sidebarPost2 = posts[2];
   const sidebarPost2ImageRef = useRef(null);
+  const [sidebarPost2ImageRefHex, setSidebarPost2ImageRefHex] = useState("#fffff");
   const [sidebarPost2ImageRefIsDark, setSidebarPost2ImageRefIsDark] = useState(false);
 
   useEffect(() => {
@@ -46,6 +47,7 @@ export function FeaturedSection() {
     const fac = new FastAverageColor();
     if (sidebarPost2ImageRef.current) {
       fac.getColorAsync(sidebarPost2ImageRef.current).then((color) => {
+        setSidebarPost2ImageRefHex(color.hex);
         setSidebarPost2ImageRefIsDark(color.isDark);
       });
     }
@@ -163,7 +165,7 @@ export function FeaturedSection() {
                   height={0}
                 />
 
-                <div className="flex flex-col space-y-3">
+                <div className="flex flex-col space-y-2 md:space-y-3">
                   <div
                     className={cn(
                       "rounded-full py-1 px-4.5 font-medium w-fit flex items-center space-x-2 border",
@@ -179,13 +181,18 @@ export function FeaturedSection() {
                   </div>
                   <p
                     className={cn(
-                      "md:hidden mt-2 font-semibold line-clamp-2 text-lg leading-tight",
+                      "md:hidden mt-1 md:mt-2 font-semibold line-clamp-2 text-base md:text-lg leading-tight",
                       sidebarPost1ImageRefIsDark ? "text-white" : "text-slate-900"
                     )}
                   >
                     {sidebarPost1.summary}
                   </p>
-                  <p className={cn("font-extrabold line-clamp-2 text-2xl leading-tight", sidebarPost1ImageRefIsDark ? "text-white" : "text-slate-900")}>
+                  <p
+                    className={cn(
+                      "font-extrabold line-clamp-2 text-xl md:text-2xl leading-tight",
+                      sidebarPost1ImageRefIsDark ? "text-white" : "text-slate-900"
+                    )}
+                  >
                     {sidebarPost1.title}
                   </p>
                 </div>
@@ -216,45 +223,55 @@ export function FeaturedSection() {
                 ease: [0.16, 1, 0.3, 1],
               }}
               className="group cursor-pointer overflow-hidden w-full aspect-[4/3] md:aspect-[4/4] rounded-3xl min-[70rem]:rounded-4xl"
+              style={{ backgroundColor: sidebarPost2ImageRefHex }}
             >
-              <div className="relative h-full">
+              <div className="relative h-full overflow-hidden p-8 flex flex-col justify-between">
                 <Image
                   ref={sidebarPost2ImageRef}
                   src={sidebarPost2.title_image || "/placeholder.svg?height=80&width=80"}
                   alt={sidebarPost2.title}
-                  className="h-full w-full object-cover group-hover:scale-105 transition-all duration-1000 overflow-hidden"
-                  fill
+                  className="sr-only"
+                  width={0}
+                  height={0}
                 />
-                <div className="absolute inset-8 flex flex-col justify-between">
-                  <div className="flex flex-col space-y-3">
-                    <div
-                      className={cn(
-                        "rounded-full py-1 px-4.5 font-medium w-fit flex items-center space-x-2 border",
-                        sidebarPost2ImageRefIsDark ? "border-white text-white" : "border-slate-900 text-slate-900"
-                      )}
-                    >
-                      {sidebarPost2.category?.name && (
-                        <>
-                          <div className={cn("size-1 rounded-full", sidebarPost2ImageRefIsDark ? "bg-white" : "bg-slate-900")} />
-                          <div>{sidebarPost2.category.name}</div>
-                        </>
-                      )}
-                    </div>
-                    <p className={cn("mt-2 font-semibold line-clamp-2 text-lg leading-tight", sidebarPost2ImageRefIsDark ? "text-white" : "text-slate-900")}>
-                      {sidebarPost2.summary}
-                    </p>
-                    <p className={cn("font-extrabold line-clamp-2 text-2xl leading-tight", sidebarPost2ImageRefIsDark ? "text-white" : "text-slate-900")}>
-                      {sidebarPost2.title}
-                    </p>
-                  </div>
 
-                  <Link href={`/blog/${sidebarPost2.id}`} className="flex justify-end">
-                    <div className={cn("flex items-center space-x-2", sidebarPost2ImageRefIsDark ? "text-white" : "text-slate-900")}>
-                      <p>더 읽어보기</p>
-                      <ArrowRight />
-                    </div>
-                  </Link>
+                <div className="flex flex-col space-y-2 md:space-y-3">
+                  <div
+                    className={cn(
+                      "rounded-full py-1 px-4.5 font-medium w-fit flex items-center space-x-2 border",
+                      sidebarPost2ImageRefIsDark ? "border-white text-white" : "border-slate-900 text-slate-900"
+                    )}
+                  >
+                    {sidebarPost2.category?.name && (
+                      <>
+                        <div className={cn("size-1 rounded-full", sidebarPost2ImageRefIsDark ? "bg-white" : "bg-slate-900")} />
+                        <div>{sidebarPost2.category.name}</div>
+                      </>
+                    )}
+                  </div>
+                  <p
+                    className={cn(
+                      "md:hidden mt-1 md:mt-2 font-semibold line-clamp-2 text-base md:text-lg leading-tight",
+                      sidebarPost2ImageRefIsDark ? "text-white" : "text-slate-900"
+                    )}
+                  >
+                    {sidebarPost2.summary}
+                  </p>
+                  <p
+                    className={cn(
+                      "font-extrabold line-clamp-2 text-xl md:text-2xl leading-tight",
+                      sidebarPost2ImageRefIsDark ? "text-white" : "text-slate-900"
+                    )}
+                  >
+                    {sidebarPost2.title}
+                  </p>
                 </div>
+                <Link href={`/blog/${sidebarPost2.id}`} className="flex justify-end">
+                  <div className={cn("flex items-center space-x-2", sidebarPost2ImageRefIsDark ? "text-white" : "text-slate-900")}>
+                    <p>더 읽어보기</p>
+                    <ArrowRight />
+                  </div>
+                </Link>
               </div>
             </motion.article>
           )}
