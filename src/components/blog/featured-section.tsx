@@ -11,6 +11,18 @@ import Link from "next/link";
 import Image from "next/image";
 import FeaturedSectionSkeleton from "./featured-section-skeleton";
 import HeatmapBackground from "../animation/heatmapbackground";
+import Color from "color";
+
+function enforceMaximumLightness(hex: string, maxLightness = 40): string {
+  const color = Color(hex);
+  const { l } = color.hsl().object();
+
+  if (l > maxLightness) {
+    return color.hsl().lightness(maxLightness).hex();
+  }
+
+  return hex;
+}
 
 export function FeaturedSection() {
   const ref = useRef(null);
@@ -26,12 +38,12 @@ export function FeaturedSection() {
 
   const sidebarPost1 = posts[1];
   const sidebarPost1ImageRef = useRef(null);
-  const [sidebarPost1ImageRefHex, setSidebarPost1ImageRefHex] = useState("#fffff");
+  const [sidebarPost1ImageRefHex, setSidebarPost1ImageRefHex] = useState("#ffffff");
   const [sidebarPost1ImageRefIsDark, setSidebarPost1ImageRefIsDark] = useState(false);
 
   const sidebarPost2 = posts[2];
   const sidebarPost2ImageRef = useRef(null);
-  const [sidebarPost2ImageRefHex, setSidebarPost2ImageRefHex] = useState("#fffff");
+  const [sidebarPost2ImageRefHex, setSidebarPost2ImageRefHex] = useState("#ffffff");
   const [sidebarPost2ImageRefIsDark, setSidebarPost2ImageRefIsDark] = useState(false);
 
   useEffect(() => {
@@ -161,9 +173,10 @@ export function FeaturedSection() {
                   ref={sidebarPost1ImageRef}
                   src={sidebarPost1.title_image || "/placeholder.svg?height=80&width=80"}
                   alt={sidebarPost1.title}
-                  className="hidden"
-                  width={0}
-                  height={0}
+                  className="sr-only"
+                  width={80}
+                  height={80}
+                  crossOrigin="anonymous"
                 />
 
                 <div className="flex flex-col space-y-2 md:space-y-3">
@@ -230,9 +243,10 @@ export function FeaturedSection() {
                   ref={sidebarPost2ImageRef}
                   src={sidebarPost2.title_image || "/placeholder.svg?height=80&width=80"}
                   alt={sidebarPost2.title}
-                  className="hidden"
-                  width={0}
-                  height={0}
+                  className="sr-only"
+                  width={80}
+                  height={80}
+                  crossOrigin="anonymous"
                 />
 
                 <div
@@ -245,7 +259,7 @@ export function FeaturedSection() {
 
                 <div className="absolute inset-0 -z-10 flex items-center justify-center">
                   <div style={{ opacity: 0.9 }}>
-                    <HeatmapBackground />
+                    <HeatmapBackground color={enforceMaximumLightness(sidebarPost2ImageRefHex)} />
                   </div>
                 </div>
 
