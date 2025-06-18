@@ -161,7 +161,7 @@ export function FeaturedSection() {
                   ref={sidebarPost1ImageRef}
                   src={sidebarPost1.title_image || "/placeholder.svg?height=80&width=80"}
                   alt={sidebarPost1.title}
-                  className="sr-only"
+                  className="hidden"
                   width={0}
                   height={0}
                 />
@@ -230,7 +230,7 @@ export function FeaturedSection() {
                   ref={sidebarPost2ImageRef}
                   src={sidebarPost2.title_image || "/placeholder.svg?height=80&width=80"}
                   alt={sidebarPost2.title}
-                  className="sr-only"
+                  className="hidden"
                   width={0}
                   height={0}
                 />
