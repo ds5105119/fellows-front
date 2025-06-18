@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import { FastAverageColor } from "fast-average-color";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import dayjs from "dayjs";
 import Link from "next/link";
 import Image from "next/image";
 import FeaturedSectionSkeleton from "./featured-section-skeleton";

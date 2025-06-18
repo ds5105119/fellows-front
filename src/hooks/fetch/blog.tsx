@@ -98,6 +98,7 @@ export const usePosts = (size?: number, category?: string, tag?: string, keyword
   const getKey = blogsGetKeyFactory({ size, category, tag, keyword, order_by, descending });
   return useSWRInfinite(getKey, blogsFetcher, {
     refreshInterval: 60000,
+    initialSize: 2,
   });
 };
 
