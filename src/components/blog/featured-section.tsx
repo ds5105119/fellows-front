@@ -173,7 +173,7 @@ export function FeaturedSection() {
                   }}
                 />
 
-                <div className="absolute inset-0 -z-10">
+                <div className="absolute inset-0 -z-10 group-hover:scale-115 duration-750">
                   <RandomLines strokeWidth={0.6} strokeOpacity={0.7} strokeColor={enforceMaximumLightness(sidebarPost1ImageRefHex, 50)} />
                 </div>
 
@@ -256,7 +256,7 @@ export function FeaturedSection() {
                   }}
                 />
 
-                <div className="absolute inset-0 -z-10 flex items-center justify-center">
+                <div className="absolute inset-0 -z-10 flex items-center justify-center group-hover:scale-115 duration-750">
                   <div style={{ opacity: 0.9 }}>
                     <HeatmapBackground color={enforceMaximumLightness(sidebarPost2ImageRefHex)} />
                   </div>
