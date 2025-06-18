@@ -3,10 +3,13 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { auth } from "@/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { notFound } from "next/navigation";
+import { cn } from "@/lib/utils";
+import type { Metadata, ResolvingMetadata } from "next";
 import MarkdownPreview from "@/components/ui/markdownpreview";
 import BlogShare from "@/components/blog/blog-share";
 import dayjs from "dayjs";
 import Image from "next/image";
+import Link from "next/link";
 import BlogToolbar from "@/components/blog/blog-toolbar";
 
 export const revalidate = 60;
@@ -21,8 +24,8 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const post_id = params.id;
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }, parent: ResolvingMetadata): Promise<Metadata> {
+  const post_id = (await params).id;
 
   const response = await fetch(`${process.env.NEXT_PUBLIC_BLOG_URL}/${post_id}`, {
     next: { revalidate: 60 },
@@ -30,13 +33,14 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 
   const post_json = await response.json();
   const post = BlogPostDto.parse(post_json);
+  const previousImages = (await parent).openGraph?.images || [];
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
     alternativeHeadline: post.summary,
-    image: [post.title_image],
+    image: [post.title_image, ...previousImages],
     author: {
       "@type": "Person",
       name: post.author.name,
@@ -67,13 +71,13 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
       description: post.summary,
       type: "article",
       url: `https://fellows.my/blog/${post_id}`,
-      images: [post.title_image],
+      images: [post.title_image, ...previousImages],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.summary,
-      images: [post.title_image],
+      images: [post.title_image, ...previousImages],
     },
     other: {
       "script:type": "application/ld+json",
@@ -99,7 +103,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <main className="relative w-full pt-13">
-      <div className="mx-auto px-10 lg:px-0 w-full md:w-lg lg:w-2xl flex flex-col space-y-6 py-20">
+      <div className="mx-auto px-8 lg:px-0 w-full md:w-lg lg:w-2xl flex flex-col space-y-6 py-20">
         <div className="space-y-2">
           <p className="text-xs font-semibold text-muted-foreground">{post.category?.name ?? "카테고리 없음"}</p>
           <p className="text-sm font-semibold text-muted-foreground">{post.published_at ? dayjs(post.published_at).format("YYYY-MM-DD") : "발행 전"}</p>
@@ -117,7 +121,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           ))}
         </div>
 
-        <div className="flex space-x-2 items-center">
+        <div className="flex space-x-2 items-center pb-4">
           <p>by</p>
           <Avatar className="h-8 w-8 rounded-full">
             <AvatarImage src={post.author.picture ?? ""} alt={post.author.name} />
@@ -129,24 +133,59 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <BlogShare title="Fellows 블로그" text={post.title} />
       </div>
 
-      <div className="mx-auto px-6 md:px-0 w-full md:max-w-[42.25rem] min-[70rem]:max-w-[62.25rem]">
+      <div className="mx-auto px-5 md:px-0 w-full md:max-w-[42.25rem] min-[70rem]:max-w-[62.25rem]">
         <AspectRatio ratio={16 / 9} className="rounded-xl md:rounded-2xl overflow-hidden">
           <Image src={post.title_image} alt={post.title} fill className="object-cover" />
         </AspectRatio>
       </div>
 
-      <div className="mx-auto px-10 lg:px-0 w-full max-w-full md:w-lg lg:w-2xl py-20">
+      <div className="mx-auto px-8 lg:px-0 w-full max-w-full md:w-lg lg:w-2xl py-20">
         <div
-          className="w-full overflow-hidden prose prose-base prose-headings:font-bold md:prose-lg
-  prose-a:text-primary
-  prose-img:rounded-md
-  prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl
-  [&_*]:max-w-full [&_*]:break-words [&_*]:overflow-hidden
-"
+          className={cn(
+            "w-full overflow-hidden prose prose-base prose-headings:font-bold md:prose-lg",
+            "prose-a:text-primary prose-img:rounded-md prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl",
+            "[&_*]:max-w-full [&_*]:break-words [&_*]:overflow-hidden"
+          )}
         >
           <MarkdownPreview loading={false}>{post.content}</MarkdownPreview>
         </div>
       </div>
+
+      <div className="mx-auto px-8 lg:px-0 w-full md:w-lg lg:w-2xl flex flex-col space-y-20">
+        <div className="space-y-4">
+          <p className="text-base md:text-lg font-bold text-gray-900">글 공유하기</p>
+          <BlogShare title="Fellows 블로그" text={post.title} />
+        </div>
+      </div>
+
+      <div className={cn("bg-gradient-to-b from-[#ffffff] to-[#e5f1ff]")}>
+        <div className="mx-auto px-8 lg:px-0 w-full md:w-lg lg:w-2xl flex flex-col space-y-10 py-28 justify-center items-center">
+          <div className="text-center text-2xl md:text-4xl leading-normal font-extrabold text-gray-800">
+            웹, 앱 외주는{" "}
+            <span className="font-black underline underline-offset-[3px] md:underline-offset-4 decoration-2 md:decoration-[3px] decoration-wavy decoration-blue-500">
+              Fellows
+            </span>
+            인 이유
+            <br />
+            직접 사용해보고 확인하세요
+          </div>
+          <div className="flex space-x-4">
+            <Link
+              className="flex items-center px-8 h-12 md:h-16 md:text-lg font-medium text-white rounded-xl bg-black hover:bg-zinc-800 transition-colors duration-300"
+              href="/service/dashboard"
+            >
+              시작하기
+            </Link>
+            <Link
+              className="flex items-center px-8 h-12 md:h-16 md:text-lg font-medium text-black rounded-xl bg-white hover:bg-zinc-200 transition-colors duration-300 border border-gray-200"
+              href="/price"
+            >
+              가격 및 플랜
+            </Link>
+          </div>
+        </div>
+      </div>
+
       <BlogToolbar session={session} post={post} />
     </main>
   );

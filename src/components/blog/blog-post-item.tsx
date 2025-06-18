@@ -53,7 +53,7 @@ export default function BlogPostItem({ post, featured = false }: BlogPostItemPro
 
       <h3
         className={cn(
-          "font-extrabold text-slate-900 leading-tight group-hover:text-blue-500 transition-colors duration-500 grow",
+          "font-extrabold text-slate-900 leading-tight transition-colors duration-500 grow",
           title ? "text-xl min-[70rem]:text-4xl" : "text-xl min-[70rem]:text-2xl"
         )}
       >
@@ -80,13 +80,13 @@ export default function BlogPostItem({ post, featured = false }: BlogPostItemPro
       {featured ? (
         <>
           {/* Featured post - horizontal layout for large screens */}
-          <div className="hidden min-[70rem]:flex">
+          <div className="hidden min-[70rem]:flex group">
             <div className="rounded-l-4xl overflow-hidden grow">
               <div className="relative aspect-[16/9]">
                 <Image
                   src={post.title_image || "/placeholder.svg?height=400&width=600"}
                   alt={post.title}
-                  className="h-full w-full object-cover group-hover:scale-105 transition-all duration-1000"
+                  className="h-full w-full object-cover group-hover:scale-105 transition-all duration-500"
                   fill
                 />
               </div>
@@ -98,18 +98,18 @@ export default function BlogPostItem({ post, featured = false }: BlogPostItemPro
           </div>
 
           {/* Featured post - vertical layout for small screens */}
-          <div className="block min-[70rem]:hidden">
+          <div className="block min-[70rem]:hidden group">
             <div className="rounded-t-3xl min-[70rem]:rounded-t-4xl overflow-hidden">
               <div className="relative aspect-[16/9]">
                 <Image
                   src={post.title_image || "/placeholder.svg?height=400&width=600"}
                   alt={post.title}
-                  className="object-cover group-hover:scale-105 transition-all duration-1000"
+                  className="object-cover group-hover:scale-105 transition-all duration-500"
                   fill
                 />
               </div>
             </div>
-            <div className="rounded-b-3xl min-[70rem]:rounded-b-4xl bg-white space-y-4 px-8 py-8 flex flex-col h-44 min-[70rem]:h-52">
+            <div className="rounded-b-3xl min-[70rem]:rounded-b-4xl bg-white space-y-4 px-8 py-8 flex flex-col min-h-44 min-[70rem]:h-52">
               <PostMetadata />
               <PostInfo />
             </div>
@@ -118,17 +118,17 @@ export default function BlogPostItem({ post, featured = false }: BlogPostItemPro
       ) : (
         <>
           {/* Regular post - vertical layout for all screen sizes */}
-          <div className="rounded-t-3xl min-[70rem]:rounded-t-4xl overflow-hidden">
+          <div className="rounded-t-3xl min-[70rem]:rounded-t-4xl overflow-hidden group">
             <div className="relative aspect-[16/9]">
               <Image
                 src={post.title_image || "/placeholder.svg?height=400&width=600"}
                 alt={post.title}
-                className="object-cover group-hover:scale-105 transition-all duration-1000"
+                className="object-cover group-hover:scale-105 transition-all duration-500"
                 fill
               />
             </div>
           </div>
-          <div className="rounded-b-3xl min-[70rem]:rounded-b-4xl bg-white space-y-4 px-8 py-8 flex flex-col h-44 min-[70rem]:h-52">
+          <div className="rounded-b-3xl min-[70rem]:rounded-b-4xl bg-white space-y-4 px-8 py-8 flex flex-col min-h-44 min-[70rem]:h-52">
             <PostMetadata />
             <PostInfo />
           </div>

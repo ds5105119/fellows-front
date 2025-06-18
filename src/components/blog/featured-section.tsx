@@ -118,7 +118,7 @@ export function FeaturedSection() {
                 </motion.div>
               </div>
 
-              <div className="rounded-b-3xl min-[70rem]:rounded-b-4xl bg-white space-y-4 px-8 pt-8 flex flex-col">
+              <div className="rounded-b-3xl min-[70rem]:rounded-b-4xl space-y-4 px-8 pt-8 flex flex-col">
                 <div className="flex space-x-2">
                   <h4 className="text-muted-foreground font-bold text-xs min-[70rem]:text-sm">{featuredPost?.category?.name ?? "인사이트"}</h4>
                 </div>

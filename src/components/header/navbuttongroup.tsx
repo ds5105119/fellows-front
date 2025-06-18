@@ -50,7 +50,7 @@ export default function NavButtonGroup({ session, ...props }: NavButtonGroupProp
           <Link href="/works" className="hover:opacity-80">
             Works
           </Link>
-          <Link href="/blog" className="hover:opacity-80">
+          <Link href="/blog" target="_blank" rel="noopener noreferrer" className="hover:opacity-80">
             Blog
           </Link>
           <button style={{ cursor: "pointer" }} onClick={() => (session?.user ? signOut() : signIn("keycloak", { redirectTo: "/service/dashboard" }))}>

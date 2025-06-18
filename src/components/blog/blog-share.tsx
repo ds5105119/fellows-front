@@ -22,12 +22,12 @@ export default function BlogShare({ title, text }: { title: string; text: string
   };
 
   return (
-    <div className="flex items-center space-x-6 pt-4">
+    <div className="flex items-center space-x-6">
       <button onClick={share}>
-        <Share2 className="text-gray-500 hover:text-gray-800 transition-colors duration-200" strokeWidth={2.2} />
+        <Share2 className="size-5 text-gray-600 hover:text-gray-800 transition-colors duration-200" strokeWidth={2.2} />
       </button>
       <button onClick={copylink}>
-        <Link className="text-gray-500 hover:text-gray-800 transition-colors duration-200" strokeWidth={2.2} />
+        <Link className="size-5 text-gray-600 hover:text-gray-800 transition-colors duration-200" strokeWidth={2.2} />
       </button>
     </div>
   );

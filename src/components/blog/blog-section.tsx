@@ -77,13 +77,13 @@ export function BlogSection({ title }: BlogSectionProps) {
 
         <Link
           href="/service/dashboard"
-          className="group col-span-full py-8 rounded-xl hidden md:flex items-center justify-center bg-zinc-200/80 border border-zinc-200"
+          className="group col-span-full py-8 rounded-xl hidden md:flex items-center justify-center bg-zinc-200/80 border border-zinc-200 hover:bg-zinc-300/80 duration-300 transition-colors"
         >
           <AnimatedGradientText speed={2} colorFrom="#4ade80" colorTo="#06b6d4" className="flex items-center text-2xl font-bold tracking-tight">
             <span>Fellows</span>
             <span className="font-medium">가 궁금하다면?&nbsp;</span>
             <span>지금 무료로 체험해보세요</span>
-            <ChevronRight className="ml-2 size-6 stroke-[#06b6d4] transition-transform duration-500 ease-in-out group-hover:translate-x-1" />
+            <ChevronRight className="ml-1.5 size-5 stroke-[#06b6d4] transition-transform duration-500 ease-in-out group-hover:translate-x-1" />
           </AnimatedGradientText>
         </Link>
 
