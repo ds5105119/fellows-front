@@ -116,20 +116,6 @@ export function FeaturedSection() {
                   <div className="absolute bottom-6 right-6 rounded-full size-14 bg-white/70 flex items-center justify-center">
                     <ArrowUpRight strokeWidth={2.5} />
                   </div>
-
-                  <div className="absolute top-8 left-8 flex flex-col space-y-3">
-                    <div className="rounded-full py-1 px-4.5 font-medium w-fit bg-white/70">
-                      {featuredPost.published_at ? dayjs(featuredPost.published_at).format("YYYY-MM-DD") : "발행 전"}
-                    </div>
-                    <div className="rounded-full py-1 px-4.5 font-medium w-fit flex items-center space-x-2 border border-white text-white">
-                      {featuredPost.tags && (
-                        <>
-                          <div className="size-1 rounded-full bg-white" />
-                          <div>{featuredPost.tags.length > 0 ? featuredPost.tags[0].name : "태그 없음"}</div>
-                        </>
-                      )}
-                    </div>
-                  </div>
                 </motion.div>
               </div>
 
