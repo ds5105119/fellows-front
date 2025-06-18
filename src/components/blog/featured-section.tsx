@@ -224,7 +224,6 @@ export function FeaturedSection() {
                 ease: [0.16, 1, 0.3, 1],
               }}
               className="group cursor-pointer overflow-hidden w-full aspect-[4/3] md:aspect-[4/4] rounded-3xl min-[70rem]:rounded-4xl"
-              style={{ backgroundColor: sidebarPost2ImageRefHex, opacity: 0.3 }}
             >
               <div className="relative h-full overflow-hidden p-8 flex flex-col justify-between">
                 <Image
@@ -234,6 +233,14 @@ export function FeaturedSection() {
                   className="sr-only"
                   width={0}
                   height={0}
+                />
+
+                <div
+                  className="absolute inset-0 -z-10"
+                  style={{
+                    backgroundColor: sidebarPost2ImageRefHex,
+                    opacity: 0.8,
+                  }}
                 />
 
                 <div className="absolute inset-0 flex items-center justify-center">
