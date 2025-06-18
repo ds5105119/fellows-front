@@ -177,6 +177,7 @@ export function FeaturedSection() {
                   width={80}
                   height={80}
                   crossOrigin="anonymous"
+                  priority
                 />
 
                 <div className="flex flex-col space-y-2 md:space-y-3">
@@ -247,6 +248,7 @@ export function FeaturedSection() {
                   width={80}
                   height={80}
                   crossOrigin="anonymous"
+                  priority
                 />
 
                 <div
