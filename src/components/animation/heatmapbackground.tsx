@@ -10,12 +10,12 @@ const hot1 = "#77312f";
 const hot2 = "#f33d15";
 
 // 데이터 생성
-const seededRandom = getSeededRandom(0.41);
+const seededRandom = getSeededRandom(Date.now());
 const binData = genBins(
   16, // columns
   16, // rows
   (idx) => 150 * idx,
-  (i) => 25 * i * seededRandom()
+  (i) => 25 * i * Math.random()
 );
 
 // 유틸 함수
