@@ -236,14 +236,14 @@ export function FeaturedSection() {
                 />
 
                 <div
-                  className="absolute inset-0 -z-10"
+                  className="absolute inset-0 -z-20"
                   style={{
                     backgroundColor: sidebarPost2ImageRefHex,
                     opacity: 0.8,
                   }}
                 />
 
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-0 -z-10 flex items-center justify-center">
                   <div style={{ opacity: 0.9 }}>
                     <HeatmapBackground />
                   </div>

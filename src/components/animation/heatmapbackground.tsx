@@ -15,7 +15,7 @@ const binData = genBins(
   16, // columns
   16, // rows
   (idx) => 150 * idx,
-  (i) => 25 * i * Math.random()
+  (i) => 25 * i * seededRandom()
 );
 
 // 유틸 함수
