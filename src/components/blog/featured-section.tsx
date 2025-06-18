@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import Image from "next/image";
 import FeaturedSectionSkeleton from "./featured-section-skeleton";
+import HeatmapBackground from "../animation/heatmapbackground";
 
 export function FeaturedSection() {
   const ref = useRef(null);
@@ -223,7 +224,7 @@ export function FeaturedSection() {
                 ease: [0.16, 1, 0.3, 1],
               }}
               className="group cursor-pointer overflow-hidden w-full aspect-[4/3] md:aspect-[4/4] rounded-3xl min-[70rem]:rounded-4xl"
-              style={{ backgroundColor: sidebarPost2ImageRefHex }}
+              style={{ backgroundColor: sidebarPost2ImageRefHex, opacity: 0.3 }}
             >
               <div className="relative h-full overflow-hidden p-8 flex flex-col justify-between">
                 <Image
@@ -234,6 +235,12 @@ export function FeaturedSection() {
                   width={0}
                   height={0}
                 />
+
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div style={{ opacity: 0.9 }}>
+                    <HeatmapBackground />
+                  </div>
+                </div>
 
                 <div className="flex flex-col space-y-2 md:space-y-3">
                   <div
