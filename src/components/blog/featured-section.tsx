@@ -10,8 +10,9 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import Image from "next/image";
 import FeaturedSectionSkeleton from "./featured-section-skeleton";
-import HeatmapBackground from "../animation/heatmapbackground";
+import HeatmapBackground from "@/components/resource/heatmapbackground";
 import Color from "color";
+import RandomLines from "../resource/randomlines";
 
 function enforceMaximumLightness(hex: string, maxLightness = 40): string {
   const color = Color(hex);
@@ -166,7 +167,6 @@ export function FeaturedSection() {
                 ease: [0.16, 1, 0.3, 1],
               }}
               className="group cursor-pointer overflow-hidden w-full aspect-[4/3] rounded-3xl min-[70rem]:rounded-4xl"
-              style={{ backgroundColor: sidebarPost1ImageRefHex }}
             >
               <div className="relative h-full overflow-hidden p-8 flex flex-col justify-between">
                 <Image
@@ -179,6 +179,18 @@ export function FeaturedSection() {
                   crossOrigin="anonymous"
                   priority
                 />
+
+                <div
+                  className="absolute inset-0 -z-20"
+                  style={{
+                    backgroundColor: sidebarPost1ImageRefIsDark ? "#222" : "#f5f2e3",
+                    opacity: 0.8,
+                  }}
+                />
+
+                <div className="absolute inset-0 -z-10">
+                  <RandomLines strokeWidth={0.6} strokeOpacity={0.7} strokeColor={enforceMaximumLightness(sidebarPost1ImageRefHex, 50)} />
+                </div>
 
                 <div className="flex flex-col space-y-2 md:space-y-3">
                   <div
