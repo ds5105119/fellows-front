@@ -43,11 +43,6 @@ export function ProjectDetails({ project, valueToggle, onValueToggle }: ProjectD
         <div className="text-sm font-normal whitespace-pre-wrap">{project.custom_project_summary}</div>
       </div>
 
-      <div className="w-full flex flex-col space-y-2">
-        <div className="text-sm font-semibold">디자인 요구사항</div>
-        <div className="text-sm font-normal whitespace-pre-wrap">{project.custom_design_requirements ?? "디자인 요구사항이 없어요."}</div>
-      </div>
-
       <div className="w-full flex flex-col space-y-1.5">
         <div className="text-sm font-semibold">{project.custom_project_status === "draft" ? "희망 사용기술" : "계약 사용기술"}</div>
         <div className="flex flex-wrap gap-2 mt-1">

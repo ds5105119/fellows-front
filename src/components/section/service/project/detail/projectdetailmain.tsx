@@ -2,10 +2,10 @@ import { auth } from "@/auth";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { ERPNextProjectType } from "@/@types/service/project";
+import { ERPNextProject } from "@/@types/service/project";
 
 interface ProjectDetailMainProps {
-  project: ERPNextProjectType;
+  project: ERPNextProject;
 }
 
 export default async function ProjectDetailMain({ project }: ProjectDetailMainProps) {
@@ -65,13 +65,6 @@ export default async function ProjectDetailMain({ project }: ProjectDetailMainPr
           <Label className="mb-1">프로젝트 개요</Label>
           <p className="whitespace-pre-wrap">{project.custom_project_summary}</p>
         </div>
-
-        {project.custom_design_requirements && (
-          <div>
-            <Label className="mb-1">디자인 요구사항</Label>
-            <p>{project.custom_design_requirements}</p>
-          </div>
-        )}
       </div>
 
       <Separator />
