@@ -116,7 +116,7 @@ export function FeaturedSectionMobile() {
       return (
         <Link href={`/blog/${post.id}`} className="block">
           <article className="group cursor-pointer h-full">
-            <div className="rounded-3xl overflow-hidden h-full shadow-lg">
+            <div className="rounded-3xl overflow-hidden h-full">
               <div className="relative aspect-[4/5] h-full">
                 <Image
                   src={post.title_image || "/placeholder.svg?height=600&width=400"}
@@ -212,7 +212,7 @@ export function FeaturedSectionMobile() {
                   opacity: 0.95,
                 }}
               />
-              <div className="absolute inset-0 -z-10 flex items-center justify-center group-hover:scale-110 transition-transform duration-700">
+              <div className="absolute inset-0 -z-10 flex items-center justify-center group-hover:scale-110 transition-transform duration-700 rounded-3xl overflow-hidden">
                 <div style={{ opacity: 0.7 }}>
                   <HeatmapBackground columns={30} rows={30} color={enforceMaximumLightness(sidebarPost2ImageRefHex, 35)} />
                 </div>
