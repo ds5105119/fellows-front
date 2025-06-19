@@ -10,7 +10,6 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import Link from "next/link";
 import Image from "next/image";
 import Color from "color";
-import FeaturedSectionSkeleton from "./featured-section-skeleton";
 import HeatmapBackground from "@/components/resource/heatmapbackground";
 import RandomLines from "@/components/resource/randomlines";
 import Autoplay from "embla-carousel-autoplay";
