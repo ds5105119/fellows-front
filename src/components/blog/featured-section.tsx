@@ -8,10 +8,10 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
+import Color from "color";
 import FeaturedSectionSkeleton from "./featured-section-skeleton";
 import HeatmapBackground from "@/components/resource/heatmapbackground";
-import Color from "color";
-import RandomLines from "../resource/randomlines";
+import RandomLines from "@/components/resource/randomlines";
 
 function enforceMaximumLightness(hex: string, maxLightness = 40): string {
   const color = Color(hex);
@@ -69,26 +69,30 @@ export function FeaturedSection() {
   return (
     <motion.section ref={ref} className="flex flex-col">
       {/* Sidebar Image Background */}
-      <Image
-        ref={sidebarPost1ImageRef}
-        src={sidebarPost1.title_image || "/placeholder.svg?height=80&width=80"}
-        alt={sidebarPost1.title}
-        className="sr-only"
-        width={80}
-        height={80}
-        crossOrigin="anonymous"
-        priority
-      />
-      <Image
-        ref={sidebarPost2ImageRef}
-        src={sidebarPost2.title_image || "/placeholder.svg?height=80&width=80"}
-        alt={sidebarPost2.title}
-        className="sr-only"
-        width={80}
-        height={80}
-        crossOrigin="anonymous"
-        priority
-      />
+      {sidebarPost1 && (
+        <Image
+          ref={sidebarPost1ImageRef}
+          src={sidebarPost1.title_image}
+          alt={sidebarPost1.title}
+          className="sr-only"
+          width={80}
+          height={80}
+          crossOrigin="anonymous"
+          priority
+        />
+      )}
+      {sidebarPost2 && (
+        <Image
+          ref={sidebarPost2ImageRef}
+          src={sidebarPost2.title_image}
+          alt={sidebarPost2.title}
+          className="sr-only"
+          width={80}
+          height={80}
+          crossOrigin="anonymous"
+          priority
+        />
+      )}
 
       {/* Section Header */}
       <div className="col-span-full flex items-center justify-between mb-6 md:mb-9">
