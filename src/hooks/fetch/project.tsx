@@ -3,339 +3,322 @@
 import useSWR, { SWRResponse } from "swr";
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
 import { fetchEventSource, EventSourceMessage } from "@microsoft/fetch-event-source";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { format } from "date-fns";
 import {
-  ERPNextProjectFileRowType,
-  ERPNextProjectPageSchema,
-  ERPNextProjectType,
-  ERPNextProjectZod,
-  ERPNextTaskPaginatedResponseZod,
-  ProjectEstimateFeatureSchema,
-  ProjectEstimateFeatureSchemaType,
-  UserERPNextProjectType,
+  ERPNextFile,
+  erpNextFileSchema,
+  ERPNextFilesResponse,
+  erpNextFilesResponseSchema,
+  ERPNextProject,
+  erpNextProjectSchema,
+  ERPNextTaskPaginatedResponse,
+  erpNextTaskPaginatedResponseSchema,
+  ProjectFeatureEstimateRequest,
+  projectFeatureEstimateResponseSchema,
+  ProjectsPaginatedResponse,
+  projectsPaginatedResponseSchema,
+  UpdateERPNextProject,
+  UserERPNextProject,
 } from "@/@types/service/project";
 
-// CREATE
+const API_BASE_URL = "/api/service/project";
 
-export const createProject = async (payload: UserERPNextProjectType): Promise<ERPNextProjectType | undefined> => {
-  const response = await fetch("/api/service/project", {
+// --- Generic Fetcher ---
+const fetcher = async (url: string) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const errorMessage = errorData.detail || `API 요청 오류: ${response.statusText}`;
+    toast.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+  return response.json();
+};
+
+// =================================================================
+// PROJECT API
+// =================================================================
+
+// --- CREATE ---
+export const createProject = async (payload: UserERPNextProject): Promise<ERPNextProject> => {
+  const response = await fetch(API_BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
-    toast.error("프로젝트 저장 중 오류가 발생했어요");
+    toast.error("프로젝트 생성 중 오류가 발생했습니다.");
+    throw new Error("Failed to create project");
   }
 
-  try {
-    const responseData = await response.json();
-    return ERPNextProjectZod.parse(responseData);
-  } catch {
-    toast.error("프로젝트 저장 중 오류가 발생했어요");
-  }
+  const responseData = await response.json();
+  return erpNextProjectSchema.parse(responseData);
 };
 
-// READ
-
-export const useProject = (project_id: string): SWRResponse<ERPNextProjectType | undefined> => {
-  const fetcher = async (url: string) => {
-    if (!url) return undefined;
-
-    try {
-      const response = await fetch(url, {
-        method: "GET",
-        redirect: "follow",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-
-      const responseData = await response.json();
-      const parsedData = ERPNextProjectZod.parse(responseData);
-
-      return parsedData;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  return useSWR(`/api/service/project/${project_id}`, fetcher);
+// --- READ (Single) ---
+export const useProject = (projectId: string | null): SWRResponse<ERPNextProject> => {
+  const url = projectId ? `${API_BASE_URL}/${projectId}` : null;
+  return useSWR(url, async (url: string) => erpNextProjectSchema.parse(await fetcher(url)));
 };
 
-const projectsGetKeyFactory = ({
-  size,
-  keyword,
-  order_by,
-  status,
-}: {
+// --- READ (List) ---
+const projectsGetKeyFactory = (params: {
   size?: number;
   keyword?: string;
   order_by?: string;
   status?: string;
-}): SWRInfiniteKeyLoader => {
+}): SWRInfiniteKeyLoader<ProjectsPaginatedResponse> => {
   return (pageIndex, previousPageData) => {
-    if (previousPageData && !previousPageData.items.length) return null;
-    const params = new URLSearchParams();
-    params.append("page", `${pageIndex}`);
-    if (size) params.append("size", `${size}`);
-    if (keyword) params.append("keyword", keyword);
-    if (order_by) params.append("order_by", order_by);
-    if (status) params.append("status", status);
-    return `/api/service/project?${params.toString()}`;
+    if (previousPageData && !previousPageData.items.length) return null; // 마지막 페이지
+
+    const searchParams = new URLSearchParams();
+    searchParams.append("page", `${pageIndex}`);
+    if (params.size) searchParams.append("size", `${params.size}`);
+    if (params.keyword) searchParams.append("keyword", params.keyword);
+    if (params.order_by) searchParams.append("order_by", params.order_by);
+    if (params.status) searchParams.append("status", params.status);
+
+    return `${API_BASE_URL}?${searchParams.toString()}`;
   };
 };
 
-const projectsFetcher = async (url: string) => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Fetch failed");
-  const data = await res.json();
-  return ERPNextProjectPageSchema.parse(data);
-};
-
-export const useProjects = (size?: number, keyword?: string, order_by?: string, status?: string) => {
-  const getKey = projectsGetKeyFactory({ size, keyword, order_by, status });
-  return useSWRInfinite(getKey, projectsFetcher, {
+export const useProjects = (params: { size?: number; keyword?: string; order_by?: string; status?: string }) => {
+  const getKey = projectsGetKeyFactory(params);
+  return useSWRInfinite(getKey, async (url: string) => projectsPaginatedResponseSchema.parse(await fetcher(url)), {
     refreshInterval: 60000,
   });
 };
 
-// PUT
-
-export const submitProject = async (project_id: string) => {
-  await fetch(`/api/service/project/${project_id}/submit`, {
-    method: "POST",
-  });
-};
-
-export const cancelSubmitProject = async (project_id: string) => {
-  await fetch(`/api/service/project/${project_id}/submit/cancel`, {
-    method: "POST",
-  });
-};
-
-export const addFileToProject = async (project_id: string, file_record: ERPNextProjectFileRowType) => {
-  await fetch(`/api/service/project/${project_id}/files`, {
+// --- UPDATE ---
+export const updateProject = async (projectId: string, payload: UpdateERPNextProject): Promise<ERPNextProject> => {
+  const response = await fetch(`${API_BASE_URL}/${projectId}`, {
     method: "PUT",
-    body: JSON.stringify(file_record),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
   });
+
+  if (!response.ok) {
+    toast.error("프로젝트 업데이트 중 오류가 발생했습니다.");
+    throw new Error("Failed to update project");
+  }
+  const responseData = await response.json();
+  return erpNextProjectSchema.parse(responseData);
 };
 
-// DELETE
-
-export const deleteProject = async (project_id: string) => {
-  await fetch(`/api/service/project/${project_id}`, {
+// --- DELETE ---
+export const deleteProject = async (projectId: string): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/${projectId}`, {
     method: "DELETE",
   });
+  if (!response.ok) {
+    toast.error("프로젝트 삭제 중 오류가 발생했습니다.");
+    throw new Error("Failed to delete project");
+  }
+  toast.success("프로젝트가 삭제되었습니다.");
 };
 
-// 테스크
+// --- SUBMIT ---
+export const submitProject = async (projectId: string): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/${projectId}/submit`, { method: "POST" });
+  if (!response.ok) {
+    toast.error("프로젝트 제출 중 오류가 발생했습니다.");
+    throw new Error("Failed to submit project");
+  }
+  toast.success("프로젝트가 제출되었습니다.");
+};
 
-const tasksGetKeyFactory = ({ size, project_id }: { project_id: string; size?: string }): SWRInfiniteKeyLoader => {
-  return (index, previousPageData) => {
+export const cancelSubmitProject = async (projectId: string): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/${projectId}/submit/cancel`, { method: "POST" });
+  if (!response.ok) {
+    toast.error("제출 취소 중 오류가 발생했습니다.");
+    throw new Error("Failed to cancel project submission");
+  }
+  toast.success("프로젝트 제출이 취소되었습니다.");
+};
+
+// =================================================================
+// FILE API (Sub-resource of Project)
+// =================================================================
+
+// --- CREATE ---
+export const createFile = async (projectId: string, filePayload: Omit<ERPNextFile, "creation" | "modified">): Promise<ERPNextFile> => {
+  const response = await fetch(`${API_BASE_URL}/${projectId}/files`, {
+    method: "PUT", // API 라우터에 따라 PUT 사용
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(filePayload),
+  });
+
+  if (!response.ok) {
+    toast.error("파일 업로드 중 오류가 발생했습니다.");
+    throw new Error("Failed to upload file");
+  }
+
+  // API가 생성된 파일 객체를 반환한다고 가정
+  const responseData = await response.json();
+  return erpNextFileSchema.parse(responseData);
+};
+
+// --- READ (Single) ---
+export const useFile = (projectId: string | null, fileKey: string | null): SWRResponse<ERPNextFile> => {
+  const url = projectId && fileKey ? `${API_BASE_URL}/${projectId}/files/${fileKey}` : null;
+  return useSWR(url, async (url: string) => erpNextFileSchema.parse(await fetcher(url)));
+};
+
+// --- READ (List) ---
+const filesGetKeyFactory = (projectId: string): SWRInfiniteKeyLoader<ERPNextFilesResponse> => {
+  return (pageIndex, previousPageData) => {
+    if (!projectId) return null;
     if (previousPageData && !previousPageData.items.length) return null;
-
-    const params = new URLSearchParams();
-    params.append("page", `${index * Number(size || 20)}`);
-
-    if (size) params.append("size", size);
-
-    return `/api/service/project/${project_id}/tasks?${params.toString()}`;
+    return `${API_BASE_URL}/${projectId}/files?page=${pageIndex}`;
   };
 };
 
-const tasksFetcher = async (url: string) => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to load data");
-  const data = await res.json();
-  return ERPNextTaskPaginatedResponseZod.parse(data);
+export const useFiles = (projectId: string) => {
+  const getKey = filesGetKeyFactory(projectId);
+  return useSWRInfinite(getKey, async (url: string) => erpNextFilesResponseSchema.parse(await fetcher(url)));
 };
 
-export const useTasks = (size: string, project_id: string) => {
-  const getKey = tasksGetKeyFactory({ size, project_id });
-  return useSWRInfinite(getKey, tasksFetcher);
-};
-
-// 기능 추천
-
-const getEstimateFeatures = async ({
-  project_name,
-  project_summary,
-  readiness_level,
-  platforms,
-}: {
-  project_name: string;
-  project_summary: string;
-  readiness_level: string;
-  platforms: string[];
-}) => {
-  const params = new URLSearchParams();
-  params.append("project_name", project_name);
-  params.append("project_summary", project_summary);
-  params.append("readiness_level", readiness_level);
-  platforms.forEach((platform) => params.append("platforms", platform));
-
-  const url = `/api/service/project/estimate/feature?${params.toString()}`;
-
-  const response = await fetch(url, {
-    method: "GET",
+// --- DELETE ---
+export const deleteFile = async (projectId: string, fileKey: string): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/${projectId}/files/${fileKey}`, {
+    method: "DELETE",
   });
+  if (!response.ok) {
+    toast.error("파일 삭제 중 오류가 발생했습니다.");
+    throw new Error("Failed to delete file");
+  }
+  toast.success("파일이 삭제되었습니다.");
+};
 
+// =================================================================
+// TASK API (Sub-resource of Project)
+// =================================================================
+
+const tasksGetKeyFactory = (projectId: string, params: { size?: number; order_by?: string }): SWRInfiniteKeyLoader<ERPNextTaskPaginatedResponse> => {
+  return (pageIndex, previousPageData) => {
+    if (!projectId) return null;
+    if (previousPageData && !previousPageData.items.length) return null;
+
+    const searchParams = new URLSearchParams();
+    searchParams.append("page", `${pageIndex}`);
+    if (params.size) searchParams.append("size", `${params.size}`);
+    if (params.order_by) searchParams.append("order_by", params.order_by);
+
+    return `${API_BASE_URL}/${projectId}/tasks?${searchParams.toString()}`;
+  };
+};
+
+export const useTasks = (projectId: string, params: { size?: number; order_by?: string }) => {
+  const getKey = tasksGetKeyFactory(projectId, params);
+  return useSWRInfinite(getKey, async (url: string) => erpNextTaskPaginatedResponseSchema.parse(await fetcher(url)));
+};
+
+// =================================================================
+// ESTIMATE API
+// =================================================================
+
+// --- Feature Estimate (SWR 사용으로 리팩토링) ---
+const featureEstimateFetcher = async (url: string) => {
+  const response = await fetch(url);
   const ratelimit = parseInt(response.headers.get("x-ratelimit-remaining") ?? "0");
-  const retryAfter = parseInt(response.headers.get("Retry-After") ?? "0");
 
-  if (response.ok) {
-    const initalProject = await response.json();
-    const projectEstimateFeature = ProjectEstimateFeatureSchema.parse(initalProject);
-    toast.success(`${ratelimit}회 남았어요.`);
-    return { projectEstimateFeature, ratelimit, retryAfter };
-  } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
-    toast.error("API 호출에 실패했습니다.");
-  } else if (response.status === 429) {
-    toast.warning("API 한도를 초과했습니다.");
-  } else {
-    toast.error("API 호출에 실패했습니다.");
+  if (response.status === 429) {
+    toast.warning("API 호출 한도를 초과했습니다. 잠시 후 다시 시도해주세요.");
+    throw new Error("Rate limit exceeded");
+  }
+  if (!response.ok) {
+    toast.error("기능 추천 목록을 가져오는데 실패했습니다.");
+    throw new Error("Failed to fetch features");
   }
 
-  throw new Error("API 호출에 실패했습니다.");
+  const responseData = await response.json();
+  const parsedData = projectFeatureEstimateResponseSchema.parse(responseData);
+  toast.success(`기능 추천 완료! (남은 횟수: ${ratelimit}회)`);
+  return { data: parsedData, ratelimit };
 };
 
-export const useGetEstimateFeatures = ({
-  project_name,
-  project_summary,
-  readiness_level,
-  platforms,
-}: {
-  project_name: string;
-  project_summary: string;
-  readiness_level: string;
-  platforms: string[];
-}) => {
-  const [data, setData] = useState<ProjectEstimateFeatureSchemaType | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [ratelimit, setRatelimit] = useState(0);
-  const [retryAfter, setRetryAfter] = useState(0);
-
-  const fetchData = useCallback(async () => {
-    if (!project_name || !project_summary || !readiness_level || platforms.length === 0) {
-      setData(null);
-      setLoading(false);
-      setError(null);
-      setSuccess(false);
-      return;
+export const useGetEstimateFeatures = (params: ProjectFeatureEstimateRequest | null) => {
+  const getKey = () => {
+    if (!params || !params.project_name || !params.project_summary || params.platforms.length === 0) {
+      return null;
     }
+    const searchParams = new URLSearchParams({
+      project_name: params.project_name,
+      project_summary: params.project_summary,
+      readiness_level: params.readiness_level,
+    });
+    params.platforms.forEach((p) => searchParams.append("platforms", p));
+    return `${API_BASE_URL}/estimate/feature?${searchParams.toString()}`;
+  };
 
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
-    setData(null);
-
-    try {
-      const result = await getEstimateFeatures({ project_name, project_summary, readiness_level, platforms });
-      setData(result.projectEstimateFeature);
-      setRatelimit(result.ratelimit);
-      setRetryAfter(result.retryAfter);
-      setSuccess(true);
-    } catch {
-      setError("An unexpected error occurred");
-      setSuccess(false);
-    } finally {
-      setLoading(false);
-    }
-  }, [project_name, project_summary, platforms, readiness_level]);
-
-  useEffect(() => {
-    if (success || error) {
-      const timer = setTimeout(() => {
-        if (success) setSuccess(false);
-        if (error) setError(null);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [success, error]);
-
-  return { data, loading, error, success, ratelimit, retryAfter, fetchData };
+  return useSWR(getKey, featureEstimateFetcher, {
+    shouldRetryOnError: false, // 429 에러 발생 시 자동 재시도 방지
+  });
 };
 
-// 예상 견적 작성
-
-export const useEstimateProject = (project_id: string, _markdown: string) => {
-  const [ctrl, setCtrl] = useState<AbortController | null>(null);
+// --- Project Estimate (Streaming) ---
+export const useEstimateProject = (projectId: string | null, initialMarkdown: string = "") => {
+  const [markdown, setMarkdown] = useState<string>(initialMarkdown);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [markdown, setMarkdown] = useState<string>(_markdown);
-  const [lastMarkdown, setLastMarkdown] = useState<string>(_markdown);
-  const [remaining, setRemaining] = useState<number>(1);
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
 
-  const url = `/api/service/project/${project_id}/estimate`;
+  const startEstimate = useCallback(() => {
+    if (!projectId) return;
 
-  const estimate = () => {
-    const newCtrl = new AbortController();
-
+    const controller = new AbortController();
+    setAbortController(controller);
     setIsLoading(true);
-    setMarkdown("");
-    setCtrl(newCtrl);
+    setMarkdown(""); // 스트리밍 시작 시 내용 초기화
 
-    fetchEventSource(url, {
+    fetchEventSource(`${API_BASE_URL}/${projectId}/estimate`, {
       method: "GET",
-      signal: newCtrl.signal,
+      signal: controller.signal,
       openWhenHidden: true,
 
       onopen: async (response) => {
-        const ratelimit = parseInt(response.headers.get("x-ratelimit-remaining") ?? "1");
-        const retryAfter = parseInt(response.headers.get("Retry-After") ?? "0");
-        setRemaining(ratelimit);
-
         if (response.ok) {
-          toast.info("AI 견적이 생성 중 입니다.");
-        } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
-          toast.error("API 호출에 실패했습니다.");
-          newCtrl.abort();
-        } else if (response.status === 429) {
-          toast.warning(`${format(Date.now() + retryAfter * 1000, "yyyy-MM-dd:HH:mm:ss")} 부터 사용 가능합니다.`);
-          newCtrl.abort();
+          toast.info("AI 견적 생성을 시작합니다.");
+          return;
+        }
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get("Retry-After") ?? "0");
+          toast.warning(`API 한도 초과. ${retryAfter}초 후에 다시 시도하세요.`);
         } else {
-          toast.error("API 호출에 실패했습니다.");
-          newCtrl.abort();
+          toast.error(`견적 생성 실패: ${response.statusText}`);
         }
-
-        if (!response.ok) {
-          setMarkdown(lastMarkdown);
-          setIsLoading(false);
-        }
+        controller.abort(); // 에러 발생 시 스트림 중단
       },
       onmessage: (event: EventSourceMessage) => {
-        if (event.data === "") {
-          setMarkdown((prev) => prev + "\n");
-        } else {
-          setMarkdown((prev) => prev + event.data);
+        if (event.event === "stream_done") {
+          controller.abort(); // 서버에서 종료 신호를 보내면 연결을 중단
+          return;
         }
+        setMarkdown((prev) => prev + (event.data === "" ? "\n" : event.data));
       },
       onclose: () => {
         setIsLoading(false);
-        setLastMarkdown(markdown);
-        setCtrl(null);
+        setAbortController(null);
+        toast.success("AI 견적이 완료되었습니다.");
       },
       onerror: (err) => {
-        if (err instanceof TypeError && err.message === "Failed to fetch") {
-          toast("네트워크 오류로 견적을 생성할 수 없습니다.");
-        } else {
-          toast("AI 견적 생성 중 오류가 발생했습니다.");
-        }
         setIsLoading(false);
-        newCtrl.abort();
-        setCtrl(null);
-
-        throw err;
+        setAbortController(null);
+        if (err.name !== "AbortError") {
+          toast.error("견적 생성 중 알 수 없는 오류가 발생했습니다.");
+          throw err;
+        }
       },
     });
-  };
+  }, [projectId]);
 
-  return { ctrl, setCtrl, isLoading, markdown, remaining, estimate };
+  const stopEstimate = useCallback(() => {
+    if (abortController) {
+      abortController.abort();
+      toast.info("견적 생성을 중단했습니다.");
+    }
+  }, [abortController]);
+
+  return { markdown, isLoading, startEstimate, stopEstimate };
 };

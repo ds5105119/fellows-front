@@ -4,11 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShineBorder } from "@/components/magicui/shine-border";
 import { Session } from "next-auth";
-import { ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/project";
+import { erpNextProjectSchema, ERPNextProject } from "@/@types/service/project";
 import ProjectDetailMain from "@/components/section/service/project/detail/projectdetailmain";
 import ProjectEstimator from "@/components/section/service/project/detail/projectestimator";
 
-const getProject = async ({ project_id, session }: { project_id: string; session: Session }): Promise<ERPNextProjectType> => {
+const getProject = async ({ project_id, session }: { project_id: string; session: Session }): Promise<ERPNextProject> => {
   const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}`;
 
   try {
@@ -28,7 +28,7 @@ const getProject = async ({ project_id, session }: { project_id: string; session
     }
 
     const responseData = await response.json();
-    const parsedData = ERPNextProjectZod.parse(responseData);
+    const parsedData = erpNextProjectSchema.parse(responseData);
 
     return parsedData;
   } catch (error) {

@@ -1,261 +1,312 @@
+// zodSchemas.ts
 import { z } from "zod";
 
 // --- Enums ---
 
-export const PlatformEnumZod = z.enum(["web", "android", "ios"]);
-export type PlatformEnumType = z.infer<typeof PlatformEnumZod>;
+export const platformEnum = z.enum(["web", "android", "ios"]);
+export const readinessLevelEnum = z.enum(["idea", "requirements", "wireframe"]);
+export const erpNextProjectStatusEnum = z.enum(["Open", "Completed", "Cancelled"]);
+export const customProjectStatusEnum = z.enum(["draft", "process:1", "process:2", "complete", "maintenance"]);
+export const isActiveEnum = z.enum(["Yes", "No"]);
+export const percentCompleteMethodEnum = z.enum(["Manual", "Task Completion", "Task Progress", "Task Weight"]);
+export const priorityEnum = z.enum(["Medium", "Low", "High"]);
+export const erpNextTaskStatusEnum = z.enum(["Open", "Working", "Pending Review", "Overdue", "Template", "Completed", "Cancelled"]);
+export const erpNextTaskPriorityEnum = z.enum(["Low", "Medium", "High", "Urgent"]);
+export const erpNextToDoStatusEnum = z.enum(["Open", "Closed", "Cancelled"]);
+export const erpNextToDoPriorityEnum = z.enum(["High", "Medium", "Low"]);
 
-export const ReadinessLevelEnumZod = z.enum(["idea", "requirements", "wireframe"]);
-export type ReadinessLevelEnumType = z.infer<typeof ReadinessLevelEnumZod>;
+// --- Child Table Models for ERPNext ---
 
-export const ERPNextProjectStatusEnumZod = z.enum(["Open", "Completed", "Cancelled"]);
-export type ERPNextProjectStatusEnumType = z.infer<typeof ERPNextProjectStatusEnumZod>;
-
-export const CustomProjectStatusEnumZod = z.enum(["draft", "process:1", "process:2", "complete", "maintenance"]);
-export type CustomProjectStatusEnumType = z.infer<typeof CustomProjectStatusEnumZod>;
-
-export const IsActiveEnumZod = z.enum(["Yes", "No"]);
-export type IsActiveEnumType = z.infer<typeof IsActiveEnumZod>;
-
-export const PercentCompleteMethodEnumZod = z.enum(["Manual", "Task Completion", "Task Progress", "Task Weight"]);
-export type PercentCompleteMethodEnumType = z.infer<typeof PercentCompleteMethodEnumZod>;
-
-export const PriorityEnumZod = z.enum(["Medium", "Low", "High"]);
-export type PriorityEnumType = z.infer<typeof PriorityEnumZod>;
-
-export const ERPNextTaskStatusEnumZod = z.enum(["Open", "Working", "Pending Review", "Overdue", "Template", "Completed", "Cancelled"]);
-export type ERPNextTaskStatusEnumType = z.infer<typeof ERPNextTaskStatusEnumZod>;
-
-export const ERPNextTaskPriorityEnumZod = z.enum(["Low", "Medium", "High", "Urgent"]);
-export type ERPNextTaskPriorityEnumType = z.infer<typeof ERPNextTaskPriorityEnumZod>;
-
-export const ERPNextToDoStatusEnumZod = z.enum(["Open", "Closed", "Cancelled"]);
-export type ERPNextToDoStatusEnumType = z.infer<typeof ERPNextToDoStatusEnumZod>;
-
-export const ERPNextToDoPriorityEnumZod = z.enum(["High", "Medium", "Low"]);
-export type ERPNextToDoPriorityEnumType = z.infer<typeof ERPNextToDoPriorityEnumZod>;
-
-// --- Child Table Zod Schemas for ERPNext ---
-
-export const ERPNextProjectPlatformRowZod = z.object({
-  doctype: z.string().default("Platforms"),
-  platform: z.string(),
-});
-export type ERPNextProjectPlatformRowType = z.infer<typeof ERPNextProjectPlatformRowZod>;
-
-export const ERPNextProjectFeatureRowZod = z.object({
-  doctype: z.string().default("Features"),
-  feature: z.string(),
-});
-export type ERPNextProjectFeatureRowType = z.infer<typeof ERPNextProjectFeatureRowZod>;
-
-export const ERPNextProjectPreferredTechStackRowZod = z.object({
-  doctype: z.string().default("Preferred Tech Stack"),
-  stack: z.string(),
-});
-export type ERPNextProjectPreferredTechStackRowType = z.infer<typeof ERPNextProjectPreferredTechStackRowZod>;
-
-export const ERPNextProjectDesignUrlRowZod = z.object({
-  doctype: z.string().default("Project Design Url"),
-  url: z.string(),
-});
-export type ERPNextProjectDesignUrlRowType = z.infer<typeof ERPNextProjectDesignUrlRowZod>;
-
-export const ERPNextProjectFileRowZod = z.object({
-  creation: z
-    .string()
-    .nullish()
-    .transform((val) => (val ? new Date(val) : null)),
-  modified: z
-    .string()
-    .nullish()
-    .transform((val) => (val ? new Date(val) : null)),
-
-  doctype: z.string().default("Files"),
-  key: z.string(),
-  file_name: z.string(),
-  algorithm: z.string().default("AES256"),
-  sse_key: z.string(),
-  uploader: z.string(),
-});
-export type ERPNextProjectFileRowType = z.infer<typeof ERPNextProjectFileRowZod>;
-
-export const ERPNextProjectUserRowZod = z.object({
-  doctype: z.string().default("Project User"),
-  user: z.string(),
-  welcome_email_sent: z.boolean().nullish().default(false),
-});
-export type ERPNextProjectUserRowType = z.infer<typeof ERPNextProjectUserRowZod>;
-
-// --- Task and ToDo Zod Schemas ---
-
-export const ERPNextTaskDependsOnRowZod = z
+export const erpNextProjectPlatformRowSchema = z
   .object({
-    doctype: z.string().default("Task Depends On"),
+    doctype: z.string().optional().nullable().default("Platforms"),
+    platform: z.string(),
+  })
+  .passthrough();
+export type ERPNextProjectPlatformRow = z.infer<typeof erpNextProjectPlatformRowSchema>;
+
+export const erpNextProjectFeatureRowSchema = z
+  .object({
+    doctype: z.string().optional().nullable().default("Features"),
+    feature: z.string(),
+  })
+  .passthrough();
+export type ERPNextProjectFeatureRow = z.infer<typeof erpNextProjectFeatureRowSchema>;
+
+export const erpNextProjectPreferredTechStackRowSchema = z
+  .object({
+    doctype: z.string().optional().nullable().default("Preferred Tech Stack"),
+    stack: z.string(),
+  })
+  .passthrough();
+export type ERPNextProjectPreferredTechStackRow = z.infer<typeof erpNextProjectPreferredTechStackRowSchema>;
+
+export const erpNextProjectDesignUrlRowSchema = z
+  .object({
+    doctype: z.string().optional().nullable().default("Project Design Url"),
+    url: z.string().url(),
+  })
+  .passthrough();
+export type ERPNextProjectDesignUrlRow = z.infer<typeof erpNextProjectDesignUrlRowSchema>;
+
+export const erpNextProjectUserRowSchema = z
+  .object({
+    doctype: z.string().optional().nullable().default("Project User"),
+    user: z.string(),
+    welcome_email_sent: z.boolean().optional().nullable().default(false),
+  })
+  .passthrough();
+export type ERPNextProjectUserRow = z.infer<typeof erpNextProjectUserRowSchema>;
+
+// --- Main Project Model ---
+
+export const erpNextProjectSchema = z
+  .object({
+    creation: z.coerce.date().optional().nullable(),
+    modified: z.coerce.date().optional().nullable(),
+    naming_series: z.string().default("PROJ-.####"),
+    project_name: z.string(),
+    status: erpNextProjectStatusEnum.optional().nullable().default("Open"),
+    project_type: z.string().optional().nullable(),
+    is_active: isActiveEnum.optional().nullable(),
+    percent_complete_method: percentCompleteMethodEnum.optional().nullable().default("Task Completion"),
+    percent_complete: z.number().optional().nullable(),
+    custom_deletable: z.boolean().optional().nullable().default(true),
+    project_template: z.string().optional().nullable(),
+    expected_start_date: z.coerce.date().optional().nullable(),
+    expected_end_date: z.coerce.date().optional().nullable(),
+    actual_start_date: z.coerce.date().optional().nullable(),
+    actual_end_date: z.coerce.date().optional().nullable(),
+    actual_time: z.number().optional().nullable(),
+    priority: priorityEnum.optional().nullable(),
+    department: z.string().optional().nullable(),
+    custom_project_title: z.string().optional().nullable(),
+    custom_project_summary: z.string().optional().nullable(),
+    custom_project_status: customProjectStatusEnum.optional().nullable().default("draft"),
+    custom_ai_estimate: z.string().optional().nullable(),
+    custom_emoji: z.string().optional().nullable(),
+    custom_readiness_level: readinessLevelEnum.optional().nullable(),
+    custom_content_pages: z.number().int().optional().nullable(),
+    custom_maintenance_required: z.boolean().optional().nullable().default(false),
+    custom_sub: z.string().optional().nullable(),
+    custom_platforms: z.array(erpNextProjectPlatformRowSchema).optional().nullable().default([]),
+    custom_features: z.array(erpNextProjectFeatureRowSchema).optional().nullable().default([]),
+    custom_preferred_tech_stacks: z.array(erpNextProjectPreferredTechStackRowSchema).optional().nullable().default([]),
+    custom_design_urls: z.array(erpNextProjectDesignUrlRowSchema).optional().nullable().default([]),
+    estimated_costing: z.number().optional().nullable(),
+    total_costing_amount: z.number().optional().nullable(),
+    total_expense_claim: z.number().optional().nullable(),
+    total_purchase_cost: z.number().optional().nullable(),
+    company: z.string().default("Fellows"),
+    cost_center: z.string().optional().nullable(),
+    total_sales_amount: z.number().optional().nullable(),
+    total_billable_amount: z.number().optional().nullable(),
+    total_billed_amount: z.number().optional().nullable(),
+    total_consumed_material_cost: z.number().optional().nullable(),
+    gross_margin: z.number().optional().nullable(),
+    per_gross_margin: z.number().optional().nullable(),
+    users: z.array(erpNextProjectUserRowSchema).optional().nullable().default([]),
+  })
+  .passthrough();
+export type ERPNextProject = z.infer<typeof erpNextProjectSchema>;
+
+export const userERPNextProjectSchema = z
+  .object({
+    custom_project_title: z.string(),
+    custom_project_summary: z.string(),
+    custom_readiness_level: readinessLevelEnum,
+    expected_start_date: z.coerce.date().optional().nullable(),
+    expected_end_date: z.coerce.date().optional().nullable(),
+    custom_content_pages: z.number().int().optional().nullable(),
+    custom_maintenance_required: z.boolean().optional().nullable().default(false),
+    custom_project_status: customProjectStatusEnum.optional().nullable().default("draft"),
+    custom_platforms: z.array(erpNextProjectPlatformRowSchema).default([]),
+    custom_features: z.array(erpNextProjectFeatureRowSchema).optional().nullable().default([]),
+    custom_preferred_tech_stacks: z.array(erpNextProjectPreferredTechStackRowSchema).optional().nullable().default([]),
+    custom_design_urls: z.array(erpNextProjectDesignUrlRowSchema).optional().nullable().default([]),
+  })
+  .passthrough();
+export type UserERPNextProject = z.infer<typeof userERPNextProjectSchema>;
+
+export const updateERPNextProjectSchema = z
+  .object({
+    custom_project_title: z.string().optional().nullable(),
+    custom_project_summary: z.string().optional().nullable(),
+    custom_readiness_level: readinessLevelEnum.optional().nullable(),
+    is_active: isActiveEnum.optional().nullable(),
+    expected_start_date: z.coerce.date().optional().nullable(),
+    expected_end_date: z.coerce.date().optional().nullable(),
+    custom_content_pages: z.number().int().optional().nullable(),
+    custom_maintenance_required: z.boolean().optional().nullable(),
+    custom_project_status: customProjectStatusEnum.optional().nullable(),
+    custom_platforms: z.array(erpNextProjectPlatformRowSchema).optional().default([]),
+    custom_features: z.array(erpNextProjectFeatureRowSchema).optional().nullable().default([]),
+    custom_preferred_tech_stacks: z.array(erpNextProjectPreferredTechStackRowSchema).optional().nullable().default([]),
+    custom_design_urls: z.array(erpNextProjectDesignUrlRowSchema).optional().nullable().default([]),
+  })
+  .passthrough();
+export type UpdateERPNextProject = z.infer<typeof updateERPNextProjectSchema>;
+
+export const erpNextProjectsRequestSchema = z.object({
+  page: z.number().int().nonnegative().default(0),
+  size: z.number().int().min(1).max(20).default(10),
+  keyword: z.string().optional().nullable(),
+  order_by: z.string().default("modified"),
+  status: z.string().optional().nullable(),
+});
+export type ERPNextProjectsRequest = z.infer<typeof erpNextProjectsRequestSchema>;
+
+export const projectsPaginatedResponseSchema = z.object({
+  items: z.array(erpNextProjectSchema),
+});
+export type ProjectsPaginatedResponse = z.infer<typeof projectsPaginatedResponseSchema>;
+
+// --- Task Models ---
+
+export const erpNextTaskDependsOnRowSchema = z
+  .object({
+    doctype: z.string().optional().nullable().default("Task Depends On"),
     task: z.string(),
   })
   .passthrough();
-export type ERPNextTaskDependsOnRowType = z.infer<typeof ERPNextTaskDependsOnRowZod>;
+export type ERPNextTaskDependsOnRow = z.infer<typeof erpNextTaskDependsOnRowSchema>;
 
-export const ERPNextTaskRequestZod = z
+export const erpNextTaskRequestSchema = z
   .object({
     subject: z.string(),
-    project: z.string().nullish(),
-    depends_on: z.array(ERPNextTaskDependsOnRowZod).nullish().default([]),
+    project: z.string().optional().nullable(),
+    depends_on: z.array(erpNextTaskDependsOnRowSchema).optional().nullable().default([]),
   })
   .passthrough();
-export type ERPNextTaskRequestType = z.infer<typeof ERPNextTaskRequestZod>;
+export type ERPNextTaskRequest = z.infer<typeof erpNextTaskRequestSchema>;
 
-export const ERPNextTaskZod = z
+export const erpNextTaskSchema = z
   .object({
     subject: z.string(),
     project: z.string(),
-    color: z.string().nullish(),
-    status: ERPNextTaskStatusEnumZod.nullish(),
-    exp_start_date: z.coerce.date().nullish(),
-    expected_time: z.number().nullish().default(0.0),
-    exp_end_date: z.coerce.date().nullish(),
-    progress: z.number().default(0.0),
-    description: z.string().nullish(),
-    closing_date: z.coerce.date().nullish(),
+    issue: z.string().optional().nullable(),
+    type: z.string().optional().nullable(),
+    color: z.string().optional().nullable(),
+    is_group: z.boolean().default(false),
+    is_template: z.boolean().default(false),
+    custom_is_user_visible: z.boolean().default(false),
+    custom_sub: z.string().optional().nullable(),
+    status: erpNextTaskStatusEnum.optional().nullable(),
+    priority: erpNextTaskPriorityEnum.optional().nullable(),
+    task_weight: z.number().optional().nullable(),
+    parent_task: z.string().optional().nullable(),
+    completed_by: z.string().optional().nullable(),
+    completed_on: z.coerce.date().optional().nullable(),
+    exp_start_date: z.coerce.date().optional().nullable(),
+    expected_time: z.number().default(0.0),
+    start: z.number().int().optional().nullable(),
+    exp_end_date: z.coerce.date().optional().nullable(),
+    progress: z.number().optional().nullable(),
+    duration: z.number().int().optional().nullable(),
+    is_milestone: z.boolean().default(false),
+    description: z.string().optional().nullable(),
+    depends_on: z.array(erpNextTaskDependsOnRowSchema).optional().nullable().default([]),
+    review_date: z.coerce.date().optional().nullable(),
+    closing_date: z.coerce.date().optional().nullable(),
+    department: z.string().optional().nullable(),
+    company: z.string().optional().nullable(),
   })
   .passthrough();
-export type ERPNextTaskType = z.infer<typeof ERPNextTaskZod>;
+export type ERPNextTask = z.infer<typeof erpNextTaskSchema>;
 
-// ERPNextTaskForUser is identical to ERPNextTask in this Pydantic structure
-export const ERPNextTaskForUserZod = ERPNextTaskZod.extend({}); // Or define separately if they diverge
-export type ERPNextTaskForUserType = z.infer<typeof ERPNextTaskForUserZod>;
-
-export const ERPNextTaskPaginatedResponseZod = z.object({
-  items: z.array(ERPNextTaskForUserZod),
-});
-export type ERPNextTaskPaginatedResponseType = z.infer<typeof ERPNextTaskPaginatedResponseZod>;
-
-export const ERPNextToDoZod = z
+export const erpNextTaskForUserSchema = z
   .object({
-    status: ERPNextToDoStatusEnumZod.default(ERPNextToDoStatusEnumZod.Enum.Open),
-    priority: ERPNextToDoPriorityEnumZod.default(ERPNextToDoPriorityEnumZod.Enum.Medium),
-    color: z.string().nullish(),
-    date: z.coerce.date().nullish(),
-    allocated_to: z.string().nullish(),
-    description: z.string(),
-    reference_type: z.string().nullish(),
-    reference_name: z.string().nullish(),
-    role: z.string().nullish(),
-    assigned_by: z.string().nullish(),
+    name: z.string(),
+    subject: z.string(),
+    project: z.string(),
+    color: z.string().optional().nullable(),
+    status: erpNextTaskStatusEnum.optional().nullable(),
+    exp_start_date: z.coerce.date().optional().nullable(),
+    expected_time: z.number().default(0.0),
+    exp_end_date: z.coerce.date().optional().nullable(),
+    progress: z.number().default(0.0),
+    description: z.string().optional().nullable(),
+    closing_date: z.coerce.date().optional().nullable(),
   })
   .passthrough();
-export type ERPNextToDoType = z.infer<typeof ERPNextToDoZod>;
+export type ERPNextTaskForUser = z.infer<typeof erpNextTaskForUserSchema>;
 
-// --- Main Project Zod Schema ---
+export const projectTaskRequestSchema = z
+  .object({
+    page: z.number().int().nonnegative().default(0),
+    size: z.number().int().min(0).max(100).default(20),
+    order_by: z.string().default("modified"),
+  })
+  .passthrough();
+export type ProjectTaskRequest = z.infer<typeof projectTaskRequestSchema>;
 
-export const ERPNextProjectZod = z.object({
-  creation: z
-    .string()
-    .nullish()
-    .transform((val) => (val ? new Date(val) : null)),
-  modified: z
-    .string()
-    .nullish()
-    .transform((val) => (val ? new Date(val) : null)),
-
-  naming_series: z.string().nullish().default("PROJ-.####"),
-  project_name: z.string(),
-  status: ERPNextProjectStatusEnumZod.nullish().default(ERPNextProjectStatusEnumZod.Enum.Open),
-  project_type: z.string().nullish(),
-  is_active: IsActiveEnumZod.nullish(),
-  percent_complete_method: PercentCompleteMethodEnumZod.nullish().default(PercentCompleteMethodEnumZod.Enum["Task Completion"]),
-  percent_complete: z.number().nullish(),
-  custom_deletable: z.boolean().nullish().default(true),
-  tasks: z.array(ERPNextTaskZod).nullish().default([]),
-
-  project_template: z.string().nullish(),
-  expected_start_date: z.coerce.date().nullish(),
-  expected_end_date: z.coerce.date().nullish(),
-  actual_start_date: z.coerce.date().nullish(),
-  actual_end_date: z.coerce.date().nullish(),
-  actual_time: z.number().nullish(),
-
-  priority: PriorityEnumZod.nullish(),
-  department: z.string().nullish(),
-
-  custom_project_title: z.string().nullish(),
-  custom_project_summary: z.string().nullish(),
-  custom_project_status: CustomProjectStatusEnumZod.nullish().default(CustomProjectStatusEnumZod.Enum.draft),
-  custom_ai_estimate: z.string().nullish(),
-  custom_emoji: z.string().nullish(),
-  custom_design_requirements: z.string().nullish(),
-  custom_readiness_level: ReadinessLevelEnumZod.nullish(),
-  custom_content_pages: z.number().int().nullish(),
-  custom_maintenance_required: z.boolean().nullish().default(false),
-
-  custom_sub: z.string().nullish(),
-  custom_platforms: z.array(ERPNextProjectPlatformRowZod).nullish().default([]),
-  custom_files: z.array(ERPNextProjectFileRowZod).nullish().default([]),
-  custom_features: z.array(ERPNextProjectFeatureRowZod).nullish().default([]),
-  custom_preferred_tech_stacks: z.array(ERPNextProjectPreferredTechStackRowZod).nullish().default([]),
-  custom_design_urls: z.array(ERPNextProjectDesignUrlRowZod).nullish().default([]),
-
-  estimated_costing: z.number().nullish(),
-  total_costing_amount: z.number().nullish(),
-  total_expense_claim: z.number().nullish(),
-  total_purchase_cost: z.number().nullish(),
-  company: z.string().default("Fellows"),
-  cost_center: z.string().nullish(),
-
-  total_sales_amount: z.number().nullish(),
-  total_billable_amount: z.number().nullish(),
-  total_billed_amount: z.number().nullish(),
-  total_consumed_material_cost: z.number().nullish(),
-
-  gross_margin: z.number().nullish(),
-  per_gross_margin: z.number().nullish(),
-
-  users: z.array(ERPNextProjectUserRowZod).nullish().default([]),
+export const erpNextTaskPaginatedResponseSchema = z.object({
+  items: z.array(erpNextTaskForUserSchema),
 });
-export type ERPNextProjectType = z.infer<typeof ERPNextProjectZod>;
+export type ERPNextTaskPaginatedResponse = z.infer<typeof erpNextTaskPaginatedResponseSchema>;
 
-export const ERPNextProjectPageSchema = z.object({
-  items: z.array(ERPNextProjectZod),
-});
-export type ERPNextProjectPageType = z.infer<typeof ERPNextProjectPageSchema>;
+export const erpNextToDoSchema = z
+  .object({
+    status: erpNextToDoStatusEnum.default("Open"),
+    priority: erpNextToDoPriorityEnum.default("Medium"),
+    color: z.string().optional().nullable(),
+    date: z.coerce.date().optional().nullable(),
+    allocated_to: z.string().optional().nullable(),
+    description: z.string(),
+    reference_type: z.string().optional().nullable(),
+    reference_name: z.string().optional().nullable(),
+    role: z.string().optional().nullable(),
+    assigned_by: z.string().optional().nullable(),
+  })
+  .passthrough();
+export type ERPNextToDo = z.infer<typeof erpNextToDoSchema>;
 
-export const UserERPNextProjectZod = z.object({
-  custom_project_title: z.string(),
-  custom_project_summary: z.string(),
-  custom_readiness_level: ReadinessLevelEnumZod.default(ReadinessLevelEnumZod.Enum.idea),
+// --- File Models ---
 
-  expected_start_date: z.string().nullish(),
-  expected_end_date: z.string().nullish(),
+export const erpNextFileSchema = z
+  .object({
+    doctype: z.string().optional().nullable().default("Files"),
+    creation: z.coerce.date().optional().nullable(),
+    modified: z.coerce.date().optional().nullable(),
+    file_name: z.string(),
+    key: z.string(),
+    uploader: z.string(),
+    algorithm: z.string().default("AES256"),
+    sse_key: z.string().optional().nullable(),
+    project: z.string().optional().nullable(),
+    task: z.string().optional().nullable(),
+    issue: z.string().optional().nullable(),
+  })
+  .passthrough();
+export type ERPNextFile = z.infer<typeof erpNextFileSchema>;
 
-  custom_content_pages: z.number().int().nullish(),
-  custom_maintenance_required: z.boolean().nullish().default(false),
-
-  custom_platforms: z.array(ERPNextProjectPlatformRowZod).nullish().default([]),
-  custom_files: z.array(ERPNextProjectFileRowZod).nullish().default([]),
-  custom_features: z.array(ERPNextProjectFeatureRowZod).nullish().default([]),
-  custom_preferred_tech_stacks: z.array(ERPNextProjectPreferredTechStackRowZod).nullish().default([]),
-  custom_design_urls: z.array(ERPNextProjectDesignUrlRowZod).nullish().default([]),
-});
-export type UserERPNextProjectType = z.infer<typeof UserERPNextProjectZod>;
-
-export const ProjectsRequestZod = z.object({
+export const erpNextFileRequestSchema = z.object({
   page: z.number().int().nonnegative().default(0),
-  size: z.number().int().min(1).max(20).default(10),
-  keyword: z.string().nullish(),
-  order_by: z.string().default("updated_at"),
-  status: z.string().nullish(),
+  size: z.number().int().min(0).max(100).default(20),
+  order_by: z.string().default("modified"),
+  task: z.string().optional().nullable(),
+  issue: z.string().optional().nullable(),
 });
-export type ProjectsRequestType = z.infer<typeof ProjectsRequestZod>;
+export type ERPNextFileRequest = z.infer<typeof erpNextFileRequestSchema>;
 
-export const ProjectsPaginatedResponseZod = z.object({
-  total: z.number().int(),
-  items: z.array(ERPNextProjectZod),
+// Note: The Pydantic model for ERPNextFilesResponse was likely a typo.
+// A response should contain a list of file objects (ERPNextFile), not a list of request objects.
+export const erpNextFilesResponseSchema = z.object({
+  items: z.array(erpNextFileSchema),
 });
-export type ProjectsPaginatedResponseType = z.infer<typeof ProjectsPaginatedResponseZod>;
+export type ERPNextFilesResponse = z.infer<typeof erpNextFilesResponseSchema>;
 
-export const ProjectEstimateFeatureSchema = z.object({
+// --- Estimate Models ---
+
+export const projectFeatureEstimateRequestSchema = z.object({
+  project_name: z.string(),
+  project_summary: z.string(),
+  readiness_level: readinessLevelEnum,
+  platforms: z.array(platformEnum),
+});
+export type ProjectFeatureEstimateRequest = z.infer<typeof projectFeatureEstimateRequestSchema>;
+
+export const projectFeatureEstimateResponseSchema = z.object({
   feature_list: z.array(z.string()),
 });
-
-export type ProjectEstimateFeatureSchemaType = z.infer<typeof ProjectEstimateFeatureSchema>;
+export type ProjectFeatureEstimateResponse = z.infer<typeof projectFeatureEstimateResponseSchema>;

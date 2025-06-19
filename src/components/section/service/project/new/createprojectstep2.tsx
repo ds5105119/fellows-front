@@ -4,7 +4,7 @@ import { UseFormReturn } from "react-hook-form";
 import { FormField, FormItem, FormMessage, FormLabel, FormControl } from "@/components/ui/form";
 import { categorizedFeatures } from "@/components/resource/project";
 import { FeatureItemWithTooltip } from "@/components/form/featureitemwithtooltip";
-import { UserERPNextProjectType } from "@/@types/service/project";
+import { UserERPNextProject } from "@/@types/service/project";
 import { SwitchIndicator } from "@/components/ui/switch-indicator";
 import FileInput from "@/components/form/fileinput";
 import DatePickerWithRange from "@/components/form/datepickerwithrange";
@@ -18,7 +18,7 @@ dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
 interface CreateProjectFormStep2Props {
-  form: UseFormReturn<UserERPNextProjectType>;
+  form: UseFormReturn<UserERPNextProject>;
 }
 
 export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2Props) {
@@ -116,18 +116,15 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                     }}
                     onSelect={(range) => {
                       const prevStartDateString = getValues("expected_start_date") || undefined;
-                      const newStartDateString =
-                        range?.from instanceof Date && !isNaN(range.from.getTime()) ? dayjs(range.from).format("YYYY-MM-DD") : undefined;
-                      const newDesiredDeadlineString =
-                        range?.to instanceof Date && !isNaN(range.to.getTime()) ? dayjs(range.to).format("YYYY-MM-DD") : undefined;
-
-                      setValue("expected_start_date", newStartDateString, {
+                      const newStartDateString = range?.from;
+                      const newDesiredDeadlineString = range?.to;
+                      setValue("expected_start_date", range?.from, {
                         shouldValidate: true,
                         shouldDirty: true,
                       });
 
                       if (prevStartDateString == newDesiredDeadlineString || newStartDateString == newDesiredDeadlineString) {
-                        setValue("expected_end_date", undefined, {
+                        setValue("expected_end_date", newStartDateString, {
                           shouldValidate: true,
                           shouldDirty: true,
                         });

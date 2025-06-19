@@ -1,4 +1,4 @@
-import { UserERPNextProjectType } from "@/@types/service/project";
+import { UserERPNextProject } from "@/@types/service/project";
 
 export const categorizedFeatures = [
   {
@@ -77,8 +77,8 @@ export const stepsMeta: {
   number: number;
   title: string;
   description: string;
-  fields: (keyof UserERPNextProjectType)[];
-  uiRequiredFields?: (keyof UserERPNextProjectType)[];
+  fields: (keyof UserERPNextProject)[];
+  uiRequiredFields?: (keyof UserERPNextProject)[];
 }[] = [
   {
     number: 1,
@@ -100,4 +100,4 @@ export const stepsMeta: {
       "custom_maintenance_required",
     ],
   },
-] as const;
+];

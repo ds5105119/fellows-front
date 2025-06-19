@@ -4,11 +4,11 @@ import BreathingSparkles from "@/components/resource/breathingsparkles";
 import MarkdownPreview from "@/components/ui/markdownpreview";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { ERPNextProjectType } from "@/@types/service/project";
+import { ERPNextProject } from "@/@types/service/project";
 import { useEstimateProject } from "@/hooks/fetch/project";
 
 interface Props {
-  project: ERPNextProjectType;
+  project: ERPNextProject;
 }
 
 export default function ProjectEstimator({ project }: Props) {

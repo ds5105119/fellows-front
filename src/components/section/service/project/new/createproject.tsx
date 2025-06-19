@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -10,7 +12,13 @@ import { useRouter } from "next/navigation";
 import { createProject, useGetEstimateFeatures } from "@/hooks/fetch/project";
 import { stepsMeta } from "@/components/resource/project";
 import { useInView } from "framer-motion";
-import { UserERPNextProjectType, UserERPNextProjectZod, ERPNextProjectType } from "@/@types/service/project";
+import {
+  type UserERPNextProject,
+  userERPNextProjectSchema,
+  type ERPNextProject,
+  type ProjectFeatureEstimateRequest,
+  platformEnum,
+} from "@/@types/service/project";
 import { CheckIcon } from "lucide-react";
 import AIRecommendSkeleton from "@/components/skeleton/airecommendskeleton";
 import CreateProjectFormStep1 from "./createprojectstep1";
@@ -19,12 +27,26 @@ import CreateProjectSide from "./createprojectside";
 
 export default function CreateProject() {
   const router = useRouter();
-  const initalProjectInfo = UserERPNextProjectZod.parse({ custom_project_title: "", custom_project_summary: "" });
-  const form = useForm<UserERPNextProjectType>({
-    resolver: zodResolver(UserERPNextProjectZod),
-    defaultValues: initalProjectInfo,
+
+  // Initialize with proper Zod parsing
+  const initialProjectInfo = userERPNextProjectSchema.parse({
+    custom_project_title: "",
+    custom_project_summary: "",
+    custom_readiness_level: "idea",
+    custom_platforms: [],
+    custom_features: [],
+    custom_preferred_tech_stacks: [],
+    custom_design_urls: [],
+    custom_maintenance_required: false,
+    custom_project_status: "draft",
+  });
+
+  const form = useForm<UserERPNextProject>({
+    resolver: zodResolver(userERPNextProjectSchema),
+    defaultValues: initialProjectInfo,
     mode: "onChange",
   });
+
   const {
     setValue,
     reset,
@@ -44,13 +66,16 @@ export default function CreateProject() {
   const totalSteps = stepsMeta.length;
   const currentStepMeta = useMemo(() => stepsMeta[currentStep - 1], [currentStep]);
   const currentStepFields = useMemo(() => currentStepMeta?.fields || [], [currentStepMeta]);
-  const watchedCurrentStepFields = useWatch({ name: currentStepFields, control: form.control });
+  const watchedCurrentStepFields = useWatch({
+    name: currentStepFields as string[],
+    control: form.control,
+  });
 
-  // 페이지 로드/단계 변경 시 유효성 검사
+  // Page load/step change validation
   useEffect(() => {
     const validateCurrentStepOnLoad = async () => {
       if (currentStepFields.length > 0) {
-        await trigger(currentStepFields, { shouldFocus: false });
+        await trigger(currentStepFields as string[], { shouldFocus: false });
       }
     };
     if (form.formState.isReady) {
@@ -58,7 +83,7 @@ export default function CreateProject() {
     }
   }, [currentStep, currentStepFields, trigger, form.formState.isReady]);
 
-  // isStepping 상태 관리 (스텝 변경 애니메이션 후 상태 복구, 고도화 가능)
+  // isStepping state management
   useEffect(() => {
     if (isStepping) {
       requestAnimationFrame(() => {
@@ -83,7 +108,7 @@ export default function CreateProject() {
     });
   };
 
-  // 다음
+  // Next step handler
   const handleNext = async (event?: React.MouseEvent<HTMLButtonElement>) => {
     event?.preventDefault();
     event?.stopPropagation();
@@ -92,11 +117,12 @@ export default function CreateProject() {
       return scrollToEnd();
     }
 
-    const isZodValid = await trigger(currentStepFields, { shouldFocus: true });
+    const isZodValid = await trigger(currentStepFields as string[], { shouldFocus: true });
     let isUiValid = true;
+
     if (currentStepMeta?.uiRequiredFields) {
       for (const fieldName of currentStepMeta.uiRequiredFields) {
-        const value = getValues(fieldName);
+        const value = getValues(fieldName as string);
         if (value === undefined || value === null || (typeof value === "string" && value.trim() === "") || (Array.isArray(value) && value.length === 0)) {
           isUiValid = false;
           break;
@@ -119,7 +145,7 @@ export default function CreateProject() {
     }
   };
 
-  // 이전
+  // Previous step handler
   const handlePrev = (event?: React.MouseEvent<HTMLButtonElement>) => {
     event?.preventDefault();
     event?.stopPropagation();
@@ -134,20 +160,21 @@ export default function CreateProject() {
   const isNextButtonDisabled = useMemo(() => {
     if (isStepping) return true;
 
-    const hasZodError = currentStepFields.some((field) => errors[field]);
+    const hasZodError = currentStepFields.some((field) => errors[field as keyof UserERPNextProject]);
     if (hasZodError) return true;
 
     if (currentStepMeta?.uiRequiredFields) {
-      const uiRequiredFieldsEmpty = watchedCurrentStepFields.some((value) => {
+      const currentValues = getValues();
+      const uiRequiredFieldsEmpty = currentStepMeta.uiRequiredFields.some((fieldName) => {
+        const value = currentValues[fieldName as keyof UserERPNextProject];
         return value === undefined || value === null || (typeof value === "string" && value.trim() === "") || (Array.isArray(value) && value.length === 0);
       });
       if (uiRequiredFieldsEmpty) return true;
     }
     return false;
-  }, [errors, currentStepMeta, currentStepFields, watchedCurrentStepFields, isStepping]);
+  }, [errors, currentStepMeta, currentStepFields, watchedCurrentStepFields, isStepping, getValues]);
 
-  // 기능 추가 관련
-
+  // Feature recommendation related state
   const [isRecommend, setIsRecommend] = useState(false);
   const [isRecommandFetch, setIsRecommandFetch] = useState(false);
 
@@ -155,53 +182,41 @@ export default function CreateProject() {
   const recommendTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [estimateFeaturesData, setEstimateFeaturesData] = useState<{
-    project_name: string;
-    project_summary: string;
-    readiness_level: string;
-    platforms: string[];
-  }>({
-    project_name: "",
-    project_summary: "",
-    readiness_level: "",
-    platforms: [],
-  });
-  const estimateFeatures = useGetEstimateFeatures(estimateFeaturesData);
+  const [estimateFeaturesData, setEstimateFeaturesData] = useState<ProjectFeatureEstimateRequest | null>(null);
+
+  const estimateFeatures = useGetEstimateFeatures(
+    estimateFeaturesData?.project_name && estimateFeaturesData?.project_summary && estimateFeaturesData?.platforms.length > 0 ? estimateFeaturesData : null
+  );
+
   const estimateFeaturesFields = useWatch({
     name: ["custom_project_title", "custom_project_summary", "custom_readiness_level", "custom_platforms"],
     control: form.control,
   });
-  const { fetchData: estimateFeturesFetch } = estimateFeatures;
 
   const mergeEstimateFeatures = useCallback(() => {
-    const [project_name, project_summary, readiness_level, platforms] = estimateFeaturesFields;
-    const platformsList = (platforms || []).map((platform) => platform.platform);
-    setEstimateFeaturesData({ project_name, project_summary, readiness_level, platforms: platformsList });
-  }, [setEstimateFeaturesData, estimateFeaturesFields]);
+    try {
+      const [project_name, project_summary, readiness_level, platforms] = estimateFeaturesFields;
+      const platformsList = (platforms || [])
+        .map((platform) => {
+          const platformValue = platform.platform;
+          const validatedPlatform = platformEnum.safeParse(platformValue);
+          return validatedPlatform.success ? validatedPlatform.data : null;
+        })
+        .filter(Boolean) as Array<"web" | "android" | "ios">;
 
-  useEffect(() => {
-    if (
-      estimateFeaturesData.project_name ||
-      estimateFeaturesData.project_summary ||
-      estimateFeaturesData.readiness_level ||
-      estimateFeaturesData.platforms.length > 0
-    ) {
-      estimateFeturesFetch();
+      // API 요구사항에 맞는 데이터 구조로 설정
+      if (project_name && project_summary && readiness_level && platformsList.length > 0) {
+        setEstimateFeaturesData({
+          project_name,
+          project_summary,
+          readiness_level,
+          platforms: platformsList,
+        });
+      }
+    } catch (error) {
+      console.error("Error merging estimate features:", error);
     }
-  }, [estimateFeaturesData, estimateFeturesFetch]);
-
-  useEffect(() => {
-    if (!isRecommend) {
-      setValue("custom_features", []);
-
-      const timer = setTimeout(() => {
-        const docValue = estimateFeatures.data?.feature_list.map((p) => ({ doctype: "Features", feature: p }));
-        setValue("custom_features", docValue || []);
-      }, 600);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isRecommend, estimateFeatures.data?.feature_list, setValue]);
+  }, [estimateFeaturesFields, setEstimateFeaturesData]);
 
   useEffect(() => {
     if (firstInSecondStop === true && currentStep === 2) {
@@ -211,7 +226,7 @@ export default function CreateProject() {
   }, [firstInSecondStop, currentStep, setFirstInSecondStop, mergeEstimateFeatures]);
 
   useEffect(() => {
-    if (estimateFeatures.loading) {
+    if (estimateFeatures?.isLoading) {
       loadingStartRef.current = Date.now();
 
       setIsRecommend(true);
@@ -236,7 +251,20 @@ export default function CreateProject() {
         setIsRecommandFetch(false);
       }, remainingForFetch);
     }
-  }, [estimateFeatures.loading]);
+  }, [estimateFeatures?.isLoading]);
+
+  useEffect(() => {
+    if (!isRecommend && estimateFeatures?.data?.data.feature_list) {
+      const timer = setTimeout(() => {
+        const features = estimateFeatures.data?.data.feature_list.map((feature) => ({
+          doctype: "Features" as const,
+          feature,
+        }));
+        setValue("custom_features", features ?? []);
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [isRecommend, estimateFeatures?.data?.data.feature_list, setValue]);
 
   useEffect(() => {
     return () => {
@@ -245,18 +273,17 @@ export default function CreateProject() {
     };
   }, []);
 
-  // 제출 관련
-
+  // Form submission validation
   const validateFormForSubmission = useCallback(async (): Promise<boolean> => {
     const isFormCompletelyValid = await trigger();
 
-    // 유효성 검사 실패 시 스텝 이동
+    // Validation failure - move to step with errors
     if (!isFormCompletelyValid) {
       toast.error("입력 내용을 다시 확인해주세요. 일부 필수 항목이 누락된 것 같아요.");
       for (let i = 0; i < stepsMeta.length; i++) {
         const step = stepsMeta[i];
         const stepFields = step.fields;
-        const hasErrorInStep = stepFields.some((field) => errors[field]);
+        const hasErrorInStep = stepFields.some((field) => errors[field as keyof UserERPNextProject]);
         if (hasErrorInStep) {
           if (currentStep !== i + 1) {
             setIsStepping(true);
@@ -269,11 +296,11 @@ export default function CreateProject() {
       return false;
     }
 
-    // 유효성 검사 실패 시 스텝 이동
+    // UI validation for required fields
     for (const step of stepsMeta) {
       if (step.uiRequiredFields) {
         for (const fieldName of step.uiRequiredFields) {
-          const value = getValues(fieldName);
+          const value = getValues(fieldName as string);
           if (value === undefined || value === null || (typeof value === "string" && value.trim() === "") || (Array.isArray(value) && value.length === 0)) {
             toast.error(`${step.title} 단계의 '${fieldName}' 필드를 포함한 모든 필수 항목을 입력해주세요.`);
             if (currentStep !== step.number) {
@@ -290,17 +317,17 @@ export default function CreateProject() {
   }, [trigger, errors, currentStep, getValues, setIsStepping, setCurrentStep]);
 
   const handleSuccessfulSubmission = useCallback(
-    (project: ERPNextProjectType) => {
+    (project: ERPNextProject) => {
       toast.success("프로젝트 정보가 성공적으로 저장되었습니다.");
       router.push(`/service/project/${project.project_name}/detail`);
       router.refresh();
-      reset(initalProjectInfo);
+      reset(initialProjectInfo);
       setIsStepping(true);
     },
-    [router, reset, initalProjectInfo, setIsStepping]
+    [router, reset, initialProjectInfo, setIsStepping]
   );
 
-  const onSubmit = async (values: UserERPNextProjectType) => {
+  const onSubmit = async (values: UserERPNextProject) => {
     if (isStepping) return;
 
     if (!isReachedEnd) {
@@ -312,7 +339,7 @@ export default function CreateProject() {
       return;
     }
 
-    if (!isDirty && JSON.stringify(values) === JSON.stringify(initalProjectInfo)) {
+    if (!isDirty && JSON.stringify(values) === JSON.stringify(initialProjectInfo)) {
       toast.info("변경된 내용이 없습니다.");
       return;
     }
@@ -320,9 +347,10 @@ export default function CreateProject() {
     setIsLoading(true);
     try {
       const project = await createProject(values);
-      if (!project) throw new Error();
+      if (!project) throw new Error("Project creation failed");
       handleSuccessfulSubmission(project);
-    } catch {
+    } catch (error) {
+      console.error("Project creation error:", error);
       toast.error("프로젝트 저장 중 오류가 발생했어요");
     } finally {
       setIsLoading(false);
@@ -411,7 +439,7 @@ export default function CreateProject() {
                   className="flex-1 w-1/2 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-base md:text-lg font-semibold"
                   variant="secondary"
                   onClick={(e) => handlePrev(e)}
-                  disabled={isLoading || isStepping} // isStepping 추가
+                  disabled={isLoading || isStepping}
                 >
                   이전
                 </Button>
@@ -421,14 +449,14 @@ export default function CreateProject() {
                   className="flex-1 w-1/2 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-base md:text-lg font-semibold"
                   type="button"
                   onClick={(e) => handleNext(e)}
-                  disabled={isLoading || isNextButtonDisabled} // isNextButtonDisabled에 isStepping 포함됨
+                  disabled={isLoading || isNextButtonDisabled}
                 >
                   다음
                 </Button>
               ) : (
                 <Button
                   className="flex-1 w-1/2 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-base md:text-lg font-semibold"
-                  disabled={isLoading || !isDirty || !isFormValid || isStepping} // isStepping 추가
+                  disabled={isLoading || !isDirty || !isFormValid || isStepping}
                   onClick={handleSubmit(onSubmit)}
                 >
                   {isLoading ? "저장 중..." : "프로젝트 만들기"}

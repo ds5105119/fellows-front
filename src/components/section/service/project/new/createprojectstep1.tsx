@@ -5,13 +5,12 @@ import { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { readinessLevelLabels } from "@/components/resource/project";
-import { PlatformEnumZod, ReadinessLevelEnumZod, UserERPNextProjectType } from "@/@types/service/project";
+import { platformEnum, readinessLevelEnum, UserERPNextProject } from "@/@types/service/project";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
 
 interface CreateProjectFormStep1Props {
-  form: UseFormReturn<UserERPNextProjectType>;
+  form: UseFormReturn<UserERPNextProject>;
 }
 
 const getEnumValues = <T extends z.ZodEnum<[string, ...string[]]>>(enumType: T): z.infer<typeof enumType>[] => {
@@ -56,7 +55,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
           <FormItem>
             <FormLabel className="text-sm font-medium">플랫폼</FormLabel>
             <div className="grid gap-3 grid-cols-2 md:grid-cols-3">
-              {getEnumValues(PlatformEnumZod).map((platform) => (
+              {getEnumValues(platformEnum).map((platform) => (
                 <Button
                   className={cn(
                     "col-span-1 h-11 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-md",
@@ -87,7 +86,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
             <FormLabel className="text-sm font-medium">사전 준비도</FormLabel>
             <FormControl>
               <div className="grid gap-3 grid-cols-2 md:grid-cols-3">
-                {getEnumValues(ReadinessLevelEnumZod).map((level) => (
+                {getEnumValues(readinessLevelEnum).map((level) => (
                   <button
                     type="button"
                     key={level as string}
@@ -97,7 +96,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                     )}
                     onClick={() => field.onChange(level)}
                   >
-                    <div className="text-sm font-semibold">{readinessLevelLabels[level]?.title || level}</div>
+                    <div className="text-sm font-semibold">{level}</div>
                   </button>
                 ))}
               </div>

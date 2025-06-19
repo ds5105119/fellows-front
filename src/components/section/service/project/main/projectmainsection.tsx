@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Plus, Info } from "lucide-react";
-import { ERPNextProjectPageType, ERPNextProjectType, ERPNextProjectZod } from "@/@types/service/project";
+import { ProjectsPaginatedResponse, ERPNextProject, erpNextProjectSchema } from "@/@types/service/project";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -46,8 +46,8 @@ const orders = [
 ];
 
 export type SWRMeta = {
-  swr: SWRInfiniteResponse<ERPNextProjectPageType>;
-  data: ERPNextProjectPageType;
+  swr: SWRInfiniteResponse<ProjectsPaginatedResponse>;
+  data: ProjectsPaginatedResponse;
   isLoading?: boolean;
   isReachedEnd?: boolean;
 };
@@ -65,14 +65,14 @@ const ProjectStatusColumn = ({
   status: Status;
   keyword: string;
   orderBy: string;
-  setSelectedProject: (project: ERPNextProjectType | null) => void;
+  setSelectedProject: (project: ERPNextProject | null) => void;
   onProcessCountChange?: (count: number) => void;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref);
   const pageSize = 20;
 
-  const swr = useProjects(pageSize, keyword, orderBy, status);
+  const swr = useProjects({ size: pageSize, keyword, order_by: orderBy, status });
   const pages = swr.data?.flatMap((page) => page.items) || [];
   const isReachedEnd = swr.data && swr.data.length > 0 && swr.data[swr.data.length - 1].items.length === 0;
   const isLoading = !isReachedEnd && swr.data && (swr.isLoading || (swr.size > 0 && typeof swr.data[swr.size - 1] === "undefined"));
@@ -112,12 +112,12 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const [inputText, setInputText] = useState<string>("");
   const [processCount, setProcessCount] = useState(0);
   const [tabIndex, setTabIndex] = useState<number>(0);
-  const [selectedProject, setSelectedProject] = useState<ERPNextProjectType | null>(null);
+  const [selectedProject, setSelectedProject] = useState<ERPNextProject | null>(null);
   const [openSheet, setOpenSheet] = useState(false);
   const keyword = useThrottle(inputText, 700);
   const pathname = usePathname();
   const router = useRouter();
-  const project = useProjects(1);
+  const project = useProjects({ size: 1 });
 
   useEffect(() => {
     if (selectedProject) {
@@ -135,7 +135,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
 
   useEffect(() => {
     if (!!project_id) {
-      const emptyProject = ERPNextProjectZod.parse({ project_name: project_id });
+      const emptyProject = erpNextProjectSchema.parse({ project_name: project_id });
       setSelectedProject(emptyProject);
     }
   }, [project_id]);

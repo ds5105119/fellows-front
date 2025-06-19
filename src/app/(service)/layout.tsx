@@ -6,6 +6,7 @@ import Toaster from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { SWRProvider } from "@/lib/swrprovider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import "../globals.css";
@@ -49,7 +50,9 @@ export default async function RootLayout({
           <AppSidebar />
           <SidebarInset>
             <Header />
-            <div className="w-full scrollbar-hide break-keep">{children}</div>
+            <SWRProvider>
+              <div className="w-full scrollbar-hide break-keep">{children}</div>
+            </SWRProvider>
             <Footer />
           </SidebarInset>
         </SidebarProvider>

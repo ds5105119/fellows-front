@@ -5,7 +5,7 @@ import ProjectDropdownMenu from "./projectdropdownmenu";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { SWRMeta } from "./projectmainsection";
-import { Plus, PencilLine, Receipt, Calendar, ArrowRight, Clock5, ClipboardList, Trash2, SquareMousePointer, Loader2 } from "lucide-react";
+import { Plus, PencilLine, Receipt, Calendar, ArrowRight, Clock5, Trash2, SquareMousePointer, Loader2 } from "lucide-react";
 import {
   DndContext,
   type DragEndEvent,
@@ -23,7 +23,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
-import type { ERPNextProjectType } from "@/@types/service/project";
+import type { ERPNextProject } from "@/@types/service/project";
 import { deleteProject } from "@/hooks/fetch/project";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
@@ -43,7 +43,7 @@ export default function ProjectContainer({
   text: string;
   border: string;
   className?: string;
-  setSelectedProject: (project: ERPNextProjectType | null) => void;
+  setSelectedProject: (project: ERPNextProject | null) => void;
 }) {
   const projects = meta.data?.items || [];
   const isLoading = meta.swr.isLoading;
@@ -128,7 +128,7 @@ export default function ProjectContainer({
   };
 
   // 프로젝트 삭제 핸들러
-  const removeProject = async (project?: ERPNextProjectType | null) => {
+  const removeProject = async (project?: ERPNextProject | null) => {
     if (!project) return;
 
     if (window.confirm("프로젝트를 삭제하면 모든 정보가 삭제됩니다. 계속 진행하시겠습니까?")) {
@@ -274,7 +274,7 @@ export default function ProjectContainer({
                 </div>
               </div>
 
-              <div
+              {/* <div
                 className={cn(
                   "w-full flex space-x-2 items-center font-medium",
                   activeProject.tasks && activeProject.tasks.length > 0 ? "text-zinc-700" : "text-zinc-400"
@@ -286,7 +286,7 @@ export default function ProjectContainer({
                     ? activeProject.tasks[activeProject.tasks.length - 1].subject
                     : "할당된 테스크가 없어요"}
                 </div>
-              </div>
+              </div> */}
 
               <div className={cn("w-full flex space-x-2 items-center font-medium", activeProject.creation ? "text-zinc-700" : "text-zinc-400")}>
                 <Clock5 className="!size-3.5 shrink-0" />
@@ -338,7 +338,7 @@ function ProjectItem({
   id,
   justDropped,
 }: {
-  project: ERPNextProjectType;
+  project: ERPNextProject;
   idx: number;
   openMenu: string | null;
   setOpenMenu: (id: string | null) => void;
@@ -428,12 +428,12 @@ function ProjectItem({
           </div>
         </div>
 
-        <div className={cn("w-full flex space-x-2 items-center font-medium", project.tasks && project.tasks.length > 0 ? "text-zinc-700" : "text-zinc-400")}>
+        {/* <div className={cn("w-full flex space-x-2 items-center font-medium", project.tasks && project.tasks.length > 0 ? "text-zinc-700" : "text-zinc-400")}>
           <ClipboardList className="!size-3.5 shrink-0" />
           <div className="truncate text-xs min-w-0 flex-1">
             {project.tasks && project.tasks.length > 0 ? project.tasks[project.tasks.length - 1].subject : "할당된 테스크가 없어요"}
           </div>
-        </div>
+        </div> */}
 
         <div className={cn("w-full flex space-x-2 items-center font-medium", project.creation ? "text-zinc-700" : "text-zinc-400")}>
           <Clock5 className="!size-3.5 shrink-0" />

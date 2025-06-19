@@ -8,10 +8,10 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getSSECPresignedPutUrl, uploadFileToSSECPresignedUrl, removeFile } from "@/hooks/fetch/presigned";
 import { UploadProgressIndicator } from "../ui/uploadprogressindicator";
-import { ERPNextProjectFileRowType, ERPNextProjectFileRowZod } from "@/@types/service/project";
+import { erpNextFileSchema, ERPNextFile } from "@/@types/service/project";
 
 interface FileInputProps {
-  onChange: (val: ERPNextProjectFileRowType[]) => void;
+  onChange: (val: ERPNextFile[]) => void;
 }
 
 export const fileIconMap: { [key: string]: React.ElementType } = {
@@ -56,7 +56,7 @@ export const formatFileSize = (bytes: number): string => {
 
 export default function FileInput({ onChange }: FileInputProps) {
   const [dragOver, setDragOver] = useState(false);
-  const [files, setFiles] = useState<{ record: ERPNextProjectFileRowType; name: string; size: number; progress: number }[]>([]);
+  const [files, setFiles] = useState<{ record: ERPNextFile; name: string; size: number; progress: number }[]>([]);
   const controls = useAnimation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const filesRef = useRef(files);
@@ -77,7 +77,7 @@ export default function FileInput({ onChange }: FileInputProps) {
 
     try {
       const presigned = await getSSECPresignedPutUrl(file.name);
-      const fileRecord = ERPNextProjectFileRowZod.parse({
+      const fileRecord = erpNextFileSchema.parse({
         doctype: "Files",
         key: presigned.key,
         file_name: file.name,
@@ -103,6 +103,7 @@ export default function FileInput({ onChange }: FileInputProps) {
 
   const handleRemoveFile = async (index: number) => {
     setFiles((prev) => prev.filter((_, i) => i !== index));
+    if (!files[index].record.sse_key) return;
     await removeFile(files[index].record.key, files[index].record.sse_key);
   };
 

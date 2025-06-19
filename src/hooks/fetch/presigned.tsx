@@ -6,7 +6,7 @@ import {
   PresignedPutUrlResponseType,
   PresignedPutUrlResponseSchema,
 } from "@/@types/accounts/cloud";
-import { ERPNextProjectFileRowType } from "@/@types/service/project";
+import { ERPNextFile } from "@/@types/service/project";
 import { cn, isIOS } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -223,11 +223,12 @@ export const handleFileDownloadOrPreview = (blob: Blob, mime: string, filename: 
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
 };
 
-export function SSECFileDownloadButton({ file, children, className }: { file: ERPNextProjectFileRowType; children: React.ReactNode; className?: string }) {
+export function SSECFileDownloadButton({ file, children, className }: { file: ERPNextFile; children: React.ReactNode; className?: string }) {
   const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
     if (loading) return;
+    if (!file.sse_key || !file.key || !file.algorithm) return;
     try {
       setLoading(true);
       const presigned = await getSSECPresignedGetUrl(file.algorithm, file.key, file.sse_key);
