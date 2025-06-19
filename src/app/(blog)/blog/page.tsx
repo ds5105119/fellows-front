@@ -10,9 +10,9 @@ export default async function Page() {
   const session = await auth();
 
   return (
-    <div className="w-full h-fuil pt-24 md:pt-24">
-      <div className="bg-white pt-10 py-20">
-        <div className="px-6 md:px-0 mx-auto w-full md:max-w-[42.25rem] min-[70rem]:max-w-[62.25rem]">
+    <div className="w-full h-fuil pt-12">
+      <div className="bg-white pt-12 pb-14 md:py-20">
+        <div className="px-0 mx-auto w-full md:max-w-[42.25rem] min-[70rem]:max-w-[62.25rem]">
           <FeaturedSection />
         </div>
       </div>
