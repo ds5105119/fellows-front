@@ -154,7 +154,7 @@ export function FeaturedSection() {
               className="group cursor-pointer overflow-hidden w-full aspect-[4/3] rounded-3xl min-[70rem]:rounded-4xl"
             >
               <div className="relative h-full overflow-hidden p-8 flex flex-col justify-between">
-                <Image
+                <img
                   ref={sidebarPost1ImageRef}
                   src={sidebarPost1.title_image || "/placeholder.svg?height=80&width=80"}
                   alt={sidebarPost1.title}
@@ -162,7 +162,6 @@ export function FeaturedSection() {
                   width={80}
                   height={80}
                   crossOrigin="anonymous"
-                  priority
                 />
 
                 <div
@@ -237,7 +236,7 @@ export function FeaturedSection() {
               className="group cursor-pointer overflow-hidden w-full aspect-[4/3] md:aspect-[4/4] rounded-3xl min-[70rem]:rounded-4xl"
             >
               <div className="relative h-full overflow-hidden p-8 flex flex-col justify-between">
-                <Image
+                <img
                   ref={sidebarPost2ImageRef}
                   src={sidebarPost2.title_image || "/placeholder.svg?height=80&width=80"}
                   alt={sidebarPost2.title}
@@ -245,7 +244,6 @@ export function FeaturedSection() {
                   width={80}
                   height={80}
                   crossOrigin="anonymous"
-                  priority
                 />
 
                 <div
