@@ -220,6 +220,12 @@ export function FeaturedSectionMobile() {
 
               <div
                 className={cn(
+                  "absolute inset-0 bg-gradient-to-t",
+                  sidebarPost2ImageRefIsDark ? "from-white/20 via-white/5 to-transparent" : "from-black/20 via-black/5 to-transparent"
+                )}
+              />
+              <div
+                className={cn(
                   "absolute top-4 right-4 rounded-full size-10 backdrop-blur-sm flex items-center justify-center",
                   sidebarPost2ImageRefIsDark ? "bg-white/20" : "bg-black/10"
                 )}
