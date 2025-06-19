@@ -301,15 +301,9 @@ export function FeaturedSectionMobile() {
         ]}
       >
         <CarouselContent className="-ml-4">
-          <CarouselItem className="pl-4 basis-[92%]">
-            <CarouselPostItem post={featuredPost} type="featured" />
-          </CarouselItem>
-          <CarouselItem className="pl-4 basis-[92%]">
-            <CarouselPostItem post={sidebarPost1} type="sidebar1" />
-          </CarouselItem>
-          <CarouselItem className="pl-4 basis-[92%]">
-            <CarouselPostItem post={sidebarPost2} type="sidebar2" />
-          </CarouselItem>
+          <CarouselItem className="pl-4 basis-[92%]">{featuredPost && <CarouselPostItem post={featuredPost} type="featured" />}</CarouselItem>
+          <CarouselItem className="pl-4 basis-[92%]">{sidebarPost1 && <CarouselPostItem post={sidebarPost1} type="sidebar1" />}</CarouselItem>
+          <CarouselItem className="pl-4 basis-[92%]">{sidebarPost2 && <CarouselPostItem post={sidebarPost2} type="sidebar2" />}</CarouselItem>
         </CarouselContent>
 
         {/* Navigation Controls */}
