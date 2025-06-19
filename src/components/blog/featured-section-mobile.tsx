@@ -27,6 +27,19 @@ function enforceMaximumLightness(hex: string, maxLightness = 40): string {
   return hex;
 }
 
+function BlogPostSkeleton() {
+  return (
+    <article className="group cursor-pointer h-full">
+      <div className="rounded-3xl overflow-hidden h-full">
+        <div className="relative aspect-[4/5] h-full">
+          <div className="h-full w-full bg-gray-200 animate-pulse" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export function FeaturedSectionMobile() {
   const ref = useRef(null);
 
@@ -290,8 +303,6 @@ export function FeaturedSectionMobile() {
         </div>
       </div>
 
-      {swr.isLoading && <FeaturedSectionSkeleton />}
-
       {/* Mobile Carousel */}
       <Carousel
         opts={{
@@ -307,9 +318,15 @@ export function FeaturedSectionMobile() {
         ]}
       >
         <CarouselContent className="-ml-4">
-          <CarouselItem className="pl-4 basis-[92%]">{featuredPost && <CarouselPostItem post={featuredPost} type="featured" />}</CarouselItem>
-          <CarouselItem className="pl-4 basis-[92%]">{sidebarPost1 && <CarouselPostItem post={sidebarPost1} type="sidebar1" />}</CarouselItem>
-          <CarouselItem className="pl-4 basis-[92%]">{sidebarPost2 && <CarouselPostItem post={sidebarPost2} type="sidebar2" />}</CarouselItem>
+          <CarouselItem className="pl-4 basis-[92%]">
+            {featuredPost ? <CarouselPostItem post={featuredPost} type="featured" /> : <BlogPostSkeleton />}
+          </CarouselItem>
+          <CarouselItem className="pl-4 basis-[92%]">
+            {sidebarPost1 ? <CarouselPostItem post={sidebarPost1} type="sidebar1" /> : <BlogPostSkeleton />}
+          </CarouselItem>
+          <CarouselItem className="pl-4 basis-[92%]">
+            {sidebarPost2 ? <CarouselPostItem post={sidebarPost2} type="sidebar2" /> : <BlogPostSkeleton />}
+          </CarouselItem>
         </CarouselContent>
 
         {/* Navigation Controls */}
