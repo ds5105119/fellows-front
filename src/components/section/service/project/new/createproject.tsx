@@ -1,104 +1,32 @@
 "use client";
 
-import type React from "react";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { toast } from "sonner";
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { createProject, useGetEstimateFeatures } from "@/hooks/fetch/project";
-import { stepsMeta } from "@/components/resource/project";
-import { useInView } from "framer-motion";
-import {
-  type UserERPNextProject,
-  userERPNextProjectSchema,
-  type ERPNextProject,
-  type ProjectFeatureEstimateRequest,
-  platformEnum,
-} from "@/@types/service/project";
-import { CheckIcon } from "lucide-react";
-import AIRecommendSkeleton from "@/components/skeleton/airecommendskeleton";
+import { useRef } from "react";
 import CreateProjectFormStep1 from "./createprojectstep1";
 import CreateProjectFormStep2 from "./createprojectstep2";
 import CreateProjectSide from "./createprojectside";
+import { useProjectForm } from "@/hooks/create-project/use-project-form";
+import { useFeatureRecommendation } from "@/hooks/create-project/use-feature-recommendation";
+import { ProjectFormNavigation } from "./createformnavigation";
+import { CreateProjectTermsSection } from "./createprojecttermssection";
+import { RecommendationLoading } from "./recommandationloading";
+import { useInView } from "framer-motion";
 
 export default function CreateProject() {
-  const router = useRouter();
-
-  // Initialize with proper Zod parsing
-  const initialProjectInfo = userERPNextProjectSchema.parse({
-    custom_project_title: "",
-    custom_project_summary: "",
-    custom_readiness_level: "idea",
-    custom_platforms: [],
-    custom_features: [],
-    custom_preferred_tech_stacks: [],
-    custom_design_urls: [],
-    custom_maintenance_required: false,
-    custom_project_status: "draft",
-  });
-
-  const form = useForm<UserERPNextProject>({
-    resolver: zodResolver(userERPNextProjectSchema),
-    defaultValues: initialProjectInfo,
-    mode: "onChange",
-  });
-
-  const {
-    setValue,
-    reset,
-    formState: { errors, isDirty, isValid: isFormValid },
-    trigger,
-    getValues,
-    handleSubmit,
-  } = form;
-
-  const [currentStep, setCurrentStep] = useState(1);
-  const [firstInSecondStop, setFirstInSecondStop] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isStepping, setIsStepping] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
-  const isReachedEnd = useInView(targetRef, { margin: "-92px 0px 0px 0px" });
+  const isReachedEnd = useInView(targetRef, { margin: "6px 0px 6px 0px", amount: 0 });
 
-  const totalSteps = stepsMeta.length;
-  const currentStepMeta = useMemo(() => stepsMeta[currentStep - 1], [currentStep]);
-  const currentStepFields = useMemo(() => currentStepMeta?.fields || [], [currentStepMeta]);
-  const watchedCurrentStepFields = useWatch({
-    name: currentStepFields as string[],
-    control: form.control,
-  });
+  const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
+    useProjectForm();
 
-  // Page load/step change validation
-  useEffect(() => {
-    const validateCurrentStepOnLoad = async () => {
-      if (currentStepFields.length > 0) {
-        await trigger(currentStepFields as string[], { shouldFocus: false });
-      }
-    };
-    if (form.formState.isReady) {
-      validateCurrentStepOnLoad();
-    }
-  }, [currentStep, currentStepFields, trigger, form.formState.isReady]);
-
-  // isStepping state management
-  useEffect(() => {
-    if (isStepping) {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setIsStepping(false);
-        });
-      });
-    }
-  }, [currentStep, isStepping]);
+  const { isRecommending, handleRecommendAgain } = useFeatureRecommendation(form, currentStep);
 
   const scrollToEnd = () => {
     const target = targetRef.current;
     if (!target) return;
 
-    const maxScroll = target.offsetTop + target.offsetHeight - window.innerHeight + 93;
+    const maxScroll = target.offsetTop + target.offsetHeight - window.innerHeight + 95;
     const nextScrollTop = Math.min(window.scrollY + 500, maxScroll);
 
     window.scrollTo({
@@ -108,254 +36,34 @@ export default function CreateProject() {
     });
   };
 
-  // Next step handler
-  const handleNext = async (event?: React.MouseEvent<HTMLButtonElement>) => {
-    event?.preventDefault();
-    event?.stopPropagation();
-
+  const handleNextWithScroll = (event?: React.MouseEvent) => {
     if (!isReachedEnd) {
-      return scrollToEnd();
-    }
-
-    const isZodValid = await trigger(currentStepFields as string[], { shouldFocus: true });
-    let isUiValid = true;
-
-    if (currentStepMeta?.uiRequiredFields) {
-      for (const fieldName of currentStepMeta.uiRequiredFields) {
-        const value = getValues(fieldName as string);
-        if (value === undefined || value === null || (typeof value === "string" && value.trim() === "") || (Array.isArray(value) && value.length === 0)) {
-          isUiValid = false;
-          break;
-        }
-      }
-    }
-
-    if (isZodValid && isUiValid) {
-      if (currentStep < totalSteps) {
-        setIsStepping(true);
-        setCurrentStep((prev) => prev + 1);
-        window.scrollTo(0, 0);
-      }
-    } else {
-      if (!isZodValid) {
-        toast.error("입력 내용을 다시 확인해주세요.");
-      } else if (!isUiValid) {
-        toast.error("현재 단계의 모든 필수 항목을 입력해주세요.");
-      }
-    }
-  };
-
-  // Previous step handler
-  const handlePrev = (event?: React.MouseEvent<HTMLButtonElement>) => {
-    event?.preventDefault();
-    event?.stopPropagation();
-
-    if (currentStep > 1) {
-      setIsStepping(true);
-      setCurrentStep((prev) => prev - 1);
-      window.scrollTo(0, 0);
-    }
-  };
-
-  const isNextButtonDisabled = useMemo(() => {
-    if (isStepping) return true;
-
-    const hasZodError = currentStepFields.some((field) => errors[field as keyof UserERPNextProject]);
-    if (hasZodError) return true;
-
-    if (currentStepMeta?.uiRequiredFields) {
-      const currentValues = getValues();
-      const uiRequiredFieldsEmpty = currentStepMeta.uiRequiredFields.some((fieldName) => {
-        const value = currentValues[fieldName as keyof UserERPNextProject];
-        return value === undefined || value === null || (typeof value === "string" && value.trim() === "") || (Array.isArray(value) && value.length === 0);
-      });
-      if (uiRequiredFieldsEmpty) return true;
-    }
-    return false;
-  }, [errors, currentStepMeta, currentStepFields, watchedCurrentStepFields, isStepping, getValues]);
-
-  // Feature recommendation related state
-  const [isRecommend, setIsRecommend] = useState(false);
-  const [isRecommandFetch, setIsRecommandFetch] = useState(false);
-
-  const loadingStartRef = useRef<number | null>(null);
-  const recommendTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const [estimateFeaturesData, setEstimateFeaturesData] = useState<ProjectFeatureEstimateRequest | null>(null);
-
-  const estimateFeatures = useGetEstimateFeatures(
-    estimateFeaturesData?.project_name && estimateFeaturesData?.project_summary && estimateFeaturesData?.platforms.length > 0 ? estimateFeaturesData : null
-  );
-
-  const estimateFeaturesFields = useWatch({
-    name: ["custom_project_title", "custom_project_summary", "custom_readiness_level", "custom_platforms"],
-    control: form.control,
-  });
-
-  const mergeEstimateFeatures = useCallback(() => {
-    try {
-      const [project_name, project_summary, readiness_level, platforms] = estimateFeaturesFields;
-      const platformsList = (platforms || [])
-        .map((platform) => {
-          const platformValue = platform.platform;
-          const validatedPlatform = platformEnum.safeParse(platformValue);
-          return validatedPlatform.success ? validatedPlatform.data : null;
-        })
-        .filter(Boolean) as Array<"web" | "android" | "ios">;
-
-      // API 요구사항에 맞는 데이터 구조로 설정
-      if (project_name && project_summary && readiness_level && platformsList.length > 0) {
-        setEstimateFeaturesData({
-          project_name,
-          project_summary,
-          readiness_level,
-          platforms: platformsList,
-        });
-      }
-    } catch (error) {
-      console.error("Error merging estimate features:", error);
-    }
-  }, [estimateFeaturesFields, setEstimateFeaturesData]);
-
-  useEffect(() => {
-    if (firstInSecondStop === true && currentStep === 2) {
-      setFirstInSecondStop(false);
-      mergeEstimateFeatures();
-    }
-  }, [firstInSecondStop, currentStep, setFirstInSecondStop, mergeEstimateFeatures]);
-
-  useEffect(() => {
-    if (estimateFeatures?.isLoading) {
-      loadingStartRef.current = Date.now();
-
-      setIsRecommend(true);
-      setIsRecommandFetch(true);
-      window.scrollTo(0, 0);
-
-      if (recommendTimeoutRef.current) clearTimeout(recommendTimeoutRef.current);
-      if (fetchTimeoutRef.current) clearTimeout(fetchTimeoutRef.current);
-    } else {
-      const now = Date.now();
-      const startedAt = loadingStartRef.current ?? now;
-
-      const elapsed = now - startedAt;
-      const remainingForRecommend = Math.max(7500 - elapsed, 0);
-      const remainingForFetch = Math.max(3500 - elapsed, 0);
-
-      recommendTimeoutRef.current = setTimeout(() => {
-        setIsRecommend(false);
-      }, remainingForRecommend);
-
-      fetchTimeoutRef.current = setTimeout(() => {
-        setIsRecommandFetch(false);
-      }, remainingForFetch);
-    }
-  }, [estimateFeatures?.isLoading]);
-
-  useEffect(() => {
-    if (!isRecommend && estimateFeatures?.data?.data.feature_list) {
-      const timer = setTimeout(() => {
-        const features = estimateFeatures.data?.data.feature_list.map((feature) => ({
-          doctype: "Features" as const,
-          feature,
-        }));
-        setValue("custom_features", features ?? []);
-      }, 600);
-      return () => clearTimeout(timer);
-    }
-  }, [isRecommend, estimateFeatures?.data?.data.feature_list, setValue]);
-
-  useEffect(() => {
-    return () => {
-      if (recommendTimeoutRef.current) clearTimeout(recommendTimeoutRef.current);
-      if (fetchTimeoutRef.current) clearTimeout(fetchTimeoutRef.current);
-    };
-  }, []);
-
-  // Form submission validation
-  const validateFormForSubmission = useCallback(async (): Promise<boolean> => {
-    const isFormCompletelyValid = await trigger();
-
-    // Validation failure - move to step with errors
-    if (!isFormCompletelyValid) {
-      toast.error("입력 내용을 다시 확인해주세요. 일부 필수 항목이 누락된 것 같아요.");
-      for (let i = 0; i < stepsMeta.length; i++) {
-        const step = stepsMeta[i];
-        const stepFields = step.fields;
-        const hasErrorInStep = stepFields.some((field) => errors[field as keyof UserERPNextProject]);
-        if (hasErrorInStep) {
-          if (currentStep !== i + 1) {
-            setIsStepping(true);
-            setCurrentStep(i + 1);
-          }
-          window.scrollTo(0, 0);
-          return false;
-        }
-      }
-      return false;
-    }
-
-    // UI validation for required fields
-    for (const step of stepsMeta) {
-      if (step.uiRequiredFields) {
-        for (const fieldName of step.uiRequiredFields) {
-          const value = getValues(fieldName as string);
-          if (value === undefined || value === null || (typeof value === "string" && value.trim() === "") || (Array.isArray(value) && value.length === 0)) {
-            toast.error(`${step.title} 단계의 '${fieldName}' 필드를 포함한 모든 필수 항목을 입력해주세요.`);
-            if (currentStep !== step.number) {
-              setIsStepping(true);
-              setCurrentStep(step.number);
-            }
-            window.scrollTo(0, 0);
-            return false;
-          }
-        }
-      }
-    }
-    return true;
-  }, [trigger, errors, currentStep, getValues, setIsStepping, setCurrentStep]);
-
-  const handleSuccessfulSubmission = useCallback(
-    (project: ERPNextProject) => {
-      toast.success("프로젝트 정보가 성공적으로 저장되었습니다.");
-      router.push(`/service/project/${project.project_name}/detail`);
-      router.refresh();
-      reset(initialProjectInfo);
-      setIsStepping(true);
-    },
-    [router, reset, initialProjectInfo, setIsStepping]
-  );
-
-  const onSubmit = async (values: UserERPNextProject) => {
-    if (isStepping) return;
-
-    if (!isReachedEnd) {
-      return scrollToEnd();
-    }
-
-    const isFormValidForSubmission = await validateFormForSubmission();
-    if (!isFormValidForSubmission) {
+      scrollToEnd();
       return;
     }
+    handleNext(event);
+  };
 
-    if (!isDirty && JSON.stringify(values) === JSON.stringify(initialProjectInfo)) {
-      toast.info("변경된 내용이 없습니다.");
+  const handleSubmitWithScroll = () => {
+    if (!isReachedEnd) {
+      scrollToEnd();
       return;
     }
-
-    setIsLoading(true);
-    try {
-      const project = await createProject(values);
-      if (!project) throw new Error("Project creation failed");
-      handleSuccessfulSubmission(project);
-    } catch (error) {
-      console.error("Project creation error:", error);
-      toast.error("프로젝트 저장 중 오류가 발생했어요");
-    } finally {
-      setIsLoading(false);
-    }
+    handleSubmitClick();
   };
+
+  if (isRecommending) {
+    return (
+      <div className="flex w-full h-full min-h-screen">
+        <div className="hidden xl:flex h-full flex-col max-w-md shrink-0 scrollbar-hide pl-20 pr-10">
+          <CreateProjectSide />
+        </div>
+        <div className="flex flex-col w-full mx-auto xl:mx-0 lg:w-xl h-full scrollbar-hide shrink-0">
+          <RecommendationLoading currentStep={currentStep} totalSteps={totalSteps} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex w-full h-full min-h-screen">
@@ -364,107 +72,43 @@ export default function CreateProject() {
       </div>
 
       <div className="flex flex-col w-full mx-auto xl:mx-0 lg:w-xl h-full scrollbar-hide shrink-0">
-        {!isRecommend ? (
-          <div className="w-full px-5 md:px-8 py-6 md:py-10">
-            <div className="mb-10 flex items-end justify-between">
-              <div className="w-full">
-                <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
-                <p className="text-2xl md:text-3xl font-bold mt-3">{currentStepMeta?.title || "정보 입력"}</p>
-                <p className="text-sm md:text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">{currentStepMeta.description}</p>
-              </div>
-              {currentStep === 2 && (
-                <Button type="button" onClick={mergeEstimateFeatures} disabled={isRecommend} className="font-semibold text-background">
-                  다시 추천받기
-                </Button>
-              )}
+        <div className="w-full px-5 md:px-8 py-6 md:py-10">
+          <div className="mb-10 flex items-end justify-between">
+            <div className="w-full">
+              <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
+              <p className="text-2xl md:text-3xl font-bold mt-3">{currentStepMeta?.title || "정보 입력"}</p>
+              <p className="text-sm md:text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">{currentStepMeta.description}</p>
             </div>
-
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
-                {currentStep === 1 && <CreateProjectFormStep1 form={form} />}
-                {currentStep === 2 && <CreateProjectFormStep2 form={form} />}
-              </form>
-            </Form>
-
-            {currentStep === 1 && (
-              <div className="flex flex-col w-full h-full mt-4">
-                <div className="w-full">
-                  <p className="text-sm font-medium text-muted-foreground mb-4">프로젝트를 만들기 위해 동의가 필요한 약관들이에요</p>
-                </div>
-                <div className="flex flex-col w-full space-y-1.5">
-                  <div className="w-full flex space-x-1.5">
-                    <CheckIcon className="mt-[0.25rem] !size-5 text-blue-500" strokeWidth={3} />
-                    <div className="space-x-1">
-                      <span className="text-sm font-bold text-blue-500">필수</span>
-                      <span className="text-sm font-medium">Fellows 서비스 약관 및 개인정보 수집 · 이용 · 제공 동의</span>
-                    </div>
-                  </div>
-
-                  <div className="w-full flex space-x-1.5">
-                    <CheckIcon className="mt-[0.25rem] !size-5 text-blue-500" strokeWidth={3} />
-                    <div className="space-x-1">
-                      <span className="text-sm font-bold text-blue-500">필수</span>
-                      <span className="text-sm font-medium">개인정보 제 3자 제공 동의</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {currentStep === 2 && (
+              <Button type="button" onClick={handleRecommendAgain} disabled={isRecommending} className="font-semibold text-background">
+                다시 추천받기
+              </Button>
             )}
           </div>
-        ) : (
-          <div className="w-full h-full px-5 sm:px-8 py-6 md:py-10 flex flex-col items-center">
-            <div className="mb-10 flex items-end justify-between">
-              <div className="w-[80%]">
-                <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
-                <p className="text-2xl md:text-3xl font-bold mt-3">구현에 필요한 기능을 추천하고 있어요.</p>
-                <p className="text-sm md:text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">프로젝트에 꼭 필요한 기능만 추천해드릴께요.</p>
-              </div>
-            </div>
 
-            <div className="flex mt-16 md:mt-28 mb-64 md:mb-64">
-              <AIRecommendSkeleton isLoading={isRecommandFetch} />
-            </div>
-          </div>
-        )}
+          <Form {...form}>
+            <form className="flex flex-col gap-6">
+              {currentStep === 1 && <CreateProjectFormStep1 form={form} />}
+              {currentStep === 2 && <CreateProjectFormStep2 form={form} />}
+            </form>
+          </Form>
 
-        <div ref={targetRef} className="grow" />
+          {currentStep === 1 && <CreateProjectTermsSection />}
+        </div>
 
-        {!isRecommend && (
-          <div className="w-full sticky bottom-0 z-20 px-5 sm:px-8">
-            <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
-            <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
-              {currentStep > 1 && (
-                <Button
-                  type="button"
-                  className="flex-1 w-1/2 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-base md:text-lg font-semibold"
-                  variant="secondary"
-                  onClick={(e) => handlePrev(e)}
-                  disabled={isLoading || isStepping}
-                >
-                  이전
-                </Button>
-              )}
-              {currentStep < totalSteps ? (
-                <Button
-                  className="flex-1 w-1/2 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-base md:text-lg font-semibold"
-                  type="button"
-                  onClick={(e) => handleNext(e)}
-                  disabled={isLoading || isNextButtonDisabled}
-                >
-                  다음
-                </Button>
-              ) : (
-                <Button
-                  className="flex-1 w-1/2 h-[3.5rem] md:h-[3.75rem] rounded-2xl text-base md:text-lg font-semibold"
-                  disabled={isLoading || !isDirty || !isFormValid || isStepping}
-                  onClick={handleSubmit(onSubmit)}
-                >
-                  {isLoading ? "저장 중..." : "프로젝트 만들기"}
-                </Button>
-              )}
-            </div>
-          </div>
-        )}
+        <div ref={targetRef} className="relative grow h-1" />
+
+        <ProjectFormNavigation
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          isLoading={isLoading}
+          isStepping={isStepping}
+          isNextDisabled={isNextDisabled}
+          isSubmitDisabled={isSubmitDisabled}
+          onNext={handleNextWithScroll}
+          onPrev={handlePrev}
+          onSubmit={handleSubmitWithScroll}
+        />
       </div>
     </div>
   );

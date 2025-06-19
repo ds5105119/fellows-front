@@ -3,7 +3,7 @@
 import useSWR, { SWRResponse } from "swr";
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
 import { fetchEventSource, EventSourceMessage } from "@microsoft/fetch-event-source";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   ERPNextFile,
@@ -14,7 +14,7 @@ import {
   erpNextProjectSchema,
   ERPNextTaskPaginatedResponse,
   erpNextTaskPaginatedResponseSchema,
-  ProjectFeatureEstimateRequest,
+  ProjectFeatureEstimateResponse,
   projectFeatureEstimateResponseSchema,
   ProjectsPaginatedResponse,
   projectsPaginatedResponseSchema,
@@ -219,43 +219,107 @@ export const useTasks = (projectId: string, params: { size?: number; order_by?: 
 // ESTIMATE API
 // =================================================================
 
-// --- Feature Estimate (SWR 사용으로 리팩토링) ---
-const featureEstimateFetcher = async (url: string) => {
-  const response = await fetch(url);
+export const getEstimateFeatures = async ({
+  project_name,
+  project_summary,
+  readiness_level,
+  platforms,
+}: {
+  project_name: string;
+  project_summary: string;
+  readiness_level: string;
+  platforms: string[];
+}) => {
+  const params = new URLSearchParams();
+  params.append("project_name", project_name);
+  params.append("project_summary", project_summary);
+  params.append("readiness_level", readiness_level);
+  platforms.forEach((platform) => params.append("platforms", platform));
+
+  const url = `/api/service/project/estimate/feature?${params.toString()}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    redirect: "follow",
+    credentials: "include",
+  });
+
   const ratelimit = parseInt(response.headers.get("x-ratelimit-remaining") ?? "0");
+  const retryAfter = parseInt(response.headers.get("Retry-After") ?? "0");
 
-  if (response.status === 429) {
-    toast.warning("API 호출 한도를 초과했습니다. 잠시 후 다시 시도해주세요.");
-    throw new Error("Rate limit exceeded");
-  }
-  if (!response.ok) {
-    toast.error("기능 추천 목록을 가져오는데 실패했습니다.");
-    throw new Error("Failed to fetch features");
+  if (response.ok) {
+    const initalProject = await response.json();
+    const projectEstimateFeature = projectFeatureEstimateResponseSchema.parse(initalProject);
+    toast.success(`${ratelimit}회 남았어요.`);
+    return { projectEstimateFeature, ratelimit, retryAfter };
+  } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+    toast.error("API 호출에 실패했습니다.");
+  } else if (response.status === 429) {
+    toast.warning("API 한도를 초과했습니다.");
+  } else {
+    toast.error("API 호출에 실패했습니다.");
   }
 
-  const responseData = await response.json();
-  const parsedData = projectFeatureEstimateResponseSchema.parse(responseData);
-  toast.success(`기능 추천 완료! (남은 횟수: ${ratelimit}회)`);
-  return { data: parsedData, ratelimit };
+  throw new Error("API 호출에 실패했습니다.");
 };
 
-export const useGetEstimateFeatures = (params: ProjectFeatureEstimateRequest | null) => {
-  const getKey = () => {
-    if (!params || !params.project_name || !params.project_summary || params.platforms.length === 0) {
-      return null;
-    }
-    const searchParams = new URLSearchParams({
-      project_name: params.project_name,
-      project_summary: params.project_summary,
-      readiness_level: params.readiness_level,
-    });
-    params.platforms.forEach((p) => searchParams.append("platforms", p));
-    return `${API_BASE_URL}/estimate/feature?${searchParams.toString()}`;
-  };
+export const useGetEstimateFeatures = ({
+  project_name,
+  project_summary,
+  readiness_level,
+  platforms,
+}: {
+  project_name: string;
+  project_summary: string;
+  readiness_level: string;
+  platforms: string[];
+}) => {
+  const [data, setData] = useState<ProjectFeatureEstimateResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [ratelimit, setRatelimit] = useState(0);
+  const [retryAfter, setRetryAfter] = useState(0);
 
-  return useSWR(getKey, featureEstimateFetcher, {
-    shouldRetryOnError: false, // 429 에러 발생 시 자동 재시도 방지
-  });
+  const fetchData = useCallback(async () => {
+    if (!project_name || !project_summary || !readiness_level || platforms.length === 0) {
+      setData(null);
+      setLoading(false);
+      setError(null);
+      setSuccess(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+    setData(null);
+
+    try {
+      const result = await getEstimateFeatures({ project_name, project_summary, readiness_level, platforms });
+      setData(result.projectEstimateFeature);
+      setRatelimit(result.ratelimit);
+      setRetryAfter(result.retryAfter);
+      setSuccess(true);
+    } catch {
+      setError("An unexpected error occurred");
+      setSuccess(false);
+    } finally {
+      setLoading(false);
+    }
+  }, [project_name, project_summary, platforms, readiness_level]);
+
+  useEffect(() => {
+    if (success || error) {
+      const timer = setTimeout(() => {
+        if (success) setSuccess(false);
+        if (error) setError(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success, error]);
+
+  return { data, loading, error, success, ratelimit, retryAfter, fetchData };
 };
 
 // --- Project Estimate (Streaming) ---
