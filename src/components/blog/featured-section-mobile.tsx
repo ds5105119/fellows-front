@@ -115,12 +115,7 @@ export function FeaturedSectionMobile() {
     if (type === "featured") {
       return (
         <Link href={`/blog/${post.id}`} className="block">
-          <motion.article
-            className="group cursor-pointer h-full"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          >
+          <article className="group cursor-pointer h-full">
             <div className="rounded-3xl overflow-hidden h-full shadow-lg">
               <div className="relative aspect-[4/5] h-full">
                 <Image
@@ -145,7 +140,7 @@ export function FeaturedSectionMobile() {
                 </div>
               </div>
             </div>
-          </motion.article>
+          </article>
         </Link>
       );
     }
@@ -153,12 +148,7 @@ export function FeaturedSectionMobile() {
     if (type === "sidebar1") {
       return (
         <Link href={`/blog/${post.id}`} className="block">
-          <motion.article
-            className="group cursor-pointer h-full"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-          >
+          <article className="group cursor-pointer h-full">
             <div className="rounded-3xl overflow-hidden h-full">
               <div className="relative aspect-[4/5] h-full p-6 flex flex-col justify-between">
                 <div
@@ -204,7 +194,7 @@ export function FeaturedSectionMobile() {
                 </div>
               </div>
             </div>
-          </motion.article>
+          </article>
         </Link>
       );
     }
@@ -212,12 +202,7 @@ export function FeaturedSectionMobile() {
     // sidebar2 - HeatmapBackground
     return (
       <Link href={`/blog/${post.id}`} className="block">
-        <motion.article
-          className="group cursor-pointer h-full"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-        >
+        <article className="group cursor-pointer h-full">
           <div className="rounded-3xl overflow-hidden h-full">
             <div className="relative aspect-[4/5] h-full p-6 flex flex-col justify-between">
               <div
@@ -259,7 +244,7 @@ export function FeaturedSectionMobile() {
               </div>
             </div>
           </div>
-        </motion.article>
+        </article>
       </Link>
     );
   };
@@ -295,7 +280,7 @@ export function FeaturedSectionMobile() {
       {/* Section Header */}
       <div className="px-6 flex items-center justify-between mb-6">
         <div className="space-y-1">
-          <h2 className="text-2xl font-extrabold text-slate-900">최신 글</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900">최신 글</h2>
         </div>
       </div>
 
@@ -316,21 +301,15 @@ export function FeaturedSectionMobile() {
         ]}
       >
         <CarouselContent className="-ml-4">
-          {featuredPost && (
-            <CarouselItem className="pl-4 basis-[92%]">
-              <CarouselPostItem post={featuredPost} type="featured" />
-            </CarouselItem>
-          )}
-          {sidebarPost1 && (
-            <CarouselItem className="pl-4 basis-[92%]">
-              <CarouselPostItem post={sidebarPost1} type="sidebar1" />
-            </CarouselItem>
-          )}
-          {sidebarPost2 && (
-            <CarouselItem className="pl-4 basis-[92%]">
-              <CarouselPostItem post={sidebarPost2} type="sidebar2" />
-            </CarouselItem>
-          )}
+          <CarouselItem className="pl-4 basis-[92%]">
+            <CarouselPostItem post={featuredPost} type="featured" />
+          </CarouselItem>
+          <CarouselItem className="pl-4 basis-[92%]">
+            <CarouselPostItem post={sidebarPost1} type="sidebar1" />
+          </CarouselItem>
+          <CarouselItem className="pl-4 basis-[92%]">
+            <CarouselPostItem post={sidebarPost2} type="sidebar2" />
+          </CarouselItem>
         </CarouselContent>
 
         {/* Navigation Controls */}
