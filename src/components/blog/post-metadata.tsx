@@ -23,7 +23,7 @@ interface PostMetadataProps {
 export function PostMetadata({ metadata, onChange }: PostMetadataProps) {
   const [newTag, setNewTag] = useState("");
 
-  const categories = ["전체", "인사이트", "고객 사례", "가이드북"];
+  const categories = ["인사이트", "고객 사례", "가이드북"];
 
   const addTag = () => {
     if (newTag.trim() && !metadata.tags.includes(newTag.trim())) {
