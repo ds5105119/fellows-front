@@ -15,7 +15,7 @@ import { useInView } from "framer-motion";
 
 export default function CreateProject() {
   const targetRef = useRef<HTMLDivElement>(null);
-  const isReachedEnd = useInView(targetRef, { margin: "92px 0px 0px 0px", amount: 0 });
+  const isReachedEnd = useInView(targetRef, { margin: "92px 0px 0px 0px", amount: "some", once: false });
 
   const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
     useProjectForm();
