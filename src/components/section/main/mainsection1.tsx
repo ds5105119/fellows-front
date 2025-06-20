@@ -51,7 +51,7 @@ export default async function MainSection1() {
 
                 <div className="space-x-4 mt-3 flex">
                   <Button size="lg" className="px-16 h-16 text-lg rounded-xl bg-black" asChild>
-                    <Link href="/service/dashboard">시작하기</Link>
+                    <Link href="/redirect/start-new">시작하기</Link>
                   </Button>
                   <Button size="lg" variant="secondary" className="px-16 h-16 text-lg rounded-xl">
                     가격 및 플랜
