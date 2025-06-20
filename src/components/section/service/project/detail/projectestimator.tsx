@@ -5,6 +5,7 @@ import MarkdownPreview from "@/components/ui/markdownpreview";
 import { useEffect, useRef } from "react";
 import { ERPNextProject } from "@/@types/service/project";
 import { useEstimateProject } from "@/hooks/fetch/project";
+import { mutate } from "swr";
 
 interface Props {
   project: ERPNextProject;
@@ -20,6 +21,12 @@ export default function ProjectEstimator({ project }: Props) {
       startEstimate();
     }
   }, [project.custom_ai_estimate, startEstimate]);
+
+  useEffect(() => {
+    if (!project.custom_ai_estimate && markdown) {
+      mutate(`/api/service/project/${project.project_name}`);
+    }
+  }, [markdown, project]);
 
   return (
     <div className="w-full max-w-full flex flex-col space-y-6">
