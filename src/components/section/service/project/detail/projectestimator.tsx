@@ -6,7 +6,6 @@ import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ERPNextProject } from "@/@types/service/project";
 import { useEstimateProject } from "@/hooks/fetch/project";
-import { cn } from "@/lib/utils";
 
 interface Props {
   project: ERPNextProject;
@@ -34,20 +33,7 @@ export default function ProjectEstimator({ project }: Props) {
               견적 다시 작성하기
             </Button>
           </div>
-          <div
-            className={cn(
-              "prose prose-sm md:prose-base max-w-none",
-              "prose-headings:font-medium prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg",
-              "prose-a:text-primary prose-img:rounded-md",
-              "prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl",
-              "[&_pre]:whitespace-pre-wrap [&_pre]:break-words",
-              "[&_code]:break-words",
-              "[&_*]:max-w-full [&_*]:break-words [&_*]:overflow-hidden",
-              "min-w-0 break-words overflow-x-hidden"
-            )}
-          >
-            <MarkdownPreview loading={isLoading}>{markdown}</MarkdownPreview>
-          </div>
+          <MarkdownPreview loading={isLoading}>{markdown}</MarkdownPreview>
         </div>
       </div>
     </div>

@@ -2,14 +2,14 @@ import { auth, signIn } from "@/auth";
 import { SessionProvider } from "next-auth/react";
 import { Session } from "next-auth";
 import { erpNextProjectSchema, ERPNextProject } from "@/@types/service/project";
-import { ProjectHeader } from "@/components/section/service/project/main/project-detail/project-header";
-import { ProjectBasicInfo } from "@/components/section/service/project/main/project-detail/project-basic-info";
-import { ProjectStatus } from "@/components/section/service/project/main/project-detail/project-status";
-import { ProjectDetails } from "@/components/section/service/project/main/project-detail/project-details";
-import { ProjectNotices } from "@/components/section/service/project/main/project-detail/project-notices";
-import { ProjectActions } from "@/components/section/service/project/main/project-detail/project-actions";
+import { ProjectHeader } from "@/components/section/service/project/detail/project-header";
+import { ProjectBasicInfo } from "@/components/section/service/project/detail/project-basic-info";
+import { ProjectStatus } from "@/components/section/service/project/detail/project-status";
+import { ProjectDetails } from "@/components/section/service/project/detail/project-details";
+import { ProjectNotices } from "@/components/section/service/project/detail/project-notices";
+import { ProjectActions } from "@/components/section/service/project/detail/project-actions";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import ProjectDetailSide from "@/components/section/service/project/main/project-detail/project-detail-side";
+import ProjectDetailSide from "@/components/section/service/project/detail/project-detail-side";
 
 const getProject = async ({ project_id, session }: { project_id: string; session: Session }): Promise<ERPNextProject> => {
   const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}`;

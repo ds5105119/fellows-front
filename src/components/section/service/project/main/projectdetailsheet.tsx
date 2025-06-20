@@ -12,16 +12,16 @@ import { useProject, useTasks } from "@/hooks/fetch/project";
 import { type ERPNextProject } from "@/@types/service/project";
 
 // 분리된 컴포넌트들 import
-import { CustomerInfo } from "./project-detail/customer-info";
-import { TasksList } from "./project-detail/tasks-list";
-import { FilesList } from "./project-detail/files-list";
-import { ProjectHeader } from "./project-detail/project-header";
-import { ProjectBasicInfo } from "./project-detail/project-basic-info";
-import { ProjectStatus } from "./project-detail/project-status";
-import { ProjectDetails } from "./project-detail/project-details";
-import { AIEstimate } from "./project-detail/ai-estimate";
-import { ProjectActions } from "./project-detail/project-actions";
-import { ProjectNotices } from "./project-detail/project-notices";
+import { CustomerInfo } from "../detail/customer-info";
+import { TasksList } from "../detail/tasks-list";
+import { FilesList } from "../detail/files-list";
+import { ProjectHeader } from "../detail/project-header";
+import { ProjectBasicInfo } from "../detail/project-basic-info";
+import { ProjectStatus } from "../detail/project-status";
+import { ProjectDetails } from "../detail/project-details";
+import { ProjectActions } from "../detail/project-actions";
+import { ProjectNotices } from "../detail/project-notices";
+import ProjectEstimator from "../detail/projectestimator";
 
 interface ProjectDetailSheetProps {
   project: ERPNextProject | null;
@@ -180,7 +180,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             <ProjectBasicInfo project={project} />
             <ProjectStatus project={project} />
             <ProjectDetails project={project} />
-            <AIEstimate project={project} />
+            <ProjectEstimator project={project} />
             <ProjectActions project={project} />
             <ProjectNotices />
           </div>
@@ -228,7 +228,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
                 <ProjectBasicInfo project={project} />
                 <ProjectStatus project={project} />
                 <ProjectDetails project={project} />
-                <AIEstimate project={project} />
+                <ProjectEstimator project={project} />
                 <ProjectActions project={project} />
                 <ProjectNotices />
               </div>
