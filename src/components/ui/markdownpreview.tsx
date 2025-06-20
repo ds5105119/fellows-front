@@ -78,8 +78,6 @@ export default function MarkdownPreview({
     const [scrollLeft, setScrollLeft] = useState(0);
     const [canScroll, setCanScroll] = useState(false);
     const [isTouching, setIsTouching] = useState(false);
-    const [touchStartX, setTouchStartX] = useState(0);
-    const [touchScrollLeft, setTouchScrollLeft] = useState(0);
     const [lastTouchX, setLastTouchX] = useState(0);
 
     // 스크롤 가능 여부 체크
@@ -169,9 +167,7 @@ export default function MarkdownPreview({
         const touchX = touch.clientX;
 
         setIsTouching(true);
-        setTouchStartX(touchX);
         setLastTouchX(touchX);
-        setTouchScrollLeft(tableWrapperRef.current.scrollLeft);
       },
       [canScroll]
     );
