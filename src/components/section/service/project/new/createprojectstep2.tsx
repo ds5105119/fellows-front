@@ -7,13 +7,13 @@ import { FeatureItemWithTooltip } from "@/components/form/featureitemwithtooltip
 import { UserERPNextProject } from "@/@types/service/project";
 import { SwitchIndicator } from "@/components/ui/switch-indicator";
 import FileInput from "@/components/form/fileinput";
-import DatePickerWithRange from "@/components/form/datepickerwithrange";
 import TagInput from "@/components/form/taginput";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
+import DatePicker from "@/components/form/datepicker";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -109,32 +109,14 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
               <FormLabel className="text-sm font-medium">희망 일정 및 유지보수</FormLabel>
               <FormControl>
                 <div className="rounded-t-2xl overflow-hidden">
-                  <DatePickerWithRange
-                    value={{
-                      from: getValues("expected_start_date") ? new Date(getValues("expected_start_date")!) : undefined,
-                      to: getValues("expected_end_date") ? new Date(getValues("expected_end_date")!) : undefined,
-                    }}
-                    onSelect={(range) => {
-                      const prevStartDateString = getValues("expected_start_date") || undefined;
-                      const newStartDateString = range?.from;
-                      const newDesiredDeadlineString = range?.to;
-                      setValue("expected_start_date", range?.from, {
+                  <DatePicker
+                    value={getValues("expected_end_date") ? new Date(getValues("expected_end_date")!) : undefined}
+                    onSelect={(date) =>
+                      setValue("expected_end_date", date, {
                         shouldValidate: true,
                         shouldDirty: true,
-                      });
-
-                      if (prevStartDateString == newDesiredDeadlineString || newStartDateString == newDesiredDeadlineString) {
-                        setValue("expected_end_date", newStartDateString, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        });
-                      } else if (prevStartDateString != newDesiredDeadlineString && !!prevStartDateString) {
-                        setValue("expected_end_date", newDesiredDeadlineString, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        });
-                      }
-                    }}
+                      })
+                    }
                   />
                 </div>
               </FormControl>

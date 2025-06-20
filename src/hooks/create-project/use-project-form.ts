@@ -106,10 +106,7 @@ export function useProjectForm() {
   // 폼 제출 함수 - react-hook-form의 handleSubmit과 함께 사용
   const onSubmit = useCallback(
     async (values: UserERPNextProject) => {
-      console.log("Form submission started", { values, isDirty, isValid });
-
       if (isStepping) {
-        console.log("Submission blocked: isStepping is true");
         return;
       }
 

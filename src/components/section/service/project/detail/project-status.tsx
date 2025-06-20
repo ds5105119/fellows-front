@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { DownloadIcon, XIcon } from "lucide-react";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import ProjectEstimator from "./projectestimator";
+import SelectLogo from "@/components/resource/selectlogo";
 
 const STATUS_MAPPING: Record<string, string> = {
   draft: "초안",
@@ -79,7 +80,10 @@ export function ProjectStatus({ project }: ProjectStatusProps) {
                 </div>
               </div>
               <div className="p-8">
-                <div>{project.custom_project_title} 예상 견적서</div>
+                <div className="flex flex-col space-y-2 pb-8">
+                  <SelectLogo />
+                  <div className="text-2xl md:text-4xl font-extrabold">{project.custom_project_title} 예상 견적서</div>
+                </div>
                 <ProjectEstimator project={project} />
               </div>
             </div>
