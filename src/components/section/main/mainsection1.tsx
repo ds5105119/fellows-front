@@ -72,8 +72,8 @@ export default async function MainSection1() {
           <AspectRatio ratio={987 / 1040}>
             <Image src="/hero-desktop-2.jpg" fill alt="Image" className="rounded-md object-cover" priority />
             <div className="absolute inset-0 flex z-10 items-center justify-center">
-              <div className="w-[85%] h-[82%] flex flex-col gap-3 text-end items-end justify-end">
-                <div className="flex w-full mb-auto">
+              <div className="w-[85%] h-[86%] flex flex-col gap-3 text-end items-end justify-end">
+                <div className="flex w-full mb-auto mt-1.5">
                   <div className="w-fit">
                     <Link
                       href="/service/welfare"
