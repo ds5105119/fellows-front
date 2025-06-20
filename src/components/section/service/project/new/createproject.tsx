@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import CreateProjectFormStep1 from "./createprojectstep1";
 import CreateProjectFormStep2 from "./createprojectstep2";
 import CreateProjectSide from "./createprojectside";
@@ -15,12 +15,18 @@ import { useInView } from "framer-motion";
 
 export default function CreateProject() {
   const targetRef = useRef<HTMLDivElement>(null);
-  const isReachedEnd = useInView(targetRef, { margin: "6px 0px 6px 0px", amount: 0 });
+  const isReachedEnd = useInView(targetRef, { margin: "3px 0px 0px 0px", amount: 0 });
 
   const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
     useProjectForm();
 
-  const { isRecommending, handleRecommendAgain } = useFeatureRecommendation(form, currentStep);
+  const { isSuccess, isRecommending, handleRecommendAgain } = useFeatureRecommendation(form, currentStep);
+
+  useEffect(() => {
+    if (!isSuccess && !isRecommending) {
+      handlePrev();
+    }
+  }, [isSuccess, isRecommending]);
 
   const scrollToEnd = () => {
     const target = targetRef.current;

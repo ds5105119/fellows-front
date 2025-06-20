@@ -8,6 +8,7 @@ export function useFeatureRecommendation(form: UseFormReturn<UserERPNextProject>
   const [isRecommending, setIsRecommending] = useState(false);
   const [isFirstTimeInStep2, setIsFirstTimeInStep2] = useState(true);
   const [hasCompleted, setHasCompleted] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const timeoutRefs = useRef<{
     recommend?: NodeJS.Timeout;
@@ -66,13 +67,20 @@ export function useFeatureRecommendation(form: UseFormReturn<UserERPNextProject>
   // Apply recommendations to form
   useEffect(() => {
     if (hasCompleted && estimateFeatures?.data?.feature_list?.length && estimateFeatures.data.feature_list.length > 0) {
-      const features = estimateFeatures.data.feature_list.map((feature) => ({
-        doctype: "Features" as const,
-        feature,
-      }));
+      if (estimateFeatures.data.feature_list.length == 1 && estimateFeatures.data.feature_list[0] == "false") {
+        setIsSuccess(false);
+        toast.success(`프로젝트 이름 및 설명이 부족해요.`);
+      } else {
+        setIsSuccess(true);
 
-      form.setValue("custom_features", features);
-      toast.success(`${features.length}개의 기능을 추천받았습니다!`);
+        const features = estimateFeatures.data.feature_list.map((feature) => ({
+          doctype: "Features" as const,
+          feature,
+        }));
+
+        form.setValue("custom_features", features);
+        toast.success(`${features.length}개의 기능을 추천받았습니다!`);
+      }
     }
   }, [hasCompleted, estimateFeatures?.data?.feature_list, form]);
 
@@ -86,6 +94,7 @@ export function useFeatureRecommendation(form: UseFormReturn<UserERPNextProject>
   }, []);
 
   return {
+    isSuccess,
     isRecommending,
     handleRecommendAgain,
   };
