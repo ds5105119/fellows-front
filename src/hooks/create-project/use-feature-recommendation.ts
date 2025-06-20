@@ -69,7 +69,7 @@ export function useFeatureRecommendation(form: UseFormReturn<UserERPNextProject>
     if (hasCompleted && estimateFeatures?.data?.feature_list?.length && estimateFeatures.data.feature_list.length > 0) {
       if (estimateFeatures.data.feature_list.length == 1 && estimateFeatures.data.feature_list[0] == "false") {
         setIsSuccess(false);
-        toast.success(`프로젝트 이름 및 설명이 부족해요.`);
+        toast.warning(`프로젝트 이름 및 설명이 부족해요.`);
       } else {
         setIsSuccess(true);
 
