@@ -125,7 +125,6 @@ export function useProjectForm() {
 
       setIsLoading(true);
       try {
-        console.log("Creating project with values:", values);
         const project = await createProject(values);
         if (!project) throw new Error("Project creation failed");
 
@@ -145,7 +144,6 @@ export function useProjectForm() {
 
   // 제출 버튼 클릭 핸들러
   const handleSubmitClick = useCallback(() => {
-    console.log("Submit button clicked");
     form.handleSubmit(onSubmit)();
   }, [form, onSubmit]);
 

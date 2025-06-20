@@ -103,7 +103,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
       <div className="w-full flex flex-col space-y-1">
         <FormField
           control={control}
-          name="expected_start_date"
+          name="expected_end_date"
           render={({}) => (
             <FormItem>
               <FormLabel className="text-sm font-medium">희망 일정 및 유지보수</FormLabel>
@@ -112,7 +112,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                   <DatePicker
                     value={getValues("expected_end_date") ? new Date(getValues("expected_end_date")!) : undefined}
                     onSelect={(date) =>
-                      setValue("expected_end_date", date, {
+                      setValue("expected_end_date", dayjs(date).format("YYYY-MM-DD"), {
                         shouldValidate: true,
                         shouldDirty: true,
                       })
