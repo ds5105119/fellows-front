@@ -172,7 +172,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <div className="flex space-x-4">
             <Link
               className="flex items-center px-8 h-12 md:h-16 md:text-lg font-medium text-white rounded-xl bg-black hover:bg-zinc-800 transition-colors duration-300"
-              href="/service/dashboard"
+              href="/redirect/start-new"
             >
               시작하기
             </Link>

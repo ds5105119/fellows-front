@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 import "../globals.css";
 import SettingsSidebar from "@/components/sidebar/settings-sidebar";
 import SettingHeader from "@/components/header/settingheader";
+import GoogleAnalytics from "@/lib/googleanalytics";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
@@ -57,6 +58,7 @@ export default async function RootLayout({
           </SidebarInset>
           <Analytics />
           <SpeedInsights />
+          <GoogleAnalytics />
         </SidebarProvider>
 
         <Toaster

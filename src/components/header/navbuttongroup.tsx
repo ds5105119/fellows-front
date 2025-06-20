@@ -67,7 +67,7 @@ export default function NavButtonGroup({ session, ...props }: NavButtonGroupProp
             style={{ cursor: "pointer" }}
           >
             {session?.user ? (
-              <Link href="/service/dashboard" className="flex w-full h-full items-center">
+              <Link href="/redirect/start-new" className="flex w-full h-full items-center">
                 지금 바로 시작하기
               </Link>
             ) : (

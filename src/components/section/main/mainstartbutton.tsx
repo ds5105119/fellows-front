@@ -32,7 +32,7 @@ export default function MainStartButton() {
         <div className="w-full h-4" />
         <div className="w-full flex pb-4 pt-3">
           <Button size="lg" className="w-full px-16 h-[3.5rem] md:h-[3.75rem] text-lg font-semibold rounded-2xl bg-black active:bg-black" asChild>
-            <Link href="/service/dashboard">시작하기</Link>
+            <Link href="/redirect/start-new">시작하기</Link>
           </Button>
         </div>
       </motion.div>

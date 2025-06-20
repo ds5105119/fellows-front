@@ -212,9 +212,9 @@ export default function MobileHeader({ session }: { session: Session | null }) {
                 }}
               >
                 {/* Login Button */}
-                <button className="flex items-center gap-x-2 px-5 py-2.5 rounded-full bg-black text-white font-semibold w-fit">
+                <Link href="/redirect/start-new" className="flex items-center gap-x-2 px-5 py-2.5 rounded-full bg-black text-white font-semibold w-fit">
                   <span>지금 바로 시작하기 ✨</span>
-                </button>
+                </Link>
               </motion.div>
             </motion.div>
           )}
