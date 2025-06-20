@@ -57,7 +57,7 @@ export function ProjectStatus({ project }: ProjectStatusProps) {
               <p>AI 견적서 보기</p>
             </button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-full sm:max-w-full md:w-[45%] md:min-w-[728px] [&>button:first-of-type]:hidden gap-0">
+          <SheetContent side="left" className="w-full h-full sm:max-w-full md:w-[45%] md:min-w-[728px] [&>button:first-of-type]:hidden gap-0">
             <SheetHeader className="sr-only">
               <SheetTitle>AI 견적서</SheetTitle>
             </SheetHeader>
