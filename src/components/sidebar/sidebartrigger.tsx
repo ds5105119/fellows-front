@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { useSidebar } from "../ui/sidebar";
-import { ChevronsLeft, ChevronsRight } from "lucide-react";
+import { PanelLeftOpen, PanelLeftClose } from "lucide-react";
 
 export default function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar, open } = useSidebar();
@@ -21,7 +21,7 @@ export default function SidebarTrigger({ className, onClick, ...props }: React.C
       }}
       {...props}
     >
-      {open ? <ChevronsLeft /> : <ChevronsRight />}
+      {open ? <PanelLeftClose /> : <PanelLeftOpen />}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

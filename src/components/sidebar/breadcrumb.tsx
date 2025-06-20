@@ -30,6 +30,7 @@ export default function BreadCrumb() {
         {pathNames.map((segment, index) => {
           const href = "/" + pathNames.slice(0, index + 1).join("/");
           const name = nameMapping[segment];
+          const nextName = pathNames.length > index + 1 ? nameMapping[pathNames[index + 1]] : undefined;
 
           if (!name) {
             return null;
@@ -39,8 +40,14 @@ export default function BreadCrumb() {
             <BreadcrumbPage key={index}>{name}</BreadcrumbPage>
           ) : (
             <div className="flex items-center gap-2" key={index}>
-              <BreadcrumbSeparator />
-              <BreadcrumbLink href={href}>{name}</BreadcrumbLink>
+              {nextName ? (
+                <>
+                  <BreadcrumbLink href={href}>{name}</BreadcrumbLink>
+                  <BreadcrumbSeparator className="[&>svg]:size-4" />
+                </>
+              ) : (
+                <BreadcrumbPage key={index}>{name}</BreadcrumbPage>
+              )}
             </div>
           );
         })}
@@ -48,5 +55,3 @@ export default function BreadCrumb() {
     </Breadcrumb>
   );
 }
-
-//               {index !== pathNames.length - 1 && <BreadcrumbSeparator className="hidden md:block" />}
