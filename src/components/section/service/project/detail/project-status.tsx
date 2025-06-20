@@ -90,7 +90,7 @@ export function ProjectStatus({ project, session }: { project: ERPNextProject; s
                   <hr className="border-gray-100" />
 
                   <div className="flex w-full justify-between">
-                    <div className="flex flex-col space-y-2">
+                    <div className="flex w-1/2 flex-col space-y-2">
                       <div className="text-xs font-semibold text-muted-foreground">공급자</div>
                       <div className="text-base font-bold text-black">Fellows</div>
                       <div className="text-xs font-semibold text-muted-foreground">회사명: IIH</div>
@@ -98,7 +98,7 @@ export function ProjectStatus({ project, session }: { project: ERPNextProject; s
                       <div className="text-xs font-semibold text-muted-foreground">주소: 서울특별시 강남구 역삼동 123-456</div>
                     </div>
 
-                    <div className="flex flex-col space-y-2">
+                    <div className="flex w-1/2 flex-col space-y-2">
                       <div className="text-xs font-semibold text-muted-foreground">수신자</div>
                       <div className="text-base font-bold text-black">{session.user.name}</div>
                       <div className="text-xs font-semibold text-muted-foreground">이메일: {session.user.email}</div>
