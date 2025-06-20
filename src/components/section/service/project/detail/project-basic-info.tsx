@@ -21,7 +21,7 @@ export function ProjectBasicInfo({ project }: ProjectBasicInfoProps) {
   }, []);
 
   return (
-    <div className="w-full flex flex-col pt-6 px-5 md:px-8 space-y-5">
+    <div className="w-full flex flex-col space-y-5">
       <h2 className="text-4xl font-bold break-keep">
         {project.custom_emoji} {project.custom_project_title}
       </h2>

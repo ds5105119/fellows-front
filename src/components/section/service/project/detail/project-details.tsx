@@ -14,7 +14,7 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
   const [toggle, setToggle] = useState(false);
 
   return (
-    <div className="w-full flex flex-col pt-6 pb-6 px-5 md:px-8 space-y-4 border-b-1 border-b-sidebar-border">
+    <div className="w-full flex flex-col space-y-4">
       <div className="w-full flex items-center space-x-2">
         <FileText className="!size-5" strokeWidth={2.2} />
         <span className="text-lg font-semibold">계약 내용</span>

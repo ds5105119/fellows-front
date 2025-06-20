@@ -21,7 +21,6 @@ import { ProjectStatus } from "../detail/project-status";
 import { ProjectDetails } from "../detail/project-details";
 import { ProjectActions } from "../detail/project-actions";
 import { ProjectNotices } from "../detail/project-notices";
-import ProjectEstimator from "../detail/projectestimator";
 
 interface ProjectDetailSheetProps {
   project: ERPNextProject | null;
@@ -176,15 +175,25 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
         {/* 데스크톱 왼쪽 패널 */}
         <div className="hidden md:block md:col-span-3 h-full overflow-y-auto scrollbar-hide border-r-1 border-b-sidebar-border">
           <div className="flex flex-col h-full w-full">
-            <ProjectHeader project={project} />
-            <ProjectBasicInfo project={project} />
-            <ProjectStatus project={project} />
-            <ProjectDetails project={project} />
-            <div className="p-8">
-              <ProjectEstimator project={project} />
+            <div className="pt-12 pb-5 px-8">
+              <ProjectHeader project={project} />
             </div>
+
+            <div className="px-8 py-6">
+              <ProjectBasicInfo project={project} />
+            </div>
+
+            <ProjectStatus project={project} />
+
+            <div className="p-8">
+              <ProjectDetails project={project} />
+            </div>
+
             <ProjectActions project={project} />
-            <ProjectNotices />
+
+            <div className="px-8 pt-1 pb-5">
+              <ProjectNotices />
+            </div>
           </div>
         </div>
 
@@ -226,15 +235,25 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
           <div className="w-full grow scrollbar-hide">
             {activeMobileTab === 0 && (
               <div className="flex flex-col h-full w-full">
-                <ProjectHeader project={project} />
-                <ProjectBasicInfo project={project} />
-                <ProjectStatus project={project} />
-                <ProjectDetails project={project} />
-                <div className="p-5">
-                  <ProjectEstimator project={project} />
+                <div className="pt-12 pb-5 px-4">
+                  <ProjectHeader project={project} />
                 </div>
+
+                <div className="px-4 py-6">
+                  <ProjectBasicInfo project={project} />
+                </div>
+
+                <ProjectStatus project={project} />
+
+                <div className="p-4">
+                  <ProjectDetails project={project} />
+                </div>
+
                 <ProjectActions project={project} />
-                <ProjectNotices />
+
+                <div className="px-4 pt-1 pb-5">
+                  <ProjectNotices />
+                </div>
               </div>
             )}
             {activeMobileTab === 1 && (
