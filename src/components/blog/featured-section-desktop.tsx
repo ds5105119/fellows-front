@@ -181,11 +181,6 @@ export function FeaturedSectionDesktop() {
                 </h3>
 
                 <p className="text-lg xl:text-xl font-medium text-muted-foreground leading-relaxed">{featuredPost.summary}</p>
-
-                <div className="flex items-center space-x-2 text-blue-600 font-semibold pt-2">
-                  <span>자세히 읽기</span>
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                </div>
               </div>
             </motion.article>
           </Link>
