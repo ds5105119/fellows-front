@@ -53,6 +53,8 @@ export default async function Page() {
               </div>
             </div>
 
+            <hr className="border-gray-200" />
+
             <div className="flex space-x-3.5 w-full p-6">
               <div className="mt-[3px] shrink-0 flex items-center justify-center rounded-full size-5 bg-blue-400 text-white text-xs font-bold">3</div>
               <div className="flex flex-col space-y-1">
