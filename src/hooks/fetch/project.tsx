@@ -7,6 +7,7 @@ import { useCallback, useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   ERPNextFile,
+  ERPNextFileRequest,
   erpNextFileSchema,
   ERPNextFilesResponse,
   erpNextFilesResponseSchema,
@@ -143,53 +144,47 @@ export const cancelSubmitProject = async (projectId: string): Promise<void> => {
 // =================================================================
 
 // --- CREATE ---
-export const createFile = async (projectId: string, filePayload: Omit<ERPNextFile, "creation" | "modified">): Promise<ERPNextFile> => {
-  const response = await fetch(`${API_BASE_URL}/${projectId}/files`, {
-    method: "PUT", // API 라우터에 따라 PUT 사용
+export const createFile = async ({ projectId, filePayload }: { projectId: string; filePayload: Omit<ERPNextFile, "creation" | "modified"> }) => {
+  await fetch(`${API_BASE_URL}/${projectId}/files`, {
+    method: "POST", // API 라우터에 따라 PUT 사용
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(filePayload),
   });
-
-  if (!response.ok) {
-    toast.error("파일 업로드 중 오류가 발생했습니다.");
-    throw new Error("Failed to upload file");
-  }
-
-  // API가 생성된 파일 객체를 반환한다고 가정
-  const responseData = await response.json();
-  return erpNextFileSchema.parse(responseData);
 };
 
 // --- READ (Single) ---
-export const useFile = (projectId: string | null, fileKey: string | null): SWRResponse<ERPNextFile> => {
-  const url = projectId && fileKey ? `${API_BASE_URL}/${projectId}/files/${fileKey}` : null;
+export const useFile = ({ projectId, key }: { projectId: string; key: string }): SWRResponse<ERPNextFile> => {
+  const url = projectId && key ? `${API_BASE_URL}/${projectId}/files/${key}` : null;
   return useSWR(url, async (url: string) => erpNextFileSchema.parse(await fetcher(url)));
 };
 
 // --- READ (List) ---
-const filesGetKeyFactory = (projectId: string): SWRInfiniteKeyLoader<ERPNextFilesResponse> => {
+const filesGetKeyFactory = ({ projectId, params }: { projectId: string; params: ERPNextFileRequest }): SWRInfiniteKeyLoader<ERPNextFilesResponse> => {
   return (pageIndex, previousPageData) => {
-    if (!projectId) return null;
     if (previousPageData && !previousPageData.items.length) return null;
-    return `${API_BASE_URL}/${projectId}/files?page=${pageIndex}`;
+
+    const searchParams = new URLSearchParams([
+      ["page", `${pageIndex}`],
+      ["size", `${params.size}`],
+    ]);
+    if (params.order_by) searchParams.append("order_by", params.order_by);
+    if (params.task) searchParams.append("task", params.task);
+    if (params.issue) searchParams.append("issue", params.issue);
+
+    return `${API_BASE_URL}/${projectId}/files?${searchParams.toString()}`;
   };
 };
 
-export const useFiles = (projectId: string) => {
-  const getKey = filesGetKeyFactory(projectId);
+export const useFiles = ({ projectId, params }: { projectId: string; params: ERPNextFileRequest }) => {
+  const getKey = filesGetKeyFactory({ projectId, params });
   return useSWRInfinite(getKey, async (url: string) => erpNextFilesResponseSchema.parse(await fetcher(url)));
 };
 
 // --- DELETE ---
-export const deleteFile = async (projectId: string, fileKey: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/${projectId}/files/${fileKey}`, {
+export const deleteFile = async ({ projectId, key }: { projectId: string; key: string }): Promise<void> => {
+  await fetch(`${API_BASE_URL}/${projectId}/files/${key}`, {
     method: "DELETE",
   });
-  if (!response.ok) {
-    toast.error("파일 삭제 중 오류가 발생했습니다.");
-    throw new Error("Failed to delete file");
-  }
-  toast.success("파일이 삭제되었습니다.");
 };
 
 // =================================================================

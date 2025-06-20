@@ -136,6 +136,9 @@ export default function ProjectContainer({
         revalidate: false,
       });
       await deleteProject(project.project_name);
+      meta.swr.mutate((pages) => pages && pages.map((page) => ({ items: page.items.filter((item) => item.project_name != project.project_name) })), {
+        revalidate: false,
+      });
     }
   };
 

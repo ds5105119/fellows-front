@@ -27,18 +27,6 @@ const containerVariants = {
   },
 };
 
-const headerVariants = {
-  hidden: { opacity: 0, y: -10 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-      ease: [0.25, 0.46, 0.45, 0.94] as const,
-    },
-  },
-};
-
 export function TaskItemSkeleton() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex space-x-2 px-4 py-4">
@@ -76,11 +64,6 @@ export function TasksList({ tasks, totalTasksCount, tasksLoading, onLoadMore }: 
     }
   }, [isTaskInfRefView, tasksLoading, onLoadMore]);
 
-  // 초기 로딩 상태
-  if (tasks.isLoading && !tasks.data) {
-    return <TasksListSkeleton />;
-  }
-
   // 에러 상태
   if (tasks.error) {
     return (
@@ -102,31 +85,11 @@ export function TasksList({ tasks, totalTasksCount, tasksLoading, onLoadMore }: 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col space-y-1 pt-6">
       {/* 헤더 */}
-      <motion.div variants={headerVariants} className="flex items-center justify-between mx-4 mb-2">
+      <div className="flex items-center justify-between mx-4 mb-2">
         <div className="text-sm font-bold text-gray-900">테스크: {totalTasksCount}개</div>
-        {tasksLoading && totalTasksCount > 0 && (
-          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}>
-            <div className="flex items-center justify-center space-x-1 p-4">
-              {[0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  className="w-2 h-2 bg-blue-500 rounded-full"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 1, 0.5],
-                  }}
-                  transition={{
-                    duration: 1.2,
-                    repeat: Number.POSITIVE_INFINITY,
-                    delay: i * 0.2,
-                    ease: "easeInOut",
-                  }}
-                />
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </motion.div>
+      </div>
+
+      {tasks.isLoading && !tasks.data && <TasksListSkeleton />}
 
       {/* 태스크 리스트 */}
       <AnimatePresence mode="wait">

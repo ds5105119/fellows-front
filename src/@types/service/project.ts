@@ -281,9 +281,8 @@ export const erpNextFileSchema = z
 export type ERPNextFile = z.infer<typeof erpNextFileSchema>;
 
 export const erpNextFileRequestSchema = z.object({
-  page: z.number().int().nonnegative().default(0),
   size: z.number().int().min(0).max(100).default(20),
-  order_by: z.string().default("modified"),
+  order_by: z.string().optional().nullable(),
   task: z.string().optional().nullable(),
   issue: z.string().optional().nullable(),
 });

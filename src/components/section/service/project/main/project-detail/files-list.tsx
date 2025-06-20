@@ -6,19 +6,19 @@ import { cn } from "@/lib/utils";
 import { fileIconMap, getFileExtension } from "@/components/form/fileinput";
 import { UploadProgressIndicator } from "@/components/ui/uploadprogressindicator";
 import { getSSECPresignedPutUrl, removeFile, SSECFileDownloadButton, uploadFileToSSECPresignedUrl } from "@/hooks/fetch/presigned";
-import { ERPNextFile, erpNextFileSchema, ERPNextProject, ERPNextTaskForUser, type ERPNextFilesResponse } from "@/@types/service/project";
+import { ERPNextFile, erpNextFileSchema, ERPNextProject, ERPNextTaskForUser } from "@/@types/service/project";
 import { toast } from "sonner";
-import { SWRInfiniteResponse } from "swr/infinite";
-import { createFile } from "@/hooks/fetch/project";
+import { createFile, deleteFile, useFiles } from "@/hooks/fetch/project";
 
 interface FilesListProps {
-  files: SWRInfiniteResponse<ERPNextFilesResponse>;
   project: ERPNextProject;
   task?: ERPNextTaskForUser;
 }
 
-export function FilesList({ files, project, task }: FilesListProps) {
+export function FilesList({ project, task }: FilesListProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const files = useFiles({ projectId: project.project_name, params: { size: 20 } });
   const allFiles = files.data?.flatMap((page) => page.items) || [];
 
   const [fileProgress, setFileProgress] = useState(() =>
@@ -92,7 +92,7 @@ export function FilesList({ files, project, task }: FilesListProps) {
           },
         });
 
-        await createFile(project.project_name, fileRecord);
+        await createFile({ projectId: project.project_name, filePayload: fileRecord });
 
         toast.success("파일이 성공적으로 업로드되었습니다.");
       } catch (error) {
@@ -121,6 +121,7 @@ export function FilesList({ files, project, task }: FilesListProps) {
       if (!sse_key) return;
       try {
         await removeFile(key, sse_key);
+        await deleteFile({ projectId: project.project_name, key });
 
         files.mutate(
           (currentPages) => {

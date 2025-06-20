@@ -15,6 +15,7 @@ import { type ERPNextProject } from "@/@types/service/project";
 import { OverviewContent } from "./project-detail/overview-content";
 import { CustomerInfo } from "./project-detail/customer-info";
 import { TasksList } from "./project-detail/tasks-list";
+import { FilesList } from "./project-detail/files-list";
 
 interface ProjectDetailSheetProps {
   project: ERPNextProject | null;
@@ -66,6 +67,9 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
         <span>작업 현황</span>
         <span className="text-xs">{totalTasksCount}</span>
       </div>,
+      <div className="flex space-x-1 items-center" key="overview">
+        <span>파일</span>
+      </div>,
     ],
     [totalTasksCount]
   );
@@ -103,6 +107,9 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
       <div className="flex space-x-1 items-center" key="task-status">
         <span>작업 현황</span>
         <span className="text-xs">{totalTasksCount}</span>
+      </div>,
+      <div className="flex space-x-1 items-center" key="overview">
+        <span>파일</span>
       </div>,
     ],
     [totalTasksCount]
@@ -216,6 +223,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
               {activeTab2 === 0 && (
                 <TasksList tasks={tasks} totalTasksCount={totalTasksCount} tasksLoading={tasksLoading ?? false} onLoadMore={handleLoadMoreTasks} />
               )}
+              {activeTab2 === 1 && project && <FilesList project={project} />}
             </div>
           </div>
         </div>

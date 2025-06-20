@@ -40,7 +40,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ proj
   }
 }
 
-export async function PUT(request: Request, { params }: { params: Promise<{ project_id: string }> }) {
+export async function POST(request: Request, { params }: { params: Promise<{ project_id: string }> }) {
   const session = await auth();
   const body = await request.json();
 
@@ -49,7 +49,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ proj
 
   try {
     await fetch(url, {
-      method: "PUT",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
@@ -63,4 +63,6 @@ export async function PUT(request: Request, { params }: { params: Promise<{ proj
 
     return NextResponse.json({ error: "Failed to fetch project data" }, { status: 500 });
   }
+
+  return NextResponse.json({ message: "File Created successfully" });
 }

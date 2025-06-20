@@ -66,10 +66,6 @@ export default async function MainSection1() {
               <img src="/hero-desktop-filter.svg" alt="Filter" className="object-cover w-full h-full" />
             </AspectRatio>
           </div>
-
-          <div className="pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
-            <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
-          </div>
         </div>
         <div className="relative w-full block md:hidden">
           {/* Base image */}
@@ -121,9 +117,15 @@ export default async function MainSection1() {
               <img src="/hero-mobile-filter.svg" alt="Filter" className="object-cover w-full h-full" />
             </AspectRatio>
           </div>
-          <div className="pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
-            <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
-          </div>
+        </div>
+      </div>
+
+      <div className="col-span-full flex flex-col space-y-2 pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
+        <div>
+          <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
+        </div>
+        <div>
+          <span className="text-[#e64646] font-black">**</span> 서비스는 7월 22일부터 정식 제공됩니다
         </div>
       </div>
     </div>

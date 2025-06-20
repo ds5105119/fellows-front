@@ -47,5 +47,5 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ p
     return NextResponse.json({ error: "Failed to fetch project data" }, { status: 500 });
   }
 
-  return NextResponse.json({ message: "Project deleted successfully" });
+  return NextResponse.json({ message: "File deleted successfully" });
 }
