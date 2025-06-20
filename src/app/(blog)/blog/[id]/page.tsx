@@ -140,15 +140,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       </div>
 
       <div className="mx-auto px-8 lg:px-0 w-full max-w-full md:w-lg lg:w-2xl py-20">
-        <div
-          className={cn(
-            "w-full overflow-hidden prose prose-base prose-headings:font-bold md:prose-lg",
-            "prose-a:text-primary prose-img:rounded-md prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl",
-            "[&_*]:max-w-full [&_*]:break-words [&_*]:overflow-hidden"
-          )}
-        >
-          <MarkdownPreview loading={false}>{post.content}</MarkdownPreview>
-        </div>
+        <MarkdownPreview loading={false}>{post.content}</MarkdownPreview>
       </div>
 
       <div className="mx-auto px-8 lg:px-0 w-full md:w-lg lg:w-2xl flex flex-col space-y-20">

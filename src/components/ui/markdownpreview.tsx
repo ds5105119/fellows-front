@@ -77,6 +77,8 @@ export default function MarkdownPreview({
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
     const [canScroll, setCanScroll] = useState(false);
+    const [touchStartX, setTouchStartX] = useState(0);
+    const [touchScrollLeft, setTouchScrollLeft] = useState(0);
 
     // 스크롤 가능 여부 체크
     useEffect(() => {
@@ -157,6 +159,34 @@ export default function MarkdownPreview({
       }
     }, [canScroll]);
 
+    // 터치 이벤트 핸들러들
+    const handleTouchStart = useCallback(
+      (e: React.TouchEvent) => {
+        if (!canScroll || !tableWrapperRef.current) return;
+        const touch = e.touches[0];
+        setIsDragging(true);
+        setTouchStartX(touch.pageX - tableWrapperRef.current.offsetLeft);
+        setTouchScrollLeft(tableWrapperRef.current.scrollLeft);
+      },
+      [canScroll]
+    );
+
+    const handleTouchMove = useCallback(
+      (e: React.TouchEvent) => {
+        if (!isDragging || !canScroll || !tableWrapperRef.current) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        const x = touch.pageX - tableWrapperRef.current.offsetLeft;
+        const walk = (x - touchStartX) * 2; // 스크롤 속도 조절
+        tableWrapperRef.current.scrollLeft = touchScrollLeft - walk;
+      },
+      [isDragging, touchStartX, touchScrollLeft, canScroll]
+    );
+
+    const handleTouchEnd = useCallback(() => {
+      setIsDragging(false);
+    }, []);
+
     return (
       <div className="relative">
         <div
@@ -165,11 +195,15 @@ export default function MarkdownPreview({
           style={{
             scrollbarWidth: "thin",
             cursor: canScroll ? "grab" : "default",
+            touchAction: canScroll ? "pan-x" : "auto", // 가로 스크롤만 허용
           }}
           onMouseDown={canScroll ? handleMouseDown : undefined}
           onMouseMove={canScroll ? handleMouseMove : undefined}
           onMouseUp={canScroll ? handleMouseUp : undefined}
           onMouseLeave={canScroll ? handleMouseLeave : undefined}
+          onTouchStart={canScroll ? handleTouchStart : undefined}
+          onTouchMove={canScroll ? handleTouchMove : undefined}
+          onTouchEnd={canScroll ? handleTouchEnd : undefined}
         >
           <table
             className="border-collapse"
