@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <div className="grid grid-cols-4 md:grid-cols-12 py-4 md:py-16 gap-6 px-4 md:px-0 bg-muted">
-      <BlurFade className="grid grid-cols-4 md:grid-cols-10 col-span-full p-8 md:col-span-10 md:col-start-2 gap-6 bg-white rounded-3xl">
+      <BlurFade className="grid grid-cols-4 md:grid-cols-10 col-span-full p-6 md:p-8 md:col-span-10 md:col-start-2 gap-6 bg-white rounded-3xl">
         <div className="col-span-full flex flex-col gap-2">
           <h2 className="text-2xl font-bold">🚀 5분만에 시작하는 Fellows</h2>
           <p className="text-sm text-muted-foreground">단 두 단계로 손쉽게 프로젝트 외주를 시작하고 확인할 수 있어요.</p>
