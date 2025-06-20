@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { useEffect, useRef } from "react";
@@ -15,7 +17,12 @@ import { useInView } from "framer-motion";
 
 export default function CreateProject() {
   const targetRef = useRef<HTMLDivElement>(null);
-  const isReachedEnd = useInView(targetRef, { margin: "92px 0px 0px 0px", amount: "some", once: false });
+
+  const isReachedEnd = useInView(targetRef, {
+    margin: "92px 0px 0px 0px",
+    amount: "some",
+    once: false,
+  });
 
   const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
     useProjectForm();
@@ -27,6 +34,18 @@ export default function CreateProject() {
       handlePrev();
     }
   }, [isSuccess, isRecommending]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (targetRef.current) {
+        const rect = targetRef.current.getBoundingClientRect();
+        const isVisible = rect.top <= window.innerHeight - 92;
+        console.log("Step changed - Target visible:", isVisible, "Step:", currentStep);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [currentStep]);
 
   const scrollToEnd = () => {
     const target = targetRef.current;
@@ -43,18 +62,34 @@ export default function CreateProject() {
   };
 
   const handleNextWithScroll = (event?: React.MouseEvent) => {
-    if (!isReachedEnd) {
-      scrollToEnd();
-      return;
+    // 더 정확한 체크를 위해 실시간으로 위치 확인
+    const target = targetRef.current;
+    if (target) {
+      const rect = target.getBoundingClientRect();
+      const isCurrentlyVisible = rect.top <= window.innerHeight - 92;
+
+      if (!isCurrentlyVisible) {
+        scrollToEnd();
+        return;
+      }
     }
+
     handleNext(event);
   };
 
   const handleSubmitWithScroll = () => {
-    if (!isReachedEnd) {
-      scrollToEnd();
-      return;
+    // 더 정확한 체크를 위해 실시간으로 위치 확인
+    const target = targetRef.current;
+    if (target) {
+      const rect = target.getBoundingClientRect();
+      const isCurrentlyVisible = rect.top <= window.innerHeight - 92;
+
+      if (!isCurrentlyVisible) {
+        scrollToEnd();
+        return;
+      }
     }
+
     handleSubmitClick();
   };
 
@@ -102,7 +137,8 @@ export default function CreateProject() {
           {currentStep === 1 && <CreateProjectTermsSection />}
         </div>
 
-        <div ref={targetRef} className="relative grow h-1" />
+        {/* targetRef 위치를 더 안정적으로 만들고 높이 증가 */}
+        <div ref={targetRef} className="relative grow min-h-4" />
 
         <ProjectFormNavigation
           currentStep={currentStep}
