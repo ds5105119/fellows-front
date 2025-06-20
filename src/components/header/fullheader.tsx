@@ -4,7 +4,10 @@ import Link from "next/link";
 export default function FullHeader() {
   return (
     <div className="sticky top-0 z-50">
-      <nav className="absolute z-10 h-13 w-full overflow-hidden bg-[hsla(0,0%,93%,0.42)] backdrop-blur-xl">
+      <nav
+        className="absolute z-10 h-13 w-full overflow-hidden bg-[hsla(0,0%,93%,0.42)]"
+        style={{ backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+      >
         <div className="h-full flex items-center justify-between px-7 md:px-1 mx-auto w-full md:max-w-[42.25rem] min-[70rem]:max-w-[62.25rem]">
           <Link href="/blog" className="flex space-x-2 group">
             <Image
