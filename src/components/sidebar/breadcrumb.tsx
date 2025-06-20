@@ -39,8 +39,8 @@ export default function BreadCrumb() {
             <BreadcrumbPage key={index}>{name}</BreadcrumbPage>
           ) : (
             <div className="flex items-center gap-2" key={index}>
-              <BreadcrumbLink href={href}>{name}</BreadcrumbLink>
               <BreadcrumbSeparator />
+              <BreadcrumbLink href={href}>{name}</BreadcrumbLink>
             </div>
           );
         })}

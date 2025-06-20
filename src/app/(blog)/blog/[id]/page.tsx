@@ -161,7 +161,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       <div className={cn("bg-gradient-to-b from-[#ffffff] to-[#e5f1ff]")}>
         <div className="mx-auto px-8 lg:px-0 w-full md:w-lg lg:w-2xl flex flex-col space-y-10 py-28 justify-center items-center">
           <div className="text-center text-2xl md:text-4xl leading-normal font-extrabold text-gray-800">
-            웹, 앱 외주는{" "}
+            웹, 앱 외주는
             <span className="font-black underline underline-offset-[3px] md:underline-offset-4 decoration-2 md:decoration-[3px] decoration-wavy decoration-blue-500">
               Fellows
             </span>

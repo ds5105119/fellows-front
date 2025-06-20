@@ -8,14 +8,20 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, LinkIcon, Fullscreen } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
-import { useProject, submitProject, cancelSubmitProject, useTasks } from "@/hooks/fetch/project";
+import { useProject, useTasks } from "@/hooks/fetch/project";
 import { type ERPNextProject } from "@/@types/service/project";
 
 // 분리된 컴포넌트들 import
-import { OverviewContent } from "./project-detail/overview-content";
 import { CustomerInfo } from "./project-detail/customer-info";
 import { TasksList } from "./project-detail/tasks-list";
 import { FilesList } from "./project-detail/files-list";
+import { ProjectHeader } from "./project-detail/project-header";
+import { ProjectBasicInfo } from "./project-detail/project-basic-info";
+import { ProjectStatus } from "./project-detail/project-status";
+import { ProjectDetails } from "./project-detail/project-details";
+import { AIEstimate } from "./project-detail/ai-estimate";
+import { ProjectActions } from "./project-detail/project-actions";
+import { ProjectNotices } from "./project-detail/project-notices";
 
 interface ProjectDetailSheetProps {
   project: ERPNextProject | null;
@@ -38,7 +44,6 @@ interface ProjectDetailSheetInnerProps {
 function ProjectDetailSheetInner({ project: initialProject, onClose, session }: ProjectDetailSheetInnerProps) {
   // State 관리
   const [project, setProject] = useState<ERPNextProject>(initialProject);
-  const [valueToggle, setValueToggle] = useState(false);
   const [activeMobileTab, setActiveMobileTab] = useState(0);
   const [activeTab1, setActiveTab1] = useState(0);
   const [activeTab2, setActiveTab2] = useState(0);
@@ -126,24 +131,6 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
     }
   }, []);
 
-  const handleSubmitProject = useCallback(async () => {
-    try {
-      await submitProject(project.project_name);
-      window.location.reload();
-    } catch (error) {
-      console.error("Project submission failed:", error);
-    }
-  }, [project.project_name]);
-
-  const handleCancelSubmitProject = useCallback(async () => {
-    try {
-      await cancelSubmitProject(project.project_name);
-      window.location.reload();
-    } catch (error) {
-      console.error("Project submission cancellation failed:", error);
-    }
-  }, [project.project_name]);
-
   const handleLoadMoreTasks = useCallback(() => {
     if (!tasksIsReachedEnd && !tasksLoading) {
       tasks.setSize((s) => s + 1);
@@ -188,15 +175,15 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
       <div className="grid grid-cols-1 md:grid-cols-5 md:overflow-hidden">
         {/* 데스크톱 왼쪽 패널 */}
         <div className="hidden md:block md:col-span-3 h-full overflow-y-auto scrollbar-hide border-r-1 border-b-sidebar-border">
-          <OverviewContent
-            project={project}
-            valueToggle={valueToggle}
-            onValueToggle={() => setValueToggle((prev) => !prev)}
-            onCopy={handleCopy}
-            onFullscreen={onClose}
-            onSubmit={handleSubmitProject}
-            onCancelSubmit={handleCancelSubmitProject}
-          />
+          <div className="flex flex-col h-full w-full">
+            <ProjectHeader project={project} />
+            <ProjectBasicInfo project={project} />
+            <ProjectStatus project={project} />
+            <ProjectDetails project={project} />
+            <AIEstimate project={project} />
+            <ProjectActions project={project} />
+            <ProjectNotices />
+          </div>
         </div>
 
         {/* 데스크톱 오른쪽 패널 */}
@@ -236,15 +223,15 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
           {/* 모바일 탭 콘텐츠 */}
           <div className="w-full grow scrollbar-hide">
             {activeMobileTab === 0 && (
-              <OverviewContent
-                project={project}
-                valueToggle={valueToggle}
-                onValueToggle={() => setValueToggle((prev) => !prev)}
-                onCopy={handleCopy}
-                onFullscreen={onClose}
-                onSubmit={handleSubmitProject}
-                onCancelSubmit={handleCancelSubmitProject}
-              />
+              <div className="flex flex-col h-full w-full">
+                <ProjectHeader project={project} />
+                <ProjectBasicInfo project={project} />
+                <ProjectStatus project={project} />
+                <ProjectDetails project={project} />
+                <AIEstimate project={project} />
+                <ProjectActions project={project} />
+                <ProjectNotices />
+              </div>
             )}
             {activeMobileTab === 1 && (
               <TasksList tasks={tasks} totalTasksCount={totalTasksCount} tasksLoading={tasksLoading ?? false} onLoadMore={handleLoadMoreTasks} />

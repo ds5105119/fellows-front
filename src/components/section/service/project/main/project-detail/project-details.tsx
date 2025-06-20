@@ -4,14 +4,15 @@ import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import dayjs from "dayjs";
 import type { ERPNextProject } from "@/@types/service/project";
+import { useState } from "react";
 
 interface ProjectDetailsProps {
   project: ERPNextProject;
-  valueToggle: boolean;
-  onValueToggle: () => void;
 }
 
-export function ProjectDetails({ project, valueToggle, onValueToggle }: ProjectDetailsProps) {
+export function ProjectDetails({ project }: ProjectDetailsProps) {
+  const [toggle, setToggle] = useState(false);
+
   return (
     <div className="w-full flex flex-col pt-6 pb-6 px-5 md:px-8 space-y-4 border-b-1 border-b-sidebar-border">
       <div className="w-full flex items-center space-x-2">
@@ -25,12 +26,12 @@ export function ProjectDetails({ project, valueToggle, onValueToggle }: ProjectD
           <div className="flex flex-col space-y-2">
             <div>
               <span className="text-lg font-bold">
-                {valueToggle ? (project.estimated_costing * 1.1).toLocaleString() : project.estimated_costing.toLocaleString()}
+                {toggle ? (project.estimated_costing * 1.1).toLocaleString() : project.estimated_costing.toLocaleString()}
               </span>
-              <span className="text-sm font-normal"> 원 (부가세 {valueToggle ? "포함" : "별도"})</span>
+              <span className="text-sm font-normal"> 원 (부가세 {toggle ? "포함" : "별도"})</span>
             </div>
-            <Button size="sm" variant="outline" className="w-fit text-xs h-7 shadow-none" onClick={onValueToggle}>
-              {valueToggle ? "부가세 미포함 금액으로 변경" : "부가세 포함된 금액으로 변경"}
+            <Button size="sm" variant="outline" className="w-fit text-xs h-7 shadow-none" onClick={() => setToggle((prev) => !prev)}>
+              {toggle ? "부가세 미포함 금액으로 변경" : "부가세 포함된 금액으로 변경"}
             </Button>
           </div>
         ) : (

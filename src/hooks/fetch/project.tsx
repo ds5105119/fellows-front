@@ -329,7 +329,7 @@ export const useEstimateProject = (projectId: string | null, initialMarkdown: st
     const controller = new AbortController();
     setAbortController(controller);
     setIsLoading(true);
-    setMarkdown(""); // 스트리밍 시작 시 내용 초기화
+    setMarkdown("");
 
     fetchEventSource(`${API_BASE_URL}/${projectId}/estimate`, {
       method: "GET",
@@ -347,13 +347,18 @@ export const useEstimateProject = (projectId: string | null, initialMarkdown: st
         } else {
           toast.error(`견적 생성 실패: ${response.statusText}`);
         }
+        setIsLoading(false);
         controller.abort(); // 에러 발생 시 스트림 중단
       },
       onmessage: (event: EventSourceMessage) => {
         if (event.event === "stream_done") {
-          controller.abort(); // 서버에서 종료 신호를 보내면 연결을 중단
+          controller.abort();
+          setIsLoading(false);
+          setAbortController(null);
+          toast.success("AI 견적이 완료되었습니다.");
           return;
         }
+
         setMarkdown((prev) => prev + (event.data === "" ? "\n" : event.data));
       },
       onclose: () => {

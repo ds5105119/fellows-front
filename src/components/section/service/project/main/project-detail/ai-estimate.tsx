@@ -1,17 +1,14 @@
-"use client"
+"use client";
 
-import { Fullscreen } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import BreathingSparkles from "@/components/resource/breathingsparkles"
-import MarkdownPreview from "@/components/ui/markdownpreview"
-import type { ERPNextProject } from "@/@types/service/project"
+import BreathingSparkles from "@/components/resource/breathingsparkles";
+import MarkdownPreview from "@/components/ui/markdownpreview";
+import type { ERPNextProject } from "@/@types/service/project";
 
 interface AIEstimateProps {
-  project: ERPNextProject
-  onFullscreen: () => void
+  project: ERPNextProject;
 }
 
-export function AIEstimate({ project, onFullscreen }: AIEstimateProps) {
+export function AIEstimate({ project }: AIEstimateProps) {
   return (
     <div className="w-full items-center justify-between pt-4 pb-3 px-5 md:px-8 flex">
       <div className="w-full flex flex-col space-y-3 pt-2">
@@ -20,14 +17,6 @@ export function AIEstimate({ project, onFullscreen }: AIEstimateProps) {
             <BreathingSparkles />
             <span className="text-lg font-bold">AI 견적</span>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onFullscreen}
-            className="hover:bg-blue-500/10 border-0 focus-visible:ring-0"
-          >
-            <Fullscreen className="!size-5" />
-          </Button>
         </div>
 
         <div className="w-full">
@@ -39,5 +28,5 @@ export function AIEstimate({ project, onFullscreen }: AIEstimateProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
