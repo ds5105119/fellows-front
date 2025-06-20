@@ -87,9 +87,9 @@ export function ProjectStatus({ project, session }: { project: ERPNextProject; s
                     </div>
                   </div>
 
-                  <hr className="border-gray-100" />
+                  <hr className="border-gray-200" />
 
-                  <div className="flex flex-col md:flex-row space-y-3 md:space-y-0 w-full md:justify-between">
+                  <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 w-full md:justify-between">
                     <div className="flex md:w-1/2 flex-col space-y-2">
                       <div className="text-xs font-semibold text-muted-foreground">공급자</div>
                       <div className="text-base font-bold text-black">Fellows</div>
@@ -97,6 +97,8 @@ export function ProjectStatus({ project, session }: { project: ERPNextProject; s
                       <div className="text-xs font-semibold text-muted-foreground">대표자: 김동현</div>
                       <div className="text-xs font-semibold text-muted-foreground">주소: 서울특별시 강남구 역삼동 123-456</div>
                     </div>
+
+                    <hr className="block md:hidden border-gray-200" />
 
                     <div className="flex md:w-1/2 flex-col space-y-2">
                       <div className="text-xs font-semibold text-muted-foreground">수신자</div>
@@ -106,7 +108,7 @@ export function ProjectStatus({ project, session }: { project: ERPNextProject; s
                     </div>
                   </div>
 
-                  <hr className="border-gray-100" />
+                  <hr className="border-gray-200" />
 
                   <ProjectEstimator project={project} />
                 </div>

@@ -35,7 +35,7 @@ export default function ProjectEstimator({ project }: Props) {
         <button
           onClick={startEstimate}
           disabled={isLoading}
-          className="flex items-center space-x-2 text-white text-sm font-medium bg-black hover:bg-neutral-700 transition-colors rounded-md duration-200 h-9 px-3"
+          className="flex items-center space-x-2 text-white text-sm font-medium bg-black hover:bg-neutral-700 transition-colors rounded-md duration-200 h-8 md:h-9 px-3"
         >
           <BreathingSparkles size={18} />
           <p>견적 다시 작성하기</p>
