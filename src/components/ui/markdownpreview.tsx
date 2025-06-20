@@ -77,8 +77,10 @@ export default function MarkdownPreview({
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
     const [canScroll, setCanScroll] = useState(false);
+    const [isTouching, setIsTouching] = useState(false);
     const [touchStartX, setTouchStartX] = useState(0);
     const [touchScrollLeft, setTouchScrollLeft] = useState(0);
+    const [lastTouchX, setLastTouchX] = useState(0);
 
     // 스크롤 가능 여부 체크
     useEffect(() => {
@@ -164,8 +166,11 @@ export default function MarkdownPreview({
       (e: React.TouchEvent) => {
         if (!canScroll || !tableWrapperRef.current) return;
         const touch = e.touches[0];
-        setIsDragging(true);
-        setTouchStartX(touch.pageX - tableWrapperRef.current.offsetLeft);
+        const touchX = touch.clientX;
+
+        setIsTouching(true);
+        setTouchStartX(touchX);
+        setLastTouchX(touchX);
         setTouchScrollLeft(tableWrapperRef.current.scrollLeft);
       },
       [canScroll]
@@ -173,18 +178,25 @@ export default function MarkdownPreview({
 
     const handleTouchMove = useCallback(
       (e: React.TouchEvent) => {
-        if (!isDragging || !canScroll || !tableWrapperRef.current) return;
-        e.preventDefault();
+        if (!isTouching || !canScroll || !tableWrapperRef.current) return;
+
         const touch = e.touches[0];
-        const x = touch.pageX - tableWrapperRef.current.offsetLeft;
-        const walk = (x - touchStartX) * 2; // 스크롤 속도 조절
-        tableWrapperRef.current.scrollLeft = touchScrollLeft - walk;
+        const touchX = touch.clientX;
+        const deltaX = lastTouchX - touchX;
+
+        // 가로 스크롤이 발생하는 경우에만 기본 동작 방지
+        if (Math.abs(deltaX) > 5) {
+          e.preventDefault();
+        }
+
+        tableWrapperRef.current.scrollLeft += deltaX;
+        setLastTouchX(touchX);
       },
-      [isDragging, touchStartX, touchScrollLeft, canScroll]
+      [isTouching, lastTouchX, canScroll]
     );
 
     const handleTouchEnd = useCallback(() => {
-      setIsDragging(false);
+      setIsTouching(false);
     }, []);
 
     return (
@@ -195,7 +207,7 @@ export default function MarkdownPreview({
           style={{
             scrollbarWidth: "thin",
             cursor: canScroll ? "grab" : "default",
-            touchAction: canScroll ? "pan-x" : "auto", // 가로 스크롤만 허용
+            touchAction: canScroll ? "pan-y pinch-zoom" : "auto", // 세로 스크롤과 줌은 허용
           }}
           onMouseDown={canScroll ? handleMouseDown : undefined}
           onMouseMove={canScroll ? handleMouseMove : undefined}

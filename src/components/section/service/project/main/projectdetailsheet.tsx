@@ -180,7 +180,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             <ProjectBasicInfo project={project} />
             <ProjectStatus project={project} />
             <ProjectDetails project={project} />
-            <div className="px-5 md:px-8">
+            <div className="p-8">
               <ProjectEstimator project={project} />
             </div>
             <ProjectActions project={project} />
@@ -230,7 +230,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
                 <ProjectBasicInfo project={project} />
                 <ProjectStatus project={project} />
                 <ProjectDetails project={project} />
-                <div className="px-5 md:px-8">
+                <div className="p-5">
                   <ProjectEstimator project={project} />
                 </div>
                 <ProjectActions project={project} />
