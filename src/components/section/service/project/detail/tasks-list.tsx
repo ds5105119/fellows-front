@@ -104,38 +104,6 @@ export function TasksList({ tasks, totalTasksCount, tasksLoading, onLoadMore }: 
         )}
       </AnimatePresence>
 
-      {/* 로딩 인디케이터 */}
-      <AnimatePresence>
-        {tasksLoading && totalTasksCount > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="flex justify-center py-4"
-          >
-            <div className="flex items-center justify-center space-x-1 p-4">
-              {[0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  className="w-2 h-2 bg-blue-500 rounded-full"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 1, 0.5],
-                  }}
-                  transition={{
-                    duration: 1.2,
-                    repeat: Number.POSITIVE_INFINITY,
-                    delay: i * 0.2,
-                    ease: "easeInOut",
-                  }}
-                />
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* 무한 스크롤 트리거 */}
       <div ref={taskInfRef} className="h-4" />
     </motion.div>
