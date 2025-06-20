@@ -48,22 +48,43 @@ export default async function Page({ params }: { params: Promise<{ project_id: s
 
   return (
     <SessionProvider session={session}>
-      <ResizablePanelGroup direction="horizontal" className="w-full h-full">
-        <ResizablePanel defaultSize={45} minSize={25} className="flex flex-col h-full w-full">
-          <ProjectHeader project={project} />
-          <ProjectBasicInfo project={project} />
-          <ProjectStatus project={project} />
-          <ProjectDetails project={project} />
-          <ProjectActions project={project} />
-          <ProjectNotices />
-        </ResizablePanel>
+      <div className="hidden lg:block h-full">
+        <ResizablePanelGroup direction="horizontal" className="flex w-full h-full">
+          <ResizablePanel defaultSize={45} minSize={35} className="flex flex-col h-full w-full">
+            <div className="flex flex-col h-full w-full">
+              <div className="pt-12 pb-5 px-8">
+                <ProjectHeader project={project} />
+              </div>
 
-        <ResizableHandle withHandle />
+              <div className="px-8 py-6">
+                <ProjectBasicInfo project={project} />
+              </div>
 
-        <ResizablePanel defaultSize={55} minSize={25} className="flex flex-col h-full w-full">
-          <ProjectDetailSide project={project} />
-        </ResizablePanel>
-      </ResizablePanelGroup>
+              <ProjectStatus project={project} />
+
+              <div className="p-8">
+                <ProjectDetails project={project} />
+              </div>
+
+              <ProjectActions project={project} />
+
+              <div className="px-8 pt-1 pb-5">
+                <ProjectNotices />
+              </div>
+            </div>
+          </ResizablePanel>
+
+          <ResizableHandle withHandle />
+
+          <ResizablePanel defaultSize={55} minSize={40} className="flex flex-col h-full w-full">
+            <ProjectDetailSide project={project} />
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
+
+      <div className="block lg:hidden">
+        <ProjectDetailSide project={project} />
+      </div>
     </SessionProvider>
   );
 }

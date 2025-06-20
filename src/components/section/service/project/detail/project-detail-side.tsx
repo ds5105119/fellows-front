@@ -25,7 +25,7 @@ export default function ProjectDetailSide({ project }: { project: ERPNextProject
     <>
       <Flattabs tabs={tabs} activeTab={activeTab} handleTabChange={setActiveTab} />
       {/* 탭 콘텐츠 */}
-      <div className="w-full">
+      <div className="w-full p-4 md:p-8">
         {activeTab === 0 && <ProjectEstimator project={project} />}
         {activeTab === 1 && <ProjectEstimator project={project} />}
       </div>

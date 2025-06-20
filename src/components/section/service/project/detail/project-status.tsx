@@ -65,9 +65,6 @@ export function ProjectStatus({ project }: ProjectStatusProps) {
               <div className="sticky top-0 shrink-0 flex items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4 bg-background z-20">
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none">
-                    이용 가이드
-                  </Button>
-                  <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none">
                     <DownloadIcon className="h-4 w-4" />
                     내보내기
                   </Button>
@@ -82,6 +79,7 @@ export function ProjectStatus({ project }: ProjectStatusProps) {
                 </div>
               </div>
               <div className="p-8">
+                <div>{project.custom_project_title} 예상 견적서</div>
                 <ProjectEstimator project={project} />
               </div>
             </div>
