@@ -43,7 +43,7 @@ export default function MobileHeader({ session }: { session: Session | null }) {
       {/* Expandable Navigation Bar with Fixed Border Radius */}
       <motion.nav
         ref={navRef}
-        className="absolute left-1/2 top-3 z-10 w-[calc(100%-24px)] -translate-x-1/2 overflow-hidden bg-[hsla(0,0%,93%,0.62)] backdrop-blur-xl"
+        className="absolute left-1/2 top-3 z-10 w-[calc(100%-24px)] -translate-x-1/2 overflow-hidden bg-[hsla(0,0%,93%,0.42)]"
         initial={false}
         animate={{
           height: isOpen ? "auto" : "3.5rem", // 3.5rem = h-14
@@ -57,6 +57,8 @@ export default function MobileHeader({ session }: { session: Session | null }) {
         }}
         style={{
           borderRadius: BORDER_RADIUS,
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
         }}
       >
         {/* Header Section (Always Visible) */}
