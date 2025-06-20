@@ -76,7 +76,7 @@ export function ProjectStatus({ project, session }: { project: ERPNextProject; s
                   </Button>
                 </div>
               </div>
-              <div className="p-8">
+              <div className="p-4 md:p-8">
                 <div className="flex flex-col gap-5">
                   <div className="flex flex-col">
                     <SelectLogo />
