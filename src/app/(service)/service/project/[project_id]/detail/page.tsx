@@ -60,7 +60,7 @@ export default async function Page({ params }: { params: Promise<{ project_id: s
                 <ProjectBasicInfo project={project} />
               </div>
 
-              <ProjectStatus project={project} />
+              <ProjectStatus project={project} session={session} />
 
               <div className="p-8">
                 <ProjectDetails project={project} />

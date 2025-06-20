@@ -8,6 +8,7 @@ import { DownloadIcon, XIcon } from "lucide-react";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import ProjectEstimator from "./projectestimator";
 import SelectLogo from "@/components/resource/selectlogo";
+import { Session } from "next-auth";
 
 const STATUS_MAPPING: Record<string, string> = {
   draft: "초안",
@@ -24,11 +25,7 @@ const PLATFORM_MAPPING: Record<string, string> = {
   ios: "iOS 앱",
 };
 
-interface ProjectStatusProps {
-  project: ERPNextProject;
-}
-
-export function ProjectStatus({ project }: ProjectStatusProps) {
+export function ProjectStatus({ project, session }: { project: ERPNextProject; session: Session }) {
   const [openSheet, setOpenSheet] = useState(false);
 
   return (
@@ -80,11 +77,39 @@ export function ProjectStatus({ project }: ProjectStatusProps) {
                 </div>
               </div>
               <div className="p-8">
-                <div className="flex flex-col space-y-2 pb-8">
-                  <SelectLogo />
-                  <div className="text-2xl md:text-4xl font-extrabold">{project.custom_project_title} 예상 견적서</div>
+                <div className="flex flex-col gap-5">
+                  <div className="flex flex-col">
+                    <SelectLogo />
+                    <div className="text-2xl md:text-4xl font-extrabold mt-2">{project.custom_project_title} 예상 견적서</div>
+                    <div className="mt-3">
+                      <span className="text-sm font-bold">계약번호. </span>
+                      <span className="text-sm font-medium">{project.project_name}</span>
+                    </div>
+                  </div>
+
+                  <hr className="border-gray-100" />
+
+                  <div className="flex w-full justify-between">
+                    <div className="flex flex-col space-y-2">
+                      <div className="text-xs font-semibold text-muted-foreground">공급자</div>
+                      <div className="text-base font-bold text-black">Fellows</div>
+                      <div className="text-xs font-semibold text-muted-foreground">회사명: IIH</div>
+                      <div className="text-xs font-semibold text-muted-foreground">대표자: 김동현</div>
+                      <div className="text-xs font-semibold text-muted-foreground">주소: 서울특별시 강남구 역삼동 123-456</div>
+                    </div>
+
+                    <div className="flex flex-col space-y-2">
+                      <div className="text-xs font-semibold text-muted-foreground">수신자</div>
+                      <div className="text-base font-bold text-black">{session.user.name}</div>
+                      <div className="text-xs font-semibold text-muted-foreground">이메일: {session.user.email}</div>
+                      <div className="text-xs font-semibold text-muted-foreground">주소: {session.user.address.formatted}</div>
+                    </div>
+                  </div>
+
+                  <hr className="border-gray-100" />
+
+                  <ProjectEstimator project={project} />
                 </div>
-                <ProjectEstimator project={project} />
               </div>
             </div>
             <SheetDescription className="sr-only" />
