@@ -4,7 +4,7 @@ import type React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import CreateProjectFormStep1 from "./createprojectstep1";
 import CreateProjectFormStep2 from "./createprojectstep2";
 import CreateProjectSide from "./createprojectside";
@@ -13,39 +13,65 @@ import { useFeatureRecommendation } from "@/hooks/create-project/use-feature-rec
 import { ProjectFormNavigation } from "./createformnavigation";
 import { CreateProjectTermsSection } from "./createprojecttermssection";
 import { RecommendationLoading } from "./recommandationloading";
-import { useInView } from "framer-motion";
 
 export default function CreateProject() {
   const targetRef = useRef<HTMLDivElement>(null);
-
-  const isReachedEnd = useInView(targetRef, {
-    margin: "92px 0px 0px 0px",
-    amount: "some",
-    once: false,
-  });
+  const [isReachedEnd, setIsReachedEnd] = useState(false);
 
   const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
     useProjectForm();
 
   const { isSuccess, isRecommending, handleRecommendAgain } = useFeatureRecommendation(form, currentStep);
 
+  // 직접 Intersection Observer 구현
+  const checkVisibility = useCallback(() => {
+    const target = targetRef.current;
+    if (!target) {
+      setIsReachedEnd(false);
+      return;
+    }
+
+    const rect = target.getBoundingClientRect();
+    const isVisible = rect.top <= window.innerHeight - 92;
+    setIsReachedEnd(isVisible);
+  }, []);
+
+  // 스크롤 이벤트 리스너
+  useEffect(() => {
+    const handleScroll = () => {
+      checkVisibility();
+    };
+
+    const handleResize = () => {
+      checkVisibility();
+    };
+
+    // 초기 체크
+    checkVisibility();
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [checkVisibility]);
+
+  // 스텝 변경 시 강제로 재체크
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      checkVisibility();
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [currentStep, checkVisibility]);
+
   useEffect(() => {
     if (!isSuccess && !isRecommending) {
       handlePrev();
     }
   }, [isSuccess, isRecommending]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (targetRef.current) {
-        const rect = targetRef.current.getBoundingClientRect();
-        const isVisible = rect.top <= window.innerHeight - 92;
-        console.log("Step changed - Target visible:", isVisible, "Step:", currentStep);
-      }
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [currentStep]);
 
   const scrollToEnd = () => {
     const target = targetRef.current;
@@ -62,34 +88,18 @@ export default function CreateProject() {
   };
 
   const handleNextWithScroll = (event?: React.MouseEvent) => {
-    // 더 정확한 체크를 위해 실시간으로 위치 확인
-    const target = targetRef.current;
-    if (target) {
-      const rect = target.getBoundingClientRect();
-      const isCurrentlyVisible = rect.top <= window.innerHeight - 92;
-
-      if (!isCurrentlyVisible) {
-        scrollToEnd();
-        return;
-      }
+    if (!isReachedEnd) {
+      scrollToEnd();
+      return;
     }
-
     handleNext(event);
   };
 
   const handleSubmitWithScroll = () => {
-    // 더 정확한 체크를 위해 실시간으로 위치 확인
-    const target = targetRef.current;
-    if (target) {
-      const rect = target.getBoundingClientRect();
-      const isCurrentlyVisible = rect.top <= window.innerHeight - 92;
-
-      if (!isCurrentlyVisible) {
-        scrollToEnd();
-        return;
-      }
+    if (!isReachedEnd) {
+      scrollToEnd();
+      return;
     }
-
     handleSubmitClick();
   };
 
@@ -137,8 +147,7 @@ export default function CreateProject() {
           {currentStep === 1 && <CreateProjectTermsSection />}
         </div>
 
-        {/* targetRef 위치를 더 안정적으로 만들고 높이 증가 */}
-        <div ref={targetRef} className="relative grow min-h-4" />
+        <div ref={targetRef} className="relative grow h-1" />
 
         <ProjectFormNavigation
           currentStep={currentStep}
