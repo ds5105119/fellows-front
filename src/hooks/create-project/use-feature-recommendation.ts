@@ -8,10 +8,11 @@ export function useFeatureRecommendation(form: UseFormReturn<UserERPNextProject>
   const [isRecommending, setIsRecommending] = useState(false);
   const [isFirstTimeInStep2, setIsFirstTimeInStep2] = useState(true);
   const [hasCompleted, setHasCompleted] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(true);
 
   const timeoutRefs = useRef<{
     recommend?: NodeJS.Timeout;
+    success?: NodeJS.Timeout;
     fetch?: NodeJS.Timeout;
   }>({});
 
@@ -79,10 +80,19 @@ export function useFeatureRecommendation(form: UseFormReturn<UserERPNextProject>
         }));
 
         form.setValue("custom_features", features);
-        toast.success(`${features.length}개의 기능을 추천받았습니다!`);
+        toast.success(`${features.length - 1}개의 기능을 추천받았습니다!`);
       }
     }
   }, [hasCompleted, estimateFeatures?.data?.feature_list, form]);
+
+  // Handle completion
+  useEffect(() => {
+    if (!isSuccess) {
+      timeoutRefs.current.success = setTimeout(() => {
+        setIsSuccess(true);
+      }, 100);
+    }
+  }, [isSuccess]);
 
   // Cleanup
   useEffect(() => {
