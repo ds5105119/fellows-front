@@ -6,6 +6,15 @@ import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } 
 import { Copyright, ScanText } from "lucide-react";
 import { motion } from "framer-motion";
 
+export function Logo({ size = 20 }: { size?: number }) {
+  return (
+    <div className="flex space-x-2 group">
+      <Image src="/fellows/logo-img.svg" width={20} height={size} alt="image logo" />
+      <Image src="/fellows/logo-text.svg" width={91} height={size} alt="text logo" />
+    </div>
+  );
+}
+
 export default function SelectLogo({ ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const handleCopySVGLogo = async () => {
     try {
