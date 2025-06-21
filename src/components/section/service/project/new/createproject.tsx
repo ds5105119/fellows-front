@@ -110,7 +110,7 @@ export default function CreateProject() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
+      <div className="fixed w-full h-full top-0 left-0 z-50 bg-white dark:bg-black flex items-center justify-center p-4">
         <div className="text-center space-y-8">
           {/* Loading */}
           <div className="space-y-2">

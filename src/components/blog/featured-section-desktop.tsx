@@ -107,6 +107,7 @@ export function FeaturedSectionDesktop() {
           width={80}
           height={80}
           crossOrigin="anonymous"
+          unoptimized
           priority
         />
       )}
@@ -119,6 +120,7 @@ export function FeaturedSectionDesktop() {
           width={80}
           height={80}
           crossOrigin="anonymous"
+          unoptimized
           priority
         />
       )}
