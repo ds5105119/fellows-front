@@ -84,7 +84,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     }
   }, [post.data]);
 
-  if (!post.data) {
+  if (!post.data || !content) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
         <div className="text-center">
@@ -126,7 +126,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                 disabled={isSaving}
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
-                <span className="text-sm font-medium">발행</span>
+                <span className="text-sm font-medium">{isSaving ? "저장 중..." : "발행"}</span>
               </button>
             </div>
           </div>

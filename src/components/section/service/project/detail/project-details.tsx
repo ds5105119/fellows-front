@@ -80,29 +80,31 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
               <div className="px-2 py-2 border-b border-b-muted">
                 <Input className="border-none focus:ring-0 focus-visible:ring-0 md:text-base" placeholder="검색어 입력" />
               </div>
-              <DragScrollContainer className="flex space-x-2">
-                <button
-                  className={cn(
-                    "py-1 rounded-sm px-2 text-sm font-bold shrink-0",
-                    featureCategory == "" ? "text-white bg-blue-400" : "text-black border border-gray-200"
-                  )}
-                  onClick={() => setFeatureCategory("")}
-                >
-                  전체
-                </button>
-                {categorizedFeatures.map((category) => (
+              <div className="p-5">
+                <DragScrollContainer className="flex space-x-2">
                   <button
-                    key={category.title}
                     className={cn(
                       "py-1 rounded-sm px-2 text-sm font-bold shrink-0",
-                      featureCategory == category.title ? "text-white bg-blue-400" : "text-black border border-gray-200"
+                      featureCategory == "" ? "text-white bg-blue-400" : "text-black border border-gray-200"
                     )}
-                    onClick={() => setFeatureCategory(category.title)}
+                    onClick={() => setFeatureCategory("")}
                   >
-                    {category.title}
+                    전체
                   </button>
-                ))}
-              </DragScrollContainer>
+                  {categorizedFeatures.map((category) => (
+                    <button
+                      key={category.title}
+                      className={cn(
+                        "py-1 rounded-sm px-2 text-sm font-bold shrink-0",
+                        featureCategory == category.title ? "text-white bg-blue-400" : "text-black border border-gray-200"
+                      )}
+                      onClick={() => setFeatureCategory(category.title)}
+                    >
+                      {category.title}
+                    </button>
+                  ))}
+                </DragScrollContainer>
+              </div>
             </div>
           </DialogHeader>
         </DialogContent>
