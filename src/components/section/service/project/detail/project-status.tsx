@@ -10,6 +10,7 @@ import Image from "next/image";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import ProjectEstimator from "./projectestimator";
 import SelectLogo from "@/components/resource/selectlogo";
+import dayjs from "dayjs";
 
 const STATUS_MAPPING: Record<string, string> = {
   draft: "초안",
@@ -37,6 +38,7 @@ export function ProjectStatus({ project, session }: { project: ERPNextProject; s
           {project.custom_project_status ? STATUS_MAPPING[project.custom_project_status] : "상태 없음"}
         </div>
       </div>
+
       <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
         <h3 className="text-sm font-bold">플랫폼</h3>
         <div className="flex space-x-2">
@@ -47,6 +49,14 @@ export function ProjectStatus({ project, session }: { project: ERPNextProject; s
           ))}
         </div>
       </div>
+
+      <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
+        <h3 className="text-sm font-bold">{project.custom_project_status === "draft" ? "예상 종료일" : "계약 종료일"}</h3>
+        <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold truncate">
+          {project.expected_end_date ? dayjs(project.expected_end_date).format("YYYY-MM-DD") : "정해지지 않았어요"}
+        </div>
+      </div>
+
       <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
         <h3 className="text-sm font-bold">AI 견적</h3>
         <Sheet open={openSheet} onOpenChange={setOpenSheet}>

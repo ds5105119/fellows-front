@@ -21,6 +21,7 @@ import { ProjectStatus } from "../detail/project-status";
 import { ProjectDetails } from "../detail/project-details";
 import { ProjectActions } from "../detail/project-actions";
 import { ProjectNotices } from "../detail/project-notices";
+import dayjs from "dayjs";
 
 interface ProjectDetailSheetProps {
   project: ERPNextProject | null;
@@ -183,7 +184,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
               <ProjectBasicInfo project={project} />
             </div>
 
-            <ProjectStatus project={project} session={session}/>
+            <ProjectStatus project={project} session={session} />
 
             <div className="p-8">
               <ProjectDetails project={project} />
@@ -243,7 +244,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
                   <ProjectBasicInfo project={project} />
                 </div>
 
-                <ProjectStatus project={project} session={session}/>
+                <ProjectStatus project={project} session={session} />
 
                 <div className="p-4">
                   <ProjectDetails project={project} />
@@ -260,6 +261,20 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
               <TasksList tasks={tasks} totalTasksCount={totalTasksCount} tasksLoading={tasksLoading ?? false} onLoadMore={handleLoadMoreTasks} />
             )}
           </div>
+        </div>
+      </div>
+
+      {/* 시트 푸터 */}
+      <div className="sticky bottom-0 shrink-0 flex items-center justify-between h-12 border-t-1 border-t-sidebar-border px-4 bg-zinc-50 z-20">
+        <div className="flex items-center gap-3">
+          <p className="text-xs font-semibold text-muted-foreground">
+            {project.modified ? `${dayjs(project.modified).format("YYYY-MM-DD HH:mm:ss")} 수정됨` : "수정되지 않은 프로젝트"}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold rounded-sm border-gray-200 shadow-none">
+            이용 약관
+          </Button>
         </div>
       </div>
     </div>

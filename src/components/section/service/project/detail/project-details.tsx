@@ -2,7 +2,6 @@
 
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import dayjs from "dayjs";
 import type { ERPNextProject } from "@/@types/service/project";
 import { useState } from "react";
 
@@ -56,20 +55,6 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
           ) : (
             <span className="text-sm font-normal">사용기술이 정해지지 않았어요</span>
           )}
-        </div>
-      </div>
-
-      <div className="w-full flex">
-        <div className="w-1/2 flex flex-col space-y-1.5">
-          <div className="text-sm font-semibold">{project.custom_project_status === "draft" ? "예상 시작일" : "계약 시작일"}</div>
-          <div className="text-sm font-normal">
-            {project.expected_start_date ? dayjs(project.expected_start_date).format("YYYY-MM-DD") : "정해지지 않았어요"}
-          </div>
-        </div>
-
-        <div className="w-1/2 flex flex-col space-y-1.5">
-          <div className="text-sm font-semibold">{project.custom_project_status === "draft" ? "예상 종료일" : "계약 종료일"}</div>
-          <div className="text-sm font-normal">{project.expected_end_date ? dayjs(project.expected_end_date).format("YYYY-MM-DD") : "정해지지 않았어요"}</div>
         </div>
       </div>
     </div>
