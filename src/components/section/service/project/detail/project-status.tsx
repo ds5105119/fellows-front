@@ -11,23 +11,9 @@ import BreathingSparkles from "@/components/resource/breathingsparkles";
 import ProjectEstimator from "./projectestimator";
 import SelectLogo from "@/components/resource/selectlogo";
 import dayjs from "dayjs";
+import { STATUS_MAPPING, PLATFORM_MAPPING } from "@/components/resource/project";
 
-const STATUS_MAPPING: Record<string, string> = {
-  draft: "초안",
-  "process:1": "견적 확인중",
-  "process:2": "계약 진행중",
-  "process:3": "진행중",
-  maintenance: "유지보수",
-  complete: "완료",
-};
-
-const PLATFORM_MAPPING: Record<string, string> = {
-  web: "웹",
-  android: "안드로이드 앱",
-  ios: "iOS 앱",
-};
-
-export function ProjectStatus({ project, session }: { project: ERPNextProject; session: Session }) {
+export function ProjectStatus({ project, session }: { project: ERPNextProject; session: Session; setEditedProject: (project: ERPNextProject) => void }) {
   const [openSheet, setOpenSheet] = useState(false);
 
   return (

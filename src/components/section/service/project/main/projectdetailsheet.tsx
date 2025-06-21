@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, LinkIcon, Fullscreen } from "lucide-react";
+import { ArrowLeft, Download, LinkIcon, Fullscreen, Loader2 } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
 import { useProject, useTasks, updateProject } from "@/hooks/fetch/project";
 import { updateERPNextProjectSchema, type ERPNextProject } from "@/@types/service/project";
@@ -139,6 +139,13 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
     }
   }, [tasksIsReachedEnd, tasksLoading, tasks]);
 
+  const handleUpdateProject = async () => {
+    setIsUpdating(true);
+    await updateProject(project.project_name, updateERPNextProjectSchema.parse(editedProject));
+    await detailedProject.mutate();
+    setIsUpdating(false);
+  };
+
   // 프로젝트 정보 반영
   useEffect(() => {
     if (!initialProject || !session || !detailedProject.data) return;
@@ -153,14 +160,10 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
       const current = JSON.stringify(editedProject);
 
       if (original !== current && !isUpdating && autosave) {
-        setIsUpdating(true);
         try {
-          await updateProject(project.project_name, updateERPNextProjectSchema.parse(editedProject));
-          await detailedProject.mutate();
+          await handleUpdateProject();
         } catch {
           toast.error("프로젝트 저장에 실패했습니다.");
-        } finally {
-          setIsUpdating(false);
         }
       }
     }, 60000);
@@ -213,7 +216,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
               <ProjectBasicInfo project={editedProject} />
             </div>
 
-            <ProjectStatus project={editedProject} session={session} />
+            <ProjectStatus project={editedProject} session={session} setEditedProject={setEditedProject} />
 
             <div className="p-8">
               <ProjectDetails project={editedProject} setEditedProject={setEditedProject} />
@@ -273,7 +276,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
                   <ProjectBasicInfo project={editedProject} />
                 </div>
 
-                <ProjectStatus project={editedProject} session={session} />
+                <ProjectStatus project={editedProject} session={session} setEditedProject={setEditedProject} />
 
                 <div className="p-4">
                   <ProjectDetails project={editedProject} setEditedProject={setEditedProject} />
@@ -307,6 +310,19 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             )}
           >
             {autosave ? "자동 저장 중" : "자동 저장 끔"}
+          </button>
+          <button
+            onClick={handleUpdateProject}
+            disabled={isUpdating}
+            className={cn(
+              "py-0.5 px-1.5 text-[11px] font-semibold rounded-sm cursor-pointer select-none border flex items-center gap-1",
+              isUpdating
+                ? "bg-zinc-50 border-zinc-300 text-zinc-400 cursor-not-allowed"
+                : "bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-200 border-zinc-400 text-zinc-500"
+            )}
+          >
+            {isUpdating && <Loader2 className="!size-3 animate-spin" />}
+            {isUpdating ? "저장중" : "저장"}
           </button>
         </div>
         <div className="flex items-center gap-2">

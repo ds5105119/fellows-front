@@ -101,3 +101,18 @@ export const stepsMeta: {
     ],
   },
 ];
+
+export const STATUS_MAPPING: Record<string, string> = {
+  draft: "초안",
+  "process:1": "견적 확인중",
+  "process:2": "계약 진행중",
+  "process:3": "진행중",
+  maintenance: "유지보수",
+  complete: "완료",
+};
+
+export const PLATFORM_MAPPING: Record<string, string> = {
+  web: "웹",
+  android: "안드로이드 앱",
+  ios: "iOS 앱",
+};

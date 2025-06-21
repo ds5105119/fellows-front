@@ -5,17 +5,18 @@ import { Button } from "@/components/ui/button";
 import type { ERPNextProject } from "@/@types/service/project";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { categorizedFeatures } from "@/components/resource/project";
+import { Input } from "@/components/ui/input";
+import DragScrollContainer from "@/components/ui/dragscrollcontainer";
+import { cn } from "@/lib/utils";
 
-interface ProjectDetailsProps {
-  project: ERPNextProject;
-  setEditedProject: (project: ERPNextProject) => void;
-}
-
-export function ProjectDetails({ project, setEditedProject }: ProjectDetailsProps) {
+export function ProjectDetails({ project, setEditedProject }: { project: ERPNextProject; setEditedProject: (project: ERPNextProject) => void }) {
   const [toggle, setToggle] = useState(false);
+  const [featureCategory, setFeatureCategory] = useState("");
 
   return (
-    <div className="w-full flex flex-col space-y-4">
+    <div className="w-full flex flex-col space-y-6">
       <div className="w-full flex items-center space-x-2">
         <FileText className="!size-5" strokeWidth={2.2} />
         <span className="text-lg font-semibold">계약 내용</span>
@@ -48,6 +49,64 @@ export function ProjectDetails({ project, setEditedProject }: ProjectDetailsProp
           className="rounded-xs min-h-44"
         />
       </div>
+
+      <Dialog>
+        <div className="w-full flex flex-col space-y-2">
+          <div className="flex items-center space-x-2">
+            <div className="text-sm font-semibold">기능</div>
+            <DialogTrigger asChild>
+              <button>기능 추가하기</button>
+            </DialogTrigger>
+          </div>
+          <div className="w-full flex flex-wrap gap-2">
+            {project.custom_features?.map((val, i) => {
+              const feature = categorizedFeatures.flatMap((category) => category.items).find((item) => item.title === val.feature);
+
+              return (
+                feature && (
+                  <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
+                    {feature.icon} {feature.title}
+                  </div>
+                )
+              );
+            })}
+          </div>
+        </div>
+        <DialogContent showCloseButton={false} className="drop-shadow-white/20 drop-shadow-2xl p-0">
+          <DialogHeader>
+            <DialogTitle className="sr-only">기능 선택 창</DialogTitle>
+            <DialogDescription className="sr-only" />
+            <div className="w-full h-full flex flex-col">
+              <div className="px-2 py-2 border-b border-b-muted">
+                <Input className="border-none focus:ring-0 focus-visible:ring-0 md:text-base" placeholder="검색어 입력" />
+              </div>
+              <DragScrollContainer className="flex space-x-2">
+                <button
+                  className={cn(
+                    "py-1 rounded-sm px-2 text-sm font-bold shrink-0",
+                    featureCategory == "" ? "text-white bg-blue-400" : "text-black border border-gray-200"
+                  )}
+                  onClick={() => setFeatureCategory("")}
+                >
+                  전체
+                </button>
+                {categorizedFeatures.map((category) => (
+                  <button
+                    key={category.title}
+                    className={cn(
+                      "py-1 rounded-sm px-2 text-sm font-bold shrink-0",
+                      featureCategory == category.title ? "text-white bg-blue-400" : "text-black border border-gray-200"
+                    )}
+                    onClick={() => setFeatureCategory(category.title)}
+                  >
+                    {category.title}
+                  </button>
+                ))}
+              </DragScrollContainer>
+            </div>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
 
       <div className="w-full flex flex-col space-y-1.5">
         <div className="text-sm font-semibold">{project.custom_project_status === "draft" ? "희망 사용기술" : "계약 사용기술"}</div>

@@ -139,8 +139,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         </AspectRatio>
       </div>
 
-      <div className="mx-auto px-8 lg:px-0 w-full max-w-full md:w-lg lg:w-2xl py-20">
-        <MarkdownPreview loading={false}>{post.content}</MarkdownPreview>
+      <div className="prose mx-auto px-8 lg:px-0 w-full max-w-full md:w-lg lg:w-2xl py-20">
+        <MarkdownPreview loading={false} className="prose-h1:text-3xl prose-h1:font-extrabold [&_p]:my-1">
+          {post.content.replace(/\\n/g, "\n")}
+        </MarkdownPreview>
       </div>
 
       <div className="mx-auto px-8 lg:px-0 w-full md:w-lg lg:w-2xl flex flex-col space-y-20">
