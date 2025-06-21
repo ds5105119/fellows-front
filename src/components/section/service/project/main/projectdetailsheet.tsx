@@ -3,13 +3,14 @@
 import type { Session } from "next-auth";
 
 import Link from "next/link";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, LinkIcon, Fullscreen } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
-import { useProject, useTasks } from "@/hooks/fetch/project";
-import { type ERPNextProject } from "@/@types/service/project";
+import { useProject, useTasks, updateProject } from "@/hooks/fetch/project";
+import { updateERPNextProjectSchema, type ERPNextProject } from "@/@types/service/project";
+import { cn } from "@/lib/utils";
 
 // 분리된 컴포넌트들 import
 import { CustomerInfo } from "../detail/customer-info";
@@ -44,9 +45,13 @@ interface ProjectDetailSheetInnerProps {
 function ProjectDetailSheetInner({ project: initialProject, onClose, session }: ProjectDetailSheetInnerProps) {
   // State 관리
   const [project, setProject] = useState<ERPNextProject>(initialProject);
+  const [editedProject, setEditedProject] = useState<ERPNextProject>(initialProject);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [autosave, setAutosave] = useState(true);
   const [activeMobileTab, setActiveMobileTab] = useState(0);
   const [activeTab1, setActiveTab1] = useState(0);
   const [activeTab2, setActiveTab2] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // 데이터 페칭
   const detailedProject = useProject(initialProject.project_name);
@@ -54,12 +59,10 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
 
   // 계산된 값들
   const tasksIsReachedEnd = useMemo(() => tasks.data && tasks.data.length > 0 && tasks.data[tasks.data.length - 1]?.items.length === 0, [tasks.data]);
-
   const tasksLoading = useMemo(
     () => !tasksIsReachedEnd && (tasks.isLoading || (tasks.size > 0 && tasks.data && typeof tasks.data[tasks.size - 1] === "undefined")),
     [tasksIsReachedEnd, tasks.isLoading, tasks.size, tasks.data]
   );
-
   const totalTasksCount = useMemo(() => tasks.data?.reduce((sum, page) => sum + (page.items?.length ?? 0), 0) ?? 0, [tasks.data]);
 
   // 탭 구성
@@ -120,7 +123,6 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
     [totalTasksCount]
   );
 
-  // 이벤트 핸들러들
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -137,11 +139,38 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
     }
   }, [tasksIsReachedEnd, tasksLoading, tasks]);
 
-  // Effects
+  // 프로젝트 정보 반영
   useEffect(() => {
     if (!initialProject || !session || !detailedProject.data) return;
     setProject(detailedProject.data);
+    setEditedProject(detailedProject.data);
   }, [initialProject, detailedProject.data, session]);
+
+  // 프로젝트 자동 저장
+  useEffect(() => {
+    intervalRef.current = setInterval(async () => {
+      const original = JSON.stringify(project);
+      const current = JSON.stringify(editedProject);
+
+      if (original !== current && !isUpdating && autosave) {
+        setIsUpdating(true);
+        try {
+          await updateProject(project.project_name, updateERPNextProjectSchema.parse(editedProject));
+          await detailedProject.mutate();
+        } catch {
+          toast.error("프로젝트 저장에 실패했습니다.");
+        } finally {
+          setIsUpdating(false);
+        }
+      }
+    }, 60000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [project, editedProject, isUpdating, autosave]);
 
   return (
     <div className="flex flex-col w-full h-full overflow-y-auto md:overflow-hidden">
@@ -177,20 +206,20 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
         <div className="hidden md:block md:col-span-3 h-full overflow-y-auto scrollbar-hide border-r-1 border-b-sidebar-border">
           <div className="flex flex-col h-full w-full">
             <div className="pt-12 pb-5 px-8">
-              <ProjectHeader project={project} />
+              <ProjectHeader project={editedProject} />
             </div>
 
             <div className="px-8 py-6">
-              <ProjectBasicInfo project={project} />
+              <ProjectBasicInfo project={editedProject} />
             </div>
 
-            <ProjectStatus project={project} session={session} />
+            <ProjectStatus project={editedProject} session={session} />
 
             <div className="p-8">
-              <ProjectDetails project={project} />
+              <ProjectDetails project={editedProject} setEditedProject={setEditedProject} />
             </div>
 
-            <ProjectActions project={project} />
+            <ProjectActions project={editedProject} />
 
             <div className="px-8 pt-1 pb-5">
               <ProjectNotices />
@@ -237,20 +266,20 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             {activeMobileTab === 0 && (
               <div className="flex flex-col h-full w-full">
                 <div className="pt-12 pb-5 px-4">
-                  <ProjectHeader project={project} />
+                  <ProjectHeader project={editedProject} />
                 </div>
 
                 <div className="px-4 py-6">
-                  <ProjectBasicInfo project={project} />
+                  <ProjectBasicInfo project={editedProject} />
                 </div>
 
-                <ProjectStatus project={project} session={session} />
+                <ProjectStatus project={editedProject} session={session} />
 
                 <div className="p-4">
-                  <ProjectDetails project={project} />
+                  <ProjectDetails project={editedProject} setEditedProject={setEditedProject} />
                 </div>
 
-                <ProjectActions project={project} />
+                <ProjectActions project={editedProject} />
 
                 <div className="px-4 pt-1 pb-5">
                   <ProjectNotices />
@@ -270,6 +299,15 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
           <p className="text-xs font-semibold text-muted-foreground">
             {project.modified ? `${dayjs(project.modified).format("YYYY-MM-DD HH:mm:ss")} 수정됨` : "수정되지 않은 프로젝트"}
           </p>
+          <button
+            onClick={() => setAutosave((prev) => !prev)}
+            className={cn(
+              "py-0.5 px-1.5 text-[11px] font-semibold rounded-sm cursor-pointer select-none border",
+              autosave ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-200 border-blue-400 text-blue-500" : "bg-zinc-100 border-zinc-400 text-zinc-500"
+            )}
+          >
+            {autosave ? "자동 저장 중" : "자동 저장 끔"}
+          </button>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" className="h-8 text-xs font-semibold rounded-sm border-gray-200 shadow-none">

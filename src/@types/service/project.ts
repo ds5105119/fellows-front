@@ -127,23 +127,21 @@ export const userERPNextProjectSchema = z
   .passthrough();
 export type UserERPNextProject = z.infer<typeof userERPNextProjectSchema>;
 
-export const updateERPNextProjectSchema = z
-  .object({
-    custom_project_title: z.string().optional().nullable(),
-    custom_project_summary: z.string().optional().nullable(),
-    custom_readiness_level: readinessLevelEnum.optional().nullable(),
-    is_active: isActiveEnum.optional().nullable(),
-    expected_start_date: z.coerce.date().optional().nullable(),
-    expected_end_date: z.coerce.date().optional().nullable(),
-    custom_content_pages: z.number().int().optional().nullable(),
-    custom_maintenance_required: z.boolean().optional().nullable(),
-    custom_project_status: customProjectStatusEnum.optional().nullable(),
-    custom_platforms: z.array(erpNextProjectPlatformRowSchema).optional().default([]),
-    custom_features: z.array(erpNextProjectFeatureRowSchema).optional().nullable().default([]),
-    custom_preferred_tech_stacks: z.array(erpNextProjectPreferredTechStackRowSchema).optional().nullable().default([]),
-    custom_design_urls: z.array(erpNextProjectDesignUrlRowSchema).optional().nullable().default([]),
-  })
-  .passthrough();
+export const updateERPNextProjectSchema = z.object({
+  custom_project_title: z.string().optional().nullable(),
+  custom_project_summary: z.string().optional().nullable(),
+  custom_readiness_level: readinessLevelEnum.optional().nullable(),
+  is_active: isActiveEnum.optional().nullable(),
+  expected_start_date: z.coerce.date().optional().nullable(),
+  expected_end_date: z.coerce.date().optional().nullable(),
+  custom_content_pages: z.number().int().optional().nullable(),
+  custom_maintenance_required: z.boolean().optional().nullable(),
+  custom_project_status: customProjectStatusEnum.optional().nullable(),
+  custom_platforms: z.array(erpNextProjectPlatformRowSchema).optional().default([]),
+  custom_features: z.array(erpNextProjectFeatureRowSchema).optional().nullable().default([]),
+  custom_preferred_tech_stacks: z.array(erpNextProjectPreferredTechStackRowSchema).optional().nullable().default([]),
+  custom_design_urls: z.array(erpNextProjectDesignUrlRowSchema).optional().nullable().default([]),
+});
 export type UpdateERPNextProject = z.infer<typeof updateERPNextProjectSchema>;
 
 export const erpNextProjectsRequestSchema = z.object({

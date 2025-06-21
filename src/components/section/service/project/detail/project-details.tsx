@@ -4,12 +4,14 @@ import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ERPNextProject } from "@/@types/service/project";
 import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ProjectDetailsProps {
   project: ERPNextProject;
+  setEditedProject: (project: ERPNextProject) => void;
 }
 
-export function ProjectDetails({ project }: ProjectDetailsProps) {
+export function ProjectDetails({ project, setEditedProject }: ProjectDetailsProps) {
   const [toggle, setToggle] = useState(false);
 
   return (
@@ -40,7 +42,11 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
 
       <div className="w-full flex flex-col space-y-2">
         <div className="text-sm font-semibold">설명</div>
-        <div className="text-sm font-normal whitespace-pre-wrap">{project.custom_project_summary}</div>
+        <Textarea
+          value={project.custom_project_summary ?? ""}
+          onChange={(e) => setEditedProject({ ...project, custom_project_summary: e.target.value })}
+          className="rounded-xs min-h-44"
+        />
       </div>
 
       <div className="w-full flex flex-col space-y-1.5">

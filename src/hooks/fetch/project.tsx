@@ -89,6 +89,7 @@ export const useProjects = (params: { size?: number; keyword?: string; order_by?
   const getKey = projectsGetKeyFactory(params);
   return useSWRInfinite(getKey, async (url: string) => projectsPaginatedResponseSchema.parse(await fetcher(url)), {
     refreshInterval: 60000,
+    focusThrottleInterval: 60000,
   });
 };
 
@@ -207,7 +208,10 @@ const tasksGetKeyFactory = (projectId: string, params: { size?: number; order_by
 
 export const useTasks = (projectId: string, params: { size?: number; order_by?: string }) => {
   const getKey = tasksGetKeyFactory(projectId, params);
-  return useSWRInfinite(getKey, async (url: string) => erpNextTaskPaginatedResponseSchema.parse(await fetcher(url)));
+  return useSWRInfinite(getKey, async (url: string) => erpNextTaskPaginatedResponseSchema.parse(await fetcher(url)), {
+    refreshInterval: 60000,
+    focusThrottleInterval: 60000,
+  });
 };
 
 // =================================================================
