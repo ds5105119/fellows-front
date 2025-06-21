@@ -74,7 +74,7 @@ export default async function Page({ params }: { params: Promise<{ project_id: s
               <ProjectStatus project={project} session={session} />
 
               <div className="p-8">
-                <ProjectDetails project={project} />
+                <ProjectDetails project={project} setEditedProject={(data) => console.log(data)} />
               </div>
 
               <ProjectActions project={project} />
