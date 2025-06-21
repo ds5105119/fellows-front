@@ -13,6 +13,7 @@ import { useFeatureRecommendation } from "@/hooks/create-project/use-feature-rec
 import { ProjectFormNavigation } from "./createformnavigation";
 import { CreateProjectTermsSection } from "./createprojecttermssection";
 import { RecommendationLoading } from "./recommandationloading";
+import { Loader2 } from "lucide-react";
 
 export default function CreateProject() {
   const targetRef = useRef<HTMLDivElement>(null);
@@ -73,6 +74,10 @@ export default function CreateProject() {
     }
   }, [isSuccess, isRecommending]);
 
+  useEffect(() => {
+    if (isLoading) window.scrollTo(0, 0);
+  }, [isLoading]);
+
   const scrollToEnd = () => {
     const target = targetRef.current;
     if (!target) return;
@@ -102,6 +107,20 @@ export default function CreateProject() {
     }
     handleSubmitClick();
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center p-4">
+        <div className="text-center space-y-8">
+          {/* Loading */}
+          <div className="space-y-2">
+            <Loader2 className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">저장 중</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isRecommending) {
     return (

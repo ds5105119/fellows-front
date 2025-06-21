@@ -1,3 +1,5 @@
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { auth, signIn } from "@/auth";
 import { SessionProvider } from "next-auth/react";
 import { Session } from "next-auth";
@@ -40,9 +42,18 @@ const getProject = async ({ project_id, session }: { project_id: string; session
 };
 
 export default async function Page({ params }: { params: Promise<{ project_id: string }> }) {
-  const project_id = (await params).project_id;
   const session = await auth();
+  const project_id = (await params).project_id;
   if (!session) return signIn("keycloak", { redirectTo: `/service/project/${project_id}` });
+
+  const cookieStore = await cookies();
+  const onboardingDone = cookieStore.get("onboarding_2_done");
+
+  // 쿠키가 설정되지 않았고, 쿠키 설정 요청이 아닌 경우 리다이렉트
+  if (!onboardingDone) {
+    const currentUrl = `/service/project/${project_id}/detail`;
+    redirect(`/api/service/onboarding/dashboard/2?redirect=${encodeURIComponent(currentUrl)}`);
+  }
 
   const project = await getProject({ project_id, session });
 

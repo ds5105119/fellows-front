@@ -120,6 +120,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const project = useProjects({ size: 1 });
 
   useEffect(() => {
+    console.log(selectedProject);
     if (selectedProject) {
       const segments = pathname.split("/");
 
