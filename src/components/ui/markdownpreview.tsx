@@ -9,10 +9,10 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
 
-interface MarkdownPreviewProps extends Omit<ComponentProps<typeof ReactMarkdown>, "children"> {
-  loading: boolean;
-  children: string;
+interface MarkdownPreviewProps extends ComponentProps<typeof ReactMarkdown> {
+  loading?: boolean;
   overlayColor?: string;
+  className?: string;
 }
 
 // 간단하고 안전한 타입 정의
@@ -29,8 +29,9 @@ interface TdComponentProps extends React.TdHTMLAttributes<HTMLTableDataCellEleme
 }
 
 export default function MarkdownPreview({
-  loading,
+  loading = false,
   children,
+  className = "",
   remarkPlugins = [remarkGfm],
   overlayColor = "255, 255, 255",
   ...restProps
@@ -67,7 +68,8 @@ export default function MarkdownPreview({
     "[&_*:not(table):not(thead):not(tbody):not(tr):not(th):not(td)]:overflow-hidden",
     "[&_*:not(table):not(thead):not(tbody):not(tr):not(th):not(td)]:whitespace-normal",
     "[&_*:not(table):not(thead):not(tbody):not(tr):not(th):not(td)]:overflow-wrap-break-word",
-    "min-w-0"
+    "min-w-0",
+    className
   );
 
   // 표를 wrapper div로 감싸는 커스텀 컴포넌트

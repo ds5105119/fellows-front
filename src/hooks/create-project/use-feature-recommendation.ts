@@ -80,7 +80,6 @@ export function useFeatureRecommendation(form: UseFormReturn<UserERPNextProject>
         }));
 
         form.setValue("custom_features", features);
-        toast.success(`${features.length - 1}개의 기능을 추천받았습니다!`);
       }
     }
   }, [hasCompleted, estimateFeatures?.data?.feature_list, form]);
