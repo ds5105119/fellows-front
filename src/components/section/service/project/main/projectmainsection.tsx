@@ -113,15 +113,21 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const [processCount, setProcessCount] = useState(0);
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [selectedProject, setSelectedProject] = useState<ERPNextProject | null>(null);
-  const [openSheet, setOpenSheet] = useState(false);
+  const [openSheet, setOpenSheet] = useState(project_id ? true : false);
   const keyword = useThrottle(inputText, 700);
   const pathname = usePathname();
   const router = useRouter();
   const project = useProjects({ size: 1 });
 
   useEffect(() => {
-    console.log(selectedProject);
-    if (selectedProject) {
+    if (!!project_id) {
+      const emptyProject = erpNextProjectSchema.parse({ project_name: project_id });
+      setSelectedProject(emptyProject);
+    }
+  }, [project_id]);
+
+  useEffect(() => {
+    if (!!selectedProject) {
       const segments = pathname.split("/");
 
       if (segments[segments.length - 1] === "project") segments.push(selectedProject.project_name);
@@ -133,13 +139,6 @@ export default function ProjectMainSection({ session, project_id }: { session: S
       setOpenSheet(true);
     }
   }, [selectedProject]);
-
-  useEffect(() => {
-    if (!!project_id) {
-      const emptyProject = erpNextProjectSchema.parse({ project_name: project_id });
-      setSelectedProject(emptyProject);
-    }
-  }, [project_id]);
 
   useEffect(() => {
     if (!openSheet) {
@@ -155,7 +154,15 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   }, [openSheet]);
 
   useEffect(() => {
-    if (!project.isLoading && !project.error && !project.isValidating && project.data && project.data.length > 0 && project.data[0].items.length == 0) {
+    if (
+      !project.isLoading &&
+      !project.error &&
+      !project.isValidating &&
+      project.data &&
+      project.data.length > 0 &&
+      project.data[0].items.length == 0 &&
+      !project_id
+    ) {
       router.push("/service/project/new");
     }
   }, [project]);

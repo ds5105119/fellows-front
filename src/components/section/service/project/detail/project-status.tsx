@@ -96,11 +96,11 @@ export function ProjectStatus({ project, session }: { project: ERPNextProject; s
                       <div className="text-base font-bold text-black">Fellows</div>
                       <div className="text-xs font-semibold text-muted-foreground">회사명: IIH</div>
                       <div className="text-xs font-semibold text-muted-foreground">주소: 서울특별시 강남구 역삼동 123-456</div>
-                      <div className="flex w-full items-center justify-between pr-2 md:pr-12">
+                      <div className="flex w-full items-center justify-between pr-4 md:pr-12">
                         <div className="text-xs font-semibold text-muted-foreground">대표자: 김동현</div>
                         <div className="relative text-xs font-bold text-muted-foreground">
                           (인)
-                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none ">
+                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">
                             <Image
                               src="/fellows/stamp.png"
                               alt="Fellows Stamp"
