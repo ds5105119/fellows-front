@@ -173,7 +173,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
   }, [project, editedProject, isUpdating, autosave]);
 
   return (
-    <div className="flex flex-col w-full h-full overflow-y-auto md:overflow-hidden">
+    <div className="flex flex-col w-full h-full overflow-y-auto md:overflow-hidden pb-12">
       {/* 헤더 */}
       <div className="sticky top-0 shrink-0 flex items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4 bg-background z-20">
         <div className="flex items-center gap-3">
@@ -262,9 +262,9 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
           <Flattabs tabs={mobileTabs} activeTab={activeMobileTab} handleTabChange={setActiveMobileTab} />
 
           {/* 모바일 탭 콘텐츠 */}
-          <div className="w-full grow scrollbar-hide">
+          <div className="flex flex-col h-full w-full">
             {activeMobileTab === 0 && (
-              <div className="flex flex-col h-full w-full">
+              <>
                 <div className="pt-12 pb-5 px-4">
                   <ProjectHeader project={editedProject} />
                 </div>
@@ -284,7 +284,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
                 <div className="px-4 pt-1 pb-5">
                   <ProjectNotices />
                 </div>
-              </div>
+              </>
             )}
             {activeMobileTab === 1 && (
               <TasksList tasks={tasks} totalTasksCount={totalTasksCount} tasksLoading={tasksLoading ?? false} onLoadMore={handleLoadMoreTasks} />
@@ -294,7 +294,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
       </div>
 
       {/* 시트 푸터 */}
-      <div className="sticky bottom-0 shrink-0 flex items-center justify-between h-12 border-t-1 border-t-sidebar-border px-4 bg-zinc-50 z-20">
+      <div className="absolute bottom-0 w-full flex items-center justify-between h-12 border-t-1 border-t-sidebar-border px-4 bg-zinc-50 z-20">
         <div className="flex items-center gap-3">
           <p className="text-xs font-semibold text-muted-foreground">
             {project.modified ? `${dayjs(project.modified).format("YYYY-MM-DD HH:mm:ss")} 수정됨` : "수정되지 않은 프로젝트"}
