@@ -72,41 +72,77 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
             })}
           </div>
         </div>
-        <DialogContent showCloseButton={false} className="drop-shadow-white/20 drop-shadow-2xl p-0">
-          <DialogHeader>
+        <DialogContent showCloseButton={false} className="drop-shadow-white/20 drop-shadow-2xl p-0 h-3/4 overflow-y-auto scrollbar-hide">
+          <DialogHeader className="sr-only">
             <DialogTitle className="sr-only">기능 선택 창</DialogTitle>
             <DialogDescription className="sr-only" />
-            <div className="w-full h-full flex flex-col">
-              <div className="px-2 py-2 border-b border-b-muted">
-                <Input className="border-none focus:ring-0 focus-visible:ring-0 md:text-base" placeholder="검색어 입력" />
+          </DialogHeader>
+          <div className="w-full h-full flex flex-col">
+            <div className="sticky top-0 w-full px-2 py-2 border-b border-b-muted bg-white">
+              <Input className="border-none focus:ring-0 focus-visible:ring-0 md:text-base shadow-none" placeholder="검색어 입력" />
+            </div>
+
+            <div className="Flex flex-col grow space-y-2 py-5 px-3">
+              <div className="text-xs font-bold text-muted-foreground px-2">선택된 기능들 ({project.custom_features?.length || 0})</div>
+              <div className="w-full flex flex-wrap gap-2 px-2">
+                {project.custom_features?.map((val, i) => {
+                  const feature = categorizedFeatures.flatMap((category) => category.items).find((item) => item.title === val.feature);
+
+                  return (
+                    feature && (
+                      <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
+                        {feature.icon} {feature.title}
+                      </div>
+                    )
+                  );
+                })}
               </div>
-              <div className="p-5">
-                <DragScrollContainer className="flex space-x-2">
+
+              <div className="text-xs font-bold text-muted-foreground pt-4 px-2">
+                모든 기능들 ({categorizedFeatures.flatMap((category) => category.items)?.length || 0})
+              </div>
+              <DragScrollContainer className="flex space-x-2 px-2">
+                <button
+                  className={cn(
+                    "py-1 rounded-sm px-2 text-sm font-bold shrink-0",
+                    featureCategory == "" ? "text-white bg-blue-400" : "text-black border border-gray-200"
+                  )}
+                  onClick={() => setFeatureCategory("")}
+                >
+                  전체
+                </button>
+                {categorizedFeatures.map((category) => (
                   <button
+                    key={category.title}
                     className={cn(
                       "py-1 rounded-sm px-2 text-sm font-bold shrink-0",
-                      featureCategory == "" ? "text-white bg-blue-400" : "text-black border border-gray-200"
+                      featureCategory == category.title ? "text-white bg-blue-400" : "text-black border border-gray-200"
                     )}
-                    onClick={() => setFeatureCategory("")}
+                    onClick={() => setFeatureCategory(category.title)}
                   >
-                    전체
+                    {category.title}
                   </button>
-                  {categorizedFeatures.map((category) => (
-                    <button
-                      key={category.title}
-                      className={cn(
-                        "py-1 rounded-sm px-2 text-sm font-bold shrink-0",
-                        featureCategory == category.title ? "text-white bg-blue-400" : "text-black border border-gray-200"
-                      )}
-                      onClick={() => setFeatureCategory(category.title)}
+                ))}
+              </DragScrollContainer>
+              <div className="w-full flex flex-col space-y-1 mt-4">
+                {categorizedFeatures.map((category) => {
+                  const items = featureCategory === "" ? category.items : category.title === featureCategory ? category.items : [];
+                  return items.map((val, i) => (
+                    <div
+                      key={category.title + i}
+                      className="flex space-x-2 px-2 py-2 items-center rounded-sm text-xs font-bold hover:bg-gray-100 transition-colors duration-200"
                     >
-                      {category.title}
-                    </button>
-                  ))}
-                </DragScrollContainer>
+                      <div className="size-11 flex items-center justify-center rounded-2xl border bodrer-gray-200 text-xl">{val.icon}</div>
+                      <div className="flex flex-col space-y-1">
+                        <div className="text-sm font-normal">{val.title}</div>
+                        <div className="text-xs font-normal text-muted-foreground">{val.description}</div>
+                      </div>
+                    </div>
+                  ));
+                })}
               </div>
             </div>
-          </DialogHeader>
+          </div>
         </DialogContent>
       </Dialog>
 
