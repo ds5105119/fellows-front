@@ -28,7 +28,7 @@ export function GanttChart({
   showControl?: boolean;
 }) {
   const [timeUnit, setTimeUnit] = useState<TimeUnit>(timeunit ?? "week");
-  const [taskExpended, setTaskExpanded] = useState<boolean>(expand ?? "true");
+  const [taskExpended, setTaskExpanded] = useState<boolean>(expand ?? true);
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs()); // 오늘을 기준점으로 설정
 
   // 기본으로 모든 태스크 펼쳐진 상태로 시작
@@ -254,19 +254,19 @@ export function GanttChart({
               <SelectItem value="day">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  Days
+                  일별
                 </div>
               </SelectItem>
               <SelectItem value="week">
                 <div className="flex items-center gap-2">
                   <CalendarDays className="h-4 w-4" />
-                  Weeks
+                  주별
                 </div>
               </SelectItem>
               <SelectItem value="month">
                 <div className="flex items-center gap-2">
                   <CalendarRange className="h-4 w-4" />
-                  Months
+                  월별
                 </div>
               </SelectItem>
             </SelectContent>
@@ -300,8 +300,8 @@ export function GanttChart({
       <div className="border-y overflow-x-auto">
         <div className="w-full min-w-fit">
           {/* Header */}
-          <div className="flex border-b bg-gray-50">
-            <div className="w-16 md:w-80 p-2 border-r bg-white flex-shrink-0 flex items-center justify-center">
+          <div className="flex border-b bg-gray-50 h-12">
+            <div className="w-16 md:w-80 border-r bg-white flex-shrink-0 flex items-center justify-center">
               <h3 className="font-semibold">작업</h3>
             </div>
             <div className="flex-1 min-w-0">

@@ -16,7 +16,7 @@ export default function Page() {
 
   const tabs = ["개요", "작업 현황", "파일"] as const;
   const [tab, setTab] = useState<"개요" | "작업 현황" | "파일">("개요");
-  const [taskView, setTaskView] = useState<boolean>(true);
+  const [taskView, setTaskView] = useState<boolean>(false);
 
   const tasks = useTasks(project_id, { size: 20 });
   const taskRaw = tasks.data?.flatMap((task) => task.items) ?? [];
@@ -38,9 +38,13 @@ export default function Page() {
           })}
         </div>
         {tab == "작업 현황" && (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 group">
             <Button variant="ghost" size="icon" onClick={() => setTaskView((prev) => !prev)}>
-              {taskView ? <SquareGanttChart className="size-6" /> : <TableProperties className="size-6" />}
+              {taskView ? (
+                <SquareGanttChart className="size-6 text-muted-foreground group-hover:text-zinc-800 transition-colors duration-200" />
+              ) : (
+                <TableProperties className="size-6 text-muted-foreground group-hover:text-zinc-800 transition-colors duration-200" />
+              )}
             </Button>
           </div>
         )}

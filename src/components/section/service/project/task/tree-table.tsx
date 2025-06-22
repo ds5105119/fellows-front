@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { type ColumnDef, type ExpandedState, flexRender, getCoreRowModel, getExpandedRowModel, type OnChangeFn, useReactTable } from "@tanstack/react-table";
-import { ChevronDown, ChevronRight, Calendar, Clock, Expand, Shrink } from "lucide-react";
+import { ChevronDown, ChevronRight, Calendar, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -15,11 +15,10 @@ import { buildTree, getInitialExpandedState } from "@/lib/task-utils";
 export function TreeTable({ tasks }: { tasks: ERPNextTaskForUser[] }) {
   const treeData = useMemo(() => buildTree(tasks), [tasks]);
   const [expanded, setExpanded] = useState<Record<string, boolean>>(() => getInitialExpandedState(tasks, 2));
+  const [taskExpended, setTaskExpanded] = useState<boolean>(true);
 
   const expandAll = () => {
     const newExpanded: Record<string, boolean> = {};
-
-    // 모든 태스크를 펼침 상태로 설정 (TanStack Table의 row ID 시스템 사용)
     const setAllExpanded = (taskList: ERPNextTaskForUser[], parentPath = "") => {
       taskList.forEach((task, index) => {
         const rowId = parentPath ? `${parentPath}.${index}` : `${index}`;
@@ -32,7 +31,6 @@ export function TreeTable({ tasks }: { tasks: ERPNextTaskForUser[] }) {
     };
 
     setAllExpanded(treeData);
-    console.log("Expanding all tasks with IDs:", newExpanded);
     setExpanded(newExpanded);
   };
 
@@ -40,10 +38,18 @@ export function TreeTable({ tasks }: { tasks: ERPNextTaskForUser[] }) {
     setExpanded({});
   };
 
+  useEffect(() => {
+    if (taskExpended) {
+      expandAll();
+    } else {
+      collapseAll();
+    }
+  }, [taskExpended]);
+
   const columns: ColumnDef<ERPNextTaskForUser>[] = [
     {
       id: "task",
-      header: "Task",
+      header: "작업",
       cell: ({ row }) => {
         const task = row.original;
         const hasChildren = row.subRows?.length > 0;
@@ -71,12 +77,12 @@ export function TreeTable({ tasks }: { tasks: ERPNextTaskForUser[] }) {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: "상태",
       cell: ({ getValue }) => <StatusBadge status={getValue() as ERPNextTaskForUser["status"]} />,
     },
     {
       accessorKey: "progress",
-      header: "Progress",
+      header: "프로세스",
       cell: ({ getValue }) => {
         const progress = getValue() as number;
         return (
@@ -89,7 +95,7 @@ export function TreeTable({ tasks }: { tasks: ERPNextTaskForUser[] }) {
     },
     {
       accessorKey: "expected_time",
-      header: "Time",
+      header: "소요시간",
       cell: ({ getValue }) => {
         const time = getValue() as number;
         return (
@@ -105,7 +111,7 @@ export function TreeTable({ tasks }: { tasks: ERPNextTaskForUser[] }) {
     },
     {
       id: "dates",
-      header: "Timeline",
+      header: "타임라인",
       cell: ({ row }) => {
         const task = row.original;
         return (
@@ -128,7 +134,7 @@ export function TreeTable({ tasks }: { tasks: ERPNextTaskForUser[] }) {
     },
     {
       accessorKey: "project",
-      header: "Project",
+      header: "프로젝트",
       cell: ({ getValue }) => (
         <Badge variant="secondary" className="text-xs">
           {getValue() as string}
@@ -149,23 +155,15 @@ export function TreeTable({ tasks }: { tasks: ERPNextTaskForUser[] }) {
     },
   });
 
-  // 디버깅용 - expanded 상태 변화 감지
-  useEffect(() => {
-    console.log("Expanded state changed:", expanded);
-    console.log("Visible rows:", table.getRowModel().rows.length);
-  }, [expanded, table]);
-
   return (
-    <div className="space-y-4 w-full max-w-full">
-      <div className="flex justify-end gap-2">
-        <Button variant="outline" size="sm" onClick={expandAll} className="flex items-center gap-2">
-          <Expand className="h-4 w-4" />
-          Expand All ({tasks.length})
-        </Button>
-        <Button variant="outline" size="sm" onClick={collapseAll} className="flex items-center gap-2">
-          <Shrink className="h-4 w-4" />
-          Collapse All
-        </Button>
+    <div className="w-full max-w-full">
+      <div className="flex w-full justify-between items-center h-12 px-6">
+        <div className="flex gap-2"></div>
+        <div className="flex gap-2">
+          <Button variant="secondary" size="sm" onClick={() => setTaskExpanded((prev) => !prev)}>
+            {taskExpended ? "접기" : "펼치기"}
+          </Button>
+        </div>
       </div>
 
       <div className="w-full border-y overflow-x-auto">
@@ -177,7 +175,7 @@ export function TreeTable({ tasks }: { tasks: ERPNextTaskForUser[] }) {
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="font-semibold"
+                      className="font-semibold h-12"
                       style={{
                         width:
                           header.id === "task"
@@ -193,6 +191,20 @@ export function TreeTable({ tasks }: { tasks: ERPNextTaskForUser[] }) {
                             : header.id === "project"
                             ? "130px"
                             : "auto",
+                        textAlign:
+                          header.id === "task"
+                            ? "center"
+                            : header.id === "status"
+                            ? "center"
+                            : header.id === "progress"
+                            ? "center"
+                            : header.id === "expected_time"
+                            ? "center"
+                            : header.id === "dates"
+                            ? "center"
+                            : header.id === "project"
+                            ? "center"
+                            : "left",
                       }}
                     >
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -204,9 +216,28 @@ export function TreeTable({ tasks }: { tasks: ERPNextTaskForUser[] }) {
             <TableBody className="w-full">
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="hover:bg-gray-50 transition-colors">
+                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="hover:bg-gray-50 transition-colors h-16">
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="y-3">
+                      <TableCell
+                        key={cell.id}
+                        className="y-3"
+                        style={{
+                          textAlign:
+                            cell.id === "task"
+                              ? "center"
+                              : cell.id === "status"
+                              ? "center"
+                              : cell.id === "progress"
+                              ? "center"
+                              : cell.id === "expected_time"
+                              ? "left"
+                              : cell.id === "dates"
+                              ? "left"
+                              : cell.id === "project"
+                              ? "center"
+                              : "left",
+                        }}
+                      >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
