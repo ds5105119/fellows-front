@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import dayjs, { type Dayjs } from "dayjs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Calendar, CalendarDays, CalendarRange, ChevronDown, ChevronRight, Expand, Shrink, ChevronLeft } from "lucide-react";
+import { Calendar, CalendarDays, CalendarRange, ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
 import type { ERPNextTaskForUser } from "@/@types/service/project";
 import { StatusBadge } from "./status-badge";
 import { buildTree, calculateParentTaskDates, getAllExpandableTaskIds } from "@/lib/task-utils";
