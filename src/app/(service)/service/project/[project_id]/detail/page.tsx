@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { SquareGanttChart, TableProperties } from "lucide-react";
 import { useTasks } from "@/hooks/fetch/project";
 import { TreeTable } from "@/components/section/service/project/task/tree-table";
-import { GanttChart, TimeUnit } from "@/components/section/service/project/task/gantt-chart";
+import { GanttChart } from "@/components/section/service/project/task/gantt-chart";
 
 export default function Page() {
   const params = useParams();
