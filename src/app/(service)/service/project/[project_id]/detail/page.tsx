@@ -1,101 +1,51 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { auth, signIn } from "@/auth";
-import { SessionProvider } from "next-auth/react";
-import { Session } from "next-auth";
-import { erpNextProjectSchema, ERPNextProject } from "@/@types/service/project";
-import { ProjectHeader } from "@/components/section/service/project/detail/project-header";
-import { ProjectBasicInfo } from "@/components/section/service/project/detail/project-basic-info";
-import { ProjectStatus } from "@/components/section/service/project/detail/project-status";
-import { ProjectDetails } from "@/components/section/service/project/detail/project-details";
-import { ProjectNotices } from "@/components/section/service/project/detail/project-notices";
-import { ProjectActions } from "@/components/section/service/project/detail/project-actions";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import ProjectDetailSide from "@/components/section/service/project/detail/project-detail-side";
+"use client";
 
-const getProject = async ({ project_id, session }: { project_id: string; session: Session }): Promise<ERPNextProject> => {
-  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}`;
+import DetailMain from "@/components/section/service/project/detail/detail-main";
+import { useState } from "react";
+import { useParams } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { SquareGanttChart, TableProperties } from "lucide-react";
+import { useTasks } from "@/hooks/fetch/project";
+import { TreeTable } from "@/components/section/service/project/task/tree-table";
+import { GanttChart } from "@/components/section/service/project/task/gantt-chart";
 
-  try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
-      },
-      redirect: "follow",
-      credentials: "include",
-    });
+export default function Page() {
+  const params = useParams();
+  const project_id = params.project_id as string;
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-    }
+  const tabs = ["개요", "작업 현황", "파일"] as const;
+  const [tab, setTab] = useState<"개요" | "작업 현황" | "파일">("개요");
+  const [taskView, setTaskView] = useState<boolean>(true);
 
-    const responseData = await response.json();
-    const parsedData = erpNextProjectSchema.parse(responseData);
-
-    return parsedData;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export default async function Page({ params }: { params: Promise<{ project_id: string }> }) {
-  const session = await auth();
-  const project_id = (await params).project_id;
-  if (!session) return signIn("keycloak", { redirectTo: `/service/project/${project_id}` });
-
-  const cookieStore = await cookies();
-  const onboardingDone = cookieStore.get("onboarding_2_done");
-
-  // 쿠키가 설정되지 않았고, 쿠키 설정 요청이 아닌 경우 리다이렉트
-  if (!onboardingDone) {
-    const currentUrl = `/service/project/${project_id}/detail`;
-    redirect(`/api/service/onboarding/dashboard/2?redirect=${encodeURIComponent(currentUrl)}`);
-  }
-
-  const project = await getProject({ project_id, session });
+  const tasks = useTasks(project_id, { size: 20 });
+  const taskRaw = tasks.data?.flatMap((task) => task.items) ?? [];
 
   return (
-    <SessionProvider session={session}>
-      <div className="hidden lg:block h-full">
-        <ResizablePanelGroup direction="horizontal" className="flex w-full h-full">
-          <ResizablePanel defaultSize={45} minSize={35} className="flex flex-col h-full w-full">
-            <div className="flex flex-col h-full w-full">
-              <div className="pt-12 pb-5 px-8">
-                <ProjectHeader project={project} />
-              </div>
-
-              <div className="px-8 py-6">
-                <ProjectBasicInfo project={project} />
-              </div>
-
-              <ProjectStatus project={project} session={session} setEditedProject={(data) => console.log(data)} />
-
-              <div className="p-8">
-                <ProjectDetails project={project} setEditedProject={(data) => console.log(data)} />
-              </div>
-
-              <ProjectActions project={project} />
-
-              <div className="px-8 pt-1 pb-5">
-                <ProjectNotices />
-              </div>
-            </div>
-          </ResizablePanel>
-
-          <ResizableHandle withHandle />
-
-          <ResizablePanel defaultSize={55} minSize={40} className="flex flex-col h-full w-full">
-            <ProjectDetailSide project={project} />
-          </ResizablePanel>
-        </ResizablePanelGroup>
+    <div className="w-full flex flex-col">
+      <div className="sticky w-full top-0 flex items-center justify-between min-h-12 h-12 md:min-h-16 md:h-16 border-b-1 border-b-sidebar-border px-6 md:px-6 bg-background z-20">
+        <div className="flex items-center space-x-5">
+          {tabs.map((t, index) => {
+            return (
+              <button
+                key={index}
+                onClick={() => setTab(t)}
+                className={cn("text-base md:text-xl font-bold", t === tab ? "text-black" : "text-muted-foreground")}
+              >
+                {t}
+              </button>
+            );
+          })}
+        </div>
+        {tab == "작업 현황" && (
+          <Button variant="ghost" size="icon" onClick={() => setTaskView((prev) => !prev)}>
+            {taskView ? <SquareGanttChart className="size-6" /> : <TableProperties className="size-6" />}
+          </Button>
+        )}
       </div>
-
-      <div className="block lg:hidden">
-        <ProjectDetailSide project={project} />
-      </div>
-    </SessionProvider>
+      {tab === "개요" && <DetailMain project_id={project_id} />}
+      {tab === "작업 현황" && taskView && <TreeTable tasks={taskRaw} />}
+      {tab === "작업 현황" && !taskView && <GanttChart tasks={taskRaw} />}
+    </div>
   );
 }

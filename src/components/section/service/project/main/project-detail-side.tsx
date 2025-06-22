@@ -3,7 +3,7 @@
 import { ERPNextProject } from "@/@types/service/project";
 import Flattabs from "@/components/ui/flattabs";
 import { useState } from "react";
-import ProjectEstimator from "@/components/section/service/project/detail/projectestimator";
+import ProjectEstimator from "@/components/section/service/project/main/projectestimator";
 
 export default function ProjectDetailSide({ project }: { project: ERPNextProject }) {
   const [activeTab, setActiveTab] = useState(0);

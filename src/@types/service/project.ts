@@ -14,6 +14,7 @@ export const erpNextTaskStatusEnum = z.enum(["Open", "Working", "Pending Review"
 export const erpNextTaskPriorityEnum = z.enum(["Low", "Medium", "High", "Urgent"]);
 export const erpNextToDoStatusEnum = z.enum(["Open", "Closed", "Cancelled"]);
 export const erpNextToDoPriorityEnum = z.enum(["High", "Medium", "Low"]);
+export type ERPNextTaskStatus = z.infer<typeof erpNextTaskStatusEnum>;
 
 // --- Child Table Models for ERPNext ---
 
@@ -211,22 +212,32 @@ export const erpNextTaskSchema = z
   .passthrough();
 export type ERPNextTask = z.infer<typeof erpNextTaskSchema>;
 
-export const erpNextTaskForUserSchema = z
-  .object({
-    name: z.string(),
-    subject: z.string(),
-    project: z.string(),
-    color: z.string().optional().nullable(),
-    status: erpNextTaskStatusEnum.optional().nullable(),
-    exp_start_date: z.coerce.date().optional().nullable(),
-    expected_time: z.number().default(0.0),
-    exp_end_date: z.coerce.date().optional().nullable(),
-    progress: z.number().default(0.0),
-    description: z.string().optional().nullable(),
-    closing_date: z.coerce.date().optional().nullable(),
+const baseTaskSchema = z.object({
+  name: z.string(),
+  subject: z.string(),
+  project: z.string(),
+  color: z.string().optional().nullable(),
+  status: erpNextTaskStatusEnum.optional().nullable(),
+  exp_start_date: z.coerce.date().optional().nullable(),
+  expected_time: z.number().default(0.0),
+  exp_end_date: z.coerce.date().optional().nullable(),
+  parent_task: z.string().optional().nullable(),
+  progress: z.number().default(0.0),
+  description: z.string().optional().nullable(),
+  closing_date: z.coerce.date().optional().nullable(),
+});
+
+type BaseTask = z.infer<typeof baseTaskSchema>;
+
+export type ERPNextTaskForUser = BaseTask & {
+  subRows?: ERPNextTaskForUser[];
+};
+
+export const erpNextTaskForUserSchema = baseTaskSchema
+  .extend({
+    subRows: z.array(z.lazy(() => erpNextTaskForUserSchema)).optional(),
   })
-  .passthrough();
-export type ERPNextTaskForUser = z.infer<typeof erpNextTaskForUserSchema>;
+  .passthrough() as z.ZodType<ERPNextTaskForUser>;
 
 export const projectTaskRequestSchema = z
   .object({

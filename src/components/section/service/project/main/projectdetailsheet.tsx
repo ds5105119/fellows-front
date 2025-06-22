@@ -13,15 +13,15 @@ import { updateERPNextProjectSchema, type ERPNextProject } from "@/@types/servic
 import { cn } from "@/lib/utils";
 
 // 분리된 컴포넌트들 import
-import { CustomerInfo } from "../detail/customer-info";
-import { TasksList } from "../detail/tasks-list";
-import { FilesList } from "../detail/files-list";
-import { ProjectHeader } from "../detail/project-header";
-import { ProjectBasicInfo } from "../detail/project-basic-info";
-import { ProjectStatus } from "../detail/project-status";
-import { ProjectDetails } from "../detail/project-details";
-import { ProjectActions } from "../detail/project-actions";
-import { ProjectNotices } from "../detail/project-notices";
+import { CustomerInfo } from "./customer-info";
+import { TasksList } from "./tasks-list";
+import { FilesList } from "./files-list";
+import { ProjectHeader } from "./project-header";
+import { ProjectBasicInfo } from "./project-basic-info";
+import { ProjectStatus } from "./project-status";
+import { ProjectDetails } from "./project-details";
+import { ProjectActions } from "./project-actions";
+import { ProjectNotices } from "./project-notices";
 import dayjs from "dayjs";
 
 interface ProjectDetailSheetProps {
