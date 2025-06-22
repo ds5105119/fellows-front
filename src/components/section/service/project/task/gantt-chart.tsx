@@ -1,15 +1,18 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
-import dayjs, { type Dayjs } from "dayjs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import dayjs from "@/lib/dayjs";
+import { type Dayjs } from "dayjs";
+import Color from "color";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar, CalendarDays, CalendarRange, ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
 import type { ERPNextTaskForUser } from "@/@types/service/project";
 import { StatusBadge } from "./status-badge";
 import { buildTree, calculateParentTaskDates, getAllExpandableTaskIds } from "@/lib/task-utils";
-import Color from "color";
-import { cn } from "@/lib/utils";
+import { Calendar, CalendarDays, CalendarRange, ChevronDown, ChevronRight, ChevronLeft, FilePenLine, ClockIcon, ArrowRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { PopoverClose } from "@radix-ui/react-popover";
 
 export type TimeUnit = "day" | "week" | "month";
 
@@ -24,7 +27,7 @@ export function GanttChart({
   timeunit?: TimeUnit;
   showControl?: boolean;
 }) {
-  const [timeUnit, setTimeUnit] = useState<TimeUnit>(timeunit ?? "day");
+  const [timeUnit, setTimeUnit] = useState<TimeUnit>(timeunit ?? "week");
   const [taskExpended, setTaskExpanded] = useState<boolean>(expand ?? "true");
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs()); // 오늘을 기준점으로 설정
 
@@ -357,58 +360,92 @@ export function GanttChart({
                   <div className="relative flex-1 min-w-0 h-full py-4">
                     <div className="relative h-8">
                       {/* Task bar */}
-                      {barStyle && (
-                        <div
-                          className="absolute top-1 bottom-1 rounded-[3px] overflow-hidden"
-                          style={{
-                            ...barStyle,
-                            borderTop: `1px solid ${Color(task.color || "#007AFF")
-                              .lighten(0.6)
-                              .hex()}`,
-                            borderLeft: `1px solid ${Color(task.color || "#007AFF")
-                              .lighten(0.6)
-                              .hex()}`,
-                            borderRight: `1px solid ${Color(task.color || "#007AFF")
-                              .lighten(0.6)
-                              .hex()}`,
-                            borderBottom: `1px solid ${Color(task.color || "#007AFF")
-                              .darken(0.2)
-                              .hex()}`,
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = Color(task.color || "#007AFF")
-                              .alpha(0.3)
-                              .string();
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = "transparent";
-                          }}
-                        >
-                          {/* 배경 바 (전체 - 희미하게) */}
-                          <div
-                            className="h-full"
-                            style={{
-                              backgroundColor: task.color || "#007AFF",
-                              opacity: 0.5,
-                            }}
-                          />
-                          {/* 진행 바 (완료된 부분 - 원래 색상) */}
-                          {task.progress > 0 && (
-                            <div
-                              className="absolute top-0 h-full"
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          {barStyle && (
+                            <button
+                              className="absolute top-1 bottom-1 rounded-[3px] overflow-hidden cursor-pointer"
                               style={{
-                                width: `${task.progress}%`,
-                                backgroundColor: task.color || "#007AFF",
-                                opacity: 1,
+                                ...barStyle,
+                                borderTop: `1px solid ${Color(task.color || "#007AFF")
+                                  .lighten(0.6)
+                                  .hex()}`,
+                                borderLeft: `1px solid ${Color(task.color || "#007AFF")
+                                  .lighten(0.6)
+                                  .hex()}`,
+                                borderRight: `1px solid ${Color(task.color || "#007AFF")
+                                  .lighten(0.6)
+                                  .hex()}`,
+                                borderBottom: `1px solid ${Color(task.color || "#007AFF")
+                                  .darken(0.2)
+                                  .hex()}`,
                               }}
-                            />
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = Color(task.color || "#007AFF")
+                                  .alpha(0.3)
+                                  .string();
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = "transparent";
+                              }}
+                            >
+                              {/* 배경 바 (전체 - 희미하게) */}
+                              <div
+                                className="h-full"
+                                style={{
+                                  backgroundColor: task.color || "#007AFF",
+                                  opacity: 0.5,
+                                }}
+                              />
+                              {/* 진행 바 (완료된 부분 - 원래 색상) */}
+                              {task.progress > 0 && (
+                                <div
+                                  className="absolute top-0 h-full"
+                                  style={{
+                                    width: `${task.progress}%`,
+                                    backgroundColor: task.color || "#007AFF",
+                                    opacity: 1,
+                                  }}
+                                />
+                              )}
+                              {/* Task label */}
+                              <div className="absolute inset-0 flex items-center px-2">
+                                <span className="text-xs text-white font-medium truncate drop-shadow-sm select-none">{task.subject}</span>
+                              </div>
+                            </button>
                           )}
-                          {/* Task label */}
-                          <div className="absolute inset-0 flex items-center px-2">
-                            <span className="text-xs text-white font-medium truncate drop-shadow-sm select-none">{task.subject}</span>
+                        </PopoverTrigger>
+                        <PopoverContent className="drop-shadow-2xl p-0 rounded-xl">
+                          <div className="p-4 flex flex-col space-y-4">
+                            <div className="flex space-x-3">
+                              <FilePenLine className="!size-4 mt-[1.5px] shrink-0" />
+                              <div className="flex flex-col space-y-2">
+                                <div className="text-sm font-bold">{task.subject}</div>
+                                <div className="text-xs font-normal">{task.description}</div>
+                              </div>
+                            </div>
+                            <div className="flex space-x-3 w-full">
+                              <ClockIcon className="!size-4 shrink-0" />
+                              <div className="flex flex-col space-y-1.5 w-full">
+                                <div className="flex justify-between items-center w-full">
+                                  <div className="text-xs font-semibold">{dayjs(task.exp_start_date).format("LL")}</div>
+                                  <ArrowRight className="!size-3.5 text-zinc-400" />
+                                  <div className="text-xs font-semibold">{dayjs(task.exp_end_date).format("LL")}</div>
+                                </div>
+                                <div className="text-xs font-semibold text-zinc-400">총 {task.expected_time}시간</div>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                          <hr />
+                          <div className="px-2 py-2 flex justify-end space-y-4">
+                            <PopoverClose asChild>
+                              <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-muted-foreground w-fit">
+                                확인
+                              </Button>
+                            </PopoverClose>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
 
                       {/* No dates indicator - 태스크에 날짜가 없을 때만 표시 */}
                       {!task.exp_start_date || !task.exp_end_date ? (
