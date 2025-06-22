@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText } from "lucide-react";
+import { CheckIcon, FileText, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ERPNextProject } from "@/@types/service/project";
 import { useState } from "react";
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 export function ProjectDetails({ project, setEditedProject }: { project: ERPNextProject; setEditedProject: (project: ERPNextProject) => void }) {
   const [toggle, setToggle] = useState(false);
   const [featureCategory, setFeatureCategory] = useState("");
+  const [featureKeyword, setFeatureKeyword] = useState("");
 
   return (
     <div className="w-full flex flex-col space-y-6">
@@ -72,18 +73,32 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
             })}
           </div>
         </div>
-        <DialogContent showCloseButton={false} className="drop-shadow-white/20 drop-shadow-2xl p-0 h-3/4 overflow-y-auto scrollbar-hide">
+        <DialogContent showCloseButton={false} className="drop-shadow-white/20 drop-shadow-2xl p-0 h-3/4 overflow-y-auto scrollbar-hide focus-visible:ring-0">
           <DialogHeader className="sr-only">
             <DialogTitle className="sr-only">기능 선택 창</DialogTitle>
             <DialogDescription className="sr-only" />
           </DialogHeader>
           <div className="w-full h-full flex flex-col">
             <div className="sticky top-0 w-full px-2 py-2 border-b border-b-muted bg-white">
-              <Input className="border-none focus:ring-0 focus-visible:ring-0 md:text-base shadow-none" placeholder="검색어 입력" />
+              <Input
+                className="border-none focus:ring-0 focus-visible:ring-0 md:text-base shadow-none"
+                placeholder="검색어 입력"
+                value={featureKeyword}
+                onChange={(e) => setFeatureKeyword(e.target.value)}
+              />
             </div>
 
             <div className="Flex flex-col grow space-y-2 py-5 px-3">
-              <div className="text-xs font-bold text-muted-foreground px-2">선택된 기능들 ({project.custom_features?.length || 0})</div>
+              <div className="text-xs font-bold text-muted-foreground px-2">
+                선택된 기능들 (
+                {project.custom_features?.filter((f) =>
+                  categorizedFeatures
+                    .flatMap((c) => c.items)
+                    .flatMap((c) => c.title)
+                    .includes(f.feature)
+                ).length || 0}
+                )
+              </div>
               <div className="w-full flex flex-wrap gap-2 px-2">
                 {project.custom_features?.map((val, i) => {
                   const feature = categorizedFeatures.flatMap((category) => category.items).find((item) => item.title === val.feature);
@@ -99,7 +114,9 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
               </div>
 
               <div className="text-xs font-bold text-muted-foreground pt-4 px-2">
-                모든 기능들 ({categorizedFeatures.flatMap((category) => category.items)?.length || 0})
+                {featureCategory == ""
+                  ? `모든 기능들 (${categorizedFeatures.flatMap((c) => c.items)?.length || 0})`
+                  : `${featureCategory} (${categorizedFeatures.filter((c) => c.title == featureCategory)[0].items.length})`}
               </div>
               <DragScrollContainer className="flex space-x-2 px-2">
                 <button
@@ -126,19 +143,54 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
               </DragScrollContainer>
               <div className="w-full flex flex-col space-y-1 mt-4">
                 {categorizedFeatures.map((category) => {
-                  const items = featureCategory === "" ? category.items : category.title === featureCategory ? category.items : [];
-                  return items.map((val, i) => (
-                    <div
-                      key={category.title + i}
-                      className="flex space-x-2 px-2 py-2 items-center rounded-sm text-xs font-bold hover:bg-gray-100 transition-colors duration-200"
-                    >
-                      <div className="size-11 flex items-center justify-center rounded-2xl border bodrer-gray-200 text-xl">{val.icon}</div>
-                      <div className="flex flex-col space-y-1">
-                        <div className="text-sm font-normal">{val.title}</div>
-                        <div className="text-xs font-normal text-muted-foreground">{val.description}</div>
-                      </div>
-                    </div>
-                  ));
+                  const featuredItems = featureCategory === "" ? category.items : category.title === featureCategory ? category.items : [];
+                  const items = featureKeyword === "" ? featuredItems : featuredItems.filter((item) => item.title.includes(featureKeyword));
+
+                  return items.map((val, i) => {
+                    const active = project.custom_features?.flatMap((f) => f.feature).includes(val.title);
+
+                    return (
+                      <button
+                        key={category.title + i}
+                        className="group flex space-x-3 px-2 py-2 items-center rounded-sm text-xs font-bold hover:bg-gray-100 transition-colors duration-200"
+                        onClick={() => {
+                          const updatedFeatures = [...(project.custom_features ?? [])];
+
+                          if (active) {
+                            const idx = updatedFeatures.findIndex((f) => f.feature === val.title);
+                            if (idx !== -1) {
+                              updatedFeatures.splice(idx, 1);
+                            }
+                          } else {
+                            updatedFeatures.push({ feature: val.title, doctype: null });
+                          }
+
+                          setEditedProject({
+                            ...project,
+                            custom_features: updatedFeatures,
+                          });
+                        }}
+                      >
+                        <div className="size-10 shrink-0 flex items-center justify-center rounded-2xl border bodrer-gray-200 text-xl">{val.icon}</div>
+                        <div className="flex flex-col grow space-y-0.5 text-left">
+                          <div className="text-sm font-medium">{val.title}</div>
+                          {val.description && <div className="text-xs font-normal text-muted-foreground">{val.description}</div>}
+                        </div>
+                        {active ? (
+                          <div className="shrink-0">
+                            <CheckIcon className="size-5 text-blue-400" strokeWidth={3} />
+                          </div>
+                        ) : (
+                          <div className="shrink-0">
+                            <PlusIcon
+                              className="size-5 text-transparent group-hover:text-zinc-400 group-active:text-zinc-400 transition-colors duration-200"
+                              strokeWidth={2.5}
+                            />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  });
                 })}
               </div>
             </div>
