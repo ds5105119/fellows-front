@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, FileText, PlusIcon, XIcon } from "lucide-react";
+import { CheckIcon, FileText, Info, PlusIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ERPNextProject } from "@/@types/service/project";
 import { useState } from "react";
@@ -67,6 +67,14 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
                 <PlusIcon className="!size-4 ml-1" />
               </button>
             </DialogTrigger>
+            {project.custom_project_status != "draft" && (
+              <div className="flex space-x-1 text-muted-foreground">
+                <div className="pt-[1.4px]">
+                  <Info className="!size-3.5" />
+                </div>
+                <p className="text-xs break-keep">의뢰 후 기능을 변경하려면 이슈를 생성해야 해요.</p>
+              </div>
+            )}
           </div>
           <div className="w-full flex flex-wrap gap-2 p-2 rounded-xs bg-zinc-50 border">
             {project.custom_features?.map((val, i) => {
