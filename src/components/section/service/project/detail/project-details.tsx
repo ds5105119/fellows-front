@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, FileText, Info, PlusIcon, XIcon } from "lucide-react";
+import { CheckIcon, FileText, PlusIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ERPNextProject } from "@/@types/service/project";
 import { useState } from "react";
