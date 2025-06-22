@@ -44,11 +44,16 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
 
       <div className="w-full flex flex-col space-y-2">
         <div className="text-sm font-semibold">설명</div>
-        <Textarea
-          value={project.custom_project_summary ?? ""}
-          onChange={(e) => setEditedProject({ ...project, custom_project_summary: e.target.value })}
-          className="rounded-xs min-h-44 shadow-none"
-        />
+        {project.custom_project_status == "draft" && (
+          <Textarea
+            value={project.custom_project_summary ?? ""}
+            onChange={(e) => setEditedProject({ ...project, custom_project_summary: e.target.value })}
+            className="rounded-xs min-h-44 shadow-none"
+          />
+        )}
+        {project.custom_project_status != "draft" && (
+          <div className="rounded-xs bg-zinc-50 border px-2.5 py-2 text-sm">{project.custom_project_summary ?? ""}</div>
+        )}
       </div>
 
       <Dialog>
@@ -67,14 +72,6 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
                 <PlusIcon className="!size-4 ml-1" />
               </button>
             </DialogTrigger>
-            {project.custom_project_status != "draft" && (
-              <div className="flex space-x-1 text-muted-foreground">
-                <div className="pt-[1.4px]">
-                  <Info className="!size-3.5" />
-                </div>
-                <p className="text-xs break-keep">의뢰 후 기능을 변경하려면 이슈를 생성해야 해요.</p>
-              </div>
-            )}
           </div>
           <div className="w-full flex flex-wrap gap-2 p-2 rounded-xs bg-zinc-50 border">
             {project.custom_features?.map((val, i) => {
