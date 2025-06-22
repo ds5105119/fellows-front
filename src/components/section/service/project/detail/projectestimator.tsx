@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 import { ERPNextProject } from "@/@types/service/project";
 import { useEstimateProject } from "@/hooks/fetch/project";
 import { mutate } from "swr";
-import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableRow } from "@/components/ui/table";
 
 interface Props {
   project: ERPNextProject;
