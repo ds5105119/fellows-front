@@ -11,49 +11,40 @@ export function StatusBadge({ status }: StatusBadgeProps) {
 
   const statusConfig = {
     Open: {
-      color: "bg-blue-100 text-blue-800 border-blue-200",
-      icon: Circle,
-      iconColor: "text-blue-600",
+      color: "bg-blue-100 text-blue-600 border-blue-200",
+      text: "열림",
     },
     Working: {
-      color: "bg-yellow-100 text-yellow-800 border-yellow-200",
-      icon: Clock,
-      iconColor: "text-yellow-600",
+      color: "bg-yellow-100 text-yellow-600 border-yellow-200",
+      text: "진행중",
     },
     "Pending Review": {
-      color: "bg-purple-100 text-purple-800 border-purple-200",
-      icon: Eye,
-      iconColor: "text-purple-600",
+      color: "bg-purple-100 text-purple-600 border-purple-200",
+      text: "리뷰 대기 중",
     },
     Overdue: {
-      color: "bg-red-100 text-red-800 border-red-200",
-      icon: AlertTriangle,
-      iconColor: "text-red-600",
+      color: "bg-red-100 text-red-600 border-red-200",
+      text: "지연",
     },
     Template: {
-      color: "bg-gray-100 text-gray-800 border-gray-200",
-      icon: FileText,
-      iconColor: "text-gray-600",
+      color: "bg-gray-100 text-gray-600 border-gray-200",
+      text: "초안",
     },
     Completed: {
-      color: "bg-green-100 text-green-800 border-green-200",
-      icon: CheckCircle,
-      iconColor: "text-green-600",
+      color: "bg-green-100 text-green-600 border-green-200",
+      text: "완료",
     },
     Cancelled: {
       color: "bg-gray-100 text-gray-600 border-gray-200",
-      icon: XCircle,
-      iconColor: "text-gray-500",
+      text: "취소됨",
     },
   };
 
   const config = statusConfig[status];
-  const IconComponent = config.icon;
 
   return (
-    <Badge variant="outline" className={`${config.color} font-medium`}>
-      <IconComponent className={`mr-1 h-3 w-3 ${config.iconColor}`} />
-      {status}
+    <Badge variant="outline" className={`${config.color} rounded-[4px] px-1.5 font-medium`}>
+      {config.text}
     </Badge>
   );
 }
