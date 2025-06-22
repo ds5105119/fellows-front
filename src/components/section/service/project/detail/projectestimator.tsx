@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import { ERPNextProject } from "@/@types/service/project";
 import { useEstimateProject } from "@/hooks/fetch/project";
 import { mutate } from "swr";
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface Props {
   project: ERPNextProject;
@@ -46,10 +47,39 @@ export default function ProjectEstimator({ project }: Props) {
       </MarkdownPreview>
       {markdown && !isLoading && (
         <>
-          <hr className="border-gray-200" />
-          <div className="text-xs font-semibold text-muted-foreground">
-            AI 견적은 부정확하거나 잘못된 부분이 있을 수 있습니다. AI 견적은 실제 견적과 상이할 수 있으며, Fellows는 AI 견적 기능을 통해 생기는 어떤 책임도
-            부담하지 않습니다.
+          <div className="w-full grid grid-cols-1 md:grid-cols-2">
+            <hr className="border-black col-span-full" />
+            <div className="col-span-1 py-2 pr-2 text-xs font-semibold text-muted-foreground hidden md:block">
+              AI 견적은 부정확하거나 잘못된 부분이 있을 수 있습니다. AI 견적은 실제 견적과 상이할 수 있으며, Fellows는 AI 견적 기능을 통해 생기는 어떤 책임도
+              부담하지 않습니다.
+            </div>
+            <Table className="col-span-1 md:pl-2 order-1">
+              <TableCaption className="sr-only">견적 결제 표</TableCaption>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="w-2/5 font-medium bg-muted">총 합계</TableCell>
+                  <TableCell className="w-3/5 text-right">{(project.estimated_costing ?? 0).toLocaleString()} 원</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="w-2/5 font-medium bg-muted">공급가액</TableCell>
+                  <TableCell className="w-3/5 text-right">{(project.estimated_costing ?? 0).toLocaleString()} 원</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="w-2/5 font-medium bg-muted">VAT 10%</TableCell>
+                  <TableCell className="w-3/5 text-right">{((project.estimated_costing ?? 0) * 0.1).toLocaleString()} 원</TableCell>
+                </TableRow>
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell className="w-2/5 bg-black text-white">Total</TableCell>
+                  <TableCell className="w-3/5 text-right bg-black text-white">{((project.estimated_costing ?? 0) * 1.1).toLocaleString()} 원</TableCell>
+                </TableRow>
+              </TableFooter>
+            </Table>
+            <div className="col-span-1 py-2 pr-2 text-xs font-semibold text-muted-foreground block md:hidden">
+              AI 견적은 부정확하거나 잘못된 부분이 있을 수 있습니다. AI 견적은 실제 견적과 상이할 수 있으며, Fellows는 AI 견적 기능을 통해 생기는 어떤 책임도
+              부담하지 않습니다.
+            </div>
           </div>
         </>
       )}
