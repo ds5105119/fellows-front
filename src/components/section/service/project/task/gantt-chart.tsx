@@ -298,8 +298,8 @@ export function GanttChart({
         <div className="w-full min-w-fit">
           {/* Header */}
           <div className="flex border-b bg-gray-50">
-            <div className="w-80 p-2 border-r bg-white flex-shrink-0">
-              <h3 className="font-semibold">Task</h3>
+            <div className="w-16 md:w-80 p-2 border-r bg-white flex-shrink-0 flex items-center justify-center">
+              <h3 className="font-semibold">작업</h3>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex">
@@ -331,16 +331,16 @@ export function GanttChart({
               return (
                 <div key={task.name} className="flex hover:bg-gray-50 h-16">
                   {/* Task Info */}
-                  <div className="h-full flex items-center w-80 px-2 border-r bg-white flex-shrink-0 overflow-hidden">
-                    <div className="flex w-full items-center gap-3" style={{ paddingLeft: `${task.depth * 16}px` }}>
+                  <div className="h-full flex items-center w-16 md:w-80 px-2 border-r bg-white flex-shrink-0 overflow-hidden">
+                    <div className="flex w-full items-center gap-3 justify-center" style={{ paddingLeft: `${task.depth * 16}px` }}>
                       {hasChildren && (
                         <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-gray-100" onClick={() => toggleTaskExpansion(task.name)}>
                           {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                         </Button>
                       )}
-                      {!hasChildren && <div className="w-6" />}
+                      {!hasChildren && <div className="md:w-6" />}
 
-                      <div className="min-w-0 w-full flex-1">
+                      <div className="min-w-0 w-full flex-1 hidden md:block">
                         <div className="w-full flex items-center space-x-1.5">
                           {task.color && <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: task.color }} />}
                           <div className="font-medium text-sm text-gray-900 truncate">{task.subject}</div>
