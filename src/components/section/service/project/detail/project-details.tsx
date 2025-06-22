@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, FileText, PlusIcon } from "lucide-react";
+import { CheckIcon, FileText, PlusIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ERPNextProject } from "@/@types/service/project";
 import { useState } from "react";
@@ -47,26 +47,35 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
         <Textarea
           value={project.custom_project_summary ?? ""}
           onChange={(e) => setEditedProject({ ...project, custom_project_summary: e.target.value })}
-          className="rounded-xs min-h-44"
+          className="rounded-xs min-h-44 shadow-none"
         />
       </div>
 
       <Dialog>
         <div className="w-full flex flex-col space-y-2">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-between">
             <div className="text-sm font-semibold">기능</div>
             <DialogTrigger asChild>
-              <button>기능 추가하기</button>
+              <button
+                disabled={project.custom_project_status != "draft"}
+                className={cn(
+                  project.custom_project_status != "draft" && "hidden sr-only",
+                  "cursor-pointer select-none px-2 py-1 rounded-sm bg-muted text-xs font-bold flex items-center hover:bg-zinc-200 transition-colors duration-300"
+                )}
+              >
+                <p>기능 추가하기</p>
+                <PlusIcon className="!size-4 ml-1" />
+              </button>
             </DialogTrigger>
           </div>
-          <div className="w-full flex flex-wrap gap-2">
+          <div className="w-full flex flex-wrap gap-2 p-2 rounded-xs bg-zinc-50 border">
             {project.custom_features?.map((val, i) => {
               const feature = categorizedFeatures.flatMap((category) => category.items).find((item) => item.title === val.feature);
 
               return (
                 feature && (
-                  <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
-                    {feature.icon} {feature.title}
+                  <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold border border-zinc-200">
+                    {feature.icon}&nbsp;&nbsp;{feature.title}
                   </div>
                 )
               );
@@ -105,8 +114,31 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
 
                   return (
                     feature && (
-                      <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
-                        {feature.icon} {feature.title}
+                      <div
+                        key={i}
+                        className="relative pl-2 pr-2 py-1 bg-muted text-xs font-bold flex space-x-1 shrink-0 items-center rounded-sm overflow-hidden"
+                      >
+                        <p>
+                          {feature.icon}&nbsp;&nbsp;{feature.title}
+                        </p>
+                        <div className="group flex items-center">
+                          <button
+                            onClick={() => {
+                              console.log("clicked");
+                              const updatedFeatures = [...(project.custom_features ?? [])];
+                              const idx = updatedFeatures.findIndex((f) => f.feature === feature.title);
+                              if (idx !== -1) updatedFeatures.splice(idx, 1);
+
+                              setEditedProject({
+                                ...project,
+                                custom_features: updatedFeatures,
+                              });
+                            }}
+                          >
+                            <XIcon className="!size-3 hover:cursor-pointer" />
+                          </button>
+                          <div className="absolute inset-0 transition-colors group-hover:bg-black/5 pointer-events-none" />
+                        </div>
                       </div>
                     )
                   );
@@ -152,7 +184,7 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
                     return (
                       <button
                         key={category.title + i}
-                        className="group flex space-x-3 px-2 py-2 items-center rounded-sm text-xs font-bold hover:bg-gray-100 transition-colors duration-200"
+                        className="group flex space-x-3 px-2 py-2 items-center rounded-sm text-xs font-bold cursor-pointer hover:bg-gray-100 transition-colors duration-300"
                         onClick={() => {
                           const updatedFeatures = [...(project.custom_features ?? [])];
 
@@ -177,13 +209,17 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
                           {val.description && <div className="text-xs font-normal text-muted-foreground">{val.description}</div>}
                         </div>
                         {active ? (
-                          <div className="shrink-0">
-                            <CheckIcon className="size-5 text-blue-400" strokeWidth={3} />
+                          <div className="shrink-0 relative">
+                            <CheckIcon className="size-5 text-blue-400 group-hover:text-transparent transition-colors duration-300" strokeWidth={3} />
+                            <XIcon
+                              className="absolute top-1/2 left-1/2 -translate-1/2 size-5 group-hover:text-red-400 text-transparent transition-colors duration-300"
+                              strokeWidth={3}
+                            />
                           </div>
                         ) : (
                           <div className="shrink-0">
                             <PlusIcon
-                              className="size-5 text-transparent group-hover:text-zinc-400 group-active:text-zinc-400 transition-colors duration-200"
+                              className="size-5 text-transparent group-hover:text-zinc-400 group-active:text-zinc-400 transition-colors duration-300"
                               strokeWidth={2.5}
                             />
                           </div>
