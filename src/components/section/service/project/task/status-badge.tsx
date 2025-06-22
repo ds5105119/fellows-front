@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import { Circle, Clock, Eye, AlertTriangle, FileText, CheckCircle, XCircle } from "lucide-react";
 import type { ERPNextTaskStatus } from "@/@types/service/project";
 
 interface StatusBadgeProps {
