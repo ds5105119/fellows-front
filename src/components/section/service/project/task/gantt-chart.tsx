@@ -25,6 +25,7 @@ export function GanttChart({
   showControl?: boolean;
 }) {
   const [timeUnit, setTimeUnit] = useState<TimeUnit>(timeunit ?? "day");
+  const [taskExpended, setTaskExpanded] = useState<boolean>(expand ?? "true");
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs()); // 오늘을 기준점으로 설정
 
   // 기본으로 모든 태스크 펼쳐진 상태로 시작
@@ -230,20 +231,20 @@ export function GanttChart({
   };
 
   useEffect(() => {
-    if (expand) {
+    if (taskExpended) {
       expandAll();
     } else {
       collapseAll();
     }
-  }, [expand]);
+  }, [taskExpended]);
 
   return (
     <div className="w-full">
       {/* Controls */}
       <div className={cn("flex w-full justify-between items-center h-12 px-6", showControl ? "" : "hidden")}>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <Select value={timeunit ?? timeUnit} onValueChange={(value: TimeUnit) => setTimeUnit(value)}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-28 !h-8 rounded-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -269,31 +270,26 @@ export function GanttChart({
           </Select>
 
           {/* Navigation Controls */}
-          <div className="flex items-center gap-2 border rounded-lg p-1">
-            <Button variant="ghost" size="sm" onClick={navigatePrevious} className="h-8 w-8 p-0">
+          <div className="flex items-center gap-2 border rounded-sm px-1 h-8">
+            <Button variant="ghost" size="sm" onClick={navigatePrevious} className="size-6 p-0">
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" onClick={navigateToToday} className="px-3 h-8 text-sm font-medium min-w-[120px]">
+            <Button variant="ghost" size="sm" onClick={navigateToToday} className="px-3 h-7 text-sm font-medium min-w-[120px] hidden md:block">
               {formatDateRange()}
             </Button>
-            <Button variant="ghost" size="sm" onClick={navigateNext} className="h-8 w-8 p-0">
+            <Button variant="ghost" size="sm" onClick={navigateNext} className="size-6 p-0">
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
 
-          <Button variant="outline" size="sm" onClick={navigateToToday} className="text-sm">
+          <Button variant="ghost" size="sm" onClick={navigateToToday} className="text-xs font-bold text-blue-400 hover:text-blue-500 px-2 h-7">
             오늘
           </Button>
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={expandAll} className="flex items-center gap-2">
-            <Expand className="h-4 w-4" />
-            Expand All ({tasks.length})
-          </Button>
-          <Button variant="outline" size="sm" onClick={collapseAll} className="flex items-center gap-2">
-            <Shrink className="h-4 w-4" />
-            Collapse All
+          <Button variant="secondary" size="sm" onClick={() => setTaskExpanded((prev) => !prev)}>
+            {taskExpended ? "접기" : "펼치기"}
           </Button>
         </div>
       </div>
