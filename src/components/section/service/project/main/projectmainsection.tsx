@@ -170,17 +170,17 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   return (
     <div className="flex flex-col w-full space-y-4">
       {/* 상단 탭 */}
-      <div className="sticky z-30 top-16 bg-background w-full flex flex-col">
-        <div className="flex w-full h-12 justify-between items-center px-4 md:px-8 border-b-1 border-b-sidebar-border space-x-2">
-          <div className="flex grow md:max-w-1/2 space-x-2">
+      <div className="sticky z-30 top-12 md:top-16 bg-background w-full flex flex-col">
+        <div className="flex w-full h-12 justify-between items-center px-6 border-b-1 border-b-sidebar-border space-x-2">
+          <div className="flex items-center grow md:max-w-1/2 space-x-2">
+            <Input
+              placeholder="검색어를 입력하세요"
+              className="w-full max-w-96 h-8 px-4 border-0 shadow-none rounded-md focus-visible:ring-0 bg-muted font-medium"
+              onChange={(e) => setInputText(e.target.value)}
+            />
             <div className="hidden lg:block">
               <ComboBoxResponsive statuses={orders} initial={orderBy} callback={setOrderBy} />
             </div>
-            <Input
-              placeholder="검색어를 입력하세요"
-              className="w-full max-w-96 h-9 px-4 border-0 shadow-none rounded-full focus-visible:ring-0 bg-muted font-medium"
-              onChange={(e) => setInputText(e.target.value)}
-            />
           </div>
           <div className="flex">
             <Button size="sm" className="bg-blue-500/15 hover:bg-blue-500/25 text-blue-500 transition-colors duration-200 focus-visible:ring-0" asChild>
@@ -193,7 +193,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
       </div>
 
       {/* 프로젝트 의뢰 수 프로그레스 바 */}
-      <div className="w-full px-4 md:px-8">
+      <div className="w-full px-6">
         <div className="flex flex-col justify-center w-full h-20 rounded-lg space-y-1 bg-muted px-4 md:px-6">
           <div className="flex w-full items-center space-x-4">
             <div className="text-sm font-semibold">최대 프로젝트 의뢰 수</div>
@@ -210,7 +210,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
       </div>
 
       {/* PC 프로젝트 컬럼 그리드 */}
-      <div className="w-full hidden lg:grid lg:grid-cols-[repeat(auto-fit,minmax(16rem,16rem))] gap-4 px-4 md:px-8">
+      <div className="w-full hidden lg:grid lg:grid-cols-[repeat(auto-fit,minmax(16rem,16rem))] gap-4 px-6">
         {statuses.map((status) => (
           <div key={status} className="w-full space-y-1">
             <div className="w-full flex items-center space-x-2 text-sm font-light rounded-sm py-2 px-2">
@@ -236,7 +236,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
       </div>
 
       {/* 모바일 프로젝트 컬럼 그리드 */}
-      <div className="flex flex-col w-full lg:hidden px-4 md:px-8 space-y-4">
+      <div className="flex flex-col w-full lg:hidden px-6 space-y-4">
         <div className="flex h-full space-x-1 overflow-x-auto scrollbar-hide">
           <ComboBoxResponsive statuses={orders} initial={orderBy} callback={setOrderBy} />
 

@@ -13,20 +13,24 @@ import { Calendar, CalendarDays, CalendarRange, ChevronDown, ChevronRight, Chevr
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
+import { useTasks } from "@/hooks/fetch/project";
 
 export type TimeUnit = "day" | "week" | "month";
 
 export function GanttChart({
-  tasks,
+  project_id,
   expand = true,
   timeunit,
   showControl = true,
 }: {
-  tasks: ERPNextTaskForUser[];
+  project_id: string;
   expand?: boolean;
   timeunit?: TimeUnit;
   showControl?: boolean;
 }) {
+  const swr = useTasks(project_id, { size: 20 });
+  const tasks = swr.data?.flatMap((task) => task.items) ?? [];
+
   const [timeUnit, setTimeUnit] = useState<TimeUnit>(timeunit ?? "week");
   const [taskExpended, setTaskExpanded] = useState<boolean>(expand ?? true);
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs()); // 오늘을 기준점으로 설정

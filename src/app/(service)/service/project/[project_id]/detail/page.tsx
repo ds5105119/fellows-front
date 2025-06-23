@@ -51,7 +51,7 @@ export default function Page() {
       </div>
       {tab === "개요" && <DetailMain project_id={project_id} />}
       {tab === "작업 현황" && taskView && <TreeTable tasks={taskRaw} />}
-      {tab === "작업 현황" && !taskView && <GanttChart tasks={taskRaw} />}
+      {tab === "작업 현황" && !taskView && <GanttChart project_id={project_id} />}
     </div>
   );
 }

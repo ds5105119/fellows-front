@@ -298,38 +298,50 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
 
       {/* 시트 푸터 */}
       <div className="absolute bottom-0 w-full flex items-center justify-between h-12 border-t-1 border-t-sidebar-border px-4 bg-zinc-50 z-20">
-        <div className="flex items-center gap-3">
-          <p className="text-xs font-semibold text-muted-foreground">
-            {project.modified ? `${dayjs(project.modified).format("YYYY-MM-DD HH:mm:ss")} 수정됨` : "수정되지 않은 프로젝트"}
-          </p>
-          <button
-            onClick={() => setAutosave((prev) => !prev)}
-            className={cn(
-              "py-0.5 px-1.5 text-[11px] font-semibold rounded-sm cursor-pointer select-none border",
-              autosave ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-200 border-blue-400 text-blue-500" : "bg-zinc-100 border-zinc-400 text-zinc-500"
-            )}
-          >
-            {autosave ? "자동 저장 중" : "자동 저장 끔"}
-          </button>
-          <button
-            onClick={handleUpdateProject}
-            disabled={isUpdating}
-            className={cn(
-              "py-0.5 px-1.5 text-[11px] font-semibold rounded-sm cursor-pointer select-none border flex items-center gap-1",
-              isUpdating
-                ? "bg-zinc-50 border-zinc-300 text-zinc-400 cursor-not-allowed"
-                : "bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-200 border-zinc-400 text-zinc-500"
-            )}
-          >
-            {isUpdating && <Loader2 className="!size-3 animate-spin" />}
-            {isUpdating ? "저장중" : "저장"}
-          </button>
-        </div>
-        <div className="hidden md:flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold rounded-sm border-gray-200 shadow-none">
-            이용 약관
-          </Button>
-        </div>
+        {project.custom_project_status === "draft" ? (
+          <div className="flex items-center gap-3">
+            <p className="text-xs font-semibold text-muted-foreground">
+              {project.modified ? `${dayjs(project.modified).format("YYYY-MM-DD HH:mm:ss")} 수정됨` : "수정되지 않은 프로젝트"}
+            </p>
+            <button
+              onClick={() => setAutosave((prev) => !prev)}
+              className={cn(
+                "py-0.5 px-1.5 text-[11px] font-semibold rounded-sm cursor-pointer select-none border",
+                autosave ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-200 border-blue-400 text-blue-500" : "bg-zinc-100 border-zinc-400 text-zinc-500"
+              )}
+            >
+              {autosave ? "자동 저장 중" : "자동 저장 끔"}
+            </button>
+            <button
+              onClick={handleUpdateProject}
+              disabled={isUpdating}
+              className={cn(
+                "py-0.5 px-1.5 text-[11px] font-semibold rounded-sm cursor-pointer select-none border flex items-center gap-1",
+                isUpdating
+                  ? "bg-zinc-50 border-zinc-300 text-zinc-400 cursor-not-allowed"
+                  : "bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-200 border-zinc-400 text-zinc-500"
+              )}
+            >
+              {isUpdating && <Loader2 className="!size-3 animate-spin" />}
+              {isUpdating ? "저장중" : "저장"}
+            </button>
+          </div>
+        ) : (
+          <div />
+        )}
+        {project.custom_project_status === "draft" ? (
+          <div className="hidden md:flex items-center gap-2">
+            <Button variant="outline" size="sm" className="h-8 text-xs font-semibold rounded-sm border-gray-200 shadow-none">
+              이용 약관
+            </Button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="h-8 text-xs font-semibold rounded-sm border-gray-200 shadow-none">
+              이용 약관
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
