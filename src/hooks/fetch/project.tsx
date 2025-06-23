@@ -13,7 +13,6 @@ import {
   erpNextFilesResponseSchema,
   ERPNextProject,
   erpNextProjectSchema,
-  ERPNextTaskPaginatedResponse,
   erpNextTaskPaginatedResponseSchema,
   ProjectFeatureEstimateResponse,
   projectFeatureEstimateResponseSchema,
@@ -21,6 +20,7 @@ import {
   projectsPaginatedResponseSchema,
   UpdateERPNextProject,
   UserERPNextProject,
+  ERPNextTasksRequest,
 } from "@/@types/service/project";
 
 const API_BASE_URL = "/api/service/project";
@@ -192,22 +192,44 @@ export const deleteFile = async ({ projectId, key }: { projectId: string; key: s
 // TASK API (Sub-resource of Project)
 // =================================================================
 
-const tasksGetKeyFactory = (projectId: string, params: { size?: number; order_by?: string }): SWRInfiniteKeyLoader<ERPNextTaskPaginatedResponse> => {
+const tasksGetKeyFactory = (params: ERPNextTasksRequest): SWRInfiniteKeyLoader => {
   return (pageIndex, previousPageData) => {
-    if (!projectId) return null;
     if (previousPageData && !previousPageData.items.length) return null;
 
     const searchParams = new URLSearchParams();
     searchParams.append("page", `${pageIndex}`);
-    if (params.size) searchParams.append("size", `${params.size}`);
-    if (params.order_by) searchParams.append("order_by", params.order_by);
+    searchParams.append("size", `${params.size ?? 20}`);
 
-    return `${API_BASE_URL}/${projectId}/tasks?${searchParams.toString()}`;
+    // Handle order_by: string | string[]
+    if (params.order_by) {
+      const orderByValues = Array.isArray(params.order_by) ? params.order_by : [params.order_by];
+      orderByValues.forEach((value) => searchParams.append("order_by", value));
+    }
+
+    // Handle status: enum | enum[]
+    if (params.status) {
+      const statusValues = Array.isArray(params.status) ? params.status : [params.status];
+      statusValues.forEach((value) => searchParams.append("status", value));
+    }
+
+    if (params.project_id) {
+      searchParams.append("project_id", params.project_id);
+    }
+
+    if (params.start) {
+      searchParams.append("start", params.start.toISOString().split("T")[0]);
+    }
+
+    if (params.end) {
+      searchParams.append("end", params.end.toISOString().split("T")[0]);
+    }
+
+    return `${API_BASE_URL}/tasks?${searchParams.toString()}`;
   };
 };
 
-export const useTasks = (projectId: string, params: { size?: number; order_by?: string }) => {
-  const getKey = tasksGetKeyFactory(projectId, params);
+export const useTasks = (params: ERPNextTasksRequest) => {
+  const getKey = tasksGetKeyFactory(params);
   return useSWRInfinite(getKey, async (url: string) => erpNextTaskPaginatedResponseSchema.parse(await fetcher(url)), {
     refreshInterval: 60000,
     focusThrottleInterval: 60000,

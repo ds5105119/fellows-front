@@ -1,10 +1,11 @@
 import { Metadata } from "next";
 import { auth, signIn } from "@/auth";
-import ProjectMainSection from "@/components/section/service/project/main/projectmainsection";
+import { SessionProvider } from "next-auth/react";
+import ProjectMain from "@/components/section/service/project/page/main";
 
 export const metadata: Metadata = {
-  title: "프로젝트",
-  description: "이메일로 회원가입하고 맞춤형 복지 정책 정보를 받아보세요.",
+  title: "프로젝트 - Fellows",
+  description: "Fellows에서 프로젝트를 탐색하세요.",
 };
 
 export default async function Page({ params }: { params: Promise<{ project_id: string }> }) {
@@ -13,10 +14,12 @@ export default async function Page({ params }: { params: Promise<{ project_id: s
   if (!session) return signIn("keycloak", { redirectTo: `/service/project/${project_id}` });
 
   return (
-    <div className="w-full mb-8">
-      <div className="w-full">
-        <ProjectMainSection session={session} project_id={project_id} />
+    <SessionProvider session={session}>
+      <div className="w-full mb-8">
+        <div className="w-full">
+          <ProjectMain session={session} project_id={project_id} />
+        </div>
       </div>
-    </div>
+    </SessionProvider>
   );
 }

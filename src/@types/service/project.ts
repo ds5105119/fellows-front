@@ -178,6 +178,23 @@ export const erpNextTaskRequestSchema = z
   .passthrough();
 export type ERPNextTaskRequest = z.infer<typeof erpNextTaskRequestSchema>;
 
+export const erpNextTasksRequestSchema = z.object({
+  page: z.number().int().min(0).nullable().optional(),
+  size: z.number().int().min(0).max(100).nullable().optional(),
+  order_by: z
+    .union([z.string(), z.array(z.string())])
+    .nullable()
+    .optional(),
+  status: z
+    .union([erpNextTaskStatusEnum, z.array(erpNextTaskStatusEnum)])
+    .nullable()
+    .optional(),
+  project_id: z.string().nullable().optional(),
+  start: z.coerce.date().nullable().optional(),
+  end: z.coerce.date().nullable().optional(),
+});
+export type ERPNextTasksRequest = z.infer<typeof erpNextTasksRequestSchema>;
+
 export const erpNextTaskSchema = z
   .object({
     subject: z.string(),
@@ -238,15 +255,6 @@ export const erpNextTaskForUserSchema = baseTaskSchema
     subRows: z.array(z.lazy(() => erpNextTaskForUserSchema)).optional(),
   })
   .passthrough() as z.ZodType<ERPNextTaskForUser>;
-
-export const projectTaskRequestSchema = z
-  .object({
-    page: z.number().int().nonnegative().default(0),
-    size: z.number().int().min(0).max(100).default(20),
-    order_by: z.string().default("modified"),
-  })
-  .passthrough();
-export type ProjectTaskRequest = z.infer<typeof projectTaskRequestSchema>;
 
 export const erpNextTaskPaginatedResponseSchema = z.object({
   items: z.array(erpNextTaskForUserSchema),

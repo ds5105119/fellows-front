@@ -23,12 +23,12 @@ export function GanttChart({
   timeunit,
   showControl = true,
 }: {
-  project_id: string;
+  project_id?: string;
   expand?: boolean;
   timeunit?: TimeUnit;
   showControl?: boolean;
 }) {
-  const swr = useTasks(project_id, { size: 20 });
+  const swr = useTasks({ project_id: project_id, size: 20 });
   const tasks = swr.data?.flatMap((task) => task.items) ?? [];
 
   const [timeUnit, setTimeUnit] = useState<TimeUnit>(timeunit ?? "week");

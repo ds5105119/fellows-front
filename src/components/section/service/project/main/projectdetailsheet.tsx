@@ -8,13 +8,12 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, LinkIcon, Fullscreen, Loader2 } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
-import { useProject, useTasks, updateProject } from "@/hooks/fetch/project";
+import { useProject, updateProject } from "@/hooks/fetch/project";
 import { updateERPNextProjectSchema, type ERPNextProject } from "@/@types/service/project";
 import { cn } from "@/lib/utils";
 
 // 분리된 컴포넌트들 import
 import { CustomerInfo } from "./customer-info";
-import { TasksList } from "./tasks-list";
 import { FilesList } from "./files-list";
 import { ProjectHeader } from "./project-header";
 import { ProjectBasicInfo } from "./project-basic-info";
@@ -55,32 +54,16 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
 
   // 데이터 페칭
   const detailedProject = useProject(initialProject.project_name);
-  const tasks = useTasks(project.project_name, { size: 20 });
-
-  // 계산된 값들
-  const tasksIsReachedEnd = useMemo(() => tasks.data && tasks.data.length > 0 && tasks.data[tasks.data.length - 1]?.items.length === 0, [tasks.data]);
-  const tasksLoading = useMemo(
-    () => !tasksIsReachedEnd && (tasks.isLoading || (tasks.size > 0 && tasks.data && typeof tasks.data[tasks.size - 1] === "undefined")),
-    [tasksIsReachedEnd, tasks.isLoading, tasks.size, tasks.data]
-  );
-  const totalTasksCount = useMemo(() => tasks.data?.reduce((sum, page) => sum + (page.items?.length ?? 0), 0) ?? 0, [tasks.data]);
 
   // 탭 구성
-  const mobileTabs = useMemo(
-    () => [
-      <div className="flex space-x-1 items-center" key="overview">
-        <span>개요</span>
-      </div>,
-      <div className="flex space-x-1 items-center" key="task-status">
-        <span>작업 현황</span>
-        <span className="text-xs">{totalTasksCount}</span>
-      </div>,
-      <div className="flex space-x-1 items-center" key="overview">
-        <span>파일</span>
-      </div>,
-    ],
-    [totalTasksCount]
-  );
+  const mobileTabs = [
+    <div className="flex space-x-1 items-center" key="overview">
+      <span>개요</span>
+    </div>,
+    <div className="flex space-x-1 items-center" key="overview">
+      <span>파일</span>
+    </div>,
+  ];
 
   const tabs1 = useMemo(
     () => [
@@ -110,18 +93,11 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
     [session?.user, project]
   );
 
-  const tabs2 = useMemo(
-    () => [
-      <div className="flex space-x-1 items-center" key="task-status">
-        <span>작업 현황</span>
-        <span className="text-xs">{totalTasksCount}</span>
-      </div>,
-      <div className="flex space-x-1 items-center" key="overview">
-        <span>파일</span>
-      </div>,
-    ],
-    [totalTasksCount]
-  );
+  const tabs2 = [
+    <div className="flex space-x-1 items-center" key="overview">
+      <span>파일</span>
+    </div>,
+  ];
 
   const handleCopy = useCallback(async () => {
     try {
@@ -132,12 +108,6 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
       toast.error("프로젝트 링크 복사에 실패했습니다.");
     }
   }, []);
-
-  const handleLoadMoreTasks = useCallback(() => {
-    if (!tasksIsReachedEnd && !tasksLoading) {
-      tasks.setSize((s) => s + 1);
-    }
-  }, [tasksIsReachedEnd, tasksLoading, tasks]);
 
   const handleUpdateProject = async () => {
     setIsUpdating(true);
@@ -250,12 +220,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             {/* 일반 정보 탭 */}
             <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={setActiveTab2} />
             {/* 탭 콘텐츠 */}
-            <div className="w-full grow overflow-y-auto scrollbar-hide">
-              {activeTab2 === 0 && (
-                <TasksList tasks={tasks} totalTasksCount={totalTasksCount} tasksLoading={tasksLoading ?? false} onLoadMore={handleLoadMoreTasks} />
-              )}
-              {activeTab2 === 1 && project && <FilesList project={project} />}
-            </div>
+            <div className="w-full grow overflow-y-auto scrollbar-hide">{activeTab2 === 1 && project && <FilesList project={project} />}</div>
           </div>
         </div>
 
@@ -288,9 +253,6 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
                   <ProjectNotices />
                 </div>
               </>
-            )}
-            {activeMobileTab === 1 && (
-              <TasksList tasks={tasks} totalTasksCount={totalTasksCount} tasksLoading={tasksLoading ?? false} onLoadMore={handleLoadMoreTasks} />
             )}
           </div>
         </div>
