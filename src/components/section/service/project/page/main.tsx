@@ -14,8 +14,8 @@ export default function ProjectMain({ session, project_id }: { session: Session;
   const [taskView, setTaskView] = useState<boolean>(false);
 
   return (
-    <div className="w-full flex flex-col mt-12 md:mt-16">
-      <div className="fixed w-full top-12 md:top-16 flex items-center justify-between min-h-12 h-12 md:min-h-16 md:h-16 px-6 md:px-6 bg-background z-50 border-b border-b-sidebar-border">
+    <div className="shrink-0 w-full h-full flex flex-col">
+      <div className="sticky w-full top-12 md:top-16 flex items-center justify-between min-h-12 h-12 md:min-h-16 md:h-16 px-6 md:px-6 bg-background z-50 border-b border-b-sidebar-border">
         <div className="flex items-center space-x-5">
           {tabs.map((t, index) => {
             return (
@@ -29,7 +29,7 @@ export default function ProjectMain({ session, project_id }: { session: Session;
             );
           })}
         </div>
-        {tab == "작업 현황" && (
+        {tab === "작업 현황" && (
           <div className="flex items-center space-x-2 group">
             <Button variant="ghost" size="icon" onClick={() => setTaskView((prev) => !prev)}>
               {taskView ? (
@@ -42,8 +42,8 @@ export default function ProjectMain({ session, project_id }: { session: Session;
         )}
       </div>
       {tab === "개요" && <ProjectMainSection project_id={project_id} session={session} />}
-      {tab === "작업 현황" && taskView && <GanttChart project_id={project_id} />}
-      {tab === "작업 현황" && !taskView && <GanttChart project_id={project_id} />}
+      {tab === "작업 현황" && taskView && <GanttChart project_id={project_id} expand={false} />}
+      {tab === "작업 현황" && !taskView && <GanttChart project_id={project_id} expand={false} />}
     </div>
   );
 }

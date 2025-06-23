@@ -51,7 +51,7 @@ export default async function RootLayout({
           <SidebarInset className="md:w-[calc(100%-224px)]">
             <Header />
             <SWRProvider>
-              <main className="flex w-full scrollbar-hide break-keep">{children}</main>
+              <main className="flex w-full min-h-screen scrollbar-hide break-keep">{children}</main>
             </SWRProvider>
             <Footer />
           </SidebarInset>

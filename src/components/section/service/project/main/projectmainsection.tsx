@@ -168,10 +168,10 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   }, [project]);
 
   return (
-    <div className="flex flex-col w-full space-y-4">
+    <div className="flex flex-col w-full h-full space-y-4">
       {/* 상단 탭 */}
-      <div className="sticky z-30 top-12 md:top-16 bg-background w-full flex flex-col">
-        <div className="flex w-full h-12 justify-between items-center px-6 border-b-1 border-b-sidebar-border space-x-2">
+      <div className="sticky z-30 top-24 md:top-32 bg-background w-full flex flex-col">
+        <div className="flex w-full justify-between h-12 items-center px-6 border-b-1 border-b-sidebar-border space-x-2">
           <div className="flex items-center grow md:max-w-1/2 space-x-2">
             <Input
               placeholder="검색어를 입력하세요"

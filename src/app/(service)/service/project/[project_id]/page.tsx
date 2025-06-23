@@ -15,10 +15,8 @@ export default async function Page({ params }: { params: Promise<{ project_id: s
 
   return (
     <SessionProvider session={session}>
-      <div className="w-full mb-8">
-        <div className="w-full">
-          <ProjectMain session={session} project_id={project_id} />
-        </div>
+      <div className="w-full h-full">
+        <ProjectMain session={session} project_id={project_id} />
       </div>
     </SessionProvider>
   );

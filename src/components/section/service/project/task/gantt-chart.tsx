@@ -246,9 +246,14 @@ export function GanttChart({
   }, [taskExpended]);
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full">
       {/* Controls */}
-      <div className={cn("flex w-full justify-between items-center h-12 px-6", showControl ? "" : "hidden")}>
+      <div
+        className={cn(
+          "sticky z-30 top-24 md:top-32 bg-background flex w-full justify-between items-center h-12 px-6 border-b border-b-sidebar-border",
+          showControl ? "" : "hidden"
+        )}
+      >
         <div className="flex items-center gap-2">
           <Select value={timeunit ?? timeUnit} onValueChange={(value: TimeUnit) => setTimeUnit(value)}>
             <SelectTrigger className="w-28 !h-8 rounded-sm">
@@ -301,7 +306,7 @@ export function GanttChart({
         </div>
       </div>
 
-      <div className="border-y overflow-x-auto">
+      <div className="border-b overflow-x-auto">
         <div className="w-full min-w-fit">
           {/* Header */}
           <div className="flex border-b bg-gray-50 h-12">

@@ -14,10 +14,8 @@ export default async function Page() {
 
   return (
     <SessionProvider session={session}>
-      <div className="w-full mb-8">
-        <div className="w-full">
-          <ProjectMain session={session} />
-        </div>
+      <div className="w-full h-full">
+        <ProjectMain session={session} />
       </div>
     </SessionProvider>
   );
