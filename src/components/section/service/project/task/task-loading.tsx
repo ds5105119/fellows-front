@@ -10,7 +10,7 @@ interface TaskSkeletonProps {
 
 export function TaskSkeleton({ count = 5, className }: TaskSkeletonProps) {
   return (
-    <div className={cn("divide-y overflow-none w-full h-fit", className)}>
+    <div className={cn("divide-y overflow-hidden w-full h-fit", className)}>
       {Array.from({ length: count }).map((_, index) => (
         <TaskSkeletonRow key={index} delay={index * 0.1} />
       ))}

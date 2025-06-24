@@ -44,7 +44,7 @@ export function GanttChart({
 
   const TasksSwr = useTasks({
     project_id: project_id,
-    size: 10,
+    size: 50,
     start: dateRange.start.startOf("year").toDate(),
     end: dateRange.end.endOf("year").toDate(),
   });
