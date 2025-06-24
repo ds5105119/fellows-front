@@ -58,6 +58,7 @@ import {
   FcDatabase,
   FcCableRelease,
   FcOnlineSupport,
+  FcTreeStructure,
 } from "react-icons/fc";
 import type { IconBaseProps } from "react-icons/lib";
 
@@ -123,6 +124,7 @@ const iconMap: Record<string, React.ComponentType<IconBaseProps>> = {
   FcDatabase,
   FcCableRelease,
   FcOnlineSupport,
+  FcTreeStructure,
 };
 
 export default function DynamicFcIcon({ name, className }: Props) {

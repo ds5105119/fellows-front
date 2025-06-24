@@ -23,6 +23,7 @@ import { useState, useEffect } from "react";
 interface SubItem {
   title: string;
   url: string;
+  icon?: string;
 }
 
 interface NavItem {
@@ -235,6 +236,12 @@ export function NavGroup({ name, items, ...props }: NavGroupProps) {
                           asChild
                         >
                           <Link href={subItem.url} onClick={() => handleSubItemClick(subItem.url)}>
+                            {subItem.icon && (
+                              <DynamicFcIcon
+                                name={subItem.icon}
+                                className={cn("group-data-[collapsible=icon]:-ml-0.5 transition-colors duration-200", isParentActive(item) && "text-blue-500")}
+                              />
+                            )}
                             <span>{subItem.title}</span>
                           </Link>
                         </SidebarMenuSubButton>

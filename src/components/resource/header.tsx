@@ -6,8 +6,8 @@ export const headerData = {
       url: "/service/project",
       icon: "FcOpenedFolder",
       items: [
-        { title: "개요", url: "/service/project" },
-        { title: "작업 현황", url: "/service/project/task" },
+        { title: "개요", url: "/service/project", icon: "FcTodoList" },
+        { title: "작업 현황", url: "/service/project/task", icon: "FcTreeStructure" },
       ],
     },
     { title: "조달사업", url: "#", icon: "FcList" },
