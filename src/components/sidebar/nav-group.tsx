@@ -216,7 +216,7 @@ export function NavGroup({ name, items, ...props }: NavGroupProps) {
                     </Link>
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
-                <CollapsibleContent className="mt-1">
+                <CollapsibleContent className="group-data-[collapsible=icon]:mt-0 mt-1">
                   <SidebarMenuSub className="border-none mr-0 pr-0">
                     {item.items?.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
