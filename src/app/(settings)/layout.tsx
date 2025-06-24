@@ -5,11 +5,11 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
-
-import "../globals.css";
 import SettingsSidebar from "@/components/sidebar/settings-sidebar";
 import SettingHeader from "@/components/header/settingheader";
 import GoogleAnalytics from "@/lib/googleanalytics";
+
+import "../globals.css";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",

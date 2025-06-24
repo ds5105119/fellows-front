@@ -31,7 +31,7 @@ export default function ProjectMain({
 
   return (
     <div className="shrink-0 w-full h-full flex flex-col">
-      <div className="sticky w-full top-12 md:top-16 flex items-center justify-between min-h-12 h-12 md:min-h-16 md:h-16 px-6 md:px-6 bg-background z-50 border-b border-b-sidebar-border">
+      <div className="sticky w-full top-12 md:top-16 flex items-center justify-between min-h-12 h-12 md:min-h-16 md:h-16 px-6 md:px-6 bg-background z-20 border-b border-b-sidebar-border">
         <div className="flex items-center space-x-5">
           {tabs.map((t, index) => {
             return (

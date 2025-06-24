@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import Link from "next/link";
 import Color from "color";
 import Image from "next/image";
 import dayjs from "@/lib/dayjs";
@@ -351,9 +352,11 @@ export function GanttChart({
                   <br />
                   외주 개발을 의뢰해보세요
                 </div>
-                <Button size="lg">
-                  <ZapIcon />
-                  지금 의뢰하기
+                <Button size="lg" asChild>
+                  <Link href="/service/project">
+                    <ZapIcon />
+                    지금 의뢰하기
+                  </Link>
                 </Button>
                 <div className="mt-8 w-full rounded-2xl overflow-hidden border border-zinc-300">
                   <AspectRatio ratio={1600 / 1150} className="w-full">

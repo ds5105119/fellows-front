@@ -8,9 +8,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SWRProvider } from "@/lib/swrprovider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import GoogleAnalytics from "@/lib/googleanalytics";
 
 import "../globals.css";
-import GoogleAnalytics from "@/lib/googleanalytics";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",

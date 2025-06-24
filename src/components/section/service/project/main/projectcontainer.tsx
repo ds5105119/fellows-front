@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import ProjectDropdownMenu from "./projectdropdownmenu";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import type { SWRMeta } from "./projectmainsection";
 import { Plus, PencilLine, Receipt, Calendar, ArrowRight, Clock5, Trash2, SquareMousePointer, Loader2 } from "lucide-react";
@@ -28,6 +28,9 @@ import { deleteProject } from "@/hooks/fetch/project";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
+// 애니메이션 상태를 전역으로 관리하기 위한 Map
+const animationPlayedMap = new Map<string, boolean>();
+
 export default function ProjectContainer({
   meta,
   status,
@@ -48,6 +51,27 @@ export default function ProjectContainer({
   const projects = meta.data?.items || [];
   const isLoading = meta.swr.isLoading;
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+
+  // 애니메이션 상태 관리
+  const containerKey = `project-container-${status}`;
+  const hasAnimated = useRef(animationPlayedMap.get(containerKey) || false);
+  const [shouldAnimate, setShouldAnimate] = useState(!hasAnimated.current);
+
+  // 컴포넌트가 마운트될 때 애니메이션 상태 확인
+  useEffect(() => {
+    if (!hasAnimated.current && projects.length > 0) {
+      // 애니메이션이 실행되었음을 기록
+      hasAnimated.current = true;
+      animationPlayedMap.set(containerKey, true);
+
+      // 애니메이션 완료 후 상태 업데이트
+      const timer = setTimeout(() => {
+        setShouldAnimate(false);
+      }, projects.length * 50 + 500); // 모든 아이템 애니메이션 + 여유시간
+
+      return () => clearTimeout(timer);
+    }
+  }, [projects.length, containerKey]);
 
   // DnD 관련 상태
   const [isDragging, setIsDragging] = useState(false);
@@ -170,11 +194,12 @@ export default function ProjectContainer({
               {projects.map((project, idx) => (
                 <motion.div
                   key={project.project_name}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  // 애니메이션을 한 번만 실행하도록 조건부 설정
+                  initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
+                  animate={shouldAnimate ? { opacity: 1, y: 0 } : false}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{
-                    delay: idx * 0.05,
+                    delay: shouldAnimate ? idx * 0.05 : 0,
                     // 드롭된 아이템은 애니메이션 비활성화
                     duration: justDropped === `project-${idx}` ? 0 : undefined,
                   }}
@@ -198,14 +223,22 @@ export default function ProjectContainer({
           )}
 
           {!isLoading && projects.length === 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+            <motion.div
+              initial={shouldAnimate ? { opacity: 0 } : false}
+              animate={shouldAnimate ? { opacity: 1 } : false}
+              transition={{ delay: shouldAnimate ? 0.2 : 0 }}
+            >
               <p className={cn("text-center text-xs", text)}>없음</p>
             </motion.div>
           )}
 
           {/* 신규 프로젝트 생성*/}
           {!isLoading && status === "draft" && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: projects.length * 0.05 + 0.1 }}>
+            <motion.div
+              initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
+              animate={shouldAnimate ? { opacity: 1, y: 0 } : false}
+              transition={{ delay: shouldAnimate ? projects.length * 0.05 + 0.1 : 0 }}
+            >
               <Link
                 href="./project/new"
                 className="cursor-pointer flex items-center justify-center w-full rounded-xs bg-white outline-[1px] outline-dashed py-2 hover:bg-muted transition-colors duration-200"
@@ -422,13 +455,6 @@ function ProjectItem({
             {!project.expected_start_date && !project.expected_end_date && <div className="truncate text-xs">마감 목표를 설정할 수 있어요</div>}
           </div>
         </div>
-
-        {/* <div className={cn("w-full flex space-x-2 items-center font-medium", project.tasks && project.tasks.length > 0 ? "text-zinc-700" : "text-zinc-400")}>
-          <ClipboardList className="!size-3.5 shrink-0" />
-          <div className="truncate text-xs min-w-0 flex-1">
-            {project.tasks && project.tasks.length > 0 ? project.tasks[project.tasks.length - 1].subject : "할당된 테스크가 없어요"}
-          </div>
-        </div> */}
 
         <div className={cn("w-full flex space-x-2 items-center font-medium", project.creation ? "text-zinc-700" : "text-zinc-400")}>
           <Clock5 className="!size-3.5 shrink-0" />

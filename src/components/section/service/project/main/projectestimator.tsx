@@ -27,7 +27,7 @@ export default function ProjectEstimator({ project }: Props) {
     if (!project.custom_ai_estimate && markdown && !isLoading) {
       mutate(`/api/service/project/${project.project_name}`);
     }
-  }, [markdown, isLoading, project]);
+  }, [markdown, isLoading, project.custom_ai_estimate]);
 
   return (
     <div className="w-full max-w-full flex flex-col space-y-5 pb-6">

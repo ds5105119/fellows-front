@@ -11,7 +11,7 @@ export async function AppSidebar() {
   const session = await auth();
 
   return (
-    <Sidebar collapsible="icon" variant="sidebar">
+    <Sidebar collapsible="icon" variant="sidebar" className="z-50 drop-shadow-xl">
       <SidebarHeader className="px-6 md:px-0 md:pt-3">
         <SidebarMenu className="space-y-2">
           <SidebarMenuItem className="md:px-3">
@@ -20,8 +20,8 @@ export async function AppSidebar() {
               className="data-[slot=sidebar-menu-button]:!p-1.5 data-[slot=sidebar-menu-button]:!py-6 group-data-[collapsible=icon]:-ml-1"
             >
               <Link href="/">
-                <Image src="/fellows/logo-img.svg" width={20} height={20} alt="image logo" />
-                <Image src="/fellows/logo-text.svg" width={70} height={20} alt="text logo" />
+                <Image src="/fellows/logo-img.svg" width={20} height={20} alt="image logo" priority />
+                <Image src="/fellows/logo-text.svg" width={70} height={20} alt="text logo" priority />
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
