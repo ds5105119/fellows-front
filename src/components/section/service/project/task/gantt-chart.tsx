@@ -529,7 +529,7 @@ export function GanttChart({
         {/* Loading Skeleton */}
         {isLoading && (TasksSwr.data?.length == 1 ? <TaskSkeleton count={1} /> : <TaskSkeleton count={8} />)}
 
-        <div className="col-span-full h-1" ref={infinitRef} />
+        <div className="col-span-full" ref={infinitRef} />
       </div>
     </div>
   );
