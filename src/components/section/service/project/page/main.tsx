@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { SquareGanttChart, TableProperties } from "lucide-react";
 import { Session } from "next-auth";
 import { GanttChart } from "@/components/section/service/project/task/gantt-chart";
-import ProjectMainSection from "../main/projectmainsection";
+import ProjectMainSection from "@/components/section/service/project/main/projectmainsection";
 
 export default function ProjectMain({
   session,

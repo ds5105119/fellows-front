@@ -1,39 +1,48 @@
-import { ERPNextTasksRequest } from "@/@types/service/project";
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request, { params: _params }: { params: Promise<ERPNextTasksRequest> }) {
+export async function GET(request: Request) {
   // 요청 정보
   const session = await auth();
-  const params = await _params;
+  const { searchParams } = new URL(request.url);
+
+  const page = searchParams.get("page") ?? "0";
+  const size = searchParams.get("size") ?? "20";
+  const start = searchParams.get("start");
+  const end = searchParams.get("end");
+  const project_id = searchParams.get("project_id");
+  const order_by = searchParams.getAll("order_by");
+  const status = searchParams.getAll("status");
+  const startDate = start ? new Date(start) : undefined;
+  const endDate = end ? new Date(end) : undefined;
 
   const queryParams = new URLSearchParams();
 
-  queryParams.append("page", queryParams.get("page") || "0");
-  queryParams.append("size", queryParams.get("size") || "20");
+  queryParams.append("page", page ?? "0");
+  queryParams.append("size", size ?? "20");
 
   // Handle order_by: string | string[]
-  if (params?.order_by) {
-    const orderByValues = Array.isArray(params.order_by) ? params.order_by : [params.order_by];
+  if (order_by) {
+    const orderByValues = Array.isArray(order_by) ? order_by : [order_by];
     orderByValues.forEach((value) => queryParams.append("order_by", value));
   }
 
   // Handle status: enum | enum[]
-  if (params?.status) {
-    const statusValues = Array.isArray(params.status) ? params.status : [params.status];
+  if (status) {
+    const statusValues = Array.isArray(status) ? status : [status];
     statusValues.forEach((value) => queryParams.append("status", value));
   }
 
-  if (params?.project_id) {
-    queryParams.append("project_id", params.project_id);
+  if (project_id) {
+    queryParams.append("project_id", project_id);
   }
 
-  if (params?.start) {
-    queryParams.append("start", params.start.toISOString().split("T")[0]);
+  if (startDate) {
+    queryParams.append("start", startDate.toISOString().split("T")[0]);
   }
 
-  if (params?.end) {
-    queryParams.append("end", params.end.toISOString().split("T")[0]);
+  if (endDate) {
+    queryParams.append("end", endDate.toISOString().split("T")[0]);
   }
 
   try {

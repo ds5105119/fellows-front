@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Color from "color";
 import Image from "next/image";
 import dayjs from "@/lib/dayjs";
+import { useInView } from "framer-motion";
 import type { Dayjs } from "dayjs";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { cn } from "@/lib/utils";
@@ -32,20 +33,38 @@ export function GanttChart({
   timeunit?: TimeUnit;
   showControl?: boolean;
 }) {
-  const TasksSwr = useTasks({ project_id: project_id, size: 20 });
+  const [timeUnit, setTimeUnit] = useState<TimeUnit>(timeunit ?? "week");
+  const [taskExpended, setTaskExpanded] = useState<boolean>(expand ?? true);
+  const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
+  const [dateRange, setDateRange] = useState({
+    start: dayjs().subtract(1, "week"),
+    end: dayjs().add(2, "week"),
+    intervals: [dayjs().subtract(1, "week"), dayjs(), dayjs().add(1, "week"), dayjs().add(2, "week")],
+  });
+
+  const TasksSwr = useTasks({
+    project_id: project_id,
+    size: 10,
+    start: dateRange.start.startOf("year").toDate(),
+    end: dateRange.end.endOf("year").toDate(),
+  });
+
   const tasks = TasksSwr.data?.flatMap((task) => task.items) ?? [];
   const isReachedEnd = TasksSwr.data && TasksSwr.data.length > 0 && TasksSwr.data[TasksSwr.data.length - 1].items.length === 0;
   const isLoading = !isReachedEnd && (TasksSwr.isLoading || (TasksSwr.data && TasksSwr.size > 0 && typeof TasksSwr.data[TasksSwr.size - 1] === "undefined"));
+  const infinitRef = useRef<HTMLDivElement>(null);
+  const isReachingEnd = useInView(infinitRef, {
+    once: false,
+    margin: "-50px 0px -50px 0px",
+  });
 
   const hasTaskSwr = useTasks({ size: 1 }, { refreshInterval: 0 });
   const hasTaskIsLoading = hasTaskSwr.isLoading || (hasTaskSwr.data && hasTaskSwr.size > 0 && typeof hasTaskSwr.data[hasTaskSwr.size - 1] === "undefined");
   const hasTasks = (hasTaskSwr.data?.flatMap((task) => task.items) ?? []).length != 0;
 
-  const [timeUnit, setTimeUnit] = useState<TimeUnit>(timeunit ?? "week");
-  const [taskExpended, setTaskExpanded] = useState<boolean>(expand ?? true);
-  const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs()); // 오늘을 기준점으로 설정
+  const treeData = useMemo(() => buildTree(tasks), [tasks]);
+  const expandableTaskIds = useMemo(() => getAllExpandableTaskIds(tasks), [tasks]);
 
-  // 기본으로 모든 태스크 펼쳐진 상태로 시작
   const [expandedTasks, setExpandedTasks] = useState<Record<string, boolean>>(() => {
     const expandableIds = getAllExpandableTaskIds(tasks);
     const initialExpanded: Record<string, boolean> = {};
@@ -54,11 +73,6 @@ export function GanttChart({
     });
     return initialExpanded;
   });
-
-  // Remove parent task date calculation - use original task dates
-  const treeData = useMemo(() => buildTree(tasks), [tasks]);
-
-  const expandableTaskIds = useMemo(() => getAllExpandableTaskIds(tasks), [tasks]);
 
   const expandAll = () => {
     const newExpanded: Record<string, boolean> = {};
@@ -121,50 +135,6 @@ export function GanttChart({
   const navigateToToday = () => {
     setCurrentDate(dayjs());
   };
-
-  const dateRange = useMemo(() => {
-    let start: Dayjs, end: Dayjs, intervals: Dayjs[];
-
-    switch (timeunit ?? timeUnit) {
-      case "day":
-        // 현재 날짜 기준으로 일주일 범위 표시
-        start = currentDate.startOf("week");
-        end = currentDate.endOf("week");
-        intervals = [];
-        let currentDay = start;
-        while (currentDay.isBefore(end) || currentDay.isSame(end, "day")) {
-          intervals.push(currentDay);
-          currentDay = currentDay.add(1, "day");
-        }
-        break;
-      case "week":
-        // 현재 날짜 기준으로 4주 범위 표시
-        start = currentDate.subtract(1, "week").startOf("week");
-        end = currentDate.add(2, "week").endOf("week");
-        intervals = [];
-        let currentWeek = start;
-        while (currentWeek.isBefore(end) || currentWeek.isSame(end, "week")) {
-          intervals.push(currentWeek);
-          currentWeek = currentWeek.add(1, "week");
-        }
-        break;
-      case "month":
-        // 현재 날짜 기준으로 4개월 범위 표시
-        start = currentDate.subtract(1, "month").startOf("month");
-        end = currentDate.add(2, "month").endOf("month");
-        intervals = [];
-        let currentMonth = start;
-        while (currentMonth.isBefore(end) || currentMonth.isSame(end, "month")) {
-          intervals.push(currentMonth);
-          currentMonth = currentMonth.add(1, "month");
-        }
-        break;
-    }
-
-    return { start, end, intervals };
-  }, [currentDate, timeunit, timeUnit]);
-
-  const today = dayjs();
 
   // Format date range for display
   const formatDateRange = () => {
@@ -229,6 +199,8 @@ export function GanttChart({
   };
 
   const isCurrentInterval = (date: Dayjs) => {
+    const today = dayjs();
+
     switch (timeunit ?? timeUnit) {
       case "day":
         return date.isSame(today, "day");
@@ -245,6 +217,56 @@ export function GanttChart({
       [taskName]: !prev[taskName],
     }));
   };
+
+  useEffect(() => {
+    if (isReachingEnd && !isLoading && !isReachedEnd) {
+      TasksSwr.setSize((s) => s + 1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isReachingEnd, isLoading, isReachedEnd]);
+
+  useEffect(() => {
+    switch (timeUnit) {
+      case "day":
+        // 현재 날짜 기준으로 일주일 범위 표시
+        const start_day = currentDate.startOf("week");
+        const end_day = currentDate.endOf("week");
+        const intervals_day = [];
+        let currentDay = start_day;
+        while (currentDay.isBefore(end_day) || currentDay.isSame(end_day, "day")) {
+          intervals_day.push(currentDay);
+          currentDay = currentDay.add(1, "day");
+        }
+        setDateRange({ start: start_day, end: end_day, intervals: intervals_day });
+        break;
+      case "week":
+        // 현재 날짜 기준으로 4주 범위 표시
+        const start_week = currentDate.subtract(1, "week").startOf("week");
+        const end_week = currentDate.add(2, "week").endOf("week");
+        const intervals_week = [];
+        let currentWeek = start_week;
+        while (currentWeek.isBefore(end_week) || currentWeek.isSame(end_week, "week")) {
+          intervals_week.push(currentWeek);
+          currentWeek = currentWeek.add(1, "week");
+        }
+        setDateRange({ start: start_week, end: end_week, intervals: intervals_week });
+
+        break;
+      case "month":
+        // 현재 날짜 기준으로 4개월 범위 표시
+        const start_month = currentDate.subtract(1, "month").startOf("month");
+        const end_month = currentDate.add(2, "month").endOf("month");
+        const intervals_month = [];
+        let currentMonth = start_month;
+        while (currentMonth.isBefore(end_month) || currentMonth.isSame(end_month, "month")) {
+          intervals_month.push(currentMonth);
+          currentMonth = currentMonth.add(1, "month");
+        }
+        setDateRange({ start: start_month, end: end_month, intervals: intervals_month });
+
+        break;
+    }
+  }, [timeUnit, currentDate]);
 
   useEffect(() => {
     if (taskExpended) {
@@ -315,7 +337,7 @@ export function GanttChart({
         </div>
       </div>
 
-      <div className="border-b overflow-x-auto">
+      <div className="overflow-x-auto overflow-y-hidden h-fit">
         <div className="w-full min-w-fit">
           {/* Header */}
           <div className="flex border-b bg-gray-50 h-12">
@@ -367,9 +389,6 @@ export function GanttChart({
             </div>
           )}
 
-          {/* Loading Skeleton */}
-          {isLoading && <TaskSkeleton count={8} />}
-
           {/* Tasks */}
           <div className="divide-y">
             {visibleTasks.map((task) => {
@@ -378,7 +397,7 @@ export function GanttChart({
               const isExpanded = expandedTasks[task.name];
 
               return (
-                <div key={task.name} className="flex hover:bg-gray-50 h-16">
+                <div key={task.name} className="flex hover:bg-gray-50 h-16 border-b">
                   {/* Task Info */}
                   <div className="h-full flex items-center w-16 md:w-80 px-2 border-r bg-white flex-shrink-0 overflow-hidden">
                     <div className="flex w-full items-center gap-3 justify-center" style={{ paddingLeft: `${task.depth * 16}px` }}>
@@ -506,6 +525,11 @@ export function GanttChart({
             })}
           </div>
         </div>
+
+        {/* Loading Skeleton */}
+        {isLoading && (TasksSwr.data?.length == 1 ? <TaskSkeleton count={1} /> : <TaskSkeleton count={8} />)}
+
+        <div className="col-span-full h-1" ref={infinitRef} />
       </div>
     </div>
   );

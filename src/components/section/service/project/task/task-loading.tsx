@@ -10,7 +10,7 @@ interface TaskSkeletonProps {
 
 export function TaskSkeleton({ count = 5, className }: TaskSkeletonProps) {
   return (
-    <div className={cn("divide-y", className)}>
+    <div className={cn("divide-y overflow-none w-full h-fit", className)}>
       {Array.from({ length: count }).map((_, index) => (
         <TaskSkeletonRow key={index} delay={index * 0.1} />
       ))}
@@ -19,9 +19,12 @@ export function TaskSkeleton({ count = 5, className }: TaskSkeletonProps) {
 }
 
 function TaskSkeletonRow({ delay = 0 }: { delay?: number }) {
+  const leftPosition = ((delay * 70 + 10) % 30) + 5;
+  const barWidth = ((delay * 77 + 20) % 50) + 15;
+
   return (
     <motion.div
-      className="flex hover:bg-gray-50 h-16"
+      className="flex w-full hover:bg-gray-50 h-16"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
@@ -35,18 +38,7 @@ function TaskSkeletonRow({ delay = 0 }: { delay?: number }) {
       <div className="h-full flex items-center w-16 md:w-80 px-2 border-r bg-white flex-shrink-0 overflow-hidden">
         <div className="flex w-full items-center gap-3 justify-center">
           {/* Expand/Collapse Button Skeleton */}
-          <motion.div
-            className="h-6 w-6 rounded bg-gray-200"
-            animate={{
-              opacity: [0.5, 1, 0.5],
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: delay + 0.2,
-            }}
-          />
+          <motion.div className="h-6 w-6" />
 
           <div className="min-w-0 w-full flex-1 hidden md:block">
             <div className="w-full flex items-center space-x-1.5">
@@ -80,20 +72,6 @@ function TaskSkeletonRow({ delay = 0 }: { delay?: number }) {
             </div>
 
             <div className="flex items-center gap-2 mt-1">
-              {/* Status Badge Skeleton */}
-              <motion.div
-                className="h-5 w-16 bg-gray-200 rounded-full"
-                animate={{
-                  opacity: [0.5, 1, 0.5],
-                }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: delay + 0.5,
-                }}
-              />
-
               {/* Expected Time Skeleton */}
               <motion.div
                 className="h-3 w-8 bg-gray-200 rounded"
@@ -118,8 +96,8 @@ function TaskSkeletonRow({ delay = 0 }: { delay?: number }) {
           <motion.div
             className="absolute top-1 bottom-1 rounded-[3px] bg-gray-200"
             style={{
-              left: `${Math.random() * 20 + 10}%`,
-              width: `${Math.random() * 40 + 20}%`,
+              left: `${leftPosition}%`,
+              width: `${barWidth}%`,
             }}
             animate={{
               opacity: [0.3, 0.7, 0.3],
