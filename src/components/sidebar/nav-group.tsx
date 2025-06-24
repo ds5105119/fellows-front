@@ -159,13 +159,8 @@ export function NavGroup({ name, items, ...props }: NavGroupProps) {
     return isItemActive(item.url);
   };
 
-  const handleItemClick = (url: string, hasSubItems = false) => {
+  const handleItemClick = (url: string) => {
     setActiveItem(url);
-
-    // If the item has sub-items, don't navigate immediately
-    if (hasSubItems) {
-      return;
-    }
   };
 
   const handleSubItemClick = (url: string) => {
@@ -207,10 +202,9 @@ export function NavGroup({ name, items, ...props }: NavGroupProps) {
                       "hover:text-primary hover:bg-sidebar-accent/50",
                       "data-[active=true]:text-primary data-[active=true]:bg-sidebar-accent"
                     )}
-                    onClick={() => handleItemClick(item.url, true)}
                     asChild
                   >
-                    <div>
+                    <Link href={item.url} onClick={() => handleItemClick(item.url)}>
                       {item.icon && (
                         <DynamicFcIcon
                           name={item.icon}
@@ -219,7 +213,7 @@ export function NavGroup({ name, items, ...props }: NavGroupProps) {
                       )}
                       <span className="font-medium text-sm">{item.title}</span>
                       <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                    </div>
+                    </Link>
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="mt-1">
