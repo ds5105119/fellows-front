@@ -9,16 +9,23 @@ import { Session } from "next-auth";
 import { GanttChart } from "@/components/section/service/project/task/gantt-chart";
 import ProjectMainSection from "../main/projectmainsection";
 
-export default function ProjectMain({ session, project_id, tab: _tab }: { session: Session; project_id?: string; tab?: "개요" | "작업 현황" | "이슈" }) {
+export default function ProjectMain({
+  session,
+  project_id,
+  tab: tab = "개요",
+}: {
+  session: Session;
+  project_id?: string;
+  tab?: "개요" | "작업 현황" | "이슈";
+}) {
   const router = useRouter();
+
   const tabs = ["개요", "작업 현황", "이슈"] as const;
   const tabMapping: Record<"개요", ""> & Record<"작업 현황", "task"> & Record<"이슈", "issue"> = { 개요: "", "작업 현황": "task", 이슈: "issue" };
 
-  const [tab, setTab] = useState<"개요" | "작업 현황" | "이슈">(_tab ?? "개요");
   const [taskView, setTaskView] = useState<boolean>(false);
 
   const handleTabChange = (tab: "개요" | "작업 현황" | "이슈") => {
-    setTab(tab);
     router.push("/service/project/" + tabMapping[tab]);
   };
 
