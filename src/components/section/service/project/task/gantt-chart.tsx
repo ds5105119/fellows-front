@@ -339,7 +339,7 @@ export function GanttChart({
           {/* Not have Tasks */}
           {!hasTasks && (
             <div className="flex justify-center items-center py-24">
-              <div className="w-96 md:w-[512px] flex flex-col justify-center items-center space-y-4 text-center text-sm">
+              <div className="w-96 py-6 md:py-0 md:w-[512px] flex flex-col justify-center items-center space-y-4 text-center text-sm">
                 <div>아직 할당된 테스크가 없습니다</div>
                 <div className="text-2xl font-bold line-clamp-2">
                   가장 앞선 Fellows에 합리적인 비용으로
