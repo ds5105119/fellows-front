@@ -342,16 +342,16 @@ export function GanttChart({
               <div className="w-96 md:w-[512px] flex flex-col justify-center items-center space-y-4 text-center text-sm">
                 <div>아직 할당된 테스크가 없습니다</div>
                 <div className="text-2xl font-bold line-clamp-2">
-                  Fellows에서는 합리적인 가격과 품질과
+                  가장 앞선 Fellows에 합리적인 비용으로
                   <br />
-                  외주 개발을 의뢰해보세요
+                  새로운 외주 개발을 의뢰해보세요
                 </div>
                 <Button size="lg">
                   <ZapIcon />
                   지금 의뢰하기
                 </Button>
                 <div className="mt-8 w-full rounded-2xl overflow-hidden border border-zinc-300">
-                  <AspectRatio ratio={1600 / 1179} className="w-full">
+                  <AspectRatio ratio={1600 / 1150} className="w-full">
                     <Image src="/task-empty.png" alt="테스크가 없습니다" fill />
                   </AspectRatio>
                 </div>
