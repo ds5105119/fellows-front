@@ -178,11 +178,12 @@ export function NavGroup({ name, items, ...props }: NavGroupProps) {
                     className={cn(
                       "[&>svg]:size-5 rounded-[3px] transition-colors duration-200",
                       "hover:text-primary hover:bg-sidebar-accent/50",
-                      "data-[active=true]:text-primary data-[active=true]:bg-sidebar-accent/50"
+                      "data-[active=true]:text-primary data-[active=true]:bg-sidebar-accent"
                     )}
                     onClick={() => handleItemClick(item.url, true)}
+                    asChild
                   >
-                    <div className="flex items-center w-full">
+                    <div>
                       {item.icon && (
                         <DynamicFcIcon
                           name={item.icon}
