@@ -342,9 +342,9 @@ export function GanttChart({
               <div className="w-96 py-6 md:py-0 md:w-[512px] flex flex-col justify-center items-center space-y-4 text-center text-sm">
                 <div>아직 할당된 테스크가 없습니다</div>
                 <div className="text-2xl font-bold line-clamp-2">
-                  가장 앞선 Fellows에 합리적인 비용으로
+                  가장 앞선 SI에 합리적인 비용으로
                   <br />
-                  새로운 외주 개발을 의뢰해보세요
+                  외주 개발을 의뢰해보세요
                 </div>
                 <Button size="lg">
                   <ZapIcon />
