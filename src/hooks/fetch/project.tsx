@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR, { SWRResponse } from "swr";
-import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
+import useSWRInfinite, { SWRInfiniteConfiguration, SWRInfiniteKeyLoader } from "swr/infinite";
 import { fetchEventSource, EventSourceMessage } from "@microsoft/fetch-event-source";
 import { useCallback, useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -228,11 +228,12 @@ const tasksGetKeyFactory = (params: ERPNextTasksRequest): SWRInfiniteKeyLoader =
   };
 };
 
-export const useTasks = (params: ERPNextTasksRequest) => {
+export const useTasks = (params: ERPNextTasksRequest, options: SWRInfiniteConfiguration | undefined = {}) => {
   const getKey = tasksGetKeyFactory(params);
   return useSWRInfinite(getKey, async (url: string) => erpNextTaskPaginatedResponseSchema.parse(await fetcher(url)), {
     refreshInterval: 60000,
     focusThrottleInterval: 60000,
+    ...options,
   });
 };
 

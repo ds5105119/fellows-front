@@ -2,18 +2,20 @@
 
 import { useMemo, useState, useEffect } from "react";
 import dayjs from "@/lib/dayjs";
-import { type Dayjs } from "dayjs";
+import type { Dayjs } from "dayjs";
 import Color from "color";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { ERPNextTaskForUser } from "@/@types/service/project";
 import { StatusBadge } from "./status-badge";
-import { buildTree, calculateParentTaskDates, getAllExpandableTaskIds } from "@/lib/task-utils";
-import { Calendar, CalendarDays, CalendarRange, ChevronDown, ChevronRight, ChevronLeft, FilePenLine, ClockIcon, ArrowRight } from "lucide-react";
+import { buildTree, getAllExpandableTaskIds } from "@/lib/task-utils";
+import { Calendar, CalendarDays, CalendarRange, ChevronDown, ChevronRight, ChevronLeft, FilePenLine, ClockIcon, ArrowRight, ZapIcon } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { useTasks } from "@/hooks/fetch/project";
+import Image from "next/image";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export type TimeUnit = "day" | "week" | "month";
 
@@ -28,8 +30,10 @@ export function GanttChart({
   timeunit?: TimeUnit;
   showControl?: boolean;
 }) {
-  const swr = useTasks({ project_id: project_id, size: 20 });
-  const tasks = swr.data?.flatMap((task) => task.items) ?? [];
+  const hasTasksSwr = useTasks({ size: 1 }, { refreshInterval: 0 });
+  const TasksSwr = useTasks({ project_id: project_id, size: 20 });
+  const hasTasks = (hasTasksSwr.data?.flatMap((task) => task.items) ?? []).length != 0;
+  const tasks = TasksSwr.data?.flatMap((task) => task.items) ?? [];
 
   const [timeUnit, setTimeUnit] = useState<TimeUnit>(timeunit ?? "week");
   const [taskExpended, setTaskExpanded] = useState<boolean>(expand ?? true);
@@ -45,9 +49,8 @@ export function GanttChart({
     return initialExpanded;
   });
 
-  // Calculate parent task dates first
-  const tasksWithCalculatedDates = useMemo(() => calculateParentTaskDates(tasks), [tasks]);
-  const treeData = useMemo(() => buildTree(tasksWithCalculatedDates), [tasksWithCalculatedDates]);
+  // Remove parent task date calculation - use original task dates
+  const treeData = useMemo(() => buildTree(tasks), [tasks]);
 
   const expandableTaskIds = useMemo(() => getAllExpandableTaskIds(tasks), [tasks]);
 
@@ -87,10 +90,10 @@ export function GanttChart({
         setCurrentDate((prev) => prev.subtract(1, "week"));
         break;
       case "week":
-        setCurrentDate((prev) => prev.subtract(4, "week"));
+        setCurrentDate((prev) => prev.subtract(1, "week"));
         break;
       case "month":
-        setCurrentDate((prev) => prev.subtract(3, "month"));
+        setCurrentDate((prev) => prev.subtract(1, "month"));
         break;
     }
   };
@@ -101,10 +104,10 @@ export function GanttChart({
         setCurrentDate((prev) => prev.add(1, "week"));
         break;
       case "week":
-        setCurrentDate((prev) => prev.add(4, "week"));
+        setCurrentDate((prev) => prev.add(1, "week"));
         break;
       case "month":
-        setCurrentDate((prev) => prev.add(3, "month"));
+        setCurrentDate((prev) => prev.add(1, "month"));
         break;
     }
   };
@@ -130,8 +133,8 @@ export function GanttChart({
         break;
       case "week":
         // 현재 날짜 기준으로 4주 범위 표시
-        start = currentDate.subtract(2, "week").startOf("week");
-        end = currentDate.add(1, "week").endOf("week");
+        start = currentDate.subtract(1, "week").startOf("week");
+        end = currentDate.add(2, "week").endOf("week");
         intervals = [];
         let currentWeek = start;
         while (currentWeek.isBefore(end) || currentWeek.isSame(end, "week")) {
@@ -140,9 +143,9 @@ export function GanttChart({
         }
         break;
       case "month":
-        // 현재 날짜 기준으로 3개월 범위 표시
+        // 현재 날짜 기준으로 4개월 범위 표시
         start = currentDate.subtract(1, "month").startOf("month");
-        end = currentDate.add(1, "month").endOf("month");
+        end = currentDate.add(2, "month").endOf("month");
         intervals = [];
         let currentMonth = start;
         while (currentMonth.isBefore(end) || currentMonth.isSame(end, "month")) {
@@ -332,6 +335,29 @@ export function GanttChart({
               </div>
             </div>
           </div>
+
+          {/* Not have Tasks */}
+          {!hasTasks && (
+            <div className="flex justify-center items-center py-24">
+              <div className="w-96 md:w-[512px] flex flex-col justify-center items-center space-y-4 text-center text-sm">
+                <div>아직 할당된 테스크가 없습니다</div>
+                <div className="text-2xl font-bold line-clamp-2">
+                  Fellows에서는 합리적인 가격과 품질과
+                  <br />
+                  외주 개발을 의뢰해보세요
+                </div>
+                <Button size="lg">
+                  <ZapIcon />
+                  지금 의뢰하기
+                </Button>
+                <div className="mt-8 w-full rounded-2xl overflow-hidden border border-zinc-300">
+                  <AspectRatio ratio={1600 / 1179} className="w-full">
+                    <Image src="/task-empty.png" alt="테스크가 없습니다" fill />
+                  </AspectRatio>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Tasks */}
           <div className="divide-y">
