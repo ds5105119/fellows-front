@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { SquareGanttChart, TableProperties } from "lucide-react";
@@ -8,10 +9,18 @@ import { Session } from "next-auth";
 import { GanttChart } from "@/components/section/service/project/task/gantt-chart";
 import ProjectMainSection from "../main/projectmainsection";
 
-export default function ProjectMain({ session, project_id }: { session: Session; project_id?: string }) {
-  const tabs = ["개요", "작업 현황", "파일"] as const;
-  const [tab, setTab] = useState<"개요" | "작업 현황" | "파일">("개요");
+export default function ProjectMain({ session, project_id, tab: _tab }: { session: Session; project_id?: string; tab?: "개요" | "작업 현황" | "이슈" }) {
+  const router = useRouter();
+  const tabs = ["개요", "작업 현황", "이슈"] as const;
+  const tabMapping: Record<"개요", ""> & Record<"작업 현황", "task"> & Record<"이슈", "issue"> = { 개요: "", "작업 현황": "task", 이슈: "issue" };
+
+  const [tab, setTab] = useState<"개요" | "작업 현황" | "이슈">(_tab ?? "개요");
   const [taskView, setTaskView] = useState<boolean>(false);
+
+  const handleTabChange = (tab: "개요" | "작업 현황" | "이슈") => {
+    setTab(tab);
+    router.push("/service/project/" + tabMapping[tab]);
+  };
 
   return (
     <div className="shrink-0 w-full h-full flex flex-col">
@@ -21,7 +30,7 @@ export default function ProjectMain({ session, project_id }: { session: Session;
             return (
               <button
                 key={index}
-                onClick={() => setTab(t)}
+                onClick={() => handleTabChange(t)}
                 className={cn("text-base md:text-xl font-bold", t === tab ? "text-black" : "text-muted-foreground")}
               >
                 {t}

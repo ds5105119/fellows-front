@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import Color from "color";
+import Image from "next/image";
 import dayjs from "@/lib/dayjs";
 import type { Dayjs } from "dayjs";
-import Color from "color";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { ERPNextTaskForUser } from "@/@types/service/project";
@@ -14,8 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { useTasks } from "@/hooks/fetch/project";
-import Image from "next/image";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { TaskSkeleton } from "./task-loading";
 
 export type TimeUnit = "day" | "week" | "month";
 
@@ -30,10 +31,14 @@ export function GanttChart({
   timeunit?: TimeUnit;
   showControl?: boolean;
 }) {
-  const hasTasksSwr = useTasks({ size: 1 }, { refreshInterval: 0 });
   const TasksSwr = useTasks({ project_id: project_id, size: 20 });
-  const hasTasks = (hasTasksSwr.data?.flatMap((task) => task.items) ?? []).length != 0;
   const tasks = TasksSwr.data?.flatMap((task) => task.items) ?? [];
+  const isReachedEnd = TasksSwr.data && TasksSwr.data.length > 0 && TasksSwr.data[TasksSwr.data.length - 1].items.length === 0;
+  const isLoading = !isReachedEnd && (TasksSwr.isLoading || (TasksSwr.data && TasksSwr.size > 0 && typeof TasksSwr.data[TasksSwr.size - 1] === "undefined"));
+
+  const hasTaskSwr = useTasks({ size: 1 }, { refreshInterval: 0 });
+  const hasTaskIsLoading = hasTaskSwr.isLoading || (hasTaskSwr.data && hasTaskSwr.size > 0 && typeof hasTaskSwr.data[hasTaskSwr.size - 1] === "undefined");
+  const hasTasks = (hasTaskSwr.data?.flatMap((task) => task.items) ?? []).length != 0;
 
   const [timeUnit, setTimeUnit] = useState<TimeUnit>(timeunit ?? "week");
   const [taskExpended, setTaskExpanded] = useState<boolean>(expand ?? true);
@@ -337,7 +342,7 @@ export function GanttChart({
           </div>
 
           {/* Not have Tasks */}
-          {!hasTasks && (
+          {!hasTasks && !hasTaskIsLoading && !isLoading && (
             <div className="flex justify-center items-center py-24">
               <div className="w-84 md:w-[512px] flex flex-col justify-center items-center space-y-4 text-center text-sm">
                 <div>아직 할당된 테스크가 없습니다</div>
@@ -358,6 +363,9 @@ export function GanttChart({
               </div>
             </div>
           )}
+
+          {/* Loading Skeleton */}
+          {isLoading && <TaskSkeleton count={8} />}
 
           {/* Tasks */}
           <div className="divide-y">

@@ -135,8 +135,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
 
       const newPath = segments.join("/");
 
-      window.history.replaceState(null, "", newPath);
-      setOpenSheet(true);
+      router.push(newPath);
     }
   }, [selectedProject]);
 
@@ -148,8 +147,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
 
       const newPath = segments.slice(0, -1).join("/");
 
-      window.history.replaceState(null, "", newPath);
-      setSelectedProject(null);
+      router.push(newPath);
     }
   }, [openSheet]);
 

@@ -283,20 +283,6 @@ export default function ProjectContainer({
                 </div>
               </div>
 
-              {/* <div
-                className={cn(
-                  "w-full flex space-x-2 items-center font-medium",
-                  activeProject.tasks && activeProject.tasks.length > 0 ? "text-zinc-700" : "text-zinc-400"
-                )}
-              >
-                <ClipboardList className="!size-3.5 shrink-0" />
-                <div className="truncate text-xs min-w-0 flex-1">
-                  {activeProject.tasks && activeProject.tasks.length > 0
-                    ? activeProject.tasks[activeProject.tasks.length - 1].subject
-                    : "할당된 테스크가 없어요"}
-                </div>
-              </div> */}
-
               <div className={cn("w-full flex space-x-2 items-center font-medium", activeProject.creation ? "text-zinc-700" : "text-zinc-400")}>
                 <Clock5 className="!size-3.5 shrink-0" />
                 <div className="truncate text-xs min-w-0 flex-1">{dayjs(activeProject.creation).fromNow()}</div>
