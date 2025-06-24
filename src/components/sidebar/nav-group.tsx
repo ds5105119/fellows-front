@@ -42,25 +42,21 @@ export function NavGroup({ name, items, ...props }: NavGroupProps) {
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [openCollapsibles, setOpenCollapsibles] = useState<Set<string>>(new Set());
 
-  // Helper function to check if a path matches a navigation item
-  const isPathMatch = (pathname: string, navUrl: string): boolean => {
-    // Exact match (including trailing slash)
-    if (pathname === navUrl || pathname === navUrl + "/") {
-      return true;
-    }
-    return false;
+  // Helper function to check if a path matches a navigation item exactly
+  const isExactMatch = (pathname: string, navUrl: string): boolean => {
+    return pathname === navUrl || pathname === navUrl + "/";
   };
 
-  // Helper function to check if a path is under a parent route (for dynamic routes)
+  // Helper function to check if a path is under a parent route (supports deep nesting)
   const isUnderParentRoute = (pathname: string, parentUrl: string, siblingUrls: string[] = []): boolean => {
     // If pathname exactly matches any sibling, it's not under parent
     for (const siblingUrl of siblingUrls) {
-      if (pathname === siblingUrl || pathname === siblingUrl + "/") {
+      if (isExactMatch(pathname, siblingUrl)) {
         return false;
       }
     }
 
-    // Check if pathname starts with parent URL and has additional segments
+    // Check if pathname starts with parent URL (supports any depth)
     if (pathname.startsWith(parentUrl + "/") && pathname !== parentUrl && pathname !== parentUrl + "/") {
       return true;
     }
@@ -70,35 +66,65 @@ export function NavGroup({ name, items, ...props }: NavGroupProps) {
 
   // Helper function to find the best matching nav item
   const findActiveItem = (pathname: string, items: NavItem[]): { activeUrl: string | null; parentTitle: string | null } => {
-    // First, try to find exact matches in sub-items (highest priority)
+    let bestMatch: { activeUrl: string | null; parentTitle: string | null } = { activeUrl: null, parentTitle: null };
+    let maxSpecificity = 0;
+
+    // Calculate specificity score (longer, more specific URLs get higher scores)
+    const getSpecificity = (url: string, isExact: boolean): number => {
+      const baseScore = url.split("/").length;
+      return isExact ? baseScore * 1000 : baseScore; // Exact matches get much higher priority
+    };
+
     for (const item of items) {
       if (item.items) {
+        // Check sub-items first (they are more specific)
         for (const subItem of item.items) {
-          if (isPathMatch(pathname, subItem.url)) {
-            return { activeUrl: subItem.url, parentTitle: item.title };
+          if (isExactMatch(pathname, subItem.url)) {
+            const specificity = getSpecificity(subItem.url, true);
+            if (specificity > maxSpecificity) {
+              bestMatch = { activeUrl: subItem.url, parentTitle: item.title };
+              maxSpecificity = specificity;
+            }
+          }
+        }
+
+        // Check if pathname is under this parent item
+        const siblingUrls = item.items.map((subItem) => subItem.url);
+        if (isUnderParentRoute(pathname, item.url, siblingUrls)) {
+          const specificity = getSpecificity(item.url, false);
+          if (specificity > maxSpecificity) {
+            bestMatch = { activeUrl: item.url, parentTitle: item.title };
+            maxSpecificity = specificity;
+          }
+        }
+
+        // Check parent item exact match
+        if (isExactMatch(pathname, item.url)) {
+          const specificity = getSpecificity(item.url, true);
+          if (specificity > maxSpecificity) {
+            bestMatch = { activeUrl: item.url, parentTitle: item.title };
+            maxSpecificity = specificity;
+          }
+        }
+      } else {
+        // For items without sub-items
+        if (isExactMatch(pathname, item.url)) {
+          const specificity = getSpecificity(item.url, true);
+          if (specificity > maxSpecificity) {
+            bestMatch = { activeUrl: item.url, parentTitle: null };
+            maxSpecificity = specificity;
+          }
+        } else if (isUnderParentRoute(pathname, item.url)) {
+          const specificity = getSpecificity(item.url, false);
+          if (specificity > maxSpecificity) {
+            bestMatch = { activeUrl: item.url, parentTitle: null };
+            maxSpecificity = specificity;
           }
         }
       }
     }
 
-    // Then, try to find exact matches in main items
-    for (const item of items) {
-      if (isPathMatch(pathname, item.url)) {
-        return { activeUrl: item.url, parentTitle: item.items ? item.title : null };
-      }
-    }
-
-    // Finally, check for dynamic routes under parent items
-    for (const item of items) {
-      if (item.items) {
-        const siblingUrls = item.items.map((subItem) => subItem.url);
-        if (isUnderParentRoute(pathname, item.url, siblingUrls)) {
-          return { activeUrl: item.url, parentTitle: item.title };
-        }
-      }
-    }
-
-    return { activeUrl: null, parentTitle: null };
+    return bestMatch;
   };
 
   // Initialize active item and open collapsibles based on current pathname
