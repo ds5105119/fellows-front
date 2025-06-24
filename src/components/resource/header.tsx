@@ -1,7 +1,15 @@
 export const headerData = {
   navMain: [
     { title: "대시보드", url: "/service/dashboard", icon: "FcNews" },
-    { title: "프로젝트", url: "/service/project", icon: "FcOpenedFolder" },
+    {
+      title: "프로젝트",
+      url: "/service/project",
+      icon: "FcOpenedFolder",
+      items: [
+        { title: "개요", url: "/service/project" },
+        { title: "작업 현황", url: "/service/project/task" },
+      ],
+    },
     { title: "조달사업", url: "#", icon: "FcList" },
     { title: "지원사업", url: "/service/welfare", icon: "FcList" },
     { title: "구독", url: "#", icon: "FcConferenceCall" },
