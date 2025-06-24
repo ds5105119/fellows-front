@@ -78,17 +78,10 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
           <div className="size-2.5 rounded-full bg-red-500" />
         </div>
       ),
-      project ? (
-        <div className="flex space-x-1.5 items-center" key="company-ok">
-          <span>회사</span>
-          <div className="size-2.5 rounded-full bg-emerald-500" />
-        </div>
-      ) : (
-        <div className="flex space-x-1.5 items-center" key="company-no">
-          <span className="text-yellow-500">매니저</span>
-          <div className="size-2.5 rounded-full bg-yellow-500" />
-        </div>
-      ),
+      <div className="flex space-x-1.5 items-center" key="company-ok">
+        <span>회사</span>
+        <div className="size-2.5 rounded-full bg-emerald-500" />
+      </div>,
     ],
     [session?.user, project]
   );
@@ -220,7 +213,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             {/* 일반 정보 탭 */}
             <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={setActiveTab2} />
             {/* 탭 콘텐츠 */}
-            <div className="w-full grow overflow-y-auto scrollbar-hide">{activeTab2 === 1 && project && <FilesList project={project} />}</div>
+            <div className="w-full grow overflow-y-auto scrollbar-hide">{activeTab2 === 0 && project && <FilesList project={project} />}</div>
           </div>
         </div>
 
@@ -254,6 +247,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
                 </div>
               </>
             )}
+            {activeMobileTab === 1 && project && <FilesList project={project} />}
           </div>
         </div>
       </div>

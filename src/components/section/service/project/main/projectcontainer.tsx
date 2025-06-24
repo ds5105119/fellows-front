@@ -211,9 +211,7 @@ export default function ProjectContainer({
                     openMenu={openMenu}
                     setOpenMenu={setOpenMenu}
                     meta={meta}
-                    onSelect={() => {
-                      setSelectedProject(project);
-                    }}
+                    onClick={() => setSelectedProject(project)}
                     id={`project-${idx}`}
                     justDropped={justDropped === `project-${idx}`}
                   />
@@ -355,26 +353,18 @@ function TrashZone({ isOverTrash }: { isOverTrash: boolean }) {
   );
 }
 
-// 드래그 가능한 프로젝트 아이템 컴포넌트
-function ProjectItem({
-  project,
-  idx,
-  openMenu,
-  setOpenMenu,
-  meta,
-  onSelect,
-  id,
-  justDropped,
-}: {
+interface ProjectItemProps extends React.HTMLAttributes<HTMLDivElement> {
   project: ERPNextProject;
   idx: number;
   openMenu: string | null;
   setOpenMenu: (id: string | null) => void;
   meta: SWRMeta;
-  onSelect: () => void;
   id: string;
   justDropped?: boolean;
-}) {
+}
+
+// 드래그 가능한 프로젝트 아이템 컴포넌트
+function ProjectItem({ project, idx, openMenu, setOpenMenu, meta, id, justDropped, ...props }: ProjectItemProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: id,
     data: {
@@ -389,14 +379,13 @@ function ProjectItem({
   }
 
   return (
-    <div className="w-full text-gray-900 select-none" data-dnd-id={id}>
+    <div className="w-full text-gray-900 select-none" data-dnd-id={id} {...props}>
       {/* 프로젝트 내용 - 클릭 가능 */}
       <div
         className={cn(
           "w-full flex flex-col space-y-1.5 rounded-xs bg-white items-center p-4 hover:bg-muted",
           justDropped ? "" : "transition-colors duration-200" // 드롭된 아이템은 transition 제거
         )}
-        onClick={onSelect}
       >
         <div className="w-full flex justify-between">
           <div className="flex space-x-1.5 items-center text-sm min-w-0 flex-1">

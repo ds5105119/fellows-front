@@ -62,7 +62,7 @@ export default function Flattabs({ tabs, activeTab, handleTabChange }: FlattabsP
   }, [updateIndicator]);
 
   return (
-    <div ref={containerRef} className="relative flex space-x-1 border-b px-2 overflow-x-auto">
+    <div ref={containerRef} className="shrink-0 relative flex space-x-1 border-b px-2 overflow-x-auto">
       {tabs.map((tab, idx) => (
         <button
           key={idx}

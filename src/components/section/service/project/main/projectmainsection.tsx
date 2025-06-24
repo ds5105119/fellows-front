@@ -6,7 +6,7 @@ import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
 import ProjectContainer from "./projectcontainer";
 import ProjectDetailSheet from "./projectdetailsheet";
 import { SWRInfiniteResponse } from "swr/infinite";
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
@@ -119,37 +119,95 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const router = useRouter();
   const project = useProjects({ size: 1 });
 
-  useEffect(() => {
-    if (!!project_id) {
-      const emptyProject = erpNextProjectSchema.parse({ project_name: project_id });
-      setSelectedProject(emptyProject);
+  // URL에서 project_id를 추출하는 헬퍼 함수
+  const getProjectIdFromUrl = useCallback((pathname: string): string | null => {
+    const segments = pathname.split("/");
+    if (segments.length > 3 && segments[segments.length - 2] === "project") {
+      return segments[segments.length - 1];
     }
-  }, [project_id]);
+    return null;
+  }, []);
 
-  useEffect(() => {
-    if (!!selectedProject) {
-      const segments = pathname.split("/");
-
-      if (segments[segments.length - 1] === "project") segments.push(selectedProject.project_name);
-      else segments[segments.length - 1] = selectedProject.project_name;
-
-      const newPath = segments.join("/");
-
-      router.push(newPath);
+  // 프로젝트 데이터를 찾는 함수 (실제 구현 필요)
+  const findProjectById = useCallback((projectId: string): ERPNextProject | null => {
+    try {
+      return erpNextProjectSchema.parse({
+        project_name: projectId,
+      });
+    } catch {
+      return null;
     }
-  }, [selectedProject]);
+  }, []);
 
-  useEffect(() => {
-    if (!openSheet) {
+  // 프로젝트 선택 핸들러
+  const handleProjectSelect = useCallback(
+    (project: ERPNextProject | null) => {
+      if (!project) {
+        console.log("Project deselected");
+        setSelectedProject(null);
+        setOpenSheet(false);
+        return;
+      }
+
+      console.log("Project selected:", project.project_name);
+
+      setSelectedProject(project);
+      setOpenSheet(true);
+
+      // URL 업데이트
+      const currentProjectId = getProjectIdFromUrl(pathname);
+      if (currentProjectId !== project.project_name) {
+        const segments = pathname.split("/");
+        let newPath;
+
+        if (segments[segments.length - 1] === "project") {
+          newPath = `${pathname}/${project.project_name}`;
+        } else if (segments[segments.length - 2] === "project") {
+          segments[segments.length - 1] = project.project_name;
+          newPath = segments.join("/");
+        } else {
+          newPath = `/service/project/${project.project_name}`;
+        }
+
+        router.replace(newPath);
+      }
+    },
+    [pathname, router, getProjectIdFromUrl]
+  );
+
+  // 시트 닫기 핸들러
+  const handleSheetClose = useCallback(() => {
+    console.log("Sheet closing");
+
+    setOpenSheet(false);
+    setSelectedProject(null);
+
+    // URL에서 프로젝트 ID 제거
+    const projectIdFromUrl = getProjectIdFromUrl(pathname);
+    if (projectIdFromUrl) {
       const segments = pathname.split("/");
-
-      if (segments[segments.length - 1] === "project") return;
-
       const newPath = segments.slice(0, -1).join("/");
-
-      router.push(newPath);
+      router.replace(newPath);
     }
-  }, [openSheet]);
+  }, [pathname, router, getProjectIdFromUrl]);
+
+  // 초기 로드 시 URL에서 프로젝트 복원
+  useEffect(() => {
+    const projectIdFromUrl = getProjectIdFromUrl(pathname);
+
+    if (projectIdFromUrl && !selectedProject) {
+      console.log("Restoring project from URL:", projectIdFromUrl);
+
+      const foundProject = findProjectById(projectIdFromUrl);
+      if (foundProject) {
+        setSelectedProject(foundProject);
+        setOpenSheet(true);
+      } else {
+        // 프로젝트를 찾을 수 없으면 목록 페이지로 리다이렉트
+        router.replace("/service/project");
+      }
+    }
+  }, [pathname, selectedProject, findProjectById, getProjectIdFromUrl, router]);
 
   useEffect(() => {
     if (
@@ -226,7 +284,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
               status={status}
               keyword={keyword}
               orderBy={orderBy}
-              setSelectedProject={setSelectedProject}
+              setSelectedProject={handleProjectSelect}
               onProcessCountChange={status === "process" ? setProcessCount : undefined}
             />
           </div>
@@ -258,18 +316,18 @@ export default function ProjectMainSection({ session, project_id }: { session: S
           status={statuses[tabIndex]}
           keyword={keyword}
           orderBy={orderBy}
-          setSelectedProject={setSelectedProject}
+          setSelectedProject={handleProjectSelect}
           onProcessCountChange={statuses[tabIndex] === "process" ? setProcessCount : undefined}
         />
       </div>
 
       {/* 프로젝트 선택 시 팝업 */}
-      <Sheet open={openSheet} onOpenChange={setOpenSheet}>
+      <Sheet open={openSheet} onOpenChange={handleSheetClose}>
         <SheetContent className="w-full sm:max-w-full md:w-3/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0">
           <SheetHeader className="sr-only">
             <SheetTitle>{selectedProject?.custom_project_title ?? "프로젝트가 선택되지 않았습니다."}</SheetTitle>
           </SheetHeader>
-          <ProjectDetailSheet project={selectedProject} onClose={() => setOpenSheet(false)} session={session} />
+          <ProjectDetailSheet project={selectedProject} onClose={handleSheetClose} session={session} />
           <SheetDescription className="sr-only" />
         </SheetContent>
       </Sheet>
