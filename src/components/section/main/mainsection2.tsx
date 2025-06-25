@@ -83,7 +83,7 @@ const features = [
     ),
   },
   {
-    name: `6000개 이상의 데이터를 학습한 AI로\n3분만에 AI 견적서 작성`,
+    name: `6000↑ 데이터를 학습한 AI로\n3분만에 AI 견적서 작성`,
     description: (
       <div className="flex items-center space-x-2">
         <BreathingSparkles />
