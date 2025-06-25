@@ -13,7 +13,7 @@ import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
-import DatePicker from "@/components/form/datepicker";
+import DatePicker from "@/components/section/service/project/new/datepicker";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 

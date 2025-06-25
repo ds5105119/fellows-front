@@ -23,6 +23,7 @@ import useThrottle from "@/lib/useThrottle";
 import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
 import { statusConfig } from "@/components/resource/project";
 import { Input } from "@/components/ui/input";
+import DatePicker from "./datepicker";
 
 export type TimeUnit = "day" | "week" | "month";
 
@@ -422,6 +423,7 @@ export function GanttChart({
               </div>
             </div>
             <div className="flex items-center md:justify-end gap-2">
+              <DatePicker value={dateRange.start.toDate()} onSelect={(date) => date && calculateDateRange(dayjs(date), dateRange.end)} />
               <Button variant="secondary" size="sm" onClick={() => setDeepSearch((prev) => !prev)}>
                 <span className="text-muted-foreground font-semibold">시작일</span>
                 {dateRange.start.format("YYYY-MM-DD")}
