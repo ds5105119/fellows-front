@@ -230,7 +230,6 @@ export default function ProjectMainSection({ session, project_id }: { session: S
       setOpenSheet(true);
       lastProcessedUrlRef.current = pathname;
     } else {
-      // 프로젝트를 찾을 수 없으면 목록 페이지로 리다이렉트
       router.replace("/service/project");
     }
   }, [pathname, selectedProject, openSheet, findProjectById, getProjectIdFromUrl, router]);
