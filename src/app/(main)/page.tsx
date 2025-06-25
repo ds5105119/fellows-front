@@ -1,9 +1,9 @@
-import { BlurFade } from "@/components/magicui/blur-fade";
 import MainSection1 from "@/components/section/main/mainsection1";
 import MainSection2 from "@/components/section/main/mainsection2";
 import MainSection3 from "@/components/section/main/mainsection3";
 import MainSection4 from "@/components/section/main/mainsection4";
 import MainQnaSection from "@/components/section/main/mainqnasection";
+import { BlurFade } from "@/components/magicui/blur-fade";
 
 export default async function Home() {
   return (

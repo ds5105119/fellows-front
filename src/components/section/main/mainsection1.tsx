@@ -121,6 +121,12 @@ export default async function MainSection1() {
         </div>
       </div>
 
+      <div className="col-span-full w-full flex z-20 md:hidden pt-4">
+        <Button size="lg" className="w-full px-16 h-[3.5rem] text-lg font-semibold rounded-2xl bg-black active:bg-black" asChild>
+          <Link href="/service/dashboard">시작하기</Link>
+        </Button>
+      </div>
+
       <div className="col-span-full flex flex-col space-y-2 pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
         <div>
           <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
