@@ -34,12 +34,12 @@ export default function ComboBoxResponsive({ placeholder, initial, statuses, cal
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="ghost" className="w-fit">
+          <Button variant="ghost" className="w-fit font-bold">
             {selectedStatus ? <>{selectedStatus.label}</> : <>{placeholder}</>}
             {open ? <ChevronUp /> : <ChevronDown />}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0" align="start">
+        <PopoverContent className="w-fit = p-0" align="start">
           <Command>
             <CommandList>
               <CommandGroup>
@@ -52,6 +52,7 @@ export default function ComboBoxResponsive({ placeholder, initial, statuses, cal
                       setOpen(false);
                       if (callback) callback(status.value);
                     }}
+                    className="px-3"
                   >
                     {status.label}
                   </CommandItem>
@@ -67,7 +68,7 @@ export default function ComboBoxResponsive({ placeholder, initial, statuses, cal
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="ghost" className="w-fit">
+        <Button variant="ghost" className="w-fit font-bold">
           {selectedStatus ? <>{selectedStatus.label}</> : <>{placeholder}</>}
           {open ? <ChevronUp /> : <ChevronDown />}
         </Button>

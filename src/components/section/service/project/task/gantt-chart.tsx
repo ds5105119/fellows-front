@@ -10,15 +10,19 @@ import type { Dayjs } from "dayjs";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import type { ERPNextTaskForUser } from "@/@types/service/project";
+import { erpNextTaskStatusEnum, type ERPNextTaskForUser, type ERPNextTaskStatus } from "@/@types/service/project";
 import { StatusBadge } from "./status-badge";
 import { buildTree, getAllExpandableTaskIds } from "@/lib/task-utils";
-import { Calendar, CalendarDays, CalendarRange, ChevronDown, ChevronRight, ChevronLeft, FilePenLine, ClockIcon, ArrowRight, ZapIcon } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ChevronDown, ChevronRight, ChevronLeft, FilePenLine, ClockIcon, ArrowRight, ZapIcon, FilterIcon, SearchIcon } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { useTasks } from "@/hooks/fetch/project";
 import { TaskSkeleton } from "./task-loading";
+import useThrottle from "@/lib/useThrottle";
+import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
+import { statusConfig } from "@/components/resource/project";
+import { Input } from "@/components/ui/input";
 
 export type TimeUnit = "day" | "week" | "month";
 
@@ -33,8 +37,13 @@ export function GanttChart({
   timeunit?: TimeUnit;
   showControl?: boolean;
 }) {
-  const [timeUnit, setTimeUnit] = useState<TimeUnit>(timeunit ?? "week");
   const [taskExpended, setTaskExpanded] = useState<boolean>(expand ?? true);
+  const [deepSearch, setDeepSearch] = useState<boolean>(true);
+  const [status, setStatus] = useState<ERPNextTaskStatus[] | null>(null);
+  const [keywordText, setKeywordText] = useState<string>("");
+  const keyword = useThrottle(keywordText, 3000);
+
+  const [timeUnit, setTimeUnit] = useState<TimeUnit>(timeunit ?? "week");
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
   const [dateRange, setDateRange] = useState({
     start: dayjs().subtract(1, "week"),
@@ -45,8 +54,10 @@ export function GanttChart({
   const TasksSwr = useTasks({
     project_id: project_id,
     size: 50,
+    status: status,
     start: dateRange.start.startOf("year").toDate(),
     end: dateRange.end.endOf("year").toDate(),
+    keyword: keyword,
   });
 
   const tasks = TasksSwr.data?.flatMap((task) => task.items) ?? [];
@@ -218,6 +229,40 @@ export function GanttChart({
     }));
   };
 
+  const calculateDateRange = (start: Dayjs, end: Dayjs) => {
+    switch (timeUnit) {
+      case "day":
+        const intervals_day = [];
+        let currentDay = start;
+        while (currentDay.isBefore(end) || currentDay.isSame(end, "day")) {
+          intervals_day.push(currentDay);
+          currentDay = currentDay.add(1, "day");
+        }
+        setDateRange({ start: start, end: end, intervals: intervals_day });
+        break;
+      case "week":
+        const intervals_week = [];
+        let currentWeek = start;
+        while (currentWeek.isBefore(end) || currentWeek.isSame(end, "week")) {
+          intervals_week.push(currentWeek);
+          currentWeek = currentWeek.add(1, "week");
+        }
+        setDateRange({ start: start, end: end, intervals: intervals_week });
+
+        break;
+      case "month":
+        const intervals_month = [];
+        let currentMonth = start;
+        while (currentMonth.isBefore(end) || currentMonth.isSame(end, "month")) {
+          intervals_month.push(currentMonth);
+          currentMonth = currentMonth.add(1, "month");
+        }
+        setDateRange({ start: start, end: end, intervals: intervals_month });
+
+        break;
+    }
+  };
+
   useEffect(() => {
     if (isReachingEnd && !isLoading && !isReachedEnd) {
       TasksSwr.setSize((s) => s + 1);
@@ -228,42 +273,13 @@ export function GanttChart({
   useEffect(() => {
     switch (timeUnit) {
       case "day":
-        // 현재 날짜 기준으로 일주일 범위 표시
-        const start_day = currentDate.startOf("week");
-        const end_day = currentDate.endOf("week");
-        const intervals_day = [];
-        let currentDay = start_day;
-        while (currentDay.isBefore(end_day) || currentDay.isSame(end_day, "day")) {
-          intervals_day.push(currentDay);
-          currentDay = currentDay.add(1, "day");
-        }
-        setDateRange({ start: start_day, end: end_day, intervals: intervals_day });
+        calculateDateRange(currentDate.startOf("week"), currentDate.endOf("week"));
         break;
       case "week":
-        // 현재 날짜 기준으로 4주 범위 표시
-        const start_week = currentDate.subtract(1, "week").startOf("week");
-        const end_week = currentDate.add(2, "week").endOf("week");
-        const intervals_week = [];
-        let currentWeek = start_week;
-        while (currentWeek.isBefore(end_week) || currentWeek.isSame(end_week, "week")) {
-          intervals_week.push(currentWeek);
-          currentWeek = currentWeek.add(1, "week");
-        }
-        setDateRange({ start: start_week, end: end_week, intervals: intervals_week });
-
+        calculateDateRange(currentDate.subtract(1, "week").startOf("week"), currentDate.add(2, "week").endOf("week"));
         break;
       case "month":
-        // 현재 날짜 기준으로 4개월 범위 표시
-        const start_month = currentDate.subtract(1, "month").startOf("month");
-        const end_month = currentDate.add(2, "month").endOf("month");
-        const intervals_month = [];
-        let currentMonth = start_month;
-        while (currentMonth.isBefore(end_month) || currentMonth.isSame(end_month, "month")) {
-          intervals_month.push(currentMonth);
-          currentMonth = currentMonth.add(1, "month");
-        }
-        setDateRange({ start: start_month, end: end_month, intervals: intervals_month });
-
+        calculateDateRange(currentDate.subtract(1, "month").startOf("month"), currentDate.add(2, "month").endOf("month"));
         break;
     }
   }, [timeUnit, currentDate]);
@@ -281,60 +297,133 @@ export function GanttChart({
       {/* Controls */}
       <div
         className={cn(
-          "sticky z-30 top-24 md:top-32 bg-background flex w-full justify-between items-center h-12 px-6 border-b border-b-sidebar-border",
+          "sticky z-30 top-24 md:top-32 bg-background flex flex-col gap-3 w-full py-3 px-6 border-b border-b-sidebar-border",
           showControl ? "" : "hidden"
         )}
       >
-        <div className="flex items-center gap-2">
-          <Select value={timeunit ?? timeUnit} onValueChange={(value: TimeUnit) => setTimeUnit(value)}>
-            <SelectTrigger className="w-28 !h-8 rounded-sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="day">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  일별
-                </div>
-              </SelectItem>
-              <SelectItem value="week">
-                <div className="flex items-center gap-2">
-                  <CalendarDays className="h-4 w-4" />
-                  주별
-                </div>
-              </SelectItem>
-              <SelectItem value="month">
-                <div className="flex items-center gap-2">
-                  <CalendarRange className="h-4 w-4" />
-                  월별
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex w-full justify-between items-center">
+          <div className="flex items-center gap-2">
+            <ComboBoxResponsive
+              statuses={[
+                { label: "일별", value: "day" },
+                { label: "주별", value: "week" },
+                { label: "월별", value: "month" },
+              ]}
+              initial={"month"}
+              callback={(value: string) => setTimeUnit(value as TimeUnit)}
+            />
 
-          {/* Navigation Controls */}
-          <div className="flex items-center gap-2 border rounded-sm px-1 h-8">
-            <Button variant="ghost" size="sm" onClick={navigatePrevious} className="size-6 p-0">
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={navigateToToday} className="px-3 h-7 text-sm font-medium min-w-[120px] hidden md:block">
-              {formatDateRange()}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={navigateNext} className="size-6 p-0">
-              <ChevronRight className="h-4 w-4" />
+            {/* Navigation Controls */}
+            <div className="flex items-center gap-2 border rounded-sm px-1 h-8">
+              <Button variant="ghost" size="sm" onClick={navigatePrevious} className="size-6 p-0">
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={navigateToToday} className="px-3 h-7 text-sm font-medium min-w-[120px] hidden md:block">
+                {formatDateRange()}
+              </Button>
+              <Button variant="ghost" size="sm" onClick={navigateNext} className="size-6 p-0">
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <Button variant="ghost" size="sm" onClick={navigateToToday} className="text-xs font-bold text-blue-400 hover:text-blue-500 px-2 h-7">
+              오늘
             </Button>
           </div>
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" size="sm" className="font-semibold" onClick={() => setDeepSearch((prev) => !prev)}>
+              {deepSearch ? "상세검색 끄기" : "상세검색 켜기"}
+            </Button>
 
-          <Button variant="ghost" size="sm" onClick={navigateToToday} className="text-xs font-bold text-blue-400 hover:text-blue-500 px-2 h-7">
-            오늘
-          </Button>
+            <Button variant="secondary" size="sm" className="font-semibold" onClick={() => setTaskExpanded((prev) => !prev)}>
+              {taskExpended ? "접기" : "펼치기"}
+            </Button>
+          </div>
         </div>
+        {deepSearch && (
+          <div className="grid gap-3 grid-cols-1 md:grid-cols-2 w-full justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="rounded-sm bg-muted font-bold flex items-center !pl-1.5 hover:bg-zinc-200 transition-colors duration-300"
+                  >
+                    <FilterIcon className="!size-4 ml-1" />
+                    필터
+                  </Button>
+                </DialogTrigger>
+                <DialogContent
+                  showCloseButton={false}
+                  className="drop-shadow-white/10 drop-shadow-2xl p-0 h-3/4 overflow-y-auto scrollbar-hide focus-visible:ring-0"
+                >
+                  <DialogHeader className="sr-only">
+                    <DialogTitle className="sr-only">필터 창</DialogTitle>
+                    <DialogDescription className="sr-only" />
+                  </DialogHeader>
+                  <div className="w-full h-full flex flex-col">
+                    <div className="sticky top-0 w-full px-5 py-3 border-b border-b-muted bg-white font-bold">필터 추가하기</div>
+                    <div className="w-full h-full flex flex-col p-5">
+                      <div className="w-full flex flex-col space-y-3">
+                        <div className="w-full flex items-center space-x-3">
+                          <p className="text-sm font-bold">상태</p>
+                          <button
+                            disabled={status == null}
+                            onClick={() => setStatus(null)}
+                            className="cursor-pointer select-none px-2 py-1 rounded-sm bg-muted text-xs font-bold flex items-center hover:bg-zinc-200 transition-colors duration-300"
+                          >
+                            <p>전체 해제</p>
+                          </button>
+                        </div>
+                        <div className="w-full grid grid-cols-3 gap-3">
+                          {erpNextTaskStatusEnum.options.map((val, idx) => {
+                            return (
+                              <div key={idx} className="flex space-x-2 text-sm font-semibold">
+                                <input
+                                  type="checkbox"
+                                  checked={status ? status.includes(val) : false}
+                                  onChange={() =>
+                                    status?.includes(val)
+                                      ? status && status.length == 1
+                                        ? setStatus(null)
+                                        : setStatus(status.filter((v) => v !== val))
+                                      : status
+                                      ? setStatus([...status, val])
+                                      : setStatus([val])
+                                  }
+                                />
+                                <p>{statusConfig[val].text}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
 
-        <div className="flex gap-2">
-          <Button variant="secondary" size="sm" onClick={() => setTaskExpanded((prev) => !prev)}>
-            {taskExpended ? "접기" : "펼치기"}
-          </Button>
-        </div>
+              <div className="relative w-full max-w-96 h-fit rounded-full bg-muted">
+                <SearchIcon className="absolute top-1/2 -translate-y-1/2 left-2.5 size-4 text-muted-foreground" />
+                <Input
+                  placeholder="검색어를 입력하세요"
+                  className="ml-4 h-8 px-4 border-0 shadow-none focus-visible:ring-0 font-medium"
+                  onChange={(e) => setKeywordText(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex items-center md:justify-end gap-2">
+              <Button variant="secondary" size="sm" onClick={() => setDeepSearch((prev) => !prev)}>
+                {deepSearch ? "상세검색" : "접기"}
+              </Button>
+
+              <Button variant="secondary" size="sm" onClick={() => setTaskExpanded((prev) => !prev)}>
+                {taskExpended ? "접기" : "펼치기"}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="overflow-x-auto overflow-y-hidden h-fit">

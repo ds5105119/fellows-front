@@ -190,6 +190,7 @@ export const erpNextTasksRequestSchema = z.object({
     .nullable()
     .optional(),
   project_id: z.string().nullable().optional(),
+  keyword: z.string().nullable().optional(),
   start: z.coerce.date().nullable().optional(),
   end: z.coerce.date().nullable().optional(),
 });

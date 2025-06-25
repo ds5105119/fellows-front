@@ -216,6 +216,10 @@ const tasksGetKeyFactory = (params: ERPNextTasksRequest): SWRInfiniteKeyLoader =
       searchParams.append("project_id", params.project_id);
     }
 
+    if (params.keyword) {
+      searchParams.append("keyword", params.keyword);
+    }
+
     if (params.start) {
       searchParams.append("start", params.start.toISOString().split("T")[0]);
     }

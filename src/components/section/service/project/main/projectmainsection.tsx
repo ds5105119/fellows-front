@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Plus, Info } from "lucide-react";
+import { Plus, Info, SearchIcon } from "lucide-react";
 import { ProjectsPaginatedResponse, ERPNextProject, erpNextProjectSchema } from "@/@types/service/project";
 import { useProjects } from "@/hooks/fetch/project";
 
@@ -35,7 +35,7 @@ const statuses: Status[] = ["draft", "process", "complete", "maintenance"];
 const containerProps = {
   draft: { name: "계획 중", bg: "bg-gray-500/10", text: "text-gray-500", border: "border-gray-300", className: "col-span-1" },
   process: { name: "진행 중", bg: "bg-blue-500/10", text: "text-blue-500", border: "border-blue-300", className: "col-span-1" },
-  complete: { name: "완료", bg: "bg-green-500/10", text: "text-green-500", border: "border-green-300", className: "col-span-1" },
+  complete: { name: "완료", bg: "bg-violet-500/10", text: "text-violet-500", border: "border-violet-300", className: "col-span-1" },
   maintenance: { name: "유지보수", bg: "bg-[#FFF3ED]", text: "text-amber-500", border: "border-amber-300", className: "col-span-1" },
 };
 
@@ -114,7 +114,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [selectedProject, setSelectedProject] = useState<ERPNextProject | null>(null);
   const [openSheet, setOpenSheet] = useState(project_id ? true : false);
-  const keyword = useThrottle(inputText, 700);
+  const keyword = useThrottle(inputText, 1000);
   const pathname = usePathname();
   const router = useRouter();
   const project = useProjects({ size: 1 });
@@ -269,13 +269,16 @@ export default function ProjectMainSection({ session, project_id }: { session: S
       <div className="sticky z-30 top-24 md:top-32 bg-background w-full flex flex-col">
         <div className="flex w-full justify-between h-12 items-center px-6 border-b-1 border-b-sidebar-border space-x-2">
           <div className="flex items-center grow md:max-w-1/2 space-x-2">
-            <Input
-              placeholder="검색어를 입력하세요"
-              className="w-full max-w-96 h-8 px-4 border-0 shadow-none rounded-md focus-visible:ring-0 bg-muted font-medium"
-              onChange={(e) => setInputText(e.target.value)}
-            />
             <div className="hidden lg:block">
               <ComboBoxResponsive statuses={orders} initial={orderBy} callback={setOrderBy} />
+            </div>
+            <div className="relative w-full max-w-96 h-fit rounded-full bg-muted">
+              <SearchIcon className="absolute top-1/2 -translate-y-1/2 left-2.5 size-4 text-muted-foreground" />
+              <Input
+                placeholder="검색어를 입력하세요"
+                className="ml-4 h-8 px-4 border-0 shadow-none focus-visible:ring-0 font-medium"
+                onChange={(e) => setInputText(e.target.value)}
+              />
             </div>
           </div>
           <div className="flex">

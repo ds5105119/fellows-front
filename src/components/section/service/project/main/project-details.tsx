@@ -87,7 +87,7 @@ export function ProjectDetails({ project, setEditedProject }: { project: ERPNext
             })}
           </div>
         </div>
-        <DialogContent showCloseButton={false} className="drop-shadow-white/20 drop-shadow-2xl p-0 h-3/4 overflow-y-auto scrollbar-hide focus-visible:ring-0">
+        <DialogContent showCloseButton={false} className="drop-shadow-white/10 drop-shadow-2xl p-0 h-3/4 overflow-y-auto scrollbar-hide focus-visible:ring-0">
           <DialogHeader className="sr-only">
             <DialogTitle className="sr-only">기능 선택 창</DialogTitle>
             <DialogDescription className="sr-only" />

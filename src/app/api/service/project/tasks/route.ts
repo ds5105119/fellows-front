@@ -11,6 +11,7 @@ export async function GET(request: Request) {
   const start = searchParams.get("start");
   const end = searchParams.get("end");
   const project_id = searchParams.get("project_id");
+  const keyword = searchParams.get("keyword");
   const order_by = searchParams.getAll("order_by");
   const status = searchParams.getAll("status");
   const startDate = start ? new Date(start) : undefined;
@@ -35,6 +36,10 @@ export async function GET(request: Request) {
 
   if (project_id) {
     queryParams.append("project_id", project_id);
+  }
+
+  if (keyword) {
+    queryParams.append("keyword", keyword);
   }
 
   if (startDate) {
