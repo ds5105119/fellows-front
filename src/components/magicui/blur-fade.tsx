@@ -1,53 +1,56 @@
 "use client";
 
-import {
-  AnimatePresence,
-  motion,
-  useInView,
-  UseInViewOptions,
-  Variants,
-  MotionProps,
-} from "motion/react";
-import { useRef } from "react";
+import type React from "react";
+import { motion, useInView, type Variants, type MotionProps } from "motion/react";
+import { useRef, useEffect, useState } from "react";
 
-type MarginType = UseInViewOptions["margin"];
-
-interface BlurFadeProps extends MotionProps {
+interface BlurFadeDebugProps extends MotionProps {
   children: React.ReactNode;
   className?: string;
-  variant?: {
-    hidden: { y: number };
-    visible: { y: number };
-  };
   duration?: number;
   delay?: number;
   offset?: number;
   direction?: "up" | "down" | "left" | "right";
-  inView?: boolean;
-  inViewMargin?: MarginType;
   blur?: string;
+  debugName?: string;
 }
 
 export function BlurFade({
   children,
   className,
-  variant,
-  duration = 0.4,
+  duration = 0.6,
   delay = 0,
-  offset = 6,
+  offset = 20,
   direction = "down",
-  inView = false,
-  inViewMargin = "-50px",
-  blur = "6px",
+  blur = "8px",
+  debugName = "BlurFade",
   ...props
-}: BlurFadeProps) {
-  const ref = useRef(null);
-  const inViewResult = useInView(ref, { once: true, margin: inViewMargin });
-  const isInView = !inView || inViewResult;
-  const defaultVariants: Variants = {
+}: BlurFadeDebugProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  const isInView = useInView(ref, {
+    once: true,
+    margin: "-200px 0px -200px 0px",
+  });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted && isInView && !hasAnimated) {
+      setHasAnimated(true);
+    }
+  }, [isMounted, isInView, hasAnimated, debugName]);
+
+  const variants: Variants = {
     hidden: {
-      [direction === "left" || direction === "right" ? "x" : "y"]:
-        direction === "right" || direction === "down" ? -offset : offset,
+      [direction === "left" || direction === "right" ? "x" : "y"]: direction === "right" || direction === "down" ? -offset : offset,
       opacity: 0,
       filter: `blur(${blur})`,
     },
@@ -57,25 +60,24 @@ export function BlurFade({
       filter: `blur(0px)`,
     },
   };
-  const combinedVariants = variant || defaultVariants;
+
+  const animationState = isMounted && hasAnimated ? "visible" : "hidden";
+
   return (
-    <AnimatePresence>
-      <motion.div
-        ref={ref}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-        exit="hidden"
-        variants={combinedVariants}
-        transition={{
-          delay: 0.04 + delay,
-          duration,
-          ease: "easeOut",
-        }}
-        className={className}
-        {...props}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={animationState}
+      variants={variants}
+      transition={{
+        delay: delay,
+        duration,
+        ease: "easeOut",
+      }}
+      className={className}
+      {...props}
+    >
+      {children}
+    </motion.div>
   );
 }

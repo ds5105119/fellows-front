@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 
 export default function MainSection4() {
   return (
-    <div>
+    <div className="w-full">
       <div className="relative w-full hidden md:block">
         {/* Base image */}
-        <AspectRatio ratio={926 / 426}>
+        <AspectRatio ratio={926 / 426} className="w-full">
           <Image src="/footer-back-ground.png" fill alt="Image" className="rounded-md object-cover" priority />
           <div className="absolute inset-0 flex flex-col z-10 items-center justify-center">
             <div className="p-12 flex flex-col gap-3 text-end items-center justify-center rounded-[3rem]">
@@ -25,7 +25,7 @@ export default function MainSection4() {
       </div>
       <div className="relative w-full block md:hidden">
         {/* Base image */}
-        <AspectRatio ratio={480 / 715}>
+        <AspectRatio ratio={480 / 715} className="w-full">
           <Image src="/mobile-footer-back-ground.png" fill alt="Image" className="rounded-md object-cover" priority />
           <div className="absolute inset-0 flex z-10 items-center justify-center">
             <div className="p-12 flex flex-col gap-3 text-center items-center justify-center rounded-[3rem]">

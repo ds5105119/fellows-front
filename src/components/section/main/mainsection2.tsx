@@ -66,7 +66,7 @@ const features = [
     className: "col-span-3 lg:col-span-2 bg-zinc-100 hover:bg-blue-100 transition-colors duration-300 ease-in-out",
     background: (
       <div className="absolute top-0 w-full h-full transition-all duration-300 ease-out group-hover:scale-110">
-        <Image src="/bento2.png" alt="Image" className="rounded-md object-cover" fill priority style={{ objectFit: "cover", objectPosition: "top left" }} />
+        <Image src="/bento2.png" alt="Image" className="rounded-md object-cover object-[20%_30%]" fill priority />
       </div>
     ),
   },
@@ -100,9 +100,7 @@ export default function MainSection2() {
   return (
     <div className="w-full">
       <div className="px-4 flex flex-col space-y-4 md:space-y-6 pb-12 lg:pb-16">
-        <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">
-          <span className="text-red-400">개발 외주</span> Fellows에서 시작하면 좋은 이유
-        </h1>
+        <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">Fellows에서 시작하면 가장 좋은 이유</h1>
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
           <h4 className="text-base md:text-lg font-semibold text-foreground">
             이제 아무 곳에 외주 개발 문의는 그만,

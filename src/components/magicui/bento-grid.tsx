@@ -20,7 +20,7 @@ interface BentoCardProps extends ComponentPropsWithoutRef<"div"> {
 
 const BentoGrid = ({ children, className, ...props }: BentoGridProps) => {
   return (
-    <div className={cn("grid w-full auto-rows-[18rem] lg:auto-rows-[26rem] grid-cols-3 gap-5", className)} {...props}>
+    <div className={cn("grid w-full auto-rows-[18rem] lg:auto-rows-[24rem] grid-cols-3 gap-5 lg:gap-8", className)} {...props}>
       {children}
     </div>
   );
@@ -30,7 +30,7 @@ const BentoCard = ({ name, className, background, description, href, cta, ...pro
   <div
     key={name}
     className={cn(
-      "group relative col-span-3 flex flex-col justify-between overflow-hidden rounded-2xl",
+      "group relative col-span-3 flex flex-col justify-between overflow-hidden rounded-2xl lg:rounded-3xl",
       // light styles
       "bg-background",
       // dark styles

@@ -4,7 +4,7 @@ import LenisProvider from "@/lib/lenisprovider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import MainHeader from "@/components/header/mainheader";
-import MainFooter from "@/components/footer/mainfooter";
+import Footer from "@/components/footer/footer";
 import "../globals.css";
 import "lenis/dist/lenis.css";
 import GoogleAnalytics from "@/lib/googleanalytics";
@@ -40,7 +40,7 @@ export default async function RootLayout({
           <div className="relative overscroll-none">
             <MainHeader />
             <main className="scrollbar-hide break-keep">{children}</main>
-            <MainFooter />
+            <Footer />
           </div>
         </LenisProvider>
         <Analytics />
