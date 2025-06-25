@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
 import { useProjects } from "@/hooks/fetch/project";
+import { useScrollLock } from "@/hooks/use-scroll-lock";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -119,8 +120,8 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const router = useRouter();
   const project = useProjects({ size: 1 });
 
-  const isClosingRef = useRef(false);
-  const lastProcessedUrlRef = useRef<string>("");
+  // 초기화 완료 여부를 추적
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // URL에서 project_id를 추출하는 헬퍼 함수
   const getProjectIdFromUrl = useCallback((pathname: string): string | null => {
@@ -142,97 +143,114 @@ export default function ProjectMainSection({ session, project_id }: { session: S
     }
   }, []);
 
-  // 프로젝트 선택 핸들러
+  // 네이티브 네비게이션을 사용한 URL 변경 함수
+  const navigateToProject = useCallback(
+    (projectName: string) => {
+      const segments = pathname.split("/");
+      let newPath;
+
+      if (segments[segments.length - 1] === "project") {
+        newPath = `${pathname}/${projectName}`;
+      } else if (segments[segments.length - 2] === "project") {
+        segments[segments.length - 1] = projectName;
+        newPath = segments.join("/");
+      } else {
+        newPath = `/service/project/${projectName}`;
+      }
+
+      // window.location.href를 사용하여 네이티브 네비게이션 수행
+      // 이렇게 하면 스크롤 위치가 유지되고 히스토리가 생성됩니다
+      window.history.pushState(null, "", newPath);
+    },
+    [pathname]
+  );
+
+  const navigateToProjectList = useCallback(() => {
+    const segments = pathname.split("/");
+    const newPath = segments.slice(0, -1).join("/");
+    window.history.pushState(null, "", newPath);
+  }, [pathname]);
+
+  // 프로젝트 선택 핸들러 - 네이티브 네비게이션 사용
   const handleProjectSelect = useCallback(
     (project: ERPNextProject | null) => {
       if (!project) {
         setSelectedProject(null);
         setOpenSheet(false);
-        isClosingRef.current = false;
         return;
       }
 
-      isClosingRef.current = false;
       setSelectedProject(project);
       setOpenSheet(true);
 
-      // URL 업데이트
+      // URL 업데이트 - 네이티브 네비게이션 사용
       const currentProjectId = getProjectIdFromUrl(pathname);
       if (currentProjectId !== project.project_name) {
-        const segments = pathname.split("/");
-        let newPath;
-
-        if (segments[segments.length - 1] === "project") {
-          newPath = `${pathname}/${project.project_name}`;
-        } else if (segments[segments.length - 2] === "project") {
-          segments[segments.length - 1] = project.project_name;
-          newPath = segments.join("/");
-        } else {
-          newPath = `/service/project/${project.project_name}`;
-        }
-
-        lastProcessedUrlRef.current = newPath;
-        router.replace(newPath);
+        navigateToProject(project.project_name);
       }
     },
-    [pathname, router, getProjectIdFromUrl]
+    [pathname, getProjectIdFromUrl, navigateToProject]
   );
 
-  // 시트 열기/닫기 핸들러
+  // 시트 열기/닫기 핸들러 - 네이티브 네비게이션 사용
   const handleSheetOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        isClosingRef.current = true;
-
         setOpenSheet(false);
         setSelectedProject(null);
 
         const projectIdFromUrl = getProjectIdFromUrl(pathname);
         if (projectIdFromUrl) {
-          const segments = pathname.split("/");
-          const newPath = segments.slice(0, -1).join("/");
-          lastProcessedUrlRef.current = newPath;
-          router.replace(newPath);
+          navigateToProjectList();
         }
       }
     },
-    [pathname, router, getProjectIdFromUrl]
+    [pathname, getProjectIdFromUrl, navigateToProjectList]
   );
 
-  // 초기 로드 시 URL에서 프로젝트 복원 - 한 번만 실행되도록 수정
+  // 초기 로드 시 URL에서 프로젝트 복원 - 한 번만 실행
   useEffect(() => {
+    if (isInitialized) return;
+
     const projectIdFromUrl = getProjectIdFromUrl(pathname);
 
-    // 닫기 중이거나 이미 처리된 URL이면 실행하지 않음
-    if (isClosingRef.current || lastProcessedUrlRef.current === pathname) {
-      return;
+    if (projectIdFromUrl) {
+      const foundProject = findProjectById(projectIdFromUrl);
+      if (foundProject) {
+        setSelectedProject(foundProject);
+        setOpenSheet(true);
+      } else {
+        // 프로젝트를 찾을 수 없으면 프로젝트 목록으로 리다이렉트
+        window.location.href = "/service/project";
+        return;
+      }
     }
 
-    // URL에 프로젝트 ID가 없으면 실행하지 않음
-    if (!projectIdFromUrl) {
-      return;
-    }
+    setIsInitialized(true);
+  }, [pathname, getProjectIdFromUrl, findProjectById, isInitialized]);
 
-    // 이미 선택된 프로젝트가 URL의 프로젝트와 같으면 실행하지 않음
-    if (selectedProject?.project_name === projectIdFromUrl && openSheet) {
-      lastProcessedUrlRef.current = pathname;
-      return;
-    }
+  // 브라우저 뒤로가기/앞으로가기 처리
+  useEffect(() => {
+    if (!isInitialized) return;
 
-    // 이미 시트가 열려있으면 실행하지 않음 (중복 방지)
-    if (openSheet && selectedProject) {
-      return;
-    }
+    const handlePopState = () => {
+      const projectIdFromUrl = getProjectIdFromUrl(window.location.pathname);
 
-    const foundProject = findProjectById(projectIdFromUrl);
-    if (foundProject) {
-      setSelectedProject(foundProject);
-      setOpenSheet(true);
-      lastProcessedUrlRef.current = pathname;
-    } else {
-      router.replace("/service/project");
-    }
-  }, [pathname, selectedProject, openSheet, findProjectById, getProjectIdFromUrl, router]);
+      if (projectIdFromUrl) {
+        const foundProject = findProjectById(projectIdFromUrl);
+        if (foundProject) {
+          setSelectedProject(foundProject);
+          setOpenSheet(true);
+        }
+      } else {
+        setSelectedProject(null);
+        setOpenSheet(false);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [isInitialized, getProjectIdFromUrl, findProjectById]);
 
   useEffect(() => {
     if (
