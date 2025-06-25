@@ -18,12 +18,11 @@ import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Plus, Info } from "lucide-react";
 import { ProjectsPaginatedResponse, ERPNextProject, erpNextProjectSchema } from "@/@types/service/project";
+import { useProjects } from "@/hooks/fetch/project";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
-import { useProjects } from "@/hooks/fetch/project";
-import { useScrollLock } from "@/hooks/use-scroll-lock";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
