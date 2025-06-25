@@ -331,12 +331,20 @@ export function GanttChart({
             </Button>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm" className="font-semibold" onClick={() => setDeepSearch((prev) => !prev)}>
+            <Button variant="secondary" size="sm" className="font-semibold hidden md:flex" onClick={() => setDeepSearch((prev) => !prev)}>
               {deepSearch ? "상세검색 끄기" : "상세검색 켜기"}
             </Button>
 
-            <Button variant="secondary" size="sm" className="font-semibold" onClick={() => setTaskExpanded((prev) => !prev)}>
+            <Button variant="secondary" size="sm" className="font-semibold md:hidden" onClick={() => setDeepSearch((prev) => !prev)}>
+              {deepSearch ? "상세검색" : "일반검색"}
+            </Button>
+
+            <Button variant="secondary" size="sm" className="font-semibold hidden md:flex" onClick={() => setTaskExpanded((prev) => !prev)}>
               {taskExpended ? "접기" : "펼치기"}
+            </Button>
+
+            <Button variant="secondary" size="sm" className="font-semibold md:hidden" onClick={() => setTaskExpanded((prev) => !prev)}>
+              {taskExpended ? <ChevronDown /> : <ChevronRight />}
             </Button>
           </div>
         </div>
@@ -404,22 +412,24 @@ export function GanttChart({
                 </DialogContent>
               </Dialog>
 
-              <div className="relative w-full max-w-96 h-fit rounded-full bg-muted">
+              <div className="relative w-full h-8 max-w-96 rounded-sm bg-muted">
                 <SearchIcon className="absolute top-1/2 -translate-y-1/2 left-2.5 size-4 text-muted-foreground" />
                 <Input
                   placeholder="검색어를 입력하세요"
-                  className="ml-4 h-8 px-4 border-0 shadow-none focus-visible:ring-0 font-medium"
+                  className="ml-4 h-full px-4 border-0 shadow-none focus-visible:ring-0 font-medium"
                   onChange={(e) => setKeywordText(e.target.value)}
                 />
               </div>
             </div>
             <div className="flex items-center md:justify-end gap-2">
               <Button variant="secondary" size="sm" onClick={() => setDeepSearch((prev) => !prev)}>
-                {deepSearch ? "상세검색" : "접기"}
+                <span className="text-muted-foreground font-semibold">시작일</span>
+                {dateRange.start.format("YYYY-MM-DD")}
               </Button>
 
               <Button variant="secondary" size="sm" onClick={() => setTaskExpanded((prev) => !prev)}>
-                {taskExpended ? "접기" : "펼치기"}
+                <span className="text-muted-foreground font-semibold">종료일</span>
+                {dateRange.end.format("YYYY-MM-DD")}
               </Button>
             </div>
           </div>
