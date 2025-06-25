@@ -2,6 +2,8 @@ import { cn } from "@/lib/utils";
 import { BentoCard, BentoGrid } from "@/components/magicui/bento-grid";
 import { Marquee } from "@/components/magicui/marquee";
 import Image from "next/image";
+import { BadgeCheckIcon, ZapIcon } from "lucide-react";
+import BreathingSparkles from "@/components/resource/breathingsparkles";
 
 const date = new Date();
 date.setDate(2);
@@ -30,13 +32,18 @@ const files = [
 ];
 const features = [
   {
-    name: "간편한 프로젝트 관리",
-    description: "SaaS 관리 시스템으로 프로젝트 상태를 쉽게 관리해보세요.",
+    name: "높은 수준의 결과물을\n합리적인 가격에",
+    description: (
+      <div className="flex items-center space-x-2">
+        <BadgeCheckIcon className="size-5 text-emerald-500" strokeWidth={3} />
+        <div>다양한 개발 영역</div>
+      </div>
+    ),
     href: "#",
     cta: "더 알아보기",
-    className: "col-span-3 lg:col-span-1 ![box-shadow:0_12px_24px_rgba(0,0,0,.0)] bg-muted transition-colors duration-300 ease-in-out",
+    className: "col-span-3 md:col-span-1 ![box-shadow:0_12px_24px_rgba(0,0,0,.0)] bg-emerald-50 transition-colors duration-300 ease-in-out",
     background: (
-      <Marquee pauseOnHover className="absolute top-10 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)] ">
+      <Marquee pauseOnHover className="absolute -bottom-24 md:-bottom-12 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]">
         {files.map((f, idx) => (
           <figure
             key={idx}
@@ -44,7 +51,7 @@ const features = [
               "relative w-32 cursor-pointer overflow-hidden rounded-xl border p-4",
               "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
               "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]",
-              "transform-gpu blur-[1px] transition-all duration-300 ease-out hover:blur-none"
+              "transform-gpu blur-[0.5px] transition-all duration-300 ease-out hover:blur-none bg-white z-20"
             )}
           >
             <div className="flex flex-row items-center gap-2">
@@ -59,33 +66,43 @@ const features = [
     ),
   },
   {
-    name: "AI 예상 견적 확인하기",
-    description: "6000개 이상의 외주 데이터를 학습한 AI를 사용하여 3분만에 AI 견적서를 받아보세요.",
+    name: "SaaS 관리 시스템으로 체계적인 프로젝트 관리",
+    description: (
+      <div className="flex items-center space-x-2">
+        <ZapIcon className="size-5 text-blue-500" strokeWidth={3} fill="currentColor" />
+        <div>간편한 프로젝트 관리</div>
+      </div>
+    ),
     href: "#",
     cta: "더 알아보기",
-    className: "col-span-3 lg:col-span-2 bg-muted transition-colors duration-300 ease-in-out",
+    className: "col-span-3 md:col-span-2 bg-gradient-to-b to-cyan-400/10 via-cyan-500/10 from-blue-400/10 transition-colors duration-300 ease-in-out",
     background: (
-      <div className="absolute top-0 w-full h-full transition-all duration-300 ease-out group-hover:scale-110">
-        <Image src="/bento2.png" alt="Image" className="rounded-md object-cover object-[20%_30%]" fill priority />
+      <div className="absolute top-10 md:top-0 w-full h-full transition-all duration-300 ease-out group-hover:scale-110 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
+        <Image src="/bento3.png" alt="Image" className="rounded-md object-cover object-[40%_30%] md:object-[10%_20%]" fill priority />
       </div>
     ),
   },
   {
-    name: "통합 관리",
-    description: "다양한 외부 시스템과 연동하여 모든 작업을 하나의 플랫폼에서 관리하세요.",
+    name: `6000개 이상의 데이터를 학습한 AI로\n3분만에 AI 견적서 작성`,
+    description: (
+      <div className="flex items-center space-x-2">
+        <BreathingSparkles />
+        <div>AI 예상 견적 확인하기</div>
+      </div>
+    ),
     href: "#",
     cta: "더 알아보기",
-    className: "col-span-3 lg:col-span-2 bg-muted transition-colors duration-300 ease-in-out",
+    className: "col-span-3 md:col-span-2 bg-amber-400/10 transition-colors duration-300 ease-in-out",
     background: (
-      <div className="absolute right-10 top-10 origin-top-right rounded-md border transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)] group-hover:scale-110">
-        <Image src="/funnel.png" alt="Image" className="rounded-md object-cover" width={800} height={800} priority />
+      <div className="absolute top-10 md:top-0 w-full h-full transition-all duration-300 ease-out group-hover:scale-110 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
+        <Image src="/bento2.png" alt="Image" className="rounded-md object-cover object-[10%_30%] md:object-[10%_20%]" fill priority />
       </div>
     ),
   },
   {
     name: "프로젝트 일정 관리",
     description: "캘린더를 이용해 프로젝트 일정을 손쉽게 관리하고 필요한 파일을 날짜별로 필터링하세요.",
-    className: "col-span-3 lg:col-span-1 bg-muted transition-colors duration-300 ease-in-out",
+    className: "col-span-3 md:col-span-1 bg-muted transition-colors duration-300 ease-in-out",
     href: "#",
     cta: "더 알아보기",
     background: (
