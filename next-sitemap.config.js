@@ -4,14 +4,14 @@ module.exports = {
   sitemapSize: 7000,
   changefreq: "daily",
   priority: 1,
-  exclude: ["/redirect/**", "/api/**"],
+  exclude: ["/api/**"],
   robotsTxtOptions: {
     policies: [
       {
         crawlDelay: 10,
         userAgent: "*",
         allow: "/",
-        disallow: ["/api", "/redirect"],
+        disallow: ["/api"],
       },
       {
         userAgent: "AhrefsBot",

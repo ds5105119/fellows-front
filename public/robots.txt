@@ -2,7 +2,6 @@
 User-agent: *
 Allow: /
 Disallow: /api
-Disallow: /redirect
 Crawl-delay: 10
 
 # AhrefsBot
