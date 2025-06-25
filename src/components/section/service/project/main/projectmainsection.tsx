@@ -119,6 +119,9 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const router = useRouter();
   const project = useProjects({ size: 1 });
 
+  const isClosingRef = useRef(false);
+  const lastProcessedUrlRef = useRef<string>("");
+
   // URL에서 project_id를 추출하는 헬퍼 함수
   const getProjectIdFromUrl = useCallback((pathname: string): string | null => {
     const segments = pathname.split("/");
@@ -143,14 +146,13 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const handleProjectSelect = useCallback(
     (project: ERPNextProject | null) => {
       if (!project) {
-        console.log("Project deselected");
         setSelectedProject(null);
         setOpenSheet(false);
+        isClosingRef.current = false;
         return;
       }
 
-      console.log("Project selected:", project.project_name);
-
+      isClosingRef.current = false;
       setSelectedProject(project);
       setOpenSheet(true);
 
@@ -169,45 +171,69 @@ export default function ProjectMainSection({ session, project_id }: { session: S
           newPath = `/service/project/${project.project_name}`;
         }
 
+        lastProcessedUrlRef.current = newPath;
         router.replace(newPath);
       }
     },
     [pathname, router, getProjectIdFromUrl]
   );
 
-  // 시트 닫기 핸들러
-  const handleSheetClose = useCallback(() => {
-    console.log("Sheet closing");
+  // 시트 열기/닫기 핸들러
+  const handleSheetOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        isClosingRef.current = true;
 
-    setOpenSheet(false);
-    setSelectedProject(null);
+        setOpenSheet(false);
+        setSelectedProject(null);
 
-    // URL에서 프로젝트 ID 제거
-    const projectIdFromUrl = getProjectIdFromUrl(pathname);
-    if (projectIdFromUrl) {
-      const segments = pathname.split("/");
-      const newPath = segments.slice(0, -1).join("/");
-      router.replace(newPath);
-    }
-  }, [pathname, router, getProjectIdFromUrl]);
+        const projectIdFromUrl = getProjectIdFromUrl(pathname);
+        if (projectIdFromUrl) {
+          const segments = pathname.split("/");
+          const newPath = segments.slice(0, -1).join("/");
+          lastProcessedUrlRef.current = newPath;
+          router.replace(newPath);
+        }
+      }
+    },
+    [pathname, router, getProjectIdFromUrl]
+  );
 
-  // 초기 로드 시 URL에서 프로젝트 복원
+  // 초기 로드 시 URL에서 프로젝트 복원 - 한 번만 실행되도록 수정
   useEffect(() => {
     const projectIdFromUrl = getProjectIdFromUrl(pathname);
 
-    if (projectIdFromUrl && !selectedProject) {
-      console.log("Restoring project from URL:", projectIdFromUrl);
-
-      const foundProject = findProjectById(projectIdFromUrl);
-      if (foundProject) {
-        setSelectedProject(foundProject);
-        setOpenSheet(true);
-      } else {
-        // 프로젝트를 찾을 수 없으면 목록 페이지로 리다이렉트
-        router.replace("/service/project");
-      }
+    // 닫기 중이거나 이미 처리된 URL이면 실행하지 않음
+    if (isClosingRef.current || lastProcessedUrlRef.current === pathname) {
+      return;
     }
-  }, [pathname, selectedProject, findProjectById, getProjectIdFromUrl, router]);
+
+    // URL에 프로젝트 ID가 없으면 실행하지 않음
+    if (!projectIdFromUrl) {
+      return;
+    }
+
+    // 이미 선택된 프로젝트가 URL의 프로젝트와 같으면 실행하지 않음
+    if (selectedProject?.project_name === projectIdFromUrl && openSheet) {
+      lastProcessedUrlRef.current = pathname;
+      return;
+    }
+
+    // 이미 시트가 열려있으면 실행하지 않음 (중복 방지)
+    if (openSheet && selectedProject) {
+      return;
+    }
+
+    const foundProject = findProjectById(projectIdFromUrl);
+    if (foundProject) {
+      setSelectedProject(foundProject);
+      setOpenSheet(true);
+      lastProcessedUrlRef.current = pathname;
+    } else {
+      // 프로젝트를 찾을 수 없으면 목록 페이지로 리다이렉트
+      router.replace("/service/project");
+    }
+  }, [pathname, selectedProject, openSheet, findProjectById, getProjectIdFromUrl, router]);
 
   useEffect(() => {
     if (
@@ -322,12 +348,12 @@ export default function ProjectMainSection({ session, project_id }: { session: S
       </div>
 
       {/* 프로젝트 선택 시 팝업 */}
-      <Sheet open={openSheet} onOpenChange={handleSheetClose}>
+      <Sheet open={openSheet} onOpenChange={handleSheetOpenChange}>
         <SheetContent className="w-full sm:max-w-full md:w-3/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0">
           <SheetHeader className="sr-only">
             <SheetTitle>{selectedProject?.custom_project_title ?? "프로젝트가 선택되지 않았습니다."}</SheetTitle>
           </SheetHeader>
-          <ProjectDetailSheet project={selectedProject} onClose={handleSheetClose} session={session} />
+          <ProjectDetailSheet project={selectedProject} onClose={() => handleSheetOpenChange(false)} session={session} />
           <SheetDescription className="sr-only" />
         </SheetContent>
       </Sheet>
