@@ -30,7 +30,7 @@ const BentoCard = ({ name, className, background, description, href, cta, ...pro
   <div
     key={name}
     className={cn(
-      "group relative col-span-3 flex flex-col justify-between overflow-hidden rounded-2xl lg:rounded-3xl hover:drop-shadow-2xl drop-shadow-black/10",
+      "group relative col-span-3 flex flex-col justify-between overflow-hidden rounded-2xl lg:rounded-3xl hover:drop-shadow-2xl drop-shadow-black/10 transition-shadow transform-gpu duration-300",
       // light styles
       "bg-background",
       // dark styles
