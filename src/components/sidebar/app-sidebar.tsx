@@ -11,7 +11,7 @@ export async function AppSidebar() {
   const session = await auth();
 
   return (
-    <Sidebar collapsible="icon" variant="sidebar" className="z-50 drop-shadow-xl">
+    <Sidebar collapsible="icon" variant="sidebar" className="z-50 drop-shadow-xl drop-shadow-white/30 md:drop-shadow-blue-950/10 border-none">
       <SidebarHeader className="px-6 md:px-0 md:pt-3">
         <SidebarMenu className="space-y-2">
           <SidebarMenuItem className="md:px-3">
