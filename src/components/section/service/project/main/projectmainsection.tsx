@@ -119,9 +119,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const pathname = usePathname();
   const router = useRouter();
   const project = useProjects({ size: 1 });
-
-  // 초기화 완료 여부를 추적
-  const [isInitialized, setIsInitialized] = useState(false);
+  const isInitialized = useRef(false);
 
   // URL에서 project_id를 추출하는 헬퍼 함수
   const getProjectIdFromUrl = useCallback((pathname: string): string | null => {
@@ -210,7 +208,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
 
   // 초기 로드 시 URL에서 프로젝트 복원 - 한 번만 실행
   useEffect(() => {
-    if (isInitialized) return;
+    if (isInitialized.current) return;
 
     const projectIdFromUrl = getProjectIdFromUrl(pathname);
 
@@ -226,12 +224,12 @@ export default function ProjectMainSection({ session, project_id }: { session: S
       }
     }
 
-    setIsInitialized(true);
+    isInitialized.current = true;
   }, [pathname, getProjectIdFromUrl, findProjectById, isInitialized]);
 
   // 브라우저 뒤로가기/앞으로가기 처리
   useEffect(() => {
-    if (!isInitialized) return;
+    if (!isInitialized.current) return;
 
     const handlePopState = () => {
       const projectIdFromUrl = getProjectIdFromUrl(window.location.pathname);
