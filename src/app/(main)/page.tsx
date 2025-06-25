@@ -7,20 +7,20 @@ import MainQnaSection from "@/components/section/main/mainqnasection";
 
 export default async function Home() {
   return (
-    <div className="grid grid-cols-4 lg:grid-cols-12 px-3 lg:px-24 pt-24 md:pt-40 mb-3 md:mb-24">
-      <BlurFade className="col-span-full">
+    <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
+      <BlurFade className="col-span-full px-4 lg:px-24 py-24 md:pt-40">
         <MainSection1 />
       </BlurFade>
-      <BlurFade className="col-span-full mt-14 lg:mt-36">
+      <BlurFade className="col-span-full px-4 lg:px-24 py-14 lg:py-24 bg-muted">
         <MainSection2 />
       </BlurFade>
-      <BlurFade className="col-span-full mt-14 lg:mt-36">
+      <BlurFade className="col-span-full px-4 lg:px-24 mt-14 lg:mt-36">
         <MainSection3 />
       </BlurFade>
-      <BlurFade className="col-span-full mt-14 lg:mt-36">
+      <BlurFade className="col-span-full px-4 lg:px-24 mt-14 lg:mt-36">
         <MainQnaSection />
       </BlurFade>
-      <BlurFade className="col-span-full mt-14 lg:mt-36">
+      <BlurFade className="col-span-full px-4 lg:px-24 mt-14 lg:mt-36">
         <MainSection4 />
       </BlurFade>
     </div>

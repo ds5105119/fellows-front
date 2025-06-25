@@ -34,7 +34,7 @@ const features = [
     description: "SaaS 관리 시스템으로 프로젝트 상태를 쉽게 관리해보세요.",
     href: "#",
     cta: "더 알아보기",
-    className: "col-span-3 lg:col-span-1 ![box-shadow:0_12px_24px_rgba(0,0,0,.0)] bg-zinc-100 hover:bg-blue-100 transition-colors duration-300 ease-in-out",
+    className: "col-span-3 lg:col-span-1 ![box-shadow:0_12px_24px_rgba(0,0,0,.0)] bg-white hover:bg-blue-100 transition-colors duration-300 ease-in-out",
     background: (
       <Marquee pauseOnHover className="absolute top-10 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)] ">
         {files.map((f, idx) => (
@@ -63,7 +63,7 @@ const features = [
     description: "6000개 이상의 외주 데이터를 학습한 AI를 사용하여 3분만에 AI 견적서를 받아보세요.",
     href: "#",
     cta: "더 알아보기",
-    className: "col-span-3 lg:col-span-2 bg-zinc-100 hover:bg-blue-100 transition-colors duration-300 ease-in-out",
+    className: "col-span-3 lg:col-span-2 bg-white hover:bg-blue-100 transition-colors duration-300 ease-in-out",
     background: (
       <div className="absolute top-0 w-full h-full transition-all duration-300 ease-out group-hover:scale-110">
         <Image src="/bento2.png" alt="Image" className="rounded-md object-cover object-[20%_30%]" fill priority />
@@ -75,7 +75,7 @@ const features = [
     description: "다양한 외부 시스템과 연동하여 모든 작업을 하나의 플랫폼에서 관리하세요.",
     href: "#",
     cta: "더 알아보기",
-    className: "col-span-3 lg:col-span-2 bg-zinc-100 hover:bg-blue-100 transition-colors duration-300 ease-in-out",
+    className: "col-span-3 lg:col-span-2 bg-white hover:bg-blue-100 transition-colors duration-300 ease-in-out",
     background: (
       <div className="absolute right-10 top-10 origin-top-right rounded-md border transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)] group-hover:scale-110">
         <Image src="/funnel.png" alt="Image" className="rounded-md object-cover" width={800} height={800} priority />
@@ -85,7 +85,7 @@ const features = [
   {
     name: "프로젝트 일정 관리",
     description: "캘린더를 이용해 프로젝트 일정을 손쉽게 관리하고 필요한 파일을 날짜별로 필터링하세요.",
-    className: "col-span-3 lg:col-span-1 bg-zinc-100 hover:bg-blue-100 transition-colors duration-300 ease-in-out",
+    className: "col-span-3 lg:col-span-1 bg-white hover:bg-blue-100 transition-colors duration-300 ease-in-out",
     href: "#",
     cta: "더 알아보기",
     background: (
