@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { BentoCard, BentoGrid } from "@/components/magicui/bento-grid";
 import { Marquee } from "@/components/magicui/marquee";
 import Image from "next/image";
-import { BadgeCheckIcon, ZapIcon } from "lucide-react";
+import { BadgeCheckIcon, ChevronRight, CopyPlus, ZapIcon } from "lucide-react";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 
 const date = new Date();
@@ -37,6 +37,7 @@ const features = [
       <div className="flex items-center space-x-2">
         <BadgeCheckIcon className="size-5 text-emerald-500" strokeWidth={3} />
         <div>다양한 개발 영역</div>
+        <ChevronRight className="size-5 text-gray-700 md:hidden" />
       </div>
     ),
     href: "#",
@@ -71,6 +72,7 @@ const features = [
       <div className="flex items-center space-x-2">
         <ZapIcon className="size-5 text-blue-500" strokeWidth={3} fill="currentColor" />
         <div>간편한 프로젝트 관리</div>
+        <ChevronRight className="size-5 text-gray-700 md:hidden" />
       </div>
     ),
     href: "#",
@@ -88,6 +90,7 @@ const features = [
       <div className="flex items-center space-x-2">
         <BreathingSparkles />
         <div>AI 예상 견적 확인하기</div>
+        <ChevronRight className="size-5 text-gray-700 md:hidden" />
       </div>
     ),
     href: "#",
@@ -95,18 +98,24 @@ const features = [
     className: "col-span-3 md:col-span-2 bg-amber-400/10 transition-colors duration-300 ease-in-out",
     background: (
       <div className="absolute top-10 md:top-0 w-full h-full transition-all duration-300 ease-out group-hover:scale-110 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
-        <Image src="/bento2.png" alt="Image" className="rounded-md object-cover object-[10%_30%] md:object-[10%_20%]" fill priority />
+        <Image src="/bento2.png" alt="Image" className="rounded-md object-cover object-[80%_30%] md:object-[10%_20%]" fill priority />
       </div>
     ),
   },
   {
-    name: "프로젝트 일정 관리",
-    description: "캘린더를 이용해 프로젝트 일정을 손쉽게 관리하고 필요한 파일을 날짜별로 필터링하세요.",
+    name: "지원사업 탐색부터\n팀원 관리까지 한눈에",
+    description: (
+      <div className="flex items-center space-x-2">
+        <CopyPlus className="size-5 text-orange-500" strokeWidth={3} />
+        <div>필수 부가 기능</div>
+        <ChevronRight className="size-5 text-gray-700 md:hidden" />
+      </div>
+    ),
     className: "col-span-3 md:col-span-1 bg-muted transition-colors duration-300 ease-in-out",
     href: "#",
     cta: "더 알아보기",
     background: (
-      <div className="absolute right-10 top-10 origin-top-right rounded-md border transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)] group-hover:scale-110">
+      <div className="absolute -right-48 md:-right-30 -bottom-20 md:-bottom-5 origin-top-right rounded-md border transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)] group-hover:scale-110">
         <Image src="/funnel.png" alt="Image" className="rounded-md object-cover" width={500} height={500} priority />
       </div>
     ),

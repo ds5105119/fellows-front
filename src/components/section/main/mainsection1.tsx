@@ -105,8 +105,9 @@ export default async function MainSection1() {
                 </h1>
 
                 <h4 className="scroll-m-20 text-sm font-semibold leading-tight text-muted ml-1 mt-2">
-                  홈페이지 제작부터 관리까지
-                  <br /> 최대 40% 더 적은 비용으로 주목받는 페이지를 만들어보세요.<span className="text-[#e64646] font-black">*</span>
+                  제작부터 관리까지 최대 40% 더 적은 비용으로
+                  <br />
+                  주목받는 페이지를 만들어보세요.<span className="text-[#e64646] font-black">*</span>
                 </h4>
               </div>
             </div>
