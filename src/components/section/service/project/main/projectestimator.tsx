@@ -24,11 +24,10 @@ export default function ProjectEstimator({ project }: Props) {
   }, [project.custom_ai_estimate, startEstimate]);
 
   useEffect(() => {
-    if (!project.custom_ai_estimate && markdown && !isLoading) {
+    if (markdown && !isLoading) {
       mutate(`/api/service/project/${project.project_name}`);
-      mutate(`/api/service/project/${project.project_name}/`);
     }
-  }, [markdown, isLoading, project.custom_ai_estimate]);
+  }, [markdown, isLoading]);
 
   return (
     <div className="w-full max-w-full flex flex-col space-y-5 pb-6">
