@@ -11,7 +11,7 @@ export default async function Home() {
       <BlurFade className="col-span-full px-4 lg:px-24 py-24 md:pt-40">
         <MainSection1 />
       </BlurFade>
-      <BlurFade className="col-span-full px-4 lg:px-24 py-14 lg:py-24 bg-muted">
+      <BlurFade className="col-span-full px-4 lg:px-24 py-14 lg:py-24">
         <MainSection2 />
       </BlurFade>
       <BlurFade className="col-span-full px-4 lg:px-24 mt-14 lg:mt-36">
