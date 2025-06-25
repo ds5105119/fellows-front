@@ -15,9 +15,10 @@ interface DatePickerProps {
   value?: Date;
   onSelect: (date: Date | undefined) => void;
   className?: string;
+  text?: string;
 }
 
-export default function DatePicker({ value, onSelect, className }: DatePickerProps) {
+export default function DatePicker({ value, text, onSelect, className }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -67,22 +68,23 @@ export default function DatePicker({ value, onSelect, className }: DatePickerPro
   if (isMobile) {
     return (
       <div className={cn("relative flex", className)}>
-        {/* input을 위에 올려 실제 클릭이 닿게 */}
+        {/* label로 버튼 전체를 감싸기 */}
+        <label htmlFor="date" className="absolute inset-0 z-10 cursor-pointer">
+          {/* 완전히 투명한 input이 아니라, label이 클릭을 input에 전달함 */}
+        </label>
+
         <input
           id="date"
           type="date"
           value={formatDateForInput(value)}
           onChange={handleNativeChange}
-          className="absolute inset-0 opacity-0 z-10 cursor-pointer"
+          className="absolute opacity-0" // 접근성 지키면서 완전히 숨김
         />
 
-        {/* label로 감싸기 (브라우저 허용 클릭) */}
-        <label htmlFor="date" className="w-full">
-          <Button variant="secondary" size="sm" className="shadow-none w-full pointer-events-none">
-            <span className="text-sm text-muted-foreground font-semibold">시작일</span>
-            <span className="text-sm text-foreground font-medium">{formatDateForInput(value)}</span>
-          </Button>
-        </label>
+        <Button variant="secondary" size="sm" className="shadow-none w-full pointer-events-none">
+          {text && <span className="text-sm text-muted-foreground font-semibold">{text}</span>}
+          <span className="text-sm text-foreground font-medium">{formatDateForInput(value)}</span>
+        </Button>
       </div>
     );
   }
@@ -92,7 +94,7 @@ export default function DatePicker({ value, onSelect, className }: DatePickerPro
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button id="date" variant="secondary" size="sm">
-            <span className="text-muted-foreground font-semibold">시작일</span>
+            {text && <span className="text-sm text-muted-foreground font-semibold">{text}</span>}
             {value instanceof Date && !isNaN(value.getTime()) ? (
               <div className={cn("text-sm text-foreground font-medium")}>{format(value, "yyyy. MM. dd.")}</div>
             ) : (
@@ -115,7 +117,7 @@ export default function DatePicker({ value, onSelect, className }: DatePickerPro
               saturday: "text-blue-500",
               sunday: "text-red-500",
               today: "text-green-500",
-              selected: "bg-primary hover:bg-primary/90 focus:bg-primary/90 border-0 rounded-md",
+              selected: "text-white bg-primary hover:bg-primary/90 focus:bg-primary/90 border-0 rounded-md",
             }}
             classNames={{
               ...classNames,

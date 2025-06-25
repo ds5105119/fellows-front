@@ -423,16 +423,8 @@ export function GanttChart({
               </div>
             </div>
             <div className="flex items-center md:justify-end gap-2">
-              <DatePicker value={dateRange.start.toDate()} onSelect={(date) => date && calculateDateRange(dayjs(date), dateRange.end)} />
-              <Button variant="secondary" size="sm" onClick={() => setDeepSearch((prev) => !prev)}>
-                <span className="text-muted-foreground font-semibold">시작일</span>
-                {dateRange.start.format("YYYY-MM-DD")}
-              </Button>
-
-              <Button variant="secondary" size="sm" onClick={() => setTaskExpanded((prev) => !prev)}>
-                <span className="text-muted-foreground font-semibold">종료일</span>
-                {dateRange.end.format("YYYY-MM-DD")}
-              </Button>
+              <DatePicker value={dateRange.start.toDate()} onSelect={(date) => date && calculateDateRange(dayjs(date), dateRange.end)} text="시작일" />
+              <DatePicker value={dateRange.end.toDate()} onSelect={(date) => date && calculateDateRange(dateRange.start, dayjs(date))} text="종료일" />
             </div>
           </div>
         )}
