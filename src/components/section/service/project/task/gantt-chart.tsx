@@ -24,6 +24,7 @@ import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
 import { statusConfig } from "@/components/resource/project";
 import { Input } from "@/components/ui/input";
 import DatePicker from "./datepicker";
+import DynamicFcIcon from "@/components/resource/dynamicfcicon";
 
 export type TimeUnit = "day" | "week" | "month";
 
@@ -482,6 +483,17 @@ export function GanttChart({
             </div>
           )}
 
+          {/* There is not Tasks with Filters */}
+          {hasTasks && !hasTaskIsLoading && !isLoading && tasks.length == 0 && (
+            <div className="flex justify-center items-center py-24 border-b border-b-sidebar-border">
+              <div className="w-84 md:w-[512px] flex flex-col justify-center items-center space-y-4 text-center text-sm">
+                <DynamicFcIcon name="FcQuestions" className="size-10" />
+                <div className="text-2xl font-bold">조회된 항목이 없어요</div>
+                <div>조건을 변경하여 다시 시도해주세요.</div>
+              </div>
+            </div>
+          )}
+
           {/* Tasks */}
           <div className="divide-y">
             {visibleTasks.map((task) => {
@@ -552,7 +564,7 @@ export function GanttChart({
                                 className="h-full"
                                 style={{
                                   backgroundColor: task.color || "#007AFF",
-                                  opacity: 0.5,
+                                  opacity: 0.4,
                                 }}
                               />
                               {/* 진행 바 (완료된 부분 - 원래 색상) */}
