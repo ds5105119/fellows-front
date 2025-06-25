@@ -372,8 +372,8 @@ export function GanttChart({
                     <DialogDescription className="sr-only" />
                   </DialogHeader>
                   <div className="w-full h-full flex flex-col">
-                    <div className="sticky top-0 w-full px-5 py-3 border-b border-b-muted bg-white font-bold">필터 추가하기</div>
-                    <div className="w-full h-full flex flex-col p-5">
+                    <div className="sticky top-0 w-full px-6 py-3.5 border-b border-b-muted bg-white font-bold">필터 추가하기</div>
+                    <div className="w-full h-full flex flex-col p-6">
                       <div className="w-full flex flex-col space-y-3">
                         <div className="w-full flex items-center space-x-3">
                           <p className="text-sm font-bold">상태</p>
