@@ -46,31 +46,33 @@ export function ProjectOverviewChart() {
     { browser: "시작 전", visitors: overviewProjects.data?.items?.filter((i) => i.custom_project_status === "draft").length, fill: "var(--color-edge)" },
   ];
 
-  const totalProjet = overviewProjects.data?.items?.length ?? 0;
+  const totalProject = overviewProjects.data?.items?.length ?? 0;
 
   return (
-    <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
-      <PieChart>
-        <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-        <Pie data={chartData} dataKey="visitors" nameKey="browser" innerRadius={50}>
-          <Label
-            content={({ viewBox }) => {
-              if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                return (
-                  <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
-                    <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-3xl font-bold">
-                      {totalProjet.toLocaleString()}
-                    </tspan>
-                    <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground">
-                      프로젝트
-                    </tspan>
-                  </text>
-                );
-              }
-            }}
-          />
-        </Pie>
-      </PieChart>
-    </ChartContainer>
+    <div className="w-[250px] h-[250px] mx-auto">
+      <ChartContainer config={chartConfig} className="w-full h-full">
+        <PieChart width={250} height={250}>
+          <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+          <Pie data={chartData} dataKey="visitors" nameKey="browser" innerRadius={60} outerRadius={100} cx="50%" cy="50%">
+            <Label
+              content={({ viewBox }) => {
+                if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                  return (
+                    <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+                      <tspan x={viewBox.cx} y={viewBox.cy} className="fill-foreground text-3xl font-bold">
+                        {totalProject.toLocaleString()}
+                      </tspan>
+                      <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground">
+                        프로젝트
+                      </tspan>
+                    </text>
+                  );
+                }
+              }}
+            />
+          </Pie>
+        </PieChart>
+      </ChartContainer>
+    </div>
   );
 }
