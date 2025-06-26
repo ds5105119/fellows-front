@@ -10,7 +10,8 @@ import { ArrowUpRight, CheckIcon } from "lucide-react";
 import { Session } from "next-auth";
 import { projectsPaginatedResponseSchema, UserERPNextProject } from "@/@types/service/project";
 import { ConfettiButton } from "@/components/magicui/confetti";
-import { ProjectOverviewChart } from "@/components/section/service/dashboard/projectOverviewChart";
+import { ProjectOverviewChart } from "@/components/section/service/dashboard/projectoverviewchart";
+import { TaskOverviewChart } from "@/components/section/service/dashboard/taskoverviewchart";
 
 interface OnboardingProps {
   hasProject: boolean;
@@ -203,6 +204,10 @@ export default async function Page() {
           </div>
         </div>
       </BlurFade>
+
+      <div className="col-span-full p-8 flex flex-col gap-6 bg-white md:rounded-3xl">
+        <TaskOverviewChart />
+      </div>
 
       <div className="col-span-full p-8 md:col-span-7 md:col-start-2 flex flex-col gap-6 bg-white md:rounded-3xl">
         <div className="flex flex-col gap-2">

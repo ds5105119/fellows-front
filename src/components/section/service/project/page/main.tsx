@@ -58,8 +58,8 @@ export default function ProjectMain({
         )}
       </div>
       {tab === "개요" && <ProjectMainSection project_id={project_id} session={session} />}
-      {tab === "작업 현황" && taskView && <GanttChart project_id={project_id} expand={false} />}
-      {tab === "작업 현황" && !taskView && <GanttChart project_id={project_id} expand={false} />}
+      {tab === "작업 현황" && taskView && <GanttChart expand={false} />}
+      {tab === "작업 현황" && !taskView && <GanttChart expand={false} />}
     </div>
   );
 }
