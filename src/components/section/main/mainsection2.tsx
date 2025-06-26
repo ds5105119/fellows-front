@@ -67,11 +67,11 @@ const features = [
     ),
   },
   {
-    name: "SaaS 관리 시스템으로 체계적인 프로젝트 관리",
+    name: "SaaS로 한눈에 체계적인 프로젝트 관리 가능",
     description: (
       <div className="flex items-center space-x-2">
         <ZapIcon className="size-5 text-blue-500" strokeWidth={3} fill="currentColor" />
-        <div>간편한 프로젝트 관리</div>
+        <div>모든 기능이 무료</div>
         <ChevronRight className="size-5 text-gray-700 md:hidden" />
       </div>
     ),
