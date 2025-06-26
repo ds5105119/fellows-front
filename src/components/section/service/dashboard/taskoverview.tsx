@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import { type ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTasks } from "@/hooks/fetch/project";
 import dayjs from "@/lib/dayjs";
 import { type ERPNextTaskForUser, type ERPNextTaskStatus, erpNextTaskStatusEnum } from "@/@types/service/project";
+import { useMemo, useState } from "react";
 
 export const description = "An interactive area chart showing task status over time";
 
@@ -35,10 +35,10 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function TaskOverviewChart() {
-  const [timeRange, setTimeRange] = React.useState("7");
+  const [timeRange, setTimeRange] = useState("7");
 
   // Calculate date range based on selected time range
-  const dateRange = React.useMemo(() => {
+  const dateRange = useMemo(() => {
     const days = Number.parseInt(timeRange);
     return {
       start: dayjs().subtract(days, "day").toDate(),
@@ -89,26 +89,13 @@ export function TaskOverviewChart() {
     return result;
   }
 
-  const chartData = React.useMemo(() => {
+  const chartData = useMemo(() => {
     if (!tasks.data || !tasks.data[0]?.items) {
       // 데이터가 없어도 빈 날짜 범위 생성
       return transformTasksToStatusByDate([], timeRange);
     }
     return transformTasksToStatusByDate(tasks.data[0].items, timeRange);
   }, [tasks.data, timeRange]);
-
-  const getTimeRangeLabel = (range: string) => {
-    switch (range) {
-      case "7":
-        return "지난 일주일";
-      case "30":
-        return "지난 한달";
-      case "90":
-        return "지난 분기";
-      default:
-        return "지난 한달";
-    }
-  };
 
   return (
     <div className="w-full pt-0">
