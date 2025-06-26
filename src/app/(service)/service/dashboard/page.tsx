@@ -10,8 +10,8 @@ import { ArrowUpRight, CheckIcon } from "lucide-react";
 import { Session } from "next-auth";
 import { projectsPaginatedResponseSchema, UserERPNextProject } from "@/@types/service/project";
 import { ConfettiButton } from "@/components/magicui/confetti";
-import { ProjectOverviewChart } from "@/components/section/service/dashboard/projectoverviewchart";
-import { TaskOverviewChart } from "@/components/section/service/dashboard/taskoverviewchart";
+import { ProjectOverviewChart } from "@/components/section/service/dashboard/projectoverview";
+import { TaskOverviewChart } from "@/components/section/service/dashboard/taskoverview";
 
 interface OnboardingProps {
   hasProject: boolean;
