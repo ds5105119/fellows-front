@@ -23,7 +23,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
-import type { ERPNextProject } from "@/@types/service/project";
+import type { UserERPNextProject } from "@/@types/service/project";
 import { deleteProject } from "@/hooks/fetch/project";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
@@ -46,7 +46,7 @@ export default function ProjectContainer({
   text: string;
   border: string;
   className?: string;
-  setSelectedProject: (project: ERPNextProject | null) => void;
+  setSelectedProject: (project: UserERPNextProject | null) => void;
 }) {
   const projects = meta.data?.items || [];
   const isLoading = meta.swr.isLoading;
@@ -152,7 +152,7 @@ export default function ProjectContainer({
   };
 
   // 프로젝트 삭제 핸들러
-  const removeProject = async (project?: ERPNextProject | null) => {
+  const removeProject = async (project?: UserERPNextProject | null) => {
     if (!project) return;
 
     if (window.confirm("프로젝트를 삭제하면 모든 정보가 삭제됩니다. 계속 진행하시겠습니까?")) {
@@ -354,7 +354,7 @@ function TrashZone({ isOverTrash }: { isOverTrash: boolean }) {
 }
 
 interface ProjectItemProps extends React.HTMLAttributes<HTMLDivElement> {
-  project: ERPNextProject;
+  project: UserERPNextProject;
   idx: number;
   openMenu: string | null;
   setOpenMenu: (id: string | null) => void;
