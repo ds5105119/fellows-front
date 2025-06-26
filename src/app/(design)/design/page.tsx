@@ -4,7 +4,7 @@ import { TextReveal } from "@/components/design/text-reveal";
 export default async function Home() {
   return (
     <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
-      <BlurFade className="col-span-full pt-24 md:pt-72 pb-8 px-4">
+      <BlurFade className="col-span-full pb-8 px-4">
         <div>
           <div className="text-8xl font-bold tracking-wide leading-16 hidden">
             Fellows는 브랜드,

@@ -374,10 +374,45 @@ export function GanttChart({
                   </DialogHeader>
                   <div className="w-full h-full flex flex-col">
                     <div className="sticky top-0 w-full px-6 py-3.5 border-b border-b-muted bg-white font-bold">필터 추가하기</div>
-                    <div className="w-full h-full flex flex-col p-6">
+                    <div className="w-full h-full flex flex-col p-6 space-y-6">
                       <div className="w-full flex flex-col space-y-3">
                         <div className="w-full flex items-center space-x-3">
-                          <p className="text-sm font-bold">상태</p>
+                          <p className="text-sm font-bold">작업 상태</p>
+                          <button
+                            disabled={status == null}
+                            onClick={() => setStatus(null)}
+                            className="cursor-pointer select-none px-2 py-1 rounded-sm bg-muted text-xs font-bold flex items-center hover:bg-zinc-200 transition-colors duration-300"
+                          >
+                            <p>전체 해제</p>
+                          </button>
+                        </div>
+                        <div className="w-full grid grid-cols-3 gap-3">
+                          {erpNextTaskStatusEnum.options.map((val, idx) => {
+                            return (
+                              <div key={idx} className="flex space-x-2 text-sm font-semibold">
+                                <input
+                                  type="checkbox"
+                                  checked={status ? status.includes(val) : false}
+                                  onChange={() =>
+                                    status?.includes(val)
+                                      ? status && status.length == 1
+                                        ? setStatus(null)
+                                        : setStatus(status.filter((v) => v !== val))
+                                      : status
+                                      ? setStatus([...status, val])
+                                      : setStatus([val])
+                                  }
+                                />
+                                <p>{statusConfig[val].text}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="w-full flex flex-col space-y-3">
+                        <div className="w-full flex items-center space-x-3">
+                          <p className="text-sm font-bold">프로젝트 상태</p>
                           <button
                             disabled={status == null}
                             onClick={() => setStatus(null)}

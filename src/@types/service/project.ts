@@ -111,22 +111,55 @@ export const erpNextProjectSchema = z
   .passthrough();
 export type ERPNextProject = z.infer<typeof erpNextProjectSchema>;
 
-export const userERPNextProjectSchema = z
-  .object({
-    custom_project_title: z.string(),
-    custom_project_summary: z.string(),
-    custom_readiness_level: readinessLevelEnum,
-    expected_end_date: z.string().optional().nullable(),
-    custom_content_pages: z.number().int().optional().nullable(),
-    custom_maintenance_required: z.boolean().optional().nullable().default(false),
-    custom_project_status: customProjectStatusEnum.optional().nullable().default("draft"),
-    custom_platforms: z.array(erpNextProjectPlatformRowSchema).default([]),
-    custom_features: z.array(erpNextProjectFeatureRowSchema).optional().nullable().default([]),
-    custom_preferred_tech_stacks: z.array(erpNextProjectPreferredTechStackRowSchema).optional().nullable().default([]),
-    custom_design_urls: z.array(erpNextProjectDesignUrlRowSchema).optional().nullable().default([]),
-  })
-  .passthrough();
+export const userERPNextProjectSchema = z.object({
+  creation: z.coerce.date().optional().nullable(),
+  modified: z.coerce.date().optional().nullable(),
+
+  project_name: z.string(),
+  status: erpNextProjectStatusEnum.optional().nullable().default("Open"),
+  project_type: z.string().optional().nullable(),
+  is_active: isActiveEnum.optional().nullable(),
+  percent_complete: z.number().optional().nullable(),
+  custom_deletable: z.boolean().optional().nullable().default(true),
+
+  expected_start_date: z.coerce.date().optional().nullable(),
+  expected_end_date: z.coerce.date().optional().nullable(),
+  actual_start_date: z.coerce.date().optional().nullable(),
+  actual_end_date: z.coerce.date().optional().nullable(),
+  actual_time: z.number().optional().nullable(),
+
+  custom_project_title: z.string().optional().nullable(),
+  custom_project_summary: z.string().optional().nullable(),
+  custom_project_status: customProjectStatusEnum.optional().nullable().default("draft"),
+  custom_ai_estimate: z.string().optional().nullable(),
+  custom_emoji: z.string().optional().nullable(),
+  custom_readiness_level: readinessLevelEnum.optional().nullable(),
+  custom_content_pages: z.number().int().optional().nullable(),
+  custom_maintenance_required: z.boolean().optional().nullable().default(false),
+
+  custom_sub: z.string().optional().nullable(),
+  custom_platforms: z.array(erpNextProjectPlatformRowSchema).optional().nullable().default([]),
+  custom_features: z.array(erpNextProjectFeatureRowSchema).optional().nullable().default([]),
+  custom_preferred_tech_stacks: z.array(erpNextProjectPreferredTechStackRowSchema).optional().nullable().default([]),
+  custom_design_urls: z.array(erpNextProjectDesignUrlRowSchema).optional().nullable().default([]),
+
+  estimated_costing: z.number().optional().nullable(),
+  users: z.array(erpNextProjectUserRowSchema).optional().nullable().default([]),
+});
 export type UserERPNextProject = z.infer<typeof userERPNextProjectSchema>;
+
+export const overviewERPNextProjectSchema = z.object({
+  creation: z.coerce.date().optional().nullable(),
+  modified: z.coerce.date().optional().nullable(),
+
+  project_name: z.string(),
+  custom_project_title: z.string().optional().nullable(),
+  custom_project_status: customProjectStatusEnum.optional().nullable().default("draft"),
+
+  custom_sub: z.string().optional().nullable(),
+});
+
+export type OverviewERPNextProject = z.infer<typeof overviewERPNextProjectSchema>;
 
 export const updateERPNextProjectSchema = z.object({
   custom_project_title: z.string().optional().nullable(),
@@ -155,9 +188,14 @@ export const erpNextProjectsRequestSchema = z.object({
 export type ERPNextProjectsRequest = z.infer<typeof erpNextProjectsRequestSchema>;
 
 export const projectsPaginatedResponseSchema = z.object({
-  items: z.array(erpNextProjectSchema),
+  items: z.array(userERPNextProjectSchema),
 });
 export type ProjectsPaginatedResponse = z.infer<typeof projectsPaginatedResponseSchema>;
+
+export const overviewProjectsPaginatedResponseSchema = z.object({
+  items: z.array(overviewERPNextProjectSchema),
+});
+export type OverviewProjectsPaginatedResponse = z.infer<typeof overviewProjectsPaginatedResponseSchema>;
 
 // --- Task Models ---
 
