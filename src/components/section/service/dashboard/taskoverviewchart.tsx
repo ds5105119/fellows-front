@@ -6,6 +6,7 @@ import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTasks } from "@/hooks/fetch/project";
 
 export const description = "An interactive area chart";
 
@@ -119,6 +120,7 @@ const chartConfig = {
 
 export function TaskOverviewChart() {
   const [timeRange, setTimeRange] = React.useState("90d");
+  const tasks = useTasks({});
 
   const filteredData = chartData.filter((item) => {
     const date = new Date(item.date);
