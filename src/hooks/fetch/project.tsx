@@ -23,6 +23,7 @@ import {
   ERPNextTasksRequest,
   overviewProjectsPaginatedResponseSchema,
   OverviewProjectsPaginatedResponse,
+  ERPNextTaskPaginatedResponse,
 } from "@/@types/service/project";
 
 const API_BASE_URL = "/api/service/project";
@@ -200,7 +201,7 @@ export const deleteFile = async ({ projectId, key }: { projectId: string; key: s
 // TASK API (Sub-resource of Project)
 // =================================================================
 
-const tasksGetKeyFactory = (params: ERPNextTasksRequest): SWRInfiniteKeyLoader => {
+const tasksGetKeyFactory = (params: ERPNextTasksRequest): SWRInfiniteKeyLoader<ERPNextTaskPaginatedResponse> => {
   return (pageIndex, previousPageData) => {
     if (previousPageData && !previousPageData.items.length) return null;
 

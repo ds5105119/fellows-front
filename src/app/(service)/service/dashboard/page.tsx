@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 import { auth, signIn } from "@/auth";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { BlurFade } from "@/components/magicui/blur-fade";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, CheckIcon } from "lucide-react";
 import { Session } from "next-auth";
@@ -79,7 +78,7 @@ export default async function Page() {
 
   return (
     <div className="grid grid-cols-4 md:grid-cols-12 md:py-16 md:gap-6 bg-muted">
-      <BlurFade className="grid grid-cols-4 md:grid-cols-10 col-span-full px-6 py-12 md:p-8 md:col-span-10 md:col-start-2 gap-6 bg-white md:rounded-3xl">
+      <div className="grid grid-cols-4 md:grid-cols-10 col-span-full px-6 py-12 md:p-8 md:col-span-10 md:col-start-2 gap-6 bg-white md:rounded-3xl">
         <div className="col-span-full flex flex-col gap-2">
           <h2 className="text-2xl font-bold">🚀 5분만에 시작하는 Fellows</h2>
           <p className="text-sm text-muted-foreground">단 두 단계로 손쉽게 프로젝트 외주를 시작하고 확인할 수 있어요.</p>
@@ -203,9 +202,14 @@ export default async function Page() {
             </div>
           </div>
         </div>
-      </BlurFade>
+      </div>
 
-      <div className="col-span-full p-8 flex flex-col gap-6 bg-white md:rounded-3xl">
+      <div className="col-span-full md:col-span-10 md:col-start-2 px-6 py-12 md:p-8 gap-6 bg-white md:rounded-3xl">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-2xl font-bold">작업 현황</h2>
+          <p className="text-sm text-muted-foreground">기간 작업양을 확인해보세요.</p>
+        </div>
+
         <TaskOverviewChart />
       </div>
 
@@ -214,6 +218,7 @@ export default async function Page() {
           <h2 className="text-2xl font-bold">FAQ</h2>
           <p className="text-sm text-muted-foreground">자주 묻는 질문을 확인해보세요.</p>
         </div>
+
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="item-1">
             <AccordionTrigger className="text-base font-bold leading-loose">Fellows에서 개발하면 좋은 점이 무엇인가요?</AccordionTrigger>
@@ -242,6 +247,7 @@ export default async function Page() {
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-bold">프로젝트 진행 현황</h2>
         </div>
+
         <div className="mx-auto">
           <ProjectOverviewChart />
         </div>

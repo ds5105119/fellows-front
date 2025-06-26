@@ -3,175 +3,144 @@
 import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { type ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTasks } from "@/hooks/fetch/project";
 import dayjs from "@/lib/dayjs";
+import { type ERPNextTaskForUser, type ERPNextTaskStatus, erpNextTaskStatusEnum } from "@/@types/service/project";
 
-export const description = "An interactive area chart";
-
-const chartData = [
-  { date: "2024-04-01", desktop: 222, mobile: 150 },
-  { date: "2024-04-02", desktop: 97, mobile: 180 },
-  { date: "2024-04-03", desktop: 167, mobile: 120 },
-  { date: "2024-04-04", desktop: 242, mobile: 260 },
-  { date: "2024-04-05", desktop: 373, mobile: 290 },
-  { date: "2024-04-06", desktop: 301, mobile: 340 },
-  { date: "2024-04-07", desktop: 245, mobile: 180 },
-  { date: "2024-04-08", desktop: 409, mobile: 320 },
-  { date: "2024-04-09", desktop: 59, mobile: 110 },
-  { date: "2024-04-10", desktop: 261, mobile: 190 },
-  { date: "2024-04-11", desktop: 327, mobile: 350 },
-  { date: "2024-04-12", desktop: 292, mobile: 210 },
-  { date: "2024-04-13", desktop: 342, mobile: 380 },
-  { date: "2024-04-14", desktop: 137, mobile: 220 },
-  { date: "2024-04-15", desktop: 120, mobile: 170 },
-  { date: "2024-04-16", desktop: 138, mobile: 190 },
-  { date: "2024-04-17", desktop: 446, mobile: 360 },
-  { date: "2024-04-18", desktop: 364, mobile: 410 },
-  { date: "2024-04-19", desktop: 243, mobile: 180 },
-  { date: "2024-04-20", desktop: 89, mobile: 150 },
-  { date: "2024-04-21", desktop: 137, mobile: 200 },
-  { date: "2024-04-22", desktop: 224, mobile: 170 },
-  { date: "2024-04-23", desktop: 138, mobile: 230 },
-  { date: "2024-04-24", desktop: 387, mobile: 290 },
-  { date: "2024-04-25", desktop: 215, mobile: 250 },
-  { date: "2024-04-26", desktop: 75, mobile: 130 },
-  { date: "2024-04-27", desktop: 383, mobile: 420 },
-  { date: "2024-04-28", desktop: 122, mobile: 180 },
-  { date: "2024-04-29", desktop: 315, mobile: 240 },
-  { date: "2024-04-30", desktop: 454, mobile: 380 },
-  { date: "2024-05-01", desktop: 165, mobile: 220 },
-  { date: "2024-05-02", desktop: 293, mobile: 310 },
-  { date: "2024-05-03", desktop: 247, mobile: 190 },
-  { date: "2024-05-04", desktop: 385, mobile: 420 },
-  { date: "2024-05-05", desktop: 481, mobile: 390 },
-  { date: "2024-05-06", desktop: 498, mobile: 520 },
-  { date: "2024-05-07", desktop: 388, mobile: 300 },
-  { date: "2024-05-08", desktop: 149, mobile: 210 },
-  { date: "2024-05-09", desktop: 227, mobile: 180 },
-  { date: "2024-05-10", desktop: 293, mobile: 330 },
-  { date: "2024-05-11", desktop: 335, mobile: 270 },
-  { date: "2024-05-12", desktop: 197, mobile: 240 },
-  { date: "2024-05-13", desktop: 197, mobile: 160 },
-  { date: "2024-05-14", desktop: 448, mobile: 490 },
-  { date: "2024-05-15", desktop: 473, mobile: 380 },
-  { date: "2024-05-16", desktop: 338, mobile: 400 },
-  { date: "2024-05-17", desktop: 499, mobile: 420 },
-  { date: "2024-05-18", desktop: 315, mobile: 350 },
-  { date: "2024-05-19", desktop: 235, mobile: 180 },
-  { date: "2024-05-20", desktop: 177, mobile: 230 },
-  { date: "2024-05-21", desktop: 82, mobile: 140 },
-  { date: "2024-05-22", desktop: 81, mobile: 120 },
-  { date: "2024-05-23", desktop: 252, mobile: 290 },
-  { date: "2024-05-24", desktop: 294, mobile: 220 },
-  { date: "2024-05-25", desktop: 201, mobile: 250 },
-  { date: "2024-05-26", desktop: 213, mobile: 170 },
-  { date: "2024-05-27", desktop: 420, mobile: 460 },
-  { date: "2024-05-28", desktop: 233, mobile: 190 },
-  { date: "2024-05-29", desktop: 78, mobile: 130 },
-  { date: "2024-05-30", desktop: 340, mobile: 280 },
-  { date: "2024-05-31", desktop: 178, mobile: 230 },
-  { date: "2024-06-01", desktop: 178, mobile: 200 },
-  { date: "2024-06-02", desktop: 470, mobile: 410 },
-  { date: "2024-06-03", desktop: 103, mobile: 160 },
-  { date: "2024-06-04", desktop: 439, mobile: 380 },
-  { date: "2024-06-05", desktop: 88, mobile: 140 },
-  { date: "2024-06-06", desktop: 294, mobile: 250 },
-  { date: "2024-06-07", desktop: 323, mobile: 370 },
-  { date: "2024-06-08", desktop: 385, mobile: 320 },
-  { date: "2024-06-09", desktop: 438, mobile: 480 },
-  { date: "2024-06-10", desktop: 155, mobile: 200 },
-  { date: "2024-06-11", desktop: 92, mobile: 150 },
-  { date: "2024-06-12", desktop: 492, mobile: 420 },
-  { date: "2024-06-13", desktop: 81, mobile: 130 },
-  { date: "2024-06-14", desktop: 426, mobile: 380 },
-  { date: "2024-06-15", desktop: 307, mobile: 350 },
-  { date: "2024-06-16", desktop: 371, mobile: 310 },
-  { date: "2024-06-17", desktop: 475, mobile: 520 },
-  { date: "2024-06-18", desktop: 107, mobile: 170 },
-  { date: "2024-06-19", desktop: 341, mobile: 290 },
-  { date: "2024-06-20", desktop: 408, mobile: 450 },
-  { date: "2024-06-21", desktop: 169, mobile: 210 },
-  { date: "2024-06-22", desktop: 317, mobile: 270 },
-  { date: "2024-06-23", desktop: 480, mobile: 530 },
-  { date: "2024-06-24", desktop: 132, mobile: 180 },
-  { date: "2024-06-25", desktop: 141, mobile: 190 },
-  { date: "2024-06-26", desktop: 434, mobile: 380 },
-  { date: "2024-06-27", desktop: 448, mobile: 490 },
-  { date: "2024-06-28", desktop: 149, mobile: 200 },
-  { date: "2024-06-29", desktop: 103, mobile: 160 },
-  { date: "2024-06-30", desktop: 446, mobile: 400 },
-];
+export const description = "An interactive area chart showing task status over time";
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  desktop: {
-    label: "Desktop",
+  Open: {
+    label: "Open",
     color: "var(--chart-1)",
   },
-  mobile: {
-    label: "Mobile",
+  Working: {
+    label: "Working",
     color: "var(--chart-2)",
+  },
+  Overdue: {
+    label: "Overdue",
+    color: "var(--chart-3)",
+  },
+  Completed: {
+    label: "Completed",
+    color: "var(--chart-4)",
+  },
+  Cancelled: {
+    label: "Cancelled",
+    color: "var(--chart-5)",
   },
 } satisfies ChartConfig;
 
 export function TaskOverviewChart() {
-  const [timeRange, setTimeRange] = React.useState("30d");
+  const [timeRange, setTimeRange] = React.useState("7");
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date);
-    const referenceDate = new Date("2024-06-30");
-    let daysToSubtract = 90;
-    if (timeRange === "30d") {
-      daysToSubtract = 30;
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7;
+  // Calculate date range based on selected time range
+  const dateRange = React.useMemo(() => {
+    const days = Number.parseInt(timeRange);
+    return {
+      start: dayjs().subtract(days, "day").toDate(),
+      end: dayjs().add(10, "day").toDate(),
+    };
+  }, [timeRange]);
+
+  const tasks = useTasks(dateRange);
+
+  function transformTasksToStatusByDate(tasks: ERPNextTaskForUser[], timeRange: string) {
+    // 전체 날짜 범위 생성
+    const days = Number.parseInt(timeRange);
+    const startDate = dayjs().subtract(days, "day");
+    const endDate = dayjs();
+
+    // 모든 날짜에 대해 초기 데이터 구조 생성
+    const grouped: Record<string, Record<ERPNextTaskStatus, number>> = {};
+
+    // 날짜 범위 내의 모든 날짜를 0으로 초기화
+    for (let date = startDate; date.isBefore(endDate) || date.isSame(endDate); date = date.add(1, "day")) {
+      const dateKey = date.format("YYYY-MM-DD");
+
+      // 모든 status를 0으로 초기화한 객체를 바로 생성
+      grouped[dateKey] = erpNextTaskStatusEnum.options.reduce((acc, status) => {
+        acc[status] = 0;
+        return acc;
+      }, {} as Record<ERPNextTaskStatus, number>);
     }
-    const startDate = new Date(referenceDate);
-    startDate.setDate(startDate.getDate() - daysToSubtract);
-    return date >= startDate;
-  });
+
+    // 실제 task 데이터로 업데이트
+    for (const task of tasks) {
+      const date = task.exp_start_date ? dayjs(task.exp_start_date).format("YYYY-MM-DD") : null;
+      const status = task.status;
+
+      if (!date || !status || !grouped[date]) continue;
+
+      grouped[date][status] = (grouped[date][status] || 0) + 1;
+    }
+
+    // 배열로 변환하고 날짜순 정렬
+    const result = Object.entries(grouped)
+      .map(([date, statusCounts]) => ({
+        date,
+        ...statusCounts,
+      }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    return result;
+  }
+
+  const chartData = React.useMemo(() => {
+    if (!tasks.data || !tasks.data[0]?.items) {
+      // 데이터가 없어도 빈 날짜 범위 생성
+      return transformTasksToStatusByDate([], timeRange);
+    }
+    return transformTasksToStatusByDate(tasks.data[0].items, timeRange);
+  }, [tasks.data, timeRange]);
+
+  const getTimeRangeLabel = (range: string) => {
+    switch (range) {
+      case "7":
+        return "지난 일주일";
+      case "30":
+        return "지난 한달";
+      case "90":
+        return "지난 분기";
+      default:
+        return "지난 한달";
+    }
+  };
 
   return (
-    <Card className="pt-0">
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-        <div className="grid flex-1 gap-1">
-          <CardTitle>Area Chart - Interactive</CardTitle>
-          <CardDescription>Showing total visitors for the last 3 months</CardDescription>
-        </div>
+    <div className="w-full pt-0">
+      <div className="flex items-center gap-2 space-y-0 py-5 sm:flex-row">
         <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex" aria-label="Select a value">
-            <SelectValue placeholder="Last 3 months" />
+          <SelectTrigger className="w-[160px] rounded-lg" aria-label="Select a value">
+            <SelectValue placeholder="최근 한달" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
-            <SelectItem value="90d" className="rounded-lg">
-              Last 3 months
+            <SelectItem value="90" className="rounded-lg">
+              한 분기
             </SelectItem>
-            <SelectItem value="30d" className="rounded-lg">
-              Last 30 days
+            <SelectItem value="30" className="rounded-lg">
+              한달
             </SelectItem>
-            <SelectItem value="7d" className="rounded-lg">
-              Last 7 days
+            <SelectItem value="7" className="rounded-lg">
+              일주일
             </SelectItem>
           </SelectContent>
         </Select>
-      </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+      </div>
+
+      <div className="px-2 pt-4 sm:px-6 sm:pt-6">
         <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
-          <AreaChart data={filteredData}>
+          <AreaChart data={chartData}>
             <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-desktop)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--color-desktop)" stopOpacity={0.1} />
-              </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-mobile)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--color-mobile)" stopOpacity={0.1} />
-              </linearGradient>
+              {erpNextTaskStatusEnum.options.map((status) => (
+                <linearGradient key={status} id={`fill${status}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={`var(--color-${status})`} stopOpacity={0.8} />
+                  <stop offset="95%" stopColor={`var(--color-${status})`} stopOpacity={0.1} />
+                </linearGradient>
+              ))}
             </defs>
             <CartesianGrid vertical={false} />
             <XAxis
@@ -182,7 +151,7 @@ export function TaskOverviewChart() {
               minTickGap={32}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
+                return date.toLocaleDateString("ko-KR", {
                   month: "short",
                   day: "numeric",
                 });
@@ -193,8 +162,9 @@ export function TaskOverviewChart() {
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
+                    return new Date(value).toLocaleDateString("ko-KR", {
+                      year: "numeric",
+                      month: "long",
                       day: "numeric",
                     });
                   }}
@@ -202,12 +172,21 @@ export function TaskOverviewChart() {
                 />
               }
             />
-            <Area dataKey="mobile" type="natural" fill="url(#fillMobile)" stroke="var(--color-mobile)" stackId="a" />
-            <Area dataKey="desktop" type="natural" fill="url(#fillDesktop)" stroke="var(--color-desktop)" stackId="a" />
+            {erpNextTaskStatusEnum.options.map((status) => (
+              <Area
+                key={status}
+                dataKey={status}
+                type="monotone"
+                fill={`url(#fill${status})`}
+                stroke={`var(--color-${status})`}
+                stackId="a"
+                connectNulls={false}
+              />
+            ))}
             <ChartLegend content={<ChartLegendContent />} />
           </AreaChart>
         </ChartContainer>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
