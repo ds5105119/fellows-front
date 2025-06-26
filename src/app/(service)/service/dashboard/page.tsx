@@ -10,6 +10,7 @@ import { ArrowUpRight, CheckIcon } from "lucide-react";
 import { Session } from "next-auth";
 import { projectsPaginatedResponseSchema, UserERPNextProject } from "@/@types/service/project";
 import { ConfettiButton } from "@/components/magicui/confetti";
+import { ProjectOverviewChart } from "@/components/section/service/dashboard/projectOverviewChart";
 
 interface OnboardingProps {
   hasProject: boolean;
@@ -203,7 +204,7 @@ export default async function Page() {
         </div>
       </BlurFade>
 
-      <BlurFade className="col-span-full p-8 md:col-span-7 md:col-start-2 flex flex-col gap-6 bg-white md:rounded-3xl">
+      <div className="col-span-full p-8 md:col-span-7 md:col-start-2 flex flex-col gap-6 bg-white md:rounded-3xl">
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-bold">FAQ</h2>
           <p className="text-sm text-muted-foreground">자주 묻는 질문을 확인해보세요.</p>
@@ -230,14 +231,16 @@ export default async function Page() {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-      </BlurFade>
+      </div>
 
-      <BlurFade className="col-span-full p-8 md:col-span-3 md:col-start-9 flex flex-col gap-6 bg-white md:rounded-3xl">
+      <div className="col-span-full p-8 md:col-span-3 md:col-start-9 flex flex-col gap-3 bg-white md:rounded-3xl">
         <div className="flex flex-col gap-2">
-          <h2 className="text-2xl font-bold">FAQ</h2>
-          <p className="text-sm text-muted-foreground">이메일로 회원가입하고 맞춤형 복지 정책 정보를 받아보세요.</p>
+          <h2 className="text-2xl font-bold">프로젝트 진행 현황</h2>
         </div>
-      </BlurFade>
+        <div className="mx-auto">
+          <ProjectOverviewChart />
+        </div>
+      </div>
     </div>
   );
 }
