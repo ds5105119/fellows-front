@@ -5,33 +5,21 @@ import { ComponentPropsWithoutRef, FC, ReactNode, useRef } from "react";
 
 import { cn } from "@/lib/utils";
 
-export interface TextRevealProps extends ComponentPropsWithoutRef<"div"> {
-  children: string;
-}
-
-export const TextReveal: FC<TextRevealProps> = ({ children, className }) => {
+export const TextReveal: FC<ComponentPropsWithoutRef<"div">> = ({ className }) => {
   const targetRef = useRef<HTMLDivElement | null>(null);
   const { scrollYProgress } = useScroll({
     target: targetRef,
   });
 
-  if (typeof children !== "string") {
-    throw new Error("TextReveal: children must be a string");
-  }
-
-  const words = children.split(" ");
+  const words = "Fellows는 브랜드, 웹 및 앱 사이트를 제작하는 디지털 에이전시입니다.".split(" ");
 
   return (
     <div ref={targetRef} className={cn("relative z-0 h-[200vh]", className)}>
-      <div
-        className={
-          "sticky top-0 mx-auto flex h-[50%] max-w-4xl items-center bg-transparent px-[1rem] py-[5rem]"
-        }
-      >
+      <div className={"sticky top-16 flex h-[50%] max-w-5xl my-auto items-start bg-transparent py-[5rem]"}>
         <span
           ref={targetRef}
           className={
-            "flex flex-wrap p-5 text-2xl font-bold text-black/20 dark:text-white/20 md:p-8 md:text-3xl lg:p-10 lg:text-4xl xl:text-5xl"
+            "flex flex-wrap text-2xl font-bold tracking-wide text-black/20 dark:text-white/20 md:text-4xl lg:text-6xl xl:text-8xl space-x-5 md:space-x-10"
           }
         >
           {words.map((word, i) => {
@@ -60,10 +48,7 @@ const Word: FC<WordProps> = ({ children, progress, range }) => {
   return (
     <span className="xl:lg-3 relative mx-1 lg:mx-1.5">
       <span className="absolute opacity-30">{children}</span>
-      <motion.span
-        style={{ opacity: opacity }}
-        className={"text-black dark:text-white"}
-      >
+      <motion.span style={{ opacity: opacity }} className={"text-black dark:text-white"}>
         {children}
       </motion.span>
     </span>

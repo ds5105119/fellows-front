@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import { ChevronRight } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import ScrollSizeDownBox from "@/components/animation/scrollsizedownbox";
 
 export default async function MainSection1() {
   return (

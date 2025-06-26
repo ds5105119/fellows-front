@@ -9,7 +9,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const unsubscribe = scrollY.on("change", (latest) => {
-      setIsScrolled(latest > 5);
+      setIsScrolled(latest > 100);
     });
     return () => unsubscribe();
   }, [scrollY]);
@@ -18,7 +18,7 @@ export default function Navbar() {
     <>
       {/* Fixed Navigation Header */}
       <motion.header
-        className="sticky top-0 left-0 right-0 bg-white z-50 border-b border-black"
+        className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-black"
         animate={{
           height: isScrolled ? "80px" : "280px",
         }}
