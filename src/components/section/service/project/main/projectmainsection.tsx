@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Plus, Info, SearchIcon } from "lucide-react";
-import { ProjectsPaginatedResponse, ERPNextProject, erpNextProjectSchema } from "@/@types/service/project";
+import { ProjectsPaginatedResponse, userERPNextProjectSchema, UserERPNextProject } from "@/@types/service/project";
 import { useProjects } from "@/hooks/fetch/project";
 
 import dayjs from "dayjs";
@@ -65,7 +65,7 @@ const ProjectStatusColumn = ({
   status: Status;
   keyword: string;
   orderBy: string;
-  setSelectedProject: (project: ERPNextProject | null) => void;
+  setSelectedProject: (project: UserERPNextProject | null) => void;
   onProcessCountChange?: (count: number) => void;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -112,7 +112,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const [inputText, setInputText] = useState<string>("");
   const [processCount, setProcessCount] = useState(0);
   const [tabIndex, setTabIndex] = useState<number>(0);
-  const [selectedProject, setSelectedProject] = useState<ERPNextProject | null>(null);
+  const [selectedProject, setSelectedProject] = useState<UserERPNextProject | null>(null);
   const [openSheet, setOpenSheet] = useState(project_id ? true : false);
   const keyword = useThrottle(inputText, 1000);
   const pathname = usePathname();
@@ -130,9 +130,9 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   }, []);
 
   // 프로젝트 데이터를 찾는 함수 (실제 구현 필요)
-  const findProjectById = useCallback((projectId: string): ERPNextProject | null => {
+  const findProjectById = useCallback((projectId: string): UserERPNextProject | null => {
     try {
-      return erpNextProjectSchema.parse({
+      return userERPNextProjectSchema.parse({
         project_name: projectId,
       });
     } catch {
@@ -170,7 +170,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
 
   // 프로젝트 선택 핸들러 - 네이티브 네비게이션 사용
   const handleProjectSelect = useCallback(
-    (project: ERPNextProject | null) => {
+    (project: UserERPNextProject | null) => {
       if (!project) {
         setSelectedProject(null);
         setOpenSheet(false);

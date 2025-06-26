@@ -1,12 +1,12 @@
 "use client";
 
 import { Copy } from "lucide-react";
-import type { ERPNextProject } from "@/@types/service/project";
+import type { UserERPNextProject } from "@/@types/service/project";
 import { useCallback } from "react";
 import { toast } from "sonner";
 
 interface ProjectBasicInfoProps {
-  project: ERPNextProject;
+  project: UserERPNextProject;
 }
 
 export function ProjectBasicInfo({ project }: ProjectBasicInfoProps) {

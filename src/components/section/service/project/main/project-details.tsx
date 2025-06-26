@@ -2,7 +2,7 @@
 
 import { CheckIcon, FileText, PlusIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { ERPNextProject } from "@/@types/service/project";
+import type { UserERPNextProject } from "@/@types/service/project";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import DragScrollContainer from "@/components/ui/dragscrollcontainer";
 import { cn } from "@/lib/utils";
 
-export function ProjectDetails({ project, setEditedProject }: { project: ERPNextProject; setEditedProject: (project: ERPNextProject) => void }) {
+export function ProjectDetails({ project, setEditedProject }: { project: UserERPNextProject; setEditedProject: (project: UserERPNextProject) => void }) {
   const [toggle, setToggle] = useState(false);
   const [featureCategory, setFeatureCategory] = useState("");
   const [featureKeyword, setFeatureKeyword] = useState("");

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Session } from "next-auth";
-import type { ERPNextProject } from "@/@types/service/project";
+import type { UserERPNextProject } from "@/@types/service/project";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon, XIcon } from "lucide-react";
@@ -13,7 +13,14 @@ import SelectLogo from "@/components/resource/selectlogo";
 import dayjs from "dayjs";
 import { STATUS_MAPPING, PLATFORM_MAPPING } from "@/components/resource/project";
 
-export function ProjectStatus({ project, session }: { project: ERPNextProject; session: Session; setEditedProject: (project: ERPNextProject) => void }) {
+export function ProjectStatus({
+  project,
+  session,
+}: {
+  project: UserERPNextProject;
+  session: Session;
+  setEditedProject: (project: UserERPNextProject) => void;
+}) {
   const [openSheet, setOpenSheet] = useState(false);
 
   return (

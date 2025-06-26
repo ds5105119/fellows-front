@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, LinkIcon, Fullscreen, Loader2 } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
 import { useProject, updateProject } from "@/hooks/fetch/project";
-import { updateERPNextProjectSchema, type ERPNextProject } from "@/@types/service/project";
+import { updateERPNextProjectSchema, UserERPNextProject, type ERPNextProject } from "@/@types/service/project";
 import { cn } from "@/lib/utils";
 
 // 분리된 컴포넌트들 import
@@ -24,7 +24,7 @@ import { ProjectNotices } from "./project-notices";
 import dayjs from "dayjs";
 
 interface ProjectDetailSheetProps {
-  project: ERPNextProject | null;
+  project: UserERPNextProject | null;
   onClose: () => void;
   session: Session;
 }
@@ -36,15 +36,15 @@ export default function ProjectDetailSheet({ project, onClose, session }: Projec
 }
 
 interface ProjectDetailSheetInnerProps {
-  project: ERPNextProject;
+  project: UserERPNextProject;
   onClose: () => void;
   session: Session;
 }
 
 function ProjectDetailSheetInner({ project: initialProject, onClose, session }: ProjectDetailSheetInnerProps) {
   // State 관리
-  const [project, setProject] = useState<ERPNextProject>(initialProject);
-  const [editedProject, setEditedProject] = useState<ERPNextProject>(initialProject);
+  const [project, setProject] = useState<UserERPNextProject>(initialProject);
+  const [editedProject, setEditedProject] = useState<UserERPNextProject>(initialProject);
   const [isUpdating, setIsUpdating] = useState(false);
   const [autosave, setAutosave] = useState(true);
   const [activeMobileTab, setActiveMobileTab] = useState(0);

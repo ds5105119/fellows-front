@@ -2,10 +2,10 @@
 
 import { FileText } from "lucide-react";
 import dayjs from "dayjs";
-import type { ERPNextProject } from "@/@types/service/project";
+import type { UserERPNextProject } from "@/@types/service/project";
 
 interface ProjectHeaderProps {
-  project: ERPNextProject;
+  project: UserERPNextProject;
 }
 
 export function ProjectHeader({ project }: ProjectHeaderProps) {
