@@ -5,12 +5,12 @@ import { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { platformEnum, readinessLevelEnum, UserERPNextProject } from "@/@types/service/project";
+import { platformEnum, readinessLevelEnum, CreateERPNextProject } from "@/@types/service/project";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
 
 interface CreateProjectFormStep1Props {
-  form: UseFormReturn<UserERPNextProject>;
+  form: UseFormReturn<CreateERPNextProject>;
 }
 
 const getEnumValues = <T extends z.ZodEnum<[string, ...string[]]>>(enumType: T): z.infer<typeof enumType>[] => {

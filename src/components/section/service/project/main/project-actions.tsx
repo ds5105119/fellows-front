@@ -1,11 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { ERPNextProject } from "@/@types/service/project";
+import type { UserERPNextProject } from "@/@types/service/project";
 import { cancelSubmitProject, submitProject } from "@/hooks/fetch/project";
 
 interface ProjectActionsProps {
-  project: ERPNextProject;
+  project: UserERPNextProject;
 }
 
 export function ProjectActions({ project }: ProjectActionsProps) {

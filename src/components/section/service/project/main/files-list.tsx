@@ -6,12 +6,12 @@ import { cn } from "@/lib/utils";
 import { fileIconMap, getFileExtension } from "@/components/form/fileinput";
 import { UploadProgressIndicator } from "@/components/ui/uploadprogressindicator";
 import { getSSECPresignedPutUrl, removeFile, SSECFileDownloadButton, uploadFileToSSECPresignedUrl } from "@/hooks/fetch/presigned";
-import { ERPNextFile, erpNextFileSchema, ERPNextProject, ERPNextTaskForUser } from "@/@types/service/project";
+import { ERPNextFile, erpNextFileSchema, UserERPNextProject, ERPNextTaskForUser } from "@/@types/service/project";
 import { toast } from "sonner";
 import { createFile, deleteFile, useFiles } from "@/hooks/fetch/project";
 
 interface FilesListProps {
-  project: ERPNextProject;
+  project: UserERPNextProject;
   task?: ERPNextTaskForUser;
 }
 

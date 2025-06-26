@@ -4,9 +4,8 @@ import { UseFormReturn } from "react-hook-form";
 import { FormField, FormItem, FormMessage, FormLabel, FormControl } from "@/components/ui/form";
 import { categorizedFeatures } from "@/components/resource/project";
 import { FeatureItemWithTooltip } from "@/components/form/featureitemwithtooltip";
-import { UserERPNextProject } from "@/@types/service/project";
+import { CreateERPNextProject } from "@/@types/service/project";
 import { SwitchIndicator } from "@/components/ui/switch-indicator";
-import FileInput from "@/components/form/fileinput";
 import TagInput from "@/components/form/taginput";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 
@@ -18,7 +17,7 @@ dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
 interface CreateProjectFormStep2Props {
-  form: UseFormReturn<UserERPNextProject>;
+  form: UseFormReturn<CreateERPNextProject>;
 }
 
 export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2Props) {
@@ -144,19 +143,6 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                   </div>
                   <SwitchIndicator checked={field.value || false} />
                 </button>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="custom_files"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <FileInput onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

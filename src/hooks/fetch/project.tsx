@@ -11,15 +11,16 @@ import {
   erpNextFileSchema,
   ERPNextFilesResponse,
   erpNextFilesResponseSchema,
-  ERPNextProject,
-  erpNextProjectSchema,
+  userERPNextProjectSchema,
+  createERPNextProjectSchema,
+  CreateERPNextProject,
+  UserERPNextProject,
   erpNextTaskPaginatedResponseSchema,
   ProjectFeatureEstimateResponse,
   projectFeatureEstimateResponseSchema,
   ProjectsPaginatedResponse,
   projectsPaginatedResponseSchema,
   UpdateERPNextProject,
-  UserERPNextProject,
   ERPNextTasksRequest,
 } from "@/@types/service/project";
 
@@ -42,7 +43,7 @@ const fetcher = async (url: string) => {
 // =================================================================
 
 // --- CREATE ---
-export const createProject = async (payload: UserERPNextProject): Promise<ERPNextProject> => {
+export const createProject = async (payload: CreateERPNextProject): Promise<UserERPNextProject> => {
   const response = await fetch(API_BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -55,13 +56,13 @@ export const createProject = async (payload: UserERPNextProject): Promise<ERPNex
   }
 
   const responseData = await response.json();
-  return erpNextProjectSchema.parse(responseData);
+  return userERPNextProjectSchema.parse(responseData);
 };
 
 // --- READ (Single) ---
-export const useProject = (projectId: string | null): SWRResponse<ERPNextProject> => {
+export const useProject = (projectId: string | null): SWRResponse<UserERPNextProject> => {
   const url = projectId ? `${API_BASE_URL}/${projectId}` : null;
-  return useSWR(url, async (url: string) => erpNextProjectSchema.parse(await fetcher(url)));
+  return useSWR(url, async (url: string) => userERPNextProjectSchema.parse(await fetcher(url)));
 };
 
 // --- READ (List) ---
@@ -94,7 +95,7 @@ export const useProjects = (params: { size?: number; keyword?: string; order_by?
 };
 
 // --- UPDATE ---
-export const updateProject = async (projectId: string, payload: UpdateERPNextProject): Promise<ERPNextProject> => {
+export const updateProject = async (projectId: string, payload: UpdateERPNextProject): Promise<UserERPNextProject> => {
   const response = await fetch(`${API_BASE_URL}/${projectId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -106,7 +107,7 @@ export const updateProject = async (projectId: string, payload: UpdateERPNextPro
     throw new Error("Failed to update project");
   }
   const responseData = await response.json();
-  return erpNextProjectSchema.parse(responseData);
+  return userERPNextProjectSchema.parse(responseData);
 };
 
 // --- DELETE ---

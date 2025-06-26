@@ -9,9 +9,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createProject } from "@/hooks/fetch/project";
 import { stepsMeta } from "@/components/resource/project";
-import { type UserERPNextProject, userERPNextProjectSchema } from "@/@types/service/project";
+import { type CreateERPNextProject, createERPNextProjectSchema } from "@/@types/service/project";
 
-const initialProjectInfo = userERPNextProjectSchema.parse({
+const initialProjectInfo = createERPNextProjectSchema.parse({
   custom_project_title: "",
   custom_project_summary: "",
   custom_readiness_level: "idea",
@@ -20,7 +20,6 @@ const initialProjectInfo = userERPNextProjectSchema.parse({
   custom_preferred_tech_stacks: [],
   custom_design_urls: [],
   custom_maintenance_required: false,
-  custom_project_status: "draft",
 });
 
 export function useProjectForm() {
@@ -29,8 +28,8 @@ export function useProjectForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isStepping, setIsStepping] = useState(false);
 
-  const form = useForm<UserERPNextProject>({
-    resolver: zodResolver(userERPNextProjectSchema),
+  const form = useForm<CreateERPNextProject>({
+    resolver: zodResolver(createERPNextProjectSchema),
     defaultValues: initialProjectInfo,
     mode: "onChange",
   });
@@ -47,13 +46,13 @@ export function useProjectForm() {
   const currentStepFields = currentStepMeta?.fields || [];
 
   const validateCurrentStep = useCallback(async () => {
-    const isZodValid = await trigger(currentStepFields as string[], { shouldFocus: true });
+    const isZodValid = await trigger(currentStepFields, { shouldFocus: true });
 
     if (!currentStepMeta?.uiRequiredFields) return isZodValid;
 
     const currentValues = getValues();
     const isUiValid = currentStepMeta.uiRequiredFields.every((fieldName) => {
-      const value = currentValues[fieldName as keyof UserERPNextProject];
+      const value = currentValues[fieldName];
       return value !== undefined && value !== null && (typeof value !== "string" || value.trim() !== "") && (!Array.isArray(value) || value.length > 0);
     });
 
@@ -105,7 +104,7 @@ export function useProjectForm() {
 
   // 폼 제출 함수 - react-hook-form의 handleSubmit과 함께 사용
   const onSubmit = useCallback(
-    async (values: UserERPNextProject) => {
+    async (values: CreateERPNextProject) => {
       if (isStepping) {
         return;
       }
@@ -147,7 +146,7 @@ export function useProjectForm() {
     form.handleSubmit(onSubmit)();
   }, [form, onSubmit]);
 
-  const isNextDisabled = isStepping || currentStepFields.some((field) => errors[field as keyof UserERPNextProject]);
+  const isNextDisabled = isStepping || currentStepFields.some((field) => errors[field as keyof CreateERPNextProject]);
 
   // 제출 버튼 비활성화 조건을 완화
   const isSubmitDisabled = isLoading || isStepping || !isValid;

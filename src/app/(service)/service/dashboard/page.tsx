@@ -8,13 +8,13 @@ import { BlurFade } from "@/components/magicui/blur-fade";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, CheckIcon } from "lucide-react";
 import { Session } from "next-auth";
-import { ERPNextProject, projectsPaginatedResponseSchema } from "@/@types/service/project";
+import { projectsPaginatedResponseSchema, UserERPNextProject } from "@/@types/service/project";
 import { ConfettiButton } from "@/components/magicui/confetti";
 
 interface OnboardingProps {
   hasProject: boolean;
   hasInquery: boolean;
-  project?: ERPNextProject;
+  project?: UserERPNextProject;
 }
 
 const getOnboarding = async ({ session }: { session: Session }): Promise<OnboardingProps> => {

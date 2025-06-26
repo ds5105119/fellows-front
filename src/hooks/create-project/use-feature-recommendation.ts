@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { useGetEstimateFeatures } from "@/hooks/fetch/project";
-import { UserERPNextProject } from "@/@types/service/project";
+import { CreateERPNextProject } from "@/@types/service/project";
 
-export function useFeatureRecommendation(form: UseFormReturn<UserERPNextProject>, currentStep: number) {
+export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProject>, currentStep: number) {
   const [isRecommending, setIsRecommending] = useState(false);
   const [isFirstTimeInStep2, setIsFirstTimeInStep2] = useState(true);
   const [hasCompleted, setHasCompleted] = useState(false);
@@ -25,7 +25,7 @@ export function useFeatureRecommendation(form: UseFormReturn<UserERPNextProject>
     project_name: watchedFields[0] || "",
     project_summary: watchedFields[1] || "",
     readiness_level: watchedFields[2] || "idea",
-    platforms: watchedFields[3].map((p) => p.platform) || [],
+    platforms: watchedFields[3]?.map((p) => p.platform) || [],
   });
 
   const handleRecommendAgain = async () => {

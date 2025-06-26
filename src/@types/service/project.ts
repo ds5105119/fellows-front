@@ -161,6 +161,24 @@ export const overviewERPNextProjectSchema = z.object({
 
 export type OverviewERPNextProject = z.infer<typeof overviewERPNextProjectSchema>;
 
+export const createERPNextProjectSchema = z.object({
+  custom_project_title: z.string(),
+  custom_project_summary: z.string(),
+  custom_readiness_level: z.string(),
+
+  expected_start_date: z.string().optional().nullable(),
+  expected_end_date: z.string().optional().nullable(),
+
+  custom_content_pages: z.number().int().optional().nullable(),
+  custom_maintenance_required: z.boolean().optional().nullable(),
+
+  custom_platforms: z.array(erpNextProjectPlatformRowSchema).optional().default([]),
+  custom_features: z.array(erpNextProjectFeatureRowSchema).optional().nullable().default([]),
+  custom_preferred_tech_stacks: z.array(erpNextProjectPreferredTechStackRowSchema).optional().nullable().default([]),
+  custom_design_urls: z.array(erpNextProjectDesignUrlRowSchema).optional().nullable().default([]),
+});
+export type CreateERPNextProject = z.infer<typeof createERPNextProjectSchema>;
+
 export const updateERPNextProjectSchema = z.object({
   custom_project_title: z.string().optional().nullable(),
   custom_project_summary: z.string().optional().nullable(),
