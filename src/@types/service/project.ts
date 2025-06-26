@@ -236,7 +236,7 @@ export type ERPNextTaskRequest = z.infer<typeof erpNextTaskRequestSchema>;
 
 export const erpNextTasksRequestSchema = z.object({
   page: z.number().int().min(0).nullable().optional(),
-  size: z.number().int().min(0).max(100).nullable().optional(),
+  size: z.number().int().min(0).max(1000).nullable().optional(),
   order_by: z
     .union([z.string(), z.array(z.string())])
     .nullable()

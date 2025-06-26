@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTasks } from "@/hooks/fetch/project";
+import dayjs from "@/lib/dayjs";
 
 export const description = "An interactive area chart";
 
@@ -119,8 +120,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function TaskOverviewChart() {
-  const [timeRange, setTimeRange] = React.useState("90d");
-  const tasks = useTasks({});
+  const [timeRange, setTimeRange] = React.useState("30d");
 
   const filteredData = chartData.filter((item) => {
     const date = new Date(item.date);
