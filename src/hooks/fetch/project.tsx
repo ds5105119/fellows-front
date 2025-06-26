@@ -12,7 +12,6 @@ import {
   ERPNextFilesResponse,
   erpNextFilesResponseSchema,
   userERPNextProjectSchema,
-  createERPNextProjectSchema,
   CreateERPNextProject,
   UserERPNextProject,
   erpNextTaskPaginatedResponseSchema,

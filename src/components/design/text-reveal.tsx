@@ -6,7 +6,6 @@ import { type ComponentPropsWithoutRef, type FC, type ReactNode, useRef } from "
 import { cn } from "@/lib/utils";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
-import { Safari } from "../magicui/safari";
 
 export const TextReveal: FC<ComponentPropsWithoutRef<"div">> = ({ className }) => {
   const targetRef = useRef<HTMLDivElement | null>(null);
@@ -46,8 +45,9 @@ export const TextReveal: FC<ComponentPropsWithoutRef<"div">> = ({ className }) =
         }}
       >
         <div className="flex-1 text-3xl font-medium whitespace-pre-wrap leading-tight tracking-tight flex items-center">
-          For 10 years, we've been delivering powerful, tailor-made websites that have helped brands anchor their authority. Now, we’re harnessing this cargo of
-          expertise to propel your projects toward new and exciting horizons.
+          {
+            " For 10 years, we've been delivering powerful, tailor-made websites that have helped brands anchor their authority. Now, we’re harnessing this cargo of expertise to propel your projects toward new and exciting horizons."
+          }
         </div>
         <div className="grow px-20">
           <AspectRatio ratio={2858 / 1592}>

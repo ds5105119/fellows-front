@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, LinkIcon, Fullscreen, Loader2 } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
 import { useProject, updateProject } from "@/hooks/fetch/project";
-import { updateERPNextProjectSchema, UserERPNextProject, type ERPNextProject } from "@/@types/service/project";
+import { updateERPNextProjectSchema, UserERPNextProject } from "@/@types/service/project";
 import { cn } from "@/lib/utils";
 
 // 분리된 컴포넌트들 import
