@@ -1,9 +1,6 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
-
-import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { useProjectOverView } from "@/hooks/fetch/project";
 
