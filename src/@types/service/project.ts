@@ -245,7 +245,10 @@ export const erpNextTasksRequestSchema = z.object({
     .union([erpNextTaskStatusEnum, z.array(erpNextTaskStatusEnum)])
     .nullable()
     .optional(),
-  project_id: z.string().nullable().optional(),
+  project_id: z
+    .union([z.string(), z.array(z.string())])
+    .nullable()
+    .optional(),
   keyword: z.string().nullable().optional(),
   start: z.coerce.date().nullable().optional(),
   end: z.coerce.date().nullable().optional(),

@@ -21,6 +21,8 @@ import {
   projectsPaginatedResponseSchema,
   UpdateERPNextProject,
   ERPNextTasksRequest,
+  overviewProjectsPaginatedResponseSchema,
+  OverviewProjectsPaginatedResponse,
 } from "@/@types/service/project";
 
 const API_BASE_URL = "/api/service/project";
@@ -65,6 +67,12 @@ export const useProject = (projectId: string | null): SWRResponse<UserERPNextPro
 };
 
 // --- READ (List) ---
+
+export const useProjectOverView = (): SWRResponse<OverviewProjectsPaginatedResponse> => {
+  const url = `${API_BASE_URL}/overview`;
+  return useSWR(url, async (url: string) => overviewProjectsPaginatedResponseSchema.parse(await fetcher(url)));
+};
+
 const projectsGetKeyFactory = (params: {
   size?: number;
   keyword?: string;
@@ -213,7 +221,8 @@ const tasksGetKeyFactory = (params: ERPNextTasksRequest): SWRInfiniteKeyLoader =
     }
 
     if (params.project_id) {
-      searchParams.append("project_id", params.project_id);
+      const projectIdValues = Array.isArray(params.project_id) ? params.project_id : [params.project_id];
+      projectIdValues.forEach((value) => searchParams.append("project_id", value));
     }
 
     if (params.keyword) {
