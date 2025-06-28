@@ -23,7 +23,7 @@ export default function ProjectEstimator({ project }: Props) {
       const timer = setTimeout(() => {
         mutate(`/api/service/project/${project.project_name}`);
         setIsGenerating(false);
-      }, 1000);
+      }, 1500);
 
       return () => clearTimeout(timer);
     }

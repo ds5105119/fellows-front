@@ -379,7 +379,6 @@ export const useEstimateProject = (projectId: string | null, initialMarkdown: st
 
       onopen: async (response) => {
         if (response.ok) {
-          toast.info("AI 견적 생성을 시작합니다.");
           return;
         }
         if (response.status === 429) {
