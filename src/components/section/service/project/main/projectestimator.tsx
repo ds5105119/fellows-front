@@ -20,15 +20,15 @@ export default function ProjectEstimator({ project }: Props) {
   // 스트림 완료 시 API 데이터 갱신
   useEffect(() => {
     if (!isLoading && isGenerating && markdown) {
-      setIsGenerating(false);
-
       const timer = setTimeout(() => {
         mutate(`/api/service/project/${project.project_name}`);
-      }, 500);
+        setIsGenerating(false);
+      }, 1000);
 
       return () => clearTimeout(timer);
     }
   }, [isLoading, isGenerating, markdown, project.project_name]);
+
   const handleStartEstimate = () => {
     setIsGenerating(true);
     startEstimate();
@@ -67,8 +67,13 @@ export default function ProjectEstimator({ project }: Props) {
 
       {/* 생각중 상태 - 생성 시작했지만 아직 스트림 데이터가 없을 때만 */}
       {isThinking && (
-        <div className="flex text-muted-foreground">
-          <span className="text-sm">생각중입니다...</span>
+        <div className="flex items-center space-x-1.5">
+          <span className="text-sm text-muted-foreground">생각중입니다(1분 이상 걸릴 수 있습니다)</span>
+          <div className="flex justify-center space-x-1">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="w-[3px] h-[3px] bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.2}s` }} />
+            ))}
+          </div>
         </div>
       )}
 
