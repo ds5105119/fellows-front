@@ -104,19 +104,6 @@ export function TaskOverviewChart() {
     return transformTasksToStatusByDate(tasks.data[0].items, timeRange);
   }, [tasks.data, timeRange]);
 
-  const getTimeRangeLabel = (range: string) => {
-    switch (range) {
-      case "7":
-        return "지난 일주일";
-      case "30":
-        return "지난 한달";
-      case "90":
-        return "지난 분기";
-      default:
-        return "지난 한달";
-    }
-  };
-
   return (
     <div className="w-full pt-0">
       <div className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
