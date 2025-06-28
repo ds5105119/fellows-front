@@ -283,7 +283,9 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             </button>
           </div>
         ) : (
-          <div />
+          <div className="flex items-center gap-3">
+            <p className="text-xs font-semibold text-muted-foreground">진행 중인 프로젝트는 수정할 수 없어요.</p>
+          </div>
         )}
         {project.custom_project_status === "draft" ? (
           <div className="hidden md:flex items-center gap-2">

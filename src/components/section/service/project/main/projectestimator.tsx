@@ -2,8 +2,8 @@
 
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import MarkdownPreview from "@/components/ui/markdownpreview";
-import { useEffect } from "react";
-import { UserERPNextProject } from "@/@types/service/project";
+import { useEffect, useState } from "react";
+import type { UserERPNextProject } from "@/@types/service/project";
 import { useEstimateProject } from "@/hooks/fetch/project";
 import { mutate } from "swr";
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableRow } from "@/components/ui/table";
@@ -13,31 +13,77 @@ interface Props {
 }
 
 export default function ProjectEstimator({ project }: Props) {
-  const { markdown, isLoading, startEstimate } = useEstimateProject(project.project_name, project.custom_ai_estimate || "");
+  // 새로운 견적 생성 중인지 여부
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { markdown, isLoading, startEstimate } = useEstimateProject(project.project_name, "");
 
+  // 스트림 완료 시 API 데이터 갱신
   useEffect(() => {
-    if (!isLoading) {
-      mutate(`/api/service/project/${project.project_name}`);
+    if (!isLoading && isGenerating && markdown) {
+      setIsGenerating(false);
+
+      const timer = setTimeout(() => {
+        mutate(`/api/service/project/${project.project_name}`);
+      }, 500);
+
+      return () => clearTimeout(timer);
     }
-  }, [isLoading]);
+  }, [isLoading, isGenerating, markdown, project.project_name]);
+  const handleStartEstimate = () => {
+    setIsGenerating(true);
+    startEstimate();
+  };
+
+  // 현재 표시할 견적 내용 결정 (스트림 중이면 실시간 markdown, 아니면 기존 견적)
+  const currentEstimate = isGenerating ? markdown : project.custom_ai_estimate || "";
+
+  // 현재 상태 결정
+  const hasExistingEstimate = Boolean(project.custom_ai_estimate);
+  const isThinking = isGenerating && !markdown; // 생성 중이면서 아직 스트림 데이터가 없는 상태
+  const showEstimateContent = Boolean(currentEstimate);
+  const showPricingTable = showEstimateContent && !isLoading;
+
+  // 버튼 텍스트 결정
+  const getButtonText = () => {
+    if (isGenerating && !markdown) return "견적 작성중이에요";
+    if (isGenerating && markdown) return "견적 생성중이에요";
+    if (!hasExistingEstimate && !currentEstimate) return "AI 견적 작성하기";
+    return "견적 다시 작성하기";
+  };
 
   return (
     <div className="w-full max-w-full flex flex-col space-y-5 pb-6">
       <div className="w-full flex justify-between items-center pb-3">
         <h2 className="text-2xl font-bold">AI 견적</h2>
         <button
-          onClick={startEstimate}
-          disabled={isLoading || !markdown}
+          onClick={handleStartEstimate}
+          disabled={isLoading || isGenerating}
           className="flex items-center space-x-2 text-white text-sm font-medium bg-black hover:bg-zinc-700 disabled:bg-zinc-500 transition-colors rounded-md duration-200 h-8 md:h-9 px-3"
         >
           <BreathingSparkles size={18} />
-          <p>{!markdown ? "견적 작성중이에요" : isLoading ? "견적 작성중이에요" : "견적 다시 작성하기"}</p>
+          <p>{getButtonText()}</p>
         </button>
       </div>
-      <MarkdownPreview loading={isLoading} className="!prose-sm">
-        {markdown}
-      </MarkdownPreview>
-      {markdown && !isLoading && (
+
+      {/* 생각중 상태 - 생성 시작했지만 아직 스트림 데이터가 없을 때만 */}
+      {isThinking && (
+        <div className="flex text-muted-foreground">
+          <span className="text-sm">생각중입니다...</span>
+        </div>
+      )}
+
+      {/* 견적 내용 표시 - 스트림 중에도 실시간으로 업데이트 */}
+      {showEstimateContent && (
+        <MarkdownPreview
+          loading={isGenerating} // 스트림 중일 때 로딩 표시
+          className="!prose-sm mb-12"
+        >
+          {currentEstimate}
+        </MarkdownPreview>
+      )}
+
+      {/* 가격 테이블 - 스트림 완료 후에만 표시 */}
+      {showPricingTable && (
         <>
           <div className="w-full grid grid-cols-1 md:grid-cols-2">
             <hr className="border-black col-span-full" />
