@@ -2,7 +2,7 @@
 
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import MarkdownPreview from "@/components/ui/markdownpreview";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { UserERPNextProject } from "@/@types/service/project";
 import { useEstimateProject } from "@/hooks/fetch/project";
 import { mutate } from "swr";
@@ -13,15 +13,7 @@ interface Props {
 }
 
 export default function ProjectEstimator({ project }: Props) {
-  const initialized = useRef(false);
   const { markdown, isLoading, startEstimate } = useEstimateProject(project.project_name, project.custom_ai_estimate || "");
-
-  useEffect(() => {
-    if (!initialized.current && !project.custom_ai_estimate) {
-      initialized.current = true;
-      startEstimate();
-    }
-  }, [project.custom_ai_estimate, startEstimate]);
 
   useEffect(() => {
     if (!isLoading) {

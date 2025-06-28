@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 import { auth, signIn } from "@/auth";
 import { SessionProvider } from "next-auth/react";
-import ProjectMain from "@/components/section/service/project/page/main";
+import { GanttChart } from "@/components/section/service/project/task/gantt-chart";
+import ProjectTab from "@/components/section/service/project/main/project-tab";
 
 export const metadata: Metadata = {
   title: "프로젝트 - Fellows",
@@ -14,8 +15,9 @@ export default async function Page() {
 
   return (
     <SessionProvider session={session}>
-      <div className="w-full h-full">
-        <ProjectMain session={session} tab="작업 현황" />
+      <div className="shrink-0 w-full h-full flex flex-col">
+        <ProjectTab />
+        <GanttChart />
       </div>
     </SessionProvider>
   );

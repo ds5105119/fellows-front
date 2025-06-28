@@ -1,36 +1,40 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
-import { type ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTasks } from "@/hooks/fetch/project";
-import dayjs from "@/lib/dayjs";
 import { type ERPNextTaskForUser, type ERPNextTaskStatus, erpNextTaskStatusEnum } from "@/@types/service/project";
-import { useMemo, useState } from "react";
+import dayjs from "@/lib/dayjs";
 
 export const description = "An interactive area chart showing task status over time";
 
 const chartConfig = {
   Open: {
-    label: "Open",
+    label: "열림",
     color: "var(--chart-1)",
   },
   Working: {
-    label: "Working",
+    label: "진행 중",
     color: "var(--chart-2)",
   },
   Overdue: {
-    label: "Overdue",
+    label: "지연",
     color: "var(--chart-3)",
   },
   Completed: {
-    label: "Completed",
+    label: "완료",
     color: "var(--chart-4)",
   },
   Cancelled: {
-    label: "Cancelled",
+    label: "취소",
     color: "var(--chart-5)",
+  },
+  "Pending Review": {
+    label: "검토 대기",
+    color: "var(--chart-6)",
   },
 } satisfies ChartConfig;
 
@@ -54,6 +58,9 @@ export function TaskOverviewChart() {
     const startDate = dayjs().subtract(days, "day");
     const endDate = dayjs();
 
+    // Template을 제외한 상태들만 사용
+    const statusOptions = erpNextTaskStatusEnum.options.filter((status) => status !== "Template");
+
     // 모든 날짜에 대해 초기 데이터 구조 생성
     const grouped: Record<string, Record<ERPNextTaskStatus, number>> = {};
 
@@ -61,19 +68,19 @@ export function TaskOverviewChart() {
     for (let date = startDate; date.isBefore(endDate) || date.isSame(endDate); date = date.add(1, "day")) {
       const dateKey = date.format("YYYY-MM-DD");
 
-      // 모든 status를 0으로 초기화한 객체를 바로 생성
-      grouped[dateKey] = erpNextTaskStatusEnum.options.reduce((acc, status) => {
+      // Template을 제외한 status들만 0으로 초기화
+      grouped[dateKey] = statusOptions.reduce((acc, status) => {
         acc[status] = 0;
         return acc;
       }, {} as Record<ERPNextTaskStatus, number>);
     }
 
-    // 실제 task 데이터로 업데이트
+    // 실제 task 데이터로 업데이트 (Template 제외)
     for (const task of tasks) {
       const date = task.exp_start_date ? dayjs(task.exp_start_date).format("YYYY-MM-DD") : null;
       const status = task.status;
 
-      if (!date || !status || !grouped[date]) continue;
+      if (!date || !status || !grouped[date] || status === "Template") continue;
 
       grouped[date][status] = (grouped[date][status] || 0) + 1;
     }
@@ -97,9 +104,22 @@ export function TaskOverviewChart() {
     return transformTasksToStatusByDate(tasks.data[0].items, timeRange);
   }, [tasks.data, timeRange]);
 
+  const getTimeRangeLabel = (range: string) => {
+    switch (range) {
+      case "7":
+        return "지난 일주일";
+      case "30":
+        return "지난 한달";
+      case "90":
+        return "지난 분기";
+      default:
+        return "지난 한달";
+    }
+  };
+
   return (
     <div className="w-full pt-0">
-      <div className="flex items-center gap-2 space-y-0 py-5 sm:flex-row">
+      <div className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
         <Select value={timeRange} onValueChange={setTimeRange}>
           <SelectTrigger className="w-[160px] rounded-lg" aria-label="Select a value">
             <SelectValue placeholder="최근 한달" />
@@ -138,10 +158,7 @@ export function TaskOverviewChart() {
               minTickGap={32}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString("ko-KR", {
-                  month: "short",
-                  day: "numeric",
-                });
+                return dayjs(date).format("MM/DD");
               }}
             />
             <ChartTooltip
@@ -159,18 +176,19 @@ export function TaskOverviewChart() {
                 />
               }
             />
-            {erpNextTaskStatusEnum.options.map((status) => (
-              <Area
-                key={status}
-                dataKey={status}
-                type="monotone"
-                fill={`url(#fill${status})`}
-                stroke={`var(--color-${status})`}
-                stackId="a"
-                connectNulls={false}
-              />
-            ))}
-            <ChartLegend content={<ChartLegendContent />} />
+            {erpNextTaskStatusEnum.options
+              .filter((status) => status !== "Template")
+              .map((status) => (
+                <Area
+                  key={status}
+                  dataKey={status}
+                  type="monotone"
+                  fill={`url(#fill${status})`}
+                  stroke={`var(--color-${status})`}
+                  stackId="a"
+                  connectNulls={false}
+                />
+              ))}
           </AreaChart>
         </ChartContainer>
       </div>

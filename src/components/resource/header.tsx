@@ -1,16 +1,9 @@
 export const headerData = {
   navMain: [
     { title: "대시보드", url: "/service/dashboard", icon: "FcNews" },
-    {
-      title: "프로젝트",
-      url: "/service/project",
-      icon: "FcOpenedFolder",
-      items: [
-        { title: "개요", url: "/service/project", icon: "FcTodoList" },
-        { title: "작업 현황", url: "/service/project/task", icon: "FcTreeStructure" },
-      ],
-    },
-    { title: "조달사업", url: "#", icon: "FcList" },
+    { title: "프로젝트", url: "/service/project", icon: "FcOpenedFolder" },
+    { title: "작업 현황", url: "/service/project/task", icon: "FcTodoList" },
+    { title: "이슈", url: "/service/project/issue", icon: "FcTreeStructure" },
     { title: "지원사업", url: "/service/welfare", icon: "FcList" },
     { title: "구독", url: "#", icon: "FcConferenceCall" },
   ],
