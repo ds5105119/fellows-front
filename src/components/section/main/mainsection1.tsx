@@ -76,8 +76,8 @@ export default async function MainSection1() {
           <AspectRatio ratio={987 / 1040}>
             <Image src="/hero-desktop-2.jpg" fill alt="Image" className="rounded-md object-cover" priority />
             <div className="absolute inset-0 flex z-10 items-center justify-center">
-              <div className="w-[85%] h-[70%] flex flex-col gap-3 text-end items-end justify-end">
-                <div className="flex w-full mb-auto mt-1.5">
+              <div className="w-[85%] h-[100%] flex flex-col gap-3 text-end items-end justify-end">
+                <div className="flex w-full mb-auto mt-7">
                   <div className="w-fit">
                     <Link
                       href="/service/welfare"
@@ -102,17 +102,18 @@ export default async function MainSection1() {
                     </Link>
                   </div>
                 </div>
+                <div className="flex flex-col w-full mb-7">
+                  <h1 className="text-3xl font-extrabold tracking-normal text-background hidden">Web, App 개발</h1>
+                  <h1 className="text-3xl font-extrabold tracking-normal text-background">
+                    <span className="font-black">Fellows℠</span>에서 앞서나가세요
+                  </h1>
 
-                <h1 className="text-3xl font-extrabold tracking-normal text-background hidden">Web, App 개발</h1>
-                <h1 className="text-3xl font-extrabold tracking-normal text-background">
-                  <span className="font-black">Fellows℠</span>에서 앞서나가세요
-                </h1>
-
-                <h4 className="scroll-m-20 text-sm font-semibold leading-tight text-muted ml-1 mt-2">
-                  제작부터 관리까지 최대 40% 더 적은 비용으로
-                  <br />
-                  주목받는 페이지를 만들어보세요.<span className="text-[#e64646] font-black">*</span>
-                </h4>
+                  <h4 className="scroll-m-20 text-sm font-semibold leading-tight text-muted ml-1 mt-2">
+                    제작부터 관리까지 최대 40% 더 적은 비용으로
+                    <br />
+                    주목받는 페이지를 만들어보세요.<span className="text-[#e64646] font-black">*</span>
+                  </h4>
+                </div>
               </div>
             </div>
           </AspectRatio>
