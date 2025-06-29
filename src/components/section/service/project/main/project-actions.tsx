@@ -54,7 +54,7 @@ export function ProjectActions({ project }: ProjectActionsProps) {
             </DialogTrigger>
             <DialogContent
               showCloseButton={false}
-              className="drop-shadow-white/10 drop-shadow-2xl p-0 w-fit max-w-fit h-[90%] overflow-x-auto sm:w-fit min-w-fit lg:min-w-4xl lg:h-fit rounded-2xl overflow-y-auto scrollbar-hide focus-visible:ring-0"
+              className="drop-shadow-white/10 drop-shadow-2xl p-0 w-full max-w-full h-full sm:w-full min-w-full lg:min-w-4xl lg:h-fit rounded-none lg:rounded-2xl overflow-y-auto scrollbar-hide focus-visible:ring-0"
             >
               <DialogHeader className="sr-only">
                 <DialogTitle className="sr-only">계약 창</DialogTitle>
@@ -74,7 +74,7 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                 <div className="w-full h-fit flex flex-col lg:flex-row lg:items-center lg:justify-center p-6 lg:p-8 space-y-6 lg:space-y-0">
                   <div className="lg:grow lg:h-full">
                     <div className="flex flex-col space-y-2">
-                      <Image src="/fellows/logo.svg" alt="펠로우즈 로고" width={120} height={120} className="select-none pb-4" priority />
+                      <Image src="/fellows/logo.svg" alt="펠로우즈 로고" width={120} height={120} className="select-none pb-" priority />
                       <div className="text-lg font-bold">견적 문의</div>
                     </div>
                   </div>
