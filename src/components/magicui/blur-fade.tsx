@@ -33,6 +33,7 @@ export function BlurFade({
   const isInView = useInView(ref, {
     once: true,
     margin: "-300px 0px -300px 0px",
+    amount: "some",
   });
 
   useEffect(() => {
