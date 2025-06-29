@@ -2,11 +2,10 @@
 
 import type { Session } from "next-auth";
 
-import Link from "next/link";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, LinkIcon, Fullscreen, Loader2 } from "lucide-react";
+import { ArrowLeft, Download, LinkIcon, Loader2 } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
 import { useProject, updateProject } from "@/hooks/fetch/project";
 import { updateERPNextProjectSchema, UserERPNextProject } from "@/@types/service/project";

@@ -61,6 +61,7 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                     <DatePicker />
                   </div>
                 </div>
+                <button onClick={handleSubmitProject} />
               </div>
             </DialogContent>
           </Dialog>

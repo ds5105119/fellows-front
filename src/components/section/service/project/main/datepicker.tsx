@@ -84,7 +84,7 @@ export default function DatePicker({ value, onSelect, className }: DatePickerPro
       classNames={{
         ...classNames,
         root: `${classNames.root}`,
-        day_button: `${classNames.day_button} !font-semibold`,
+        day_button: `${classNames.day_button} !font-semibold md:!font-medium`,
         chevron: `${classNames.chevron} !fill-blue-500`,
         month_grid: `${classNames.month_grid} !border-separate !border-spacing-x-1.5 !border-spacing-y-1.5`,
         months: `${classNames.months}`,
