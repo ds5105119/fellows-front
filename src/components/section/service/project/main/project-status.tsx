@@ -64,14 +64,14 @@ export function ProjectStatus({
               <SheetTitle>AI 견적서</SheetTitle>
             </SheetHeader>
             <div className="flex flex-col h-full overflow-y-auto scrollbar-hide">
-              <div className="sticky top-0 shrink-0 flex items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4 bg-background z-20">
+              <div className="sticky top-0 shrink-0 flex flex-row-reverse md:flex-row items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4 bg-background z-20">
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none">
                     <DownloadIcon className="h-4 w-4" />
                     내보내기
                   </Button>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-row-reverse md:flex-row items-center gap-3">
                   <Button variant="ghost" size="icon" className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
                     <DownloadIcon className="!size-5" />
                   </Button>

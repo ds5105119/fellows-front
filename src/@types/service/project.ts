@@ -337,6 +337,15 @@ export const erpNextToDoSchema = z
   .passthrough();
 export type ERPNextToDo = z.infer<typeof erpNextToDoSchema>;
 
+export const quoteSlotSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // YYYY-MM-DD 형식
+  remaining: z.union([z.string(), z.number()]).transform((val) => Number(val)), // "100" → 100
+});
+export type QuoteSlot = z.infer<typeof quoteSlotSchema>;
+
+export const quoteSlotsSchema = z.array(quoteSlotSchema);
+export type QuoteSlots = z.infer<typeof quoteSlotsSchema>;
+
 // --- File Models ---
 
 export const erpNextFileSchema = z

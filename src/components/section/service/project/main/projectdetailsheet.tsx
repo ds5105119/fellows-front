@@ -158,11 +158,6 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             <Download className="h-4 w-4" />
             내보내기
           </Button>
-          <Button variant="outline" size="icon" className="size-8 font-semibold rounded-sm border-gray-200 shadow-none" asChild>
-            <Link href={`./${project.project_name}/detail`}>
-              <Fullscreen className="h-4 w-4" />
-            </Link>
-          </Button>
         </div>
       </div>
 

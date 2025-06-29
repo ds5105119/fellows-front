@@ -191,7 +191,7 @@ export function GanttHeader({
                       <div className="w-full grid grid-cols-3 gap-3">
                         {erpNextTaskStatusEnum.options.map((val, idx) => {
                           return (
-                            <div key={idx} className="flex space-x-2 text-sm font-semibold">
+                            <div key={idx} className="flex space-x-2 text-xs md:text-sm font-semibold">
                               <input
                                 type="checkbox"
                                 checked={status ? status.includes(val) : false}

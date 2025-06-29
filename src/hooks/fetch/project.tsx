@@ -24,6 +24,8 @@ import {
   overviewProjectsPaginatedResponseSchema,
   OverviewProjectsPaginatedResponse,
   ERPNextTaskPaginatedResponse,
+  QuoteSlots,
+  quoteSlotsSchema,
 } from "@/@types/service/project";
 
 const API_BASE_URL = "/api/service/project";
@@ -425,4 +427,9 @@ export const useEstimateProject = (projectId: string | null, initialMarkdown: st
   }, [abortController]);
 
   return { markdown, isLoading, startEstimate, stopEstimate };
+};
+
+export const useQuoteSlots = (): SWRResponse<QuoteSlots> => {
+  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/slots/quote`;
+  return useSWR(url, async (url: string) => quoteSlotsSchema.parse(await fetcher(url)));
 };
