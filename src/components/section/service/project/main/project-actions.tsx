@@ -6,7 +6,7 @@ import { cancelSubmitProject, submitProject } from "@/hooks/fetch/project";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import DatePicker from "./datepicker";
 import { Separator } from "@/components/ui/separator";
-import { XIcon } from "lucide-react";
+import { CalendarIcon, ClockIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -16,6 +16,7 @@ interface ProjectActionsProps {
 
 export function ProjectActions({ project }: ProjectActionsProps) {
   const [date, setDate] = useState<Date | undefined>();
+  const [inbound, setInbound] = useState<boolean>(false);
 
   if (project.custom_project_status !== "draft" && project.custom_project_status !== "process:1") {
     return null;
@@ -23,7 +24,7 @@ export function ProjectActions({ project }: ProjectActionsProps) {
 
   const handleSubmitProject = async () => {
     try {
-      await submitProject(project.project_name, { date: date });
+      await submitProject(project.project_name, { date: date, inbound: inbound });
       window.location.reload();
     } catch (error) {
       console.error("Project submission failed:", error);
@@ -72,10 +73,35 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                   </Button>
                 </div>
                 <div className="w-full h-fit flex flex-col lg:flex-row lg:items-center lg:justify-center p-6 lg:p-8 space-y-6 lg:space-y-0">
-                  <div className="lg:grow lg:h-full">
+                  <div className="lg:grow lg:h-full lg:pr-6">
                     <div className="flex flex-col space-y-2">
                       <Image src="/fellows/logo.svg" alt="펠로우즈 로고" width={120} height={120} className="select-none pb-4" priority />
                       <div className="text-lg font-bold">견적 문의</div>
+                      <div className="flex flex-col space-y-1.5">
+                        <div className="text-sm flex space-x-3 items-center text-zinc-800">
+                          <ClockIcon className="size-4" />
+                          <p>{inbound ? "8시간" : "4시간"}</p>
+                        </div>
+                        <div className="text-sm flex space-x-3 items-center text-zinc-800">
+                          <CalendarIcon className="size-4" />
+                          <p>처리 기간: 3일</p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col space-y-2 pt-6">
+                        <div className="text-lg font-bold">상담이 필요하신가요?</div>
+                        <div className="text-sm whitespace-pre-wrap">
+                          시작 전에 펠로우즈 매니저와 상담을 진행해보세요.
+                          <br />
+                          개발 방향 및 디자인 등 준비되지 않은 상태에서 적합합니다.
+                        </div>
+                        <div className="flex space-x-2 items-center">
+                          <div className="flex space-x-2 text-xs md:text-sm font-semibold">
+                            <input type="checkbox" checked={inbound} onChange={() => setInbound(!inbound)} />
+                            <p>상담 필요</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <Separator orientation="vertical" className="hidden lg:block" />
@@ -83,12 +109,12 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                     <div className="flex flex-col space-y-2">
                       <div className="text-lg font-bold">희망 시작일이 있으신가요?</div>
                       <div className="text-sm">프로젝트 시작일을 결정할 수 있습니다.</div>
-                    </div>
-                    <div className="flex space-x-2 items-center">
-                      <p className="text-sm">지연 확률</p>
-                      <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-emerald-200">낮음</div>
-                      <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-amber-200">보통</div>
-                      <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-red-200">높음</div>
+                      <div className="flex space-x-2 items-center">
+                        <p className="text-sm">지연 확률</p>
+                        <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-emerald-200">낮음</div>
+                        <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-amber-200">보통</div>
+                        <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-red-200">높음</div>
+                      </div>
                     </div>
                     <div className="mx-auto lg:mx-0 pt-2">
                       <DatePicker value={date} onSelect={setDate} />

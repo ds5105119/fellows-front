@@ -129,7 +129,6 @@ export function ProjectDetails({ project, setEditedProject }: { project: UserERP
                         <div className="group flex items-center">
                           <button
                             onClick={() => {
-                              console.log("clicked");
                               const updatedFeatures = [...(project.custom_features ?? [])];
                               const idx = updatedFeatures.findIndex((f) => f.feature === feature.title);
                               if (idx !== -1) updatedFeatures.splice(idx, 1);
