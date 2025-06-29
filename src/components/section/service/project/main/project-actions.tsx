@@ -5,10 +5,10 @@ import type { UserERPNextProject } from "@/@types/service/project";
 import { cancelSubmitProject, submitProject } from "@/hooks/fetch/project";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import DatePicker from "./datepicker";
-import SelectLogo from "@/components/resource/selectlogo";
 import { Separator } from "@/components/ui/separator";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 
 interface ProjectActionsProps {
   project: UserERPNextProject;
@@ -71,14 +71,14 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                     계약 확정하기
                   </Button>
                 </div>
-                <div className="w-full h-fit flex flex-col lg:flex-row lg:items-center lg:justify-center p-6 lg:p-8 space-y-6">
+                <div className="w-full h-fit flex flex-col lg:flex-row lg:items-center lg:justify-center p-6 lg:p-8 space-y-6 lg:space-y-0">
                   <div className="lg:grow lg:h-full">
                     <div className="flex flex-col space-y-2">
-                      <SelectLogo />
+                      <Image src="/fellows/logo.svg" alt="펠로우즈 로고" width={120} height={120} className="select-none pb-4" priority />
                       <div className="text-lg font-bold">견적 문의</div>
                     </div>
                   </div>
-                  <Separator orientation="vertical" className="hidden lg:block mt-8" />
+                  <Separator orientation="vertical" className="hidden lg:block" />
                   <div className="lg:pl-6 flex flex-col space-y-4 w-full lg:w-fit">
                     <div className="flex flex-col space-y-2">
                       <div className="text-lg font-bold">희망 시작일이 있으신가요?</div>
