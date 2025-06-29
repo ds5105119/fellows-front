@@ -5,10 +5,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
   const session = await auth();
 
   const project_id = (await params).project_id;
-  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}/submit`;
+
+  const url = new URL(request.url);
+  const queryParams = new URLSearchParams();
+  const date = url.searchParams.get("date");
+  const inbound = url.searchParams.get("inbound");
+
+  if (date) queryParams.append("date", date);
+  if (inbound) queryParams.append("inbound", inbound);
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}/submit?${queryParams.toString()}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

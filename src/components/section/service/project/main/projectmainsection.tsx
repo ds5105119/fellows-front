@@ -297,13 +297,13 @@ export default function ProjectMainSection({ session, project_id }: { session: S
           <div className="flex w-full items-center space-x-4">
             <div className="text-sm font-semibold">최대 프로젝트 의뢰 수</div>
             <div className="grow">
-              <Progress value={(processCount / 15) * 100} />
+              <Progress value={(processCount / 10) * 100} />
             </div>
-            <div className="text-sm font-semibold">{processCount}/15</div>
+            <div className="text-sm font-semibold">{processCount}/10</div>
           </div>
           <div className="flex w-full items-center space-x-1.5 text-muted-foreground">
             <Info className="!size-3.5" />
-            <div className="text-sm">최대 15개의 프로젝트를 의뢰할 수 있어요.</div>
+            <div className="text-sm">최대 10개의 프로젝트를 의뢰할 수 있어요.</div>
           </div>
         </div>
       </div>

@@ -27,6 +27,7 @@ import {
   QuoteSlots,
   quoteSlotsSchema,
 } from "@/@types/service/project";
+import dayjs from "@/lib/dayjs";
 
 const API_BASE_URL = "/api/service/project";
 
@@ -133,8 +134,12 @@ export const deleteProject = async (projectId: string): Promise<void> => {
 };
 
 // --- SUBMIT ---
-export const submitProject = async (projectId: string): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/${projectId}/submit`, { method: "POST" });
+export const submitProject = async (projectId: string, params?: { date?: Date; inbound?: boolean }): Promise<void> => {
+  const searchParams = new URLSearchParams();
+  if (params?.date) searchParams.append("date", `${dayjs(params.date).format("YYYY-MM-DD")}`);
+  if (params?.inbound) searchParams.append("inbound", `${params.inbound}`);
+
+  const response = await fetch(`${API_BASE_URL}/${projectId}/submit?${searchParams.toString()}`, { method: "POST" });
   if (!response.ok) {
     toast.error("프로젝트 제출 중 오류가 발생했습니다.");
     throw new Error("Failed to submit project");

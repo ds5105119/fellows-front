@@ -57,6 +57,8 @@ export default function DatePicker({ value, onSelect, className }: DatePickerPro
   const handleSelect = (date: Date | undefined) => {
     if (date && getAvailability(date) > 0) {
       if (onSelect) onSelect(date);
+    } else if (typeof date === "undefined") {
+      if (onSelect) onSelect(date);
     }
   };
 
@@ -65,7 +67,7 @@ export default function DatePicker({ value, onSelect, className }: DatePickerPro
       animate
       mode="single"
       captionLayout="label"
-      navLayout="around"
+      navLayout="after"
       locale={ko}
       defaultMonth={value || today}
       selected={value}
@@ -76,9 +78,9 @@ export default function DatePicker({ value, onSelect, className }: DatePickerPro
         sunday: "text-red-500",
         today: "text-green-500 font-bold",
         selected: "text-white bg-primary hover:bg-primary/90 focus:bg-primary/90 border-0 rounded-md",
-        lowAvailability: "bg-red-100 rounded-md",
-        mediumAvailability: "bg-amber-100 rounded-md",
-        highAvailability: "bg-green-100 rounded-md",
+        lowAvailability: "bg-red-200 hover:bg-red-300 transition-colors duration-300 rounded-md",
+        mediumAvailability: "bg-amber-200 hover:bg-amber-300 transition-colors duration-300 rounded-md",
+        highAvailability: "bg-emerald-200 hover:bg-emerald-300 transition-colors duration-300 rounded-md",
         unavailable: "unavailable",
       }}
       classNames={{
@@ -92,6 +94,7 @@ export default function DatePicker({ value, onSelect, className }: DatePickerPro
       className={className}
       required={false}
       disabled={(date) => getAvailability(date) === 0}
+      fixedWeeks
     />
   );
 }

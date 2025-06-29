@@ -3,21 +3,27 @@
 import { Button } from "@/components/ui/button";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { cancelSubmitProject, submitProject } from "@/hooks/fetch/project";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import DatePicker from "./datepicker";
+import SelectLogo from "@/components/resource/selectlogo";
+import { Separator } from "@/components/ui/separator";
+import { XIcon } from "lucide-react";
+import { useState } from "react";
 
 interface ProjectActionsProps {
   project: UserERPNextProject;
 }
 
 export function ProjectActions({ project }: ProjectActionsProps) {
+  const [date, setDate] = useState<Date | undefined>();
+
   if (project.custom_project_status !== "draft" && project.custom_project_status !== "process:1") {
     return null;
   }
 
   const handleSubmitProject = async () => {
     try {
-      await submitProject(project.project_name);
+      await submitProject(project.project_name, { date: date });
       window.location.reload();
     } catch (error) {
       console.error("Project submission failed:", error);
@@ -48,20 +54,47 @@ export function ProjectActions({ project }: ProjectActionsProps) {
             </DialogTrigger>
             <DialogContent
               showCloseButton={false}
-              className="drop-shadow-white/10 drop-shadow-2xl p-0 w-full max-w-full h-full sm:w-full md:w-fit md:h-3/4 rounded-none md:rounded-2xl overflow-y-auto scrollbar-hide focus-visible:ring-0"
+              className="drop-shadow-white/10 drop-shadow-2xl p-0 w-fit max-w-fit h-[90%] overflow-x-auto sm:w-fit min-w-fit lg:min-w-4xl lg:h-fit rounded-2xl overflow-y-auto scrollbar-hide focus-visible:ring-0"
             >
               <DialogHeader className="sr-only">
                 <DialogTitle className="sr-only">계약 창</DialogTitle>
                 <DialogDescription className="sr-only" />
               </DialogHeader>
               <div className="w-full h-full flex flex-col">
-                <div className="sticky top-0 w-full px-6 py-3.5 border-b border-b-muted bg-white font-bold">계약 문의하기</div>
-                <div className="w-full h-full flex flex-col p-6 space-y-6">
-                  <div className="mx-auto">
-                    <DatePicker />
+                <div className="sticky top-0 w-full px-3.5 py-3.5 border-b border-b-muted bg-white font-bold flex justify-between">
+                  <DialogClose asChild>
+                    <Button variant="ghost" size="icon">
+                      <XIcon />
+                    </Button>
+                  </DialogClose>
+                  <Button variant="outline" onClick={handleSubmitProject}>
+                    계약 확정하기
+                  </Button>
+                </div>
+                <div className="w-full h-fit flex flex-col lg:flex-row lg:items-center lg:justify-center p-6 lg:p-8 space-y-6">
+                  <div className="lg:grow lg:h-full">
+                    <div className="flex flex-col space-y-2">
+                      <SelectLogo />
+                      <div className="text-lg font-bold">견적 문의</div>
+                    </div>
+                  </div>
+                  <Separator orientation="vertical" className="hidden lg:block mt-8" />
+                  <div className="lg:pl-6 flex flex-col space-y-4 w-full lg:w-fit">
+                    <div className="flex flex-col space-y-2">
+                      <div className="text-lg font-bold">희망 시작일이 있으신가요?</div>
+                      <div className="text-sm">프로젝트 시작일을 결정할 수 있습니다.</div>
+                    </div>
+                    <div className="flex space-x-2 items-center">
+                      <p className="text-sm">지연 확률</p>
+                      <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-emerald-200">낮음</div>
+                      <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-amber-200">보통</div>
+                      <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-red-200">높음</div>
+                    </div>
+                    <div>
+                      <DatePicker value={date} onSelect={setDate} />
+                    </div>
                   </div>
                 </div>
-                <button onClick={handleSubmitProject} />
               </div>
             </DialogContent>
           </Dialog>
