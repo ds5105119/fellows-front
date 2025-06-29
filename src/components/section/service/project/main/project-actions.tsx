@@ -97,8 +97,8 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                         </div>
                         <div className="flex space-x-2 items-center">
                           <div className="flex space-x-2 text-xs md:text-sm font-semibold">
-                            <input type="checkbox" checked={inbound} onChange={() => setInbound(!inbound)} />
-                            <p>상담 필요</p>
+                            <input id="inbound" type="checkbox" checked={inbound} onChange={() => setInbound(!inbound)} />
+                            <label htmlFor="inbound">상담 필요</label>
                           </div>
                         </div>
                       </div>
