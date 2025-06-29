@@ -74,7 +74,7 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                 <div className="w-full h-fit flex flex-col lg:flex-row lg:items-center lg:justify-center p-6 lg:p-8 space-y-6 lg:space-y-0">
                   <div className="lg:grow lg:h-full">
                     <div className="flex flex-col space-y-2">
-                      <Image src="/fellows/logo.svg" alt="펠로우즈 로고" width={120} height={120} className="select-none pb-" priority />
+                      <Image src="/fellows/logo.svg" alt="펠로우즈 로고" width={120} height={120} className="select-none pb-4" priority />
                       <div className="text-lg font-bold">견적 문의</div>
                     </div>
                   </div>
@@ -90,7 +90,7 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                       <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-amber-200">보통</div>
                       <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-red-200">높음</div>
                     </div>
-                    <div>
+                    <div className="mx-auto lg:mx-0 pt-2">
                       <DatePicker value={date} onSelect={setDate} />
                     </div>
                   </div>
