@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { auth, signIn } from "@/auth";
 import { SessionProvider } from "next-auth/react";
 import ProjectTab from "@/components/section/service/project/main/project-tab";
+import IssuesPage from "@/components/section/service/project/issue/issue-main";
 
 export const metadata: Metadata = {
   title: "프로젝트 - Fellows",
@@ -16,6 +17,7 @@ export default async function Page() {
     <SessionProvider session={session}>
       <div className="shrink-0 w-full h-full flex flex-col">
         <ProjectTab />
+        <IssuesPage />
       </div>
     </SessionProvider>
   );
