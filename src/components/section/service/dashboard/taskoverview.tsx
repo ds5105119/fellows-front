@@ -14,27 +14,23 @@ export const description = "An interactive area chart showing task status over t
 const chartConfig = {
   Open: {
     label: "열림",
-    color: "var(--chart-1)",
+    color: "var(--chart-4)",
   },
   Working: {
     label: "진행 중",
-    color: "var(--chart-2)",
+    color: "oklch(90.7% 0.231 133)",
   },
   Overdue: {
     label: "지연",
-    color: "var(--chart-3)",
+    color: "oklch(66.2% 0.225 25.9)",
   },
   Completed: {
     label: "완료",
-    color: "var(--chart-4)",
+    color: "oklch(69.6% 0.165 251)",
   },
   Cancelled: {
     label: "취소",
-    color: "var(--chart-5)",
-  },
-  "Pending Review": {
-    label: "검토 대기",
-    color: "var(--chart-6)",
+    color: "oklch(0.86 0.0701 252.53 / 0.6)",
   },
 } satisfies ChartConfig;
 
@@ -59,7 +55,7 @@ export function TaskOverviewChart() {
     const endDate = dayjs();
 
     // Template을 제외한 상태들만 사용
-    const statusOptions = erpNextTaskStatusEnum.options.filter((status) => status !== "Template");
+    const statusOptions = erpNextTaskStatusEnum.options.filter((status) => status !== "Template" && status !== "Pending Review");
 
     // 모든 날짜에 대해 초기 데이터 구조 생성
     const grouped: Record<string, Record<ERPNextTaskStatus, number>> = {};
@@ -80,7 +76,7 @@ export function TaskOverviewChart() {
       const date = task.exp_start_date ? dayjs(task.exp_start_date).format("YYYY-MM-DD") : null;
       const status = task.status;
 
-      if (!date || !status || !grouped[date] || status === "Template") continue;
+      if (!date || !status || !grouped[date] || status === "Template" || status === "Pending Review") continue;
 
       grouped[date][status] = (grouped[date][status] || 0) + 1;
     }
@@ -164,7 +160,7 @@ export function TaskOverviewChart() {
               }
             />
             {erpNextTaskStatusEnum.options
-              .filter((status) => status !== "Template")
+              .filter((status) => status !== "Template" && status !== "Pending Review")
               .map((status) => (
                 <Area
                   key={status}

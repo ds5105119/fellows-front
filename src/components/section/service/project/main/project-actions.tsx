@@ -9,7 +9,8 @@ import { Separator } from "@/components/ui/separator";
 import { CalendarIcon, ClockIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
-
+import { useQuoteSlots } from "@/hooks/fetch/project";
+import dayjs from "@/lib/dayjs";
 interface ProjectActionsProps {
   project: UserERPNextProject;
 }
@@ -18,9 +19,43 @@ export function ProjectActions({ project }: ProjectActionsProps) {
   const [date, setDate] = useState<Date | undefined>();
   const [inbound, setInbound] = useState<boolean>(false);
 
-  if (project.custom_project_status !== "draft" && project.custom_project_status !== "process:1") {
-    return null;
-  }
+  const swr = useQuoteSlots();
+  const availabilityData = swr.data || [];
+  const availabilityMap = new Map(availabilityData.map((item) => [item.date, item.remaining]));
+
+  const getAvailability = (date: Date) => {
+    const dateString = dayjs(date).format("YYYY-MM-DD");
+    return Number(availabilityMap.get(dateString)) || 0;
+  };
+
+  const modifiers = {
+    saturday: (date: Date) => date.getDay() === 6,
+    sunday: (date: Date) => date.getDay() === 0,
+    available: (date: Date) => {
+      const availability = getAvailability(date);
+      return availability > 0;
+    },
+    lowAvailability: (date: Date) => {
+      const availability = getAvailability(date);
+      return availability > 0 && availability <= 33;
+    },
+    mediumAvailability: (date: Date) => {
+      const availability = getAvailability(date);
+      return availability > 33 && availability <= 66;
+    },
+    highAvailability: (date: Date) => {
+      const availability = getAvailability(date);
+      return availability > 66;
+    },
+  };
+
+  const handleSelect = (date: Date | undefined) => {
+    if (date && getAvailability(date) > 0) {
+      setDate(date);
+    } else if (typeof date === "undefined") {
+      setDate(date);
+    }
+  };
 
   const handleSubmitProject = async () => {
     try {
@@ -117,7 +152,7 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                       </div>
                     </div>
                     <div className="mx-auto lg:mx-0 pt-2">
-                      <DatePicker value={date} onSelect={setDate} />
+                      <DatePicker value={date} onSelect={handleSelect} modifiers={modifiers} disabled={(date) => getAvailability(date) === 0} />
                     </div>
                   </div>
                 </div>

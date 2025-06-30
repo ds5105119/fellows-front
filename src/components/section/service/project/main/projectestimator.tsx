@@ -13,13 +13,18 @@ interface Props {
 }
 
 export default function ProjectEstimator({ project }: Props) {
-  // 새로운 견적 생성 중인지 여부
   const [isGenerating, setIsGenerating] = useState(false);
+  // 마지막 생성된 견적을 캐시하는 상태 추가
+  const [lastGeneratedEstimate, setLastGeneratedEstimate] = useState("");
+
   const { markdown, isLoading, startEstimate } = useEstimateProject(project.project_name, "");
 
   // 스트림 완료 시 API 데이터 갱신
   useEffect(() => {
     if (!isLoading && isGenerating && markdown) {
+      // 마지막 생성된 견적을 저장
+      setLastGeneratedEstimate(markdown);
+
       const timer = setTimeout(() => {
         mutate(`/api/service/project/${project.project_name}`);
         setIsGenerating(false);
@@ -34,12 +39,19 @@ export default function ProjectEstimator({ project }: Props) {
     startEstimate();
   };
 
-  // 현재 표시할 견적 내용 결정 (스트림 중이면 실시간 markdown, 아니면 기존 견적)
-  const currentEstimate = isGenerating ? markdown : project.custom_ai_estimate || "";
+  // 현재 표시할 견적 내용 결정 (개선된 로직)
+  const currentEstimate = (() => {
+    if (isGenerating) {
+      return markdown; // 스트림 중에는 실시간 markdown
+    }
+
+    // 스트림 완료 후에는 서버 데이터 우선, 없으면 마지막 생성된 견적 사용
+    return project.custom_ai_estimate || lastGeneratedEstimate || "";
+  })();
 
   // 현재 상태 결정
-  const hasExistingEstimate = Boolean(project.custom_ai_estimate);
-  const isThinking = isGenerating && !markdown; // 생성 중이면서 아직 스트림 데이터가 없는 상태
+  const hasExistingEstimate = Boolean(project.custom_ai_estimate || lastGeneratedEstimate);
+  const isThinking = isGenerating && !markdown;
   const showEstimateContent = Boolean(currentEstimate);
   const showPricingTable = showEstimateContent && !isLoading;
 
@@ -65,10 +77,10 @@ export default function ProjectEstimator({ project }: Props) {
         </button>
       </div>
 
-      {/* 생각중 상태 - 생성 시작했지만 아직 스트림 데이터가 없을 때만 */}
+      {/* 생각중 상태 */}
       {isThinking && (
         <div className="flex items-center space-x-1.5">
-          <span className="text-sm text-muted-foreground">생각중입니다(1분 이상 걸릴 수 있습니다)</span>
+          <span className="text-sm text-muted-foreground">견적서를 생성하는 중입니다. 1분 정도 걸릴 수 있으니 견적서가 준비되면 다시 확인해 주세요.</span>
           <div className="flex justify-center space-x-1">
             {[0, 1, 2].map((i) => (
               <div key={i} className="w-[3px] h-[3px] bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.2}s` }} />
@@ -77,17 +89,14 @@ export default function ProjectEstimator({ project }: Props) {
         </div>
       )}
 
-      {/* 견적 내용 표시 - 스트림 중에도 실시간으로 업데이트 */}
+      {/* 견적 내용 표시 */}
       {showEstimateContent && (
-        <MarkdownPreview
-          loading={isGenerating} // 스트림 중일 때 로딩 표시
-          className="!prose-sm mb-12"
-        >
+        <MarkdownPreview loading={isGenerating} className="!prose-sm mb-12">
           {currentEstimate}
         </MarkdownPreview>
       )}
 
-      {/* 가격 테이블 - 스트림 완료 후에만 표시 */}
+      {/* 가격 테이블 */}
       {showPricingTable && (
         <>
           <div className="w-full grid grid-cols-1 md:grid-cols-2">

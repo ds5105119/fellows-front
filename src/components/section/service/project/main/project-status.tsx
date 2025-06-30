@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Session } from "next-auth";
-import type { UserERPNextProject } from "@/@types/service/project";
+import { platformEnum, type UserERPNextProject } from "@/@types/service/project";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon, XIcon } from "lucide-react";
@@ -12,16 +12,38 @@ import ProjectEstimator from "./projectestimator";
 import SelectLogo from "@/components/resource/selectlogo";
 import dayjs from "dayjs";
 import { STATUS_MAPPING, PLATFORM_MAPPING } from "@/components/resource/project";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import DatePicker from "./datepicker";
 
 export function ProjectStatus({
   project,
   session,
+  setEditedProject,
 }: {
   project: UserERPNextProject;
   session: Session;
   setEditedProject: (project: UserERPNextProject) => void;
 }) {
   const [openSheet, setOpenSheet] = useState(false);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const twoweeksAfter = dayjs(today).add(14, "days");
+
+  const disabledDays = [
+    { before: twoweeksAfter.toDate() },
+    (date: Date) => {
+      const day = date.getDay();
+      return day === 0 || day === 6;
+    },
+  ];
 
   return (
     <>
@@ -34,20 +56,66 @@ export function ProjectStatus({
 
       <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
         <h3 className="text-sm font-bold">플랫폼</h3>
-        <div className="flex space-x-2">
-          {project.custom_platforms?.map((val, i) => (
-            <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
-              {PLATFORM_MAPPING[val.platform]}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex space-x-2 w-44 justify-end">
+              {project.custom_platforms?.map((val, i) => (
+                <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
+                  {PLATFORM_MAPPING[val.platform]}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="drop-shadow-white/10 drop-shadow-2xl p-0 !h-fit !w-fit overflow-y-auto scrollbar-hide focus-visible:ring-0">
+            <DropdownMenuLabel>플랫폼</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            {platformEnum.options.map((val) => (
+              <DropdownMenuCheckboxItem
+                key={val as string}
+                checked={(project.custom_platforms || []).some((p) => p.platform === val)}
+                onSelect={(e) => {
+                  e.preventDefault();
+                }}
+                onCheckedChange={(checked) => {
+                  const current = project.custom_platforms || [];
+                  setEditedProject({
+                    ...project,
+                    custom_platforms: checked
+                      ? [...current, { doctype: null, platform: val }]
+                      : current.length == 1
+                      ? current
+                      : current.filter((p) => p.platform !== val),
+                  });
+                }}
+              >
+                {PLATFORM_MAPPING[val]}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
         <h3 className="text-sm font-bold">{project.custom_project_status === "draft" ? "예상 종료일" : "계약 종료일"}</h3>
-        <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold truncate">
-          {project.expected_end_date ? dayjs(project.expected_end_date).format("YYYY-MM-DD") : "정해지지 않았어요"}
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex space-x-2 w-44 justify-end">
+              <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold truncate">
+                {project.expected_end_date ? dayjs(project.expected_end_date).format("YYYY-MM-DD") : "정해지지 않았어요"}
+              </div>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="drop-shadow-white/10 drop-shadow-2xl p-0 !h-fit !w-fit overflow-y-auto scrollbar-hide focus-visible:ring-0">
+            <div className="p-6 pb-0">
+              <DatePicker
+                value={project.expected_end_date ?? undefined}
+                onSelect={(date) => setEditedProject({ ...project, expected_end_date: date })}
+                disabled={disabledDays}
+              />
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
