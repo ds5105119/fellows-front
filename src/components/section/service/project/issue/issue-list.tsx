@@ -69,7 +69,7 @@ const getStatusColor = (status: string | null) => {
   }
 };
 
-export default function IssueList({ issues, isLoading, isValidating, onCreateClick, onEditClick, onDeleteClick, onSearch, onFilterChange }: IssueListProps) {
+export default function IssueList({ issues, isValidating, onCreateClick, onEditClick, onDeleteClick, onSearch, onFilterChange }: IssueListProps) {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
 
@@ -181,22 +181,8 @@ export default function IssueList({ issues, isLoading, isValidating, onCreateCli
 
   return (
     <div>
-      {/* 헤더 */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900 flex items-center gap-2">
-            이슈 관리
-            {isValidating && <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />}
-          </h1>
-          <p className="text-sm text-gray-600 mt-1">프로젝트 이슈를 관리하고 추적하세요</p>
-        </div>
-        <Button onClick={onCreateClick} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
-          <Plus className="w-4 h-4 mr-2" />새 이슈 등록
-        </Button>
-      </div>
-
       {/* 필터 및 검색 */}
-      <div className="mb-6">
+      <div>
         <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50">
           <form onSubmit={handleSearch} className="flex-1 flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
@@ -211,6 +197,9 @@ export default function IssueList({ issues, isLoading, isValidating, onCreateCli
             </div>
             <Button type="submit" variant="outline" disabled={isValidating} className="w-full sm:w-auto bg-white">
               {isValidating ? <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" /> : "검색"}
+            </Button>
+            <Button onClick={onCreateClick} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+              <Plus className="w-4 h-4 mr-2" />새 이슈 등록
             </Button>
           </form>
 
@@ -229,7 +218,7 @@ export default function IssueList({ issues, isLoading, isValidating, onCreateCli
       </div>
 
       {/* 이슈 목록 */}
-      <div className="bg-white border border-gray-200">
+      <div className="bg-white border-y border-gray-200">
         {/* 로딩 오버레이 */}
         {isValidating && issues.length > 0 && (
           <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10">

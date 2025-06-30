@@ -53,7 +53,7 @@ export default function IssuesPage() {
       }
       mutate();
       setIsFormOpen(false);
-    } catch (error) {
+    } catch {
       toast(selectedIssue ? "이슈 수정에 실패했습니다." : "이슈 등록에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
@@ -68,7 +68,7 @@ export default function IssuesPage() {
       await deleteIssue(selectedIssue.name);
       mutate();
       setIsDeleteDialogOpen(false);
-    } catch (error) {
+    } catch {
       toast("이슈 삭제에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
