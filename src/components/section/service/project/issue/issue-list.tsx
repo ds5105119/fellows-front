@@ -153,7 +153,7 @@ export default function IssueList({ onCreateClick, onEditClick, onDeleteClick, o
     const newFilters = { ...filters };
     newFilters[key] = undefined;
 
-    const cleanedFilters = Object.fromEntries(Object.entries(newFilters).filter(([_, value]) => value !== undefined)) as IssueFilters;
+    const cleanedFilters = Object.fromEntries(Object.entries(newFilters).filter(([__, value]) => value !== undefined)) as IssueFilters;
 
     setFilters(cleanedFilters);
   };
