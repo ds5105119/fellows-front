@@ -31,6 +31,10 @@ export function ProjectStatus({
   session: Session;
   setEditedProject: (project: UserERPNextProject) => void;
 }) {
+  const canEdit = project.custom_project_status === "draft";
+
+  const [openPlatform, setOpenPlatform] = useState(false);
+  const [openEndDate, setOpenEndDate] = useState(false);
   const [openSheet, setOpenSheet] = useState(false);
 
   const today = new Date();
@@ -56,7 +60,7 @@ export function ProjectStatus({
 
       <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
         <h3 className="text-sm font-bold">플랫폼</h3>
-        <DropdownMenu>
+        <DropdownMenu open={canEdit ? openPlatform : false} onOpenChange={(val) => canEdit && setOpenPlatform(val)}>
           <DropdownMenuTrigger asChild>
             <div className="flex space-x-2 w-44 justify-end">
               {project.custom_platforms?.map((val, i) => (
@@ -98,7 +102,7 @@ export function ProjectStatus({
 
       <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
         <h3 className="text-sm font-bold">{project.custom_project_status === "draft" ? "예상 종료일" : "계약 종료일"}</h3>
-        <DropdownMenu>
+        <DropdownMenu open={canEdit ? openEndDate : false} onOpenChange={(val) => canEdit && setOpenEndDate(val)}>
           <DropdownMenuTrigger asChild>
             <div className="flex space-x-2 w-44 justify-end">
               <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold truncate">
