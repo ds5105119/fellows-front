@@ -3,12 +3,13 @@ import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
 
 const API_BASE_URL = "/api/service/project";
 
-interface IssueFilters {
+export interface IssueFilters {
   page?: number;
   size?: number;
   order_by?: string[];
   issue_type?: string[];
   project_id?: string[];
+  status?: string[];
   start?: string;
   end?: string;
   keyword?: string;
@@ -40,6 +41,7 @@ const issuesGetKeyFactory = (params: IssueFilters): SWRInfiniteKeyLoader<IssueLi
     if (params.order_by) params.order_by.forEach((order) => searchParams.append("order_by", order));
     if (params.issue_type) params.issue_type.forEach((type) => searchParams.append("issue_type", type));
     if (params.project_id) params.project_id.forEach((id) => searchParams.append("project_id", id));
+    if (params.status) params.status.forEach((id) => searchParams.append("status", id));
     if (params.start) searchParams.append("start", params.start);
     if (params.end) searchParams.append("end", params.end);
     if (params.keyword) searchParams.append("keyword", params.keyword);

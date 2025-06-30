@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useIssues, createIssue, updateIssue, deleteIssue } from "@/hooks/fetch/issue";
-import type { Issue, CreateIssueData, UpdateIssueData, IssueType } from "@/@types/service/issue";
+import { createIssue, updateIssue, deleteIssue } from "@/hooks/fetch/issue";
+import type { Issue, CreateIssueData, UpdateIssueData } from "@/@types/service/issue";
 import IssueList from "@/components/section/service/project/issue/issue-list";
 import IssueForm from "@/components/section/service/project/issue/issue-form";
 import { Button } from "@/components/ui/button";
@@ -10,23 +10,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { toast } from "sonner";
 
 export default function IssuesPage() {
-  const [filters, setFilters] = useState<{
-    keyword?: string;
-    issue_type?: IssueType[];
-  }>({});
-
-  const { data, isLoading, isValidating, mutate } = useIssues({
-    keyword: filters.keyword,
-    issue_type: filters.issue_type,
-    size: 50,
-  });
-
-  const issues = data?.flatMap((item) => item.items) ?? [];
-
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [refreshList, setRefreshList] = useState<(() => void) | null>(null);
 
   const handleCreateClick = () => {
     setSelectedIssue(null);
@@ -51,7 +39,7 @@ export default function IssuesPage() {
       } else {
         await createIssue(data as CreateIssueData);
       }
-      mutate();
+      refreshList?.();
       setIsFormOpen(false);
     } catch {
       toast(selectedIssue ? "이슈 수정에 실패했습니다." : "이슈 등록에 실패했습니다.");
@@ -66,7 +54,7 @@ export default function IssuesPage() {
     setIsSubmitting(true);
     try {
       await deleteIssue(selectedIssue.name);
-      mutate();
+      refreshList?.();
       setIsDeleteDialogOpen(false);
     } catch {
       toast("이슈 삭제에 실패했습니다.");
@@ -75,26 +63,9 @@ export default function IssuesPage() {
     }
   };
 
-  const handleSearch = (keyword: string) => {
-    setFilters((prev) => ({ ...prev, keyword }));
-  };
-
-  const handleFilterChange = (newFilters: { issue_type?: IssueType[] }) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
-  };
-
   return (
     <div>
-      <IssueList
-        issues={issues}
-        isLoading={isLoading}
-        isValidating={isValidating}
-        onCreateClick={handleCreateClick}
-        onEditClick={handleEditClick}
-        onDeleteClick={handleDeleteClick}
-        onSearch={handleSearch}
-        onFilterChange={handleFilterChange}
-      />
+      <IssueList onCreateClick={handleCreateClick} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} onRefreshReady={setRefreshList} />
 
       <IssueForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} onSubmit={handleFormSubmit} issue={selectedIssue} isLoading={isSubmitting} />
 
@@ -110,10 +81,10 @@ export default function IssuesPage() {
             </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)} disabled={isSubmitting}>
+            <Button onClick={() => setIsDeleteDialogOpen(false)} disabled={isSubmitting} className="bg-gray-100 hover:bg-gray-200 text-gray-700 border-0">
               취소
             </Button>
-            <Button variant="destructive" onClick={handleDeleteConfirm} disabled={isSubmitting}>
+            <Button onClick={handleDeleteConfirm} disabled={isSubmitting} className="bg-red-600 hover:bg-red-700 text-white border-0">
               {isSubmitting ? "삭제 중..." : "삭제"}
             </Button>
           </DialogFooter>

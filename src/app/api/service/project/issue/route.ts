@@ -27,6 +27,9 @@ export async function GET(request: NextRequest) {
     const projectIds = searchParams.getAll("project_id");
     projectIds.forEach((id) => params.append("project_id", id));
 
+    const statuses = searchParams.getAll("status");
+    statuses.forEach((status) => params.append("status", status));
+
     // 날짜 및 키워드 파라미터
     if (searchParams.get("start")) params.append("start", searchParams.get("start")!);
     if (searchParams.get("end")) params.append("end", searchParams.get("end")!);
