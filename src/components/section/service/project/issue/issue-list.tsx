@@ -88,7 +88,7 @@ const MultiSelect = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full sm:w-40 justify-between border-0 bg-white hover:bg-gray-50 focus:ring-0"
+          className="w-full sm:w-40 justify-between border-0 bg-muted hover:bg-muted focus:bg-muted focus:ring-0 focus:outline-0 shadow-none"
           disabled={disabled}
         >
           {value.length > 0 ? `${value.length}개 선택` : placeholder}
@@ -291,7 +291,7 @@ export default function IssueList({ onCreateClick, onEditClick, onDeleteClick, o
     <div>
       {/* 필터 및 검색 */}
       <div>
-        <div className="flex flex-col gap-4 p-4 bg-gray-50">
+        <div className="flex flex-col gap-4 p-4">
           {/* 첫 번째 줄: 검색과 새 이슈 등록 */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 flex flex-col sm:flex-row gap-2">
@@ -301,8 +301,7 @@ export default function IssueList({ onCreateClick, onEditClick, onDeleteClick, o
                   placeholder="이슈 제목, 설명으로 검색..."
                   value={filters.keyword || ""}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="pl-10 border-0 bg-white hover:bg-gray-50 focus:bg-white focus:ring-0 focus:outline-0"
-                  disabled={isValidating}
+                  className="pl-10 border-0 bg-muted hover:bg-muted focus:bg-muted focus-visible:ring-0 focus-visible:outline-0 shadow-none"
                 />
               </div>
             </div>
@@ -324,7 +323,6 @@ export default function IssueList({ onCreateClick, onEditClick, onDeleteClick, o
                 value={filters.issue_type || []}
                 onValueChange={(value) => handleMultiSelectChange("issue_type", value)}
                 placeholder="타입"
-                disabled={isLoading}
               />
 
               {/* 상태 필터 - Multi Select */}
@@ -339,7 +337,6 @@ export default function IssueList({ onCreateClick, onEditClick, onDeleteClick, o
                 value={filters.status || []}
                 onValueChange={(value) => handleMultiSelectChange("status", value)}
                 placeholder="상태"
-                disabled={isLoading}
               />
 
               {/* 날짜 범위 필터 */}
@@ -349,16 +346,14 @@ export default function IssueList({ onCreateClick, onEditClick, onDeleteClick, o
                   placeholder="시작일"
                   value={filters.start || ""}
                   onChange={(e) => handleFilterChange("start", e.target.value || undefined)}
-                  className="w-full sm:w-36 border-0 bg-white hover:bg-gray-50 focus:bg-white focus:ring-0 focus:outline-0"
-                  disabled={isLoading}
+                  className="w-full sm:w-36 border-0 bg-muted hover:bg-muted focus:bg-muted focus-visible:ring-0 focus-visible:outline-0 shadow-none"
                 />
                 <Input
                   type="date"
                   placeholder="종료일"
                   value={filters.end || ""}
                   onChange={(e) => handleFilterChange("end", e.target.value || undefined)}
-                  className="w-full sm:w-36 border-0 bg-white hover:bg-gray-50 focus:bg-white focus:ring-0 focus:outline-0"
-                  disabled={isLoading}
+                  className="w-full sm:w-36 border-0 bg-muted hover:bg-muted focus:bg-muted focus-visible:ring-0 focus-visible:outline-0 shadow-none"
                 />
               </div>
             </div>
@@ -464,7 +459,7 @@ export default function IssueList({ onCreateClick, onEditClick, onDeleteClick, o
 
         {/* 로딩 오버레이 */}
         {isValidating && issues.length > 0 && (
-          <div className="absolute inset-0 bg-white/70 z-10">
+          <div className="bg-white/70">
             <div className="space-y-0">
               {[...Array(Math.min(5, issues.length))].map((_, i) => (
                 <SkeletonItem key={`skeleton-${i}`} />
