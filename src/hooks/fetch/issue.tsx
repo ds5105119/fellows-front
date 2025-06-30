@@ -21,13 +21,7 @@ const fetcher = async (url: string) => {
     throw new Error("Failed to fetch");
   }
   const data = await response.json();
-
-  try {
-    IssueListResponseSchema.parse(data);
-    console.log(IssueListResponseSchema.parse(data));
-  } catch (error) {
-    console.error("Failed to parse data:", error);
-  }
+  IssueListResponseSchema.parse(data);
   return data;
 };
 
@@ -59,16 +53,9 @@ export function useIssues(params: IssueFilters = {}) {
 }
 
 export async function createIssue(data: CreateIssueData): Promise<Issue> {
-  const params = new URLSearchParams();
-  params.append("subject", data.subject);
-  params.append("custom_sub", data.custom_sub);
-  if (data.priority) params.append("priority", data.priority);
-  if (data.issue_type) params.append("issue_type", data.issue_type);
-  if (data.description) params.append("description", data.description);
-  if (data.project) params.append("project", data.project);
-
-  const response = await fetch(`${API_BASE_URL}/issue?${params.toString()}`, {
+  const response = await fetch(`${API_BASE_URL}/issue`, {
     method: "POST",
+    body: JSON.stringify(data),
   });
 
   if (!response.ok) {
@@ -80,15 +67,9 @@ export async function createIssue(data: CreateIssueData): Promise<Issue> {
 }
 
 export async function updateIssue(name: string, data: UpdateIssueData): Promise<Issue> {
-  const params = new URLSearchParams();
-  if (data.subject) params.append("subject", data.subject);
-  if (data.priority) params.append("priority", data.priority);
-  if (data.issue_type) params.append("issue_type", data.issue_type);
-  if (data.description) params.append("description", data.description);
-  if (data.project) params.append("project", data.project);
-
-  const response = await fetch(`${API_BASE_URL}/issue/${name}?${params.toString()}`, {
+  const response = await fetch(`${API_BASE_URL}/issue/${name}`, {
     method: "PUT",
+    body: JSON.stringify(data),
   });
 
   if (!response.ok) {

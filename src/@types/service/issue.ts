@@ -44,7 +44,6 @@ export const IssueListResponseSchema = z.object({
 
 export const CreateIssueSchema = z.object({
   subject: z.string().min(1, "제목을 입력해주세요"),
-  custom_sub: z.string().min(1, "부제목을 입력해주세요"),
   priority: z.string().optional(),
   issue_type: IssueTypeEnum.optional(),
   description: z.string().optional(),

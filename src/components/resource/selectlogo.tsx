@@ -21,7 +21,6 @@ export default function SelectLogo({ ...props }: React.HTMLAttributes<HTMLDivEle
       const res = await fetch("/fellows/logo.svg");
       const svgText = await res.text();
       await navigator.clipboard.writeText(svgText);
-      console.log("SVG copied to clipboard!");
     } catch (err) {
       console.error("Failed to copy SVG:", err);
     }

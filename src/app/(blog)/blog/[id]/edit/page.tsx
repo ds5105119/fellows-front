@@ -72,7 +72,6 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
   useEffect(() => {
     if (post.data) {
-      console.log(post.data.content);
       setContent(post.data.content ?? "");
       setMetadata({
         title: post.data.title ?? "",

@@ -93,11 +93,10 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
 
   const handleCopy = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
-      toast.success("프로젝트 링크가 복사되었습니다.");
-    } catch (error) {
-      console.error("Copy failed:", error);
-      toast.error("프로젝트 링크 복사에 실패했습니다.");
+      await navigator.clipboard.writeText(project.project_name);
+      toast.success("프로젝트 번호가 복사되었습니다.");
+    } catch {
+      toast.error("프로젝트 번호 복사에 실패했습니다.");
     }
   }, []);
 

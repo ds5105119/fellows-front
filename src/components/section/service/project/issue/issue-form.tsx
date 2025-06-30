@@ -26,7 +26,6 @@ export default function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading 
     resolver: zodResolver(CreateIssueSchema),
     defaultValues: {
       subject: issue?.subject || "",
-      custom_sub: issue?.custom_sub || "",
       priority: issue?.priority || "",
       issue_type: issue?.issue_type || undefined,
       description: issue?.description || "",
@@ -67,20 +66,6 @@ export default function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading 
                     <FormLabel>제목 *</FormLabel>
                     <FormControl>
                       <Input placeholder="이슈 제목을 입력하세요" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="custom_sub"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>부제목 *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="이슈 부제목을 입력하세요" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

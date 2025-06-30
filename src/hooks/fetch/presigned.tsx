@@ -81,7 +81,6 @@ export async function getPresignedPutUrl(): Promise<PresignedPutUrlResponseType>
   }
 
   const data = await response.json();
-  console.log(data);
   return PresignedPutUrlResponseSchema.parse(data);
 }
 

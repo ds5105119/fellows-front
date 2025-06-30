@@ -3,24 +3,16 @@ import { type NextRequest, NextResponse } from "next/server";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_PROJECT_URL || "http://127.0.0.1:8000/api/project";
 
-export async function PUT(request: NextRequest, { params }: { params: { name: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ name: string }> }) {
   try {
     const session = await auth();
+    const body = await request.json();
 
-    const { searchParams } = new URL(request.url);
-    const { name } = params;
+    const { name } = await params;
 
-    // 쿼리 파라미터를 그대로 전달
-    const queryParams = new URLSearchParams();
-
-    if (searchParams.get("subject")) queryParams.append("subject", searchParams.get("subject")!);
-    if (searchParams.get("priority")) queryParams.append("priority", searchParams.get("priority")!);
-    if (searchParams.get("issue_type")) queryParams.append("issue_type", searchParams.get("issue_type")!);
-    if (searchParams.get("description")) queryParams.append("description", searchParams.get("description")!);
-    if (searchParams.get("project")) queryParams.append("project", searchParams.get("project")!);
-
-    const response = await fetch(`${API_BASE_URL}/issue/${encodeURIComponent(name)}?${queryParams.toString()}`, {
+    const response = await fetch(`${API_BASE_URL}/issue/${encodeURIComponent(name)}`, {
       method: "PUT",
+      body: JSON.stringify(body),
       headers: {
         "Content-Type": "application/json",
         ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
@@ -42,11 +34,11 @@ export async function PUT(request: NextRequest, { params }: { params: { name: st
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { name: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ name: string }> }) {
   try {
     const session = await auth();
 
-    const { name } = params;
+    const { name } = await params;
 
     const response = await fetch(`${API_BASE_URL}/issue/${encodeURIComponent(name)}`, {
       method: "DELETE",

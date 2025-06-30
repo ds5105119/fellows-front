@@ -248,7 +248,6 @@ const CardSetDisplay = ({ set, index, totalSets, scrollYProgress, isActive, clas
 
   const onClick = () => {
     const el = ref.current;
-    console.log("씨발");
     if (el) lenis?.scrollTo(el);
   };
 

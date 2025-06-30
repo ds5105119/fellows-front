@@ -1,39 +1,45 @@
 import { z } from "zod";
 
-export const UserDataSchema = z.object({
-  id: z.number().optional(),
-  sub: z.string().optional(),
-
-  overcome: z.number().default(0),
-  household_size: z.number().default(0),
-
-  multicultural: z.boolean().default(false),
-  north_korean: z.boolean().default(false),
-  single_parent_or_grandparent: z.boolean().default(false),
-  homeless: z.boolean().default(false),
-  new_resident: z.boolean().default(false),
-  multi_child_family: z.boolean().default(false),
-  extend_family: z.boolean().default(false),
-
-  disable: z.boolean().default(false),
-  veteran: z.boolean().default(false),
-  disease: z.boolean().default(false),
-
-  prospective_parents_or_infertility: z.boolean().default(false),
-  pregnant: z.boolean().default(false),
-  childbirth_or_adoption: z.boolean().default(false),
-
-  farmers: z.boolean().default(false),
-  fishermen: z.boolean().default(false),
-  livestock_farmers: z.boolean().default(false),
-  forestry_workers: z.boolean().default(false),
-
-  unemployed: z.boolean().default(false),
-  employed: z.boolean().default(false),
-
-  academic_status: z.number().default(0),
+export const userData = z.object({
+  dashboard_1_open: z.boolean().optional().nullable(),
+  dashboard_1_2_end: z.boolean().optional().nullable(),
 });
-export const PartialUserDataSchema = UserDataSchema.partial();
+
+export const UserSchema = z.object({
+  id: z.string().uuid(),
+  username: z.string().email(),
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().email(),
+  emailVerified: z.boolean(),
+  attributes: z.object({
+    userData: z.array(z.string()).optional(),
+    birthdate: z.array(z.string()).optional(),
+    gender: z.array(z.string()).optional(),
+    picture: z.array(z.string().url()).optional(),
+    name: z.array(z.string()).optional(),
+  }),
+  createdTimestamp: z.number(),
+  enabled: z.boolean(),
+  totp: z.boolean(),
+  disableableCredentialTypes: z.array(z.string()),
+  requiredActions: z.array(z.string()),
+  federatedIdentities: z.array(
+    z.object({
+      identityProvider: z.string(),
+      userId: z.string(),
+      userName: z.string(),
+    })
+  ),
+  notBefore: z.number(),
+  access: z.object({
+    manageGroupMembership: z.boolean(),
+    view: z.boolean(),
+    mapRoles: z.boolean(),
+    impersonate: z.boolean(),
+    manage: z.boolean(),
+  }),
+});
 
 export const UserBusinessDataSchema = z.object({
   id: z.number().optional(),
@@ -61,7 +67,7 @@ export const UserBusinessDataNullableSchema = UserBusinessDataSchema.nullable();
 export const LocationSchema = z.object({
   location: z.tuple([z.number(), z.number()]),
 });
-// 🔹 OIDCAddressDto
+
 export const OIDCAddressSchema = LocationSchema.extend({
   locality: z.string(),
   sub_locality: z.string(),
@@ -124,7 +130,7 @@ export const Coord2AddrResponseSchema = z.object({
 export const KakaoAddressSchema = LocationSchema.merge(Coord2AddrResponseSchema);
 
 // 🔹 UserAttributes
-export const UserAttributesSchema = OIDCAddressSchema.extend({
+export const UserAttributesSchema = z.object({
   username: z.string().min(3).max(255),
   email: z.string().email().max(255),
   name: z.string(),
@@ -137,12 +143,21 @@ export const UserAttributesSchema = OIDCAddressSchema.extend({
   phoneNumber: z.string().nullable().optional(),
   phoneNumberVerified: z.boolean().nullable().optional(),
 
+  locality: z.string().nullable().optional(),
+  sub_locality: z.string().nullable().optional(),
+  region: z.string().nullable().optional(),
+  postal_code: z.string().nullable().optional(),
+  country: z.string().nullable().optional(),
+  street: z.string().nullable().optional(),
+  formatted: z.string().nullable().optional().default(""),
+
   picture: z.string().nullable().optional(),
   bio: z.string().min(0).max(100).nullable().optional(),
   link: z.array(z.string()).max(4).nullable().optional(),
+  userData: z.string().optional().nullable(),
 });
 
-export const UpdateUserAttributesSchema = OIDCAddressSchema.extend({
+export const UpdateUserAttributesSchema = z.object({
   username: z.string().min(3).max(255).optional().nullable(),
   email: z.string().email().max(255).optional().nullable(),
   name: z.string().optional().nullable(),
@@ -155,11 +170,21 @@ export const UpdateUserAttributesSchema = OIDCAddressSchema.extend({
   phoneNumber: z.string().optional().nullable(),
   phoneNumberVerified: z.boolean().optional().nullable(),
 
+  locality: z.string().nullable().optional(),
+  sub_locality: z.string().nullable().optional(),
+  region: z.string().nullable().optional(),
+  postal_code: z.string().nullable().optional(),
+  country: z.string().nullable().optional(),
+  street: z.string().nullable().optional(),
+  formatted: z.string().nullable().optional(),
+
   picture: z.string().optional().nullable(),
   bio: z.string().min(0).max(100).optional().nullable(),
   link: z.array(z.string()).max(4).optional().nullable(),
+  userData: z.string().optional().nullable(),
 });
 
+export type User = z.infer<typeof UserSchema>;
 export type Address = z.infer<typeof AddressSchema>;
 export type RoadAddress = z.infer<typeof RoadAddressSchema>;
 export type Coord2AddrDto = z.infer<typeof Coord2AddrDtoSchema>;
@@ -170,8 +195,7 @@ export type KakaoAddressDto = z.infer<typeof KakaoAddressSchema>;
 export type LocationDto = z.infer<typeof LocationSchema>;
 export type OIDCAddressDto = z.infer<typeof OIDCAddressSchema>;
 export type UserAttributes = z.infer<typeof UserAttributesSchema>;
+export type UserData = z.infer<typeof userData>;
 export type UpdateUserAttributes = z.infer<typeof UpdateUserAttributesSchema>;
-export type UserData = z.infer<typeof UserDataSchema>;
-export type PartialUserData = z.infer<typeof PartialUserDataSchema>;
 export type UserBusinessData = z.infer<typeof UserBusinessDataSchema>;
 export type UserBusinessDataNullable = z.infer<typeof UserBusinessDataNullableSchema>;

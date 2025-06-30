@@ -90,7 +90,7 @@ const ProjectStatusColumn = ({
       swr.setSize((s) => s + 1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView, isLoading, isReachedEnd]); // FIX: 의존성 배열에서 swr 객체를 제거하여 무한 루프를 방지합니다.
+  }, [inView, isLoading, isReachedEnd]);
 
   // 'process' 상태의 아이템 개수를 부모 컴포넌트로 전달하기 위한 useEffect
   useEffect(() => {

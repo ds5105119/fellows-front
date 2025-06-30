@@ -1,13 +1,8 @@
-/**
- * Copyright (c) 2025, IIH. All rights reserved.
- * Auth.js를 사용하여 Keycloak 인증 서버와 연동합니다.
- * Access Token을 자동으로 갱신하려 시도하고, 실패하는 경우 로그아웃합니다.
- */
-
 import NextAuth from "next-auth";
 import Keycloak from "next-auth/providers/keycloak";
 import { JWT } from "next-auth/jwt";
 import { redirect } from "next/navigation";
+import { UserData, userData } from "@/@types/accounts/userdata";
 
 declare module "next-auth" {
   interface User {
@@ -28,6 +23,7 @@ declare module "next-auth" {
       country: string;
     };
     gender: string;
+    userData: UserData;
     groups: string[];
   }
 
@@ -67,6 +63,7 @@ declare module "next-auth/jwt" {
       country: string;
     };
     gender: string;
+    userData?: string;
     groups: string[];
     access_token: string;
     expires_at: number;
@@ -77,7 +74,7 @@ declare module "next-auth/jwt" {
   }
 }
 
-const expiresIntoAt = (expiresIn: number | undefined) => (typeof expiresIn == "number" ? Date.now() / 1000 + expiresIn - 10 : 0);
+const expiresIntoAt = (expiresIn: number | undefined) => (typeof expiresIn === "number" ? Date.now() / 1000 + expiresIn - 10 : 0);
 
 async function refreshAccessToken(token: JWT) {
   if (!token.refresh_token) throw new TypeError("Missing refresh_token");
@@ -109,7 +106,13 @@ async function refreshAccessToken(token: JWT) {
   };
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const {
+  handlers,
+  auth,
+  signIn,
+  signOut,
+  unstable_update: update,
+} = NextAuth({
   providers: [
     Keycloak({
       account(account) {
@@ -117,19 +120,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+
   callbacks: {
-    async jwt({ token, account, profile }) {
+    async jwt({ token, account, profile, trigger, session }) {
       if (account) {
-        if (account.provider === "keycloak") {
-          token = profile as JWT;
-          token.access_token = account.access_token || "";
-          token.refresh_token = account.refresh_token || "";
-          token.expires_at = account.expires_at || 0;
-          token.refresh_token_expires_at = expiresIntoAt(
-            typeof account.refresh_token_expires_at === "undefined" ? 0 : (account.refresh_token_expires_at as number)
-          );
-        }
+        // 최초 로그인 시
+        token = profile as JWT;
+        token.access_token = account.access_token || "";
+        token.refresh_token = account.refresh_token || "";
+        token.expires_at = account.expires_at || 0;
+        token.refresh_token_expires_at = expiresIntoAt(
+          typeof account.refresh_token_expires_at === "undefined" ? 0 : (account.refresh_token_expires_at as number)
+        );
       } else {
+        // 만료되었을 경우 또는 update 호출 시 refresh
         if (Date.now() >= (token.expires_at || 0) * 1000) {
           try {
             return await refreshAccessToken(token);
@@ -138,13 +146,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         }
       }
+
+      // 세션 업데이트 처리
+      if (trigger === "update" && session) {
+        console.log("씨발");
+
+        try {
+          return await refreshAccessToken(token);
+        } catch {
+          token.error = "RefreshTokenError";
+        }
+      }
+
       return token;
     },
+
     async session({ session, token }) {
       if (token.error === "RefreshTokenError") {
         session.error = "RefreshTokenError";
         redirect("/api/auth/signout");
       }
+
       session.exp = token.exp;
       session.iat = token.iat;
       session.jti = token.jti;
@@ -158,9 +180,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.birthdate = token.birthdate;
       session.user.sub_locality = token.sub_locality;
       session.user.email_verified = token.email_verified;
+      session.user.userData = userData.parse(JSON.parse(token.userData || "{}"));
       session.user.groups = token.groups;
       session.access_token = token.access_token;
       session.expires_at = token.expires_at;
+
       return session;
     },
   },

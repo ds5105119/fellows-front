@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import BusinessRecommendWelfareSection from "@/components/section/service/welfare/businessrecommendwelfaresection";
-import { getBusinessUserData } from "@/hooks/fetch/user";
+import { getBusinessUserData } from "@/hooks/fetch/server/user";
 
 export const metadata: Metadata = {
   title: "회원가입 | 복지 정책 서비스",

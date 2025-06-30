@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { UserBusinessDataNullableSchema, UserBusinessData, UpdateUserAttributes } from "@/@types/accounts/userdata";
+import { UserBusinessDataNullableSchema, UserBusinessData, UpdateUserAttributes, UserSchema } from "@/@types/accounts/userdata";
 
 export const getBusinessUserData = async () => {
   const url = `${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/business`;
@@ -57,8 +57,26 @@ export const updateBusinessUserData = async (data: UserBusinessData) => {
   });
 };
 
-export const updateUserData = async (data: UpdateUserAttributes) => {
-  const url = `${process.env.NEXT_PUBLIC_USERDATA_URL}`;
+export const getUser = async () => {
+  const url = `http://127.0.0.1:8000/api/user/data`;
+  const session = await auth();
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+    },
+    redirect: "follow",
+    credentials: "include",
+  });
+
+  const data = await response.json();
+  return UserSchema.parse(data);
+};
+
+export const updateUser = async (data: UpdateUserAttributes) => {
+  const url = `http://127.0.0.1:8000/api/user/data`;
   const session = await auth();
 
   await fetch(url, {

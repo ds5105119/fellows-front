@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserBusinessDataForm from "@/components/form/businessdataform";
-import { getBusinessUserData } from "@/hooks/fetch/user";
+import { getBusinessUserData } from "@/hooks/fetch/server/user";
 export const metadata: Metadata = {
   title: "회원가입 | 복지 정책 서비스",
   description: "이메일로 회원가입하고 맞춤형 복지 정책 정보를 받아보세요.",

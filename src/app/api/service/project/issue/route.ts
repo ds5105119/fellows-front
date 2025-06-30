@@ -60,21 +60,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
+    const body = await request.json();
 
-    const { searchParams } = new URL(request.url);
-
-    // 쿼리 파라미터를 그대로 전달
-    const params = new URLSearchParams();
-
-    if (searchParams.get("subject")) params.append("subject", searchParams.get("subject")!);
-    if (searchParams.get("custom_sub")) params.append("custom_sub", searchParams.get("custom_sub")!);
-    if (searchParams.get("priority")) params.append("priority", searchParams.get("priority")!);
-    if (searchParams.get("issue_type")) params.append("issue_type", searchParams.get("issue_type")!);
-    if (searchParams.get("description")) params.append("description", searchParams.get("description")!);
-    if (searchParams.get("project")) params.append("project", searchParams.get("project")!);
-
-    const response = await fetch(`${API_BASE_URL}/issue?${params.toString()}`, {
+    const response = await fetch(`${API_BASE_URL}/issue`, {
       method: "POST",
+      body: JSON.stringify({ ...body, custom_sub: session?.sub }),
       headers: {
         "Content-Type": "application/json",
         ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
