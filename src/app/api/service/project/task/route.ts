@@ -51,7 +51,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_PROJECT_URL}/tasks?${queryParams.toString()}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_PROJECT_URL}/task?${queryParams.toString()}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

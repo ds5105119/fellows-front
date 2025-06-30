@@ -245,7 +245,7 @@ const tasksGetKeyFactory = (params: ERPNextTasksRequest): SWRInfiniteKeyLoader<E
       searchParams.append("end", params.end.toISOString().split("T")[0]);
     }
 
-    return `${API_BASE_URL}/tasks?${searchParams.toString()}`;
+    return `${API_BASE_URL}/task?${searchParams.toString()}`;
   };
 };
 
