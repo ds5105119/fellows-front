@@ -120,7 +120,7 @@ export default function IssueList({ onCreateClick, onEditClick, onDeleteClick, o
   const [filters, setFilters] = useState<IssueFilters>({});
 
   // 모든 필터를 SWR에 전달
-  const { data, isLoading, isValidating, mutate } = useIssues({
+  const { data, isValidating, mutate } = useIssues({
     keyword: filters.keyword,
     issue_type: filters.issue_type,
     status: filters.status,
@@ -145,8 +145,8 @@ export default function IssueList({ onCreateClick, onEditClick, onDeleteClick, o
     setFilters((prev) => ({ ...prev, [key]: value.length > 0 ? value : undefined }));
   };
 
-  const handleFilterChange = (key: keyof IssueFilters, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+  const handleFilterChange = (key: keyof IssueFilters, value: string | undefined) => {
+    if (value) setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const clearFilter = (key: keyof IssueFilters) => {
