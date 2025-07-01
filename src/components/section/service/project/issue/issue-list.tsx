@@ -1,9 +1,8 @@
 "use client";
-import { useIssues, IssueFilters } from "@/hooks/fetch/issue";
 import type { Issue, IssueListResponse, IssueType } from "@/@types/service/issue";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, Search, Plus, Edit, Trash2, Building, Clock } from "lucide-react";
+import { MoreHorizontal, Search, Edit, Trash2, Building, Clock } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
