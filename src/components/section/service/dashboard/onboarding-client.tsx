@@ -25,7 +25,7 @@ export function OnboardingClient({ userData, hasProject, hasInquery, project, up
   const url = project ? `/service/project/${project.project_name}` : "/service/project";
 
   useEffect(() => {
-    updateUser({ userData: JSON.stringify({ ...userData, dashboard_1_open: isExpanded }) });
+    updateUser({ userData: [JSON.stringify({ ...userData, dashboard_1_open: isExpanded })] });
   }, [updateUser, isExpanded, userData]);
 
   return (

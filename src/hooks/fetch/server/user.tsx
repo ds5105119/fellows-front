@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { UserBusinessDataNullableSchema, UserBusinessData, UpdateUserAttributes, UserSchema } from "@/@types/accounts/userdata";
+import { UserBusinessDataNullableSchema, UserBusinessData, UpdateUserAttributes, UserAttributesSchema } from "@/@types/accounts/userdata";
 
 export const getBusinessUserData = async () => {
   const url = `${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/business`;
@@ -72,7 +72,7 @@ export const getUser = async () => {
   });
 
   const data = await response.json();
-  return UserSchema.parse(data);
+  return UserAttributesSchema.parse(data);
 };
 
 export const updateUser = async (data: UpdateUserAttributes) => {

@@ -13,11 +13,11 @@ export const metadata: Metadata = {
 
 async function setOnBoarding() {
   const user = await getUser();
-  if (user.attributes.userData) {
-    const rawUserData = JSON.parse(user.attributes.userData[0] || "{}");
+  if (user.userData) {
+    const rawUserData = JSON.parse(user.userData[0] || "{}");
     const user_data = userData.parse(rawUserData);
     if (!user_data.dashboard_1_2_end) {
-      updateUser({ userData: JSON.stringify({ ...user_data, dashboard_1_2_end: true }) });
+      updateUser({ userData: [JSON.stringify({ ...user_data, dashboard_1_2_end: true })] });
     }
   }
 }

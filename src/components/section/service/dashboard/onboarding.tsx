@@ -59,7 +59,7 @@ const getOnboarding = async ({ session }: { session: Session }): Promise<Onboard
 
     // 온보딩 2가 진행되었는가?
     const user = await getUser();
-    const rawUserData = JSON.parse(user.attributes.userData ? user.attributes.userData[0] : "{}");
+    const rawUserData = JSON.parse(user.userData ? user.userData[0] : "{}");
 
     return {
       userData: userData.parse(rawUserData),
