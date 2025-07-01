@@ -9,7 +9,9 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <div className="flex flex-col w-full h-full items-center space-y-10 px-8 py-10">
-      <UserProfile />
+      <div className="w-full md:max-w-xl">
+        <UserProfile />
+      </div>
     </div>
   );
 }
