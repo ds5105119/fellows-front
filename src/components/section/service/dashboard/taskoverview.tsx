@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTasks } from "@/hooks/fetch/project";
 import { type ERPNextTaskForUser, type ERPNextTaskStatus, erpNextTaskStatusEnum } from "@/@types/service/project";
 import dayjs from "@/lib/dayjs";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export const description = "An interactive area chart showing task status over time";
 
@@ -42,7 +43,7 @@ export function TaskOverviewChart() {
     const days = Number.parseInt(timeRange);
     return {
       start: dayjs().subtract(days, "day").toDate(),
-      end: dayjs().add(10, "day").toDate(),
+      end: dayjs().add(days, "day").toDate(),
     };
   }, [timeRange]);
 
@@ -52,7 +53,7 @@ export function TaskOverviewChart() {
     // 전체 날짜 범위 생성
     const days = Number.parseInt(timeRange);
     const startDate = dayjs().subtract(days, "day");
-    const endDate = dayjs();
+    const endDate = dayjs().add(days, "day");
 
     // Template을 제외한 상태들만 사용
     const statusOptions = erpNextTaskStatusEnum.options.filter((status) => status !== "Template" && status !== "Pending Review");
@@ -102,23 +103,12 @@ export function TaskOverviewChart() {
 
   return (
     <div className="w-full pt-0">
-      <div className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="w-[160px] rounded-lg" aria-label="Select a value">
-            <SelectValue placeholder="최근 한달" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="90" className="rounded-lg">
-              한 분기
-            </SelectItem>
-            <SelectItem value="30" className="rounded-lg">
-              한달
-            </SelectItem>
-            <SelectItem value="7" className="rounded-lg">
-              일주일
-            </SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex items-center justify-end gap-2 space-y-0 border-b py-5 sm:flex-row">
+        <ToggleGroup type="single" value={timeRange} onValueChange={setTimeRange} variant="outline" className="*:data-[slot=toggle-group-item]:!px-4">
+          <ToggleGroupItem value="7">일주일 전후</ToggleGroupItem>
+          <ToggleGroupItem value="30">한달 전후</ToggleGroupItem>
+          <ToggleGroupItem value="90">한분기 전후</ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
       <div className="px-2 pt-4 sm:px-6 sm:pt-6">

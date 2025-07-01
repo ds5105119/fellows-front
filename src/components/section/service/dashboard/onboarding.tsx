@@ -2,14 +2,14 @@ import { auth, signIn } from "@/auth";
 import type { Session } from "next-auth";
 import { projectsPaginatedResponseSchema, type UserERPNextProject } from "@/@types/service/project";
 import { getUser, updateUser } from "@/hooks/fetch/server/user";
-import { userData } from "@/@types/accounts/userdata";
+import { UserData, userData } from "@/@types/accounts/userdata";
 import { OnboardingClient } from "./onboarding-client";
+import { SessionProvider } from "next-auth/react";
 
 interface OnboardingProps {
-  onboarding: boolean;
+  userData: UserData;
   hasProject: boolean;
   hasInquery: boolean;
-  dashboard_1_2_end: boolean;
   project?: UserERPNextProject;
 }
 
@@ -60,13 +60,11 @@ const getOnboarding = async ({ session }: { session: Session }): Promise<Onboard
     // 온보딩 2가 진행되었는가?
     const user = await getUser();
     const rawUserData = JSON.parse(user.attributes.userData ? user.attributes.userData[0] : "{}");
-    const user_data = userData.parse(rawUserData);
 
     return {
-      onboarding: user_data.dashboard_1_open ?? true,
+      userData: userData.parse(rawUserData),
       hasProject: hasProject,
       hasInquery: hasInQuery,
-      dashboard_1_2_end: user_data.dashboard_1_2_end ?? false,
       project: inQueryResponseParsedData.items[0],
     };
   } catch (error) {
@@ -76,19 +74,13 @@ const getOnboarding = async ({ session }: { session: Session }): Promise<Onboard
 
 export default async function Onboarding() {
   const session = await auth();
-
   if (!session) return signIn("keycloak", { redirectTo: "/service/dashboard" });
 
-  const { onboarding, hasProject, hasInquery, dashboard_1_2_end, project } = await getOnboarding({ session });
+  const { userData, hasProject, hasInquery, project } = await getOnboarding({ session });
 
   return (
-    <OnboardingClient
-      initialOnboarding={onboarding}
-      hasProject={hasProject}
-      hasInquery={hasInquery}
-      dashboard_1_2_end={dashboard_1_2_end}
-      project={project}
-      updateUser={updateUser}
-    />
+    <SessionProvider session={session}>
+      <OnboardingClient userData={userData} hasProject={hasProject} hasInquery={hasInquery} project={project} updateUser={updateUser} />
+    </SessionProvider>
   );
 }

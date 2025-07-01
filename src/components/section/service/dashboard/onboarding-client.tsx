@@ -10,24 +10,23 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpRight, CheckIcon, ChevronDown, ChevronUp } from "lucide-react";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { ConfettiButton } from "@/components/magicui/confetti";
-import { UpdateUserAttributes } from "@/@types/accounts/userdata";
+import { UpdateUserAttributes, UserData } from "@/@types/accounts/userdata";
 
 interface OnboardingClientProps {
-  initialOnboarding: boolean;
+  userData: UserData;
   hasProject: boolean;
   hasInquery: boolean;
-  dashboard_1_2_end: boolean;
   project?: UserERPNextProject;
   updateUser: (data: UpdateUserAttributes) => Promise<void>;
 }
 
-export function OnboardingClient({ initialOnboarding, hasProject, hasInquery, dashboard_1_2_end, project, updateUser }: OnboardingClientProps) {
-  const [isExpanded, setIsExpanded] = useState(initialOnboarding);
+export function OnboardingClient({ userData, hasProject, hasInquery, project, updateUser }: OnboardingClientProps) {
+  const [isExpanded, setIsExpanded] = useState(userData.dashboard_1_open ?? true);
   const url = project ? `/service/project/${project.project_name}` : "/service/project";
 
   useEffect(() => {
-    updateUser({ userData: JSON.stringify({ dashboard_1_open: isExpanded, dashboard_1_2_end: dashboard_1_2_end }) });
-  }, [updateUser, isExpanded, dashboard_1_2_end]);
+    updateUser({ userData: JSON.stringify({ ...userData, dashboard_1_open: isExpanded }) });
+  }, [updateUser, isExpanded, userData]);
 
   return (
     <motion.div
@@ -44,7 +43,7 @@ export function OnboardingClient({ initialOnboarding, hasProject, hasInquery, da
       <div className="col-span-full flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-2">
-            <h2 className="text-2xl font-bold">{hasProject && hasInquery && dashboard_1_2_end ? "튜토리얼 완료" : " 🚀 5분만에 시작하는 Fellows"}</h2>
+            <h2 className="text-2xl font-bold">{hasProject && hasInquery && userData.dashboard_1_2_end ? "튜토리얼 완료" : " 🚀 5분만에 시작하는 Fellows"}</h2>
             <AnimatePresence initial={false}>
               {isExpanded && (
                 <motion.p
@@ -121,7 +120,7 @@ export function OnboardingClient({ initialOnboarding, hasProject, hasInquery, da
 
               <hr className="border-gray-200" />
 
-              {dashboard_1_2_end ? (
+              {userData.dashboard_1_2_end ? (
                 <div className="flex space-x-3.5 w-full p-6 bg-blue-50">
                   <CheckIcon className="mt-[3px] shrink-0 bg-blue-400 rounded-full text-white !size-5 p-1" strokeWidth={3} />
                   <div className="flex flex-col space-y-1">

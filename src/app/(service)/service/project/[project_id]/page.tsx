@@ -17,16 +17,16 @@ async function setOnBoarding() {
     const rawUserData = JSON.parse(user.attributes.userData[0] || "{}");
     const user_data = userData.parse(rawUserData);
     if (!user_data.dashboard_1_2_end) {
-      updateUser({ userData: JSON.stringify({ dashboard_1_2_end: true }) });
+      updateUser({ userData: JSON.stringify({ ...user_data, dashboard_1_2_end: true }) });
     }
   }
 }
 
 export default async function Page({ params }: { params: Promise<{ project_id: string }> }) {
   const session = await auth();
-
   const project_id = (await params).project_id;
   if (!session) return signIn("keycloak", { redirectTo: `/service/project/${project_id}` });
+
   await setOnBoarding();
 
   return (
