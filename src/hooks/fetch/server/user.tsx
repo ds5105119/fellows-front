@@ -58,10 +58,9 @@ export const updateBusinessUserData = async (data: UserBusinessData) => {
 };
 
 export const getUser = async () => {
-  const url = `http://127.0.0.1:8000/api/user/data`;
   const session = await auth();
 
-  const response = await fetch(url, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -76,10 +75,9 @@ export const getUser = async () => {
 };
 
 export const updateUser = async (data: UpdateUserAttributes) => {
-  const url = `http://127.0.0.1:8000/api/user/data`;
   const session = await auth();
 
-  await fetch(url, {
+  await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}`, {
     method: "PATCH",
     body: JSON.stringify(data),
     headers: {

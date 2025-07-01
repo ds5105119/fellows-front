@@ -107,8 +107,8 @@ export default function UserProfile() {
         const result = `${process.env.NEXT_PUBLIC_R2_URL}/${presigned.key}`;
 
         setValue("picture", [result]);
-        setUser((prev) => ({ ...prev, picture: [result] } as UserAttributes));
-        await updateUser({ picture: [result] } as UpdateUserAttributes);
+        setUser((prev) => ({ ...prev, picture: [result] }));
+        await updateUser({ picture: [result] });
       } catch (error) {
         console.error("업로드 중 오류:", error);
       } finally {
