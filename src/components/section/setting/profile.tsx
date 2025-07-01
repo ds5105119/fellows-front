@@ -39,7 +39,7 @@ export default function UserProfile() {
 
   const {
     handleSubmit,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { isSubmitting, isDirty },
     reset,
     setValue,
     watch,
@@ -78,7 +78,7 @@ export default function UserProfile() {
       // Filter out empty values
       const filteredData = Object.fromEntries(
         Object.entries(data)
-          .filter(([_, value]) => {
+          .filter(([, value]) => {
             if (Array.isArray(value)) {
               return value.length > 0 && value.some((v) => v && v.trim() !== "");
             }
@@ -124,7 +124,7 @@ export default function UserProfile() {
   };
 
   const removeLink = (index: number) => {
-    const newLinks = links.filter((_, i) => i !== index);
+    const newLinks = links.filter((__, i) => i !== index);
     setLinks(newLinks);
   };
 
