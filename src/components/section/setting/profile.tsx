@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Edit3, MapPin, LinkIcon, UserIcon, Check, X, Plus, Camera, ChevronDown } from "lucide-react";
 import { getUser, updateUser } from "@/hooks/fetch/server/user";
-import { type User } from "@/@types/accounts/userdata";
+import { UserAttributes } from "@/@types/accounts/userdata";
 
 interface EditableFieldProps {
   value: string;
@@ -206,7 +206,7 @@ function SelectableField({ value, onSave, options, placeholder, className = "", 
 }
 
 export default function UserProfile() {
-  const [user, setUser] = useState<User | undefined>();
+  const [user, setUser] = useState<UserAttributes | undefined>();
   const [loading, setLoading] = useState(true);
   const [links, setLinks] = useState<string[]>([]);
 
@@ -229,24 +229,9 @@ export default function UserProfile() {
   const handleUpdateField = async (field: string, value: string) => {
     try {
       await updateUser({ [field]: value });
-      setUser((prev: any) => ({
+      setUser((prev) => ({
         ...prev,
-        [field]: value,
-      }));
-    } catch (error) {
-      console.error("Failed to update user:", error);
-    }
-  };
-
-  const handleUpdateAttribute = async (attribute: string, value: string) => {
-    try {
-      await updateUser({ [attribute]: value });
-      setUser((prev: any) => ({
-        ...prev,
-        attributes: {
-          ...prev.attributes,
-          [attribute]: [value],
-        },
+        [field]: [value],
       }));
     } catch (error) {
       console.error("Failed to update user:", error);
@@ -336,7 +321,7 @@ export default function UserProfile() {
           <div className="space-y-2">
             <EditableField
               value={user.name ? user.name[0] : ""}
-              onSave={(value) => handleUpdateAttribute("name", value)}
+              onSave={(value) => handleUpdateField("name", value)}
               placeholder="Enter your name"
               className="text-2xl font-bold"
               textSize="text-2xl font-bold"
@@ -345,7 +330,7 @@ export default function UserProfile() {
 
           <EditableField
             value={user.bio ? user.bio[0] : ""}
-            onSave={(value) => handleUpdateAttribute("bio", value)}
+            onSave={(value) => handleUpdateField("bio", value)}
             placeholder="Tell us about yourself..."
             multiline
             maxLength={100}
@@ -369,7 +354,7 @@ export default function UserProfile() {
             <label className="text-sm font-medium text-gray-600">Birth Date</label>
             <EditableField
               value={user.birthdate ? user.birthdate[0] : ""}
-              onSave={(value) => handleUpdateAttribute("birthdate", value)}
+              onSave={(value) => handleUpdateField("birthdate", value)}
               placeholder="YYYY-MM-DD"
               textSize="text-sm"
             />
@@ -379,7 +364,7 @@ export default function UserProfile() {
             <label className="text-sm font-medium text-gray-600">Gender</label>
             <SelectableField
               value={user.gender ? user.gender[0] : ""}
-              onSave={(value) => handleUpdateAttribute("gender", value)}
+              onSave={(value) => handleUpdateField("gender", value)}
               options={genderOptions}
               placeholder="Select gender"
               textSize="text-sm"
