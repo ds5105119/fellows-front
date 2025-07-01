@@ -6,11 +6,11 @@ import { notFound } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { Metadata, ResolvingMetadata } from "next";
 import MarkdownPreview from "@/components/ui/markdownpreview";
-import BlogShare from "@/components/blog/blog-share";
+import BlogShare from "@/components/section/blog/blog-share";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
-import BlogToolbar from "@/components/blog/blog-toolbar";
+import BlogToolbar from "@/components/section/blog/blog-toolbar";
 
 export const revalidate = 60;
 export const dynamicParams = true;

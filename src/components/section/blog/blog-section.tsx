@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import BlogPostItem from "./blog-post-item";
 import BlogPostSkeleton from "./blog-post-skeleton";
 import BlogNavigation from "./blog-navigation";
-import { AnimatedGradientText } from "../magicui/animated-gradient-text";
+import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 

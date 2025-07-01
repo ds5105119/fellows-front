@@ -76,7 +76,6 @@ declare module "next-auth/jwt" {
 }
 
 const expiresIntoAt = (expiresIn: number | undefined) => (typeof expiresIn === "number" ? Date.now() / 1000 + expiresIn - 10 : 0);
-``;
 
 async function refreshAccessToken(token: JWT) {
   if (!token.refresh_token) throw new TypeError("Missing refresh_token");

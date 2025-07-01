@@ -1,8 +1,8 @@
-import BlogToolbar from "@/components/blog/blog-toolbar";
+import BlogToolbar from "@/components/section//blog/blog-toolbar";
 import Link from "next/link";
 import { auth } from "@/auth";
-import { FeaturedSection } from "@/components/blog/featured-section";
-import { BlogSection } from "@/components/blog/blog-section";
+import { FeaturedSection } from "@/components/section/blog/featured-section";
+import { BlogSection } from "@/components/section/blog/blog-section";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import { ChevronRight } from "lucide-react";
 

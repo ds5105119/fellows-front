@@ -6,8 +6,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { X, Plus, Upload } from "lucide-react";
 import imageUploadHandler from "@/lib/imageUploadHandler";
-import AnimatedUnderlineInput from "../ui/animatedunderlineinput";
-import AnimatedUnderlineTextarea from "../ui/animatedunderlinetextarea";
+import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
+import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
 
 interface PostMetadataProps {
   metadata: {

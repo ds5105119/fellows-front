@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { PostMetadata } from "@/components/blog/post-metadata";
+import { PostMetadata } from "@/components/section/blog/post-metadata";
 import Editor from "@/components/editor/editor";
 import { CreateBlogPostDto } from "@/@types/service/blog";
 import { createPost } from "@/hooks/fetch/blog";
