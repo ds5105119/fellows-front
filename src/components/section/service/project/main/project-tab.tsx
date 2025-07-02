@@ -1,18 +1,16 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { SquareGanttChart, TableProperties } from "lucide-react";
 
-export default function ProjectTab() {
+export default function ProjectTab({ taskView, setTaskView }: { taskView?: boolean; setTaskView?: (value: boolean) => void }) {
   const router = useRouter();
   const pathname = usePathname();
 
   const tabs = ["개요", "작업 현황", "이슈"] as const;
   const tabMapping: Record<"개요", ""> & Record<"작업 현황", "task"> & Record<"이슈", "issue"> = { 개요: "", "작업 현황": "task", 이슈: "issue" };
-  const [taskView, setTaskView] = useState<boolean>(false);
 
   const handleTabChange = (tab: "개요" | "작업 현황" | "이슈") => {
     router.push("/service/project/" + tabMapping[tab]);
@@ -37,7 +35,7 @@ export default function ProjectTab() {
       </div>
       {tab === "작업 현황" && (
         <div className="flex items-center space-x-2 group">
-          <Button variant="ghost" size="icon" onClick={() => setTaskView((prev) => !prev)}>
+          <Button variant="ghost" size="icon" onClick={() => setTaskView && setTaskView(!taskView)}>
             {taskView ? (
               <SquareGanttChart className="size-6 text-muted-foreground group-hover:text-zinc-800 transition-colors duration-200" />
             ) : (

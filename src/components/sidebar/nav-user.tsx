@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Session } from "next-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,6 +21,7 @@ interface NavUserProps {
 }
 
 export function NavUser({ session }: NavUserProps) {
+  const router = useRouter();
   const { isMobile } = useSidebar();
 
   return (
@@ -59,7 +61,7 @@ export function NavUser({ session }: NavUserProps) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/service/settings/profile")}>
                 <UserCircleIcon />
                 계정
               </DropdownMenuItem>

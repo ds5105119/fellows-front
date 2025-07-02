@@ -1,27 +1,22 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, ChevronLeft, FilterIcon, SearchIcon } from "lucide-react";
+import { ChevronDown, ChevronRight, FilterIcon, SearchIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
 import { erpNextTaskStatusEnum, OverviewProjectsPaginatedResponse, type ERPNextTaskStatus } from "@/@types/service/project";
 import { statusConfig } from "@/components/resource/project";
 import DatePicker from "./datepicker";
 import dayjs from "@/lib/dayjs";
 import type { Dayjs } from "dayjs";
-import type { TimeUnit, DateRange } from "./gantt-chart";
+import type { DateRange } from "./tree-table";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
-interface GanttHeaderProps {
+interface TreeHeaderProps {
   showControl: boolean;
   projectsOverview?: OverviewProjectsPaginatedResponse;
-  timeUnit: TimeUnit;
-  setTimeUnit: (unit: TimeUnit) => void;
-  currentDate: Dayjs;
-  setCurrentDate: (date: Dayjs) => void;
   dateRange: DateRange;
-  calculateDateRange: (start: Dayjs, end: Dayjs) => void;
+  setDateRange: (start?: Dayjs, end?: Dayjs) => void;
   taskExpended: boolean;
   setTaskExpanded: (expanded: boolean) => void;
   deepSearch: boolean;
@@ -34,15 +29,11 @@ interface GanttHeaderProps {
   setProjectId: (id: string[] | null) => void;
 }
 
-export function GanttHeader({
+export function TreeHeader({
   showControl,
   projectsOverview,
-  timeUnit,
-  setTimeUnit,
-  currentDate,
-  setCurrentDate,
   dateRange,
-  calculateDateRange,
+  setDateRange,
   taskExpended,
   setTaskExpanded,
   deepSearch,
@@ -53,87 +44,14 @@ export function GanttHeader({
   setKeywordText,
   projectId,
   setProjectId,
-}: GanttHeaderProps) {
+}: TreeHeaderProps) {
   const overviewProjects = projectsOverview?.items || [];
-
-  const navigatePrevious = () => {
-    switch (timeUnit) {
-      case "day":
-        setCurrentDate(currentDate.subtract(1, "week"));
-        break;
-      case "week":
-        setCurrentDate(currentDate.subtract(1, "week"));
-        break;
-      case "month":
-        setCurrentDate(currentDate.subtract(1, "month"));
-        break;
-    }
-  };
-
-  const navigateNext = () => {
-    switch (timeUnit) {
-      case "day":
-        setCurrentDate(currentDate.add(1, "week"));
-        break;
-      case "week":
-        setCurrentDate(currentDate.add(1, "week"));
-        break;
-      case "month":
-        setCurrentDate(currentDate.add(1, "month"));
-        break;
-    }
-  };
-
-  const navigateToToday = () => {
-    setCurrentDate(dayjs());
-  };
-
-  // Format date range for display
-  const formatDateRange = () => {
-    const { start, end } = dateRange;
-    switch (timeUnit) {
-      case "day":
-        return `${start.format("YYYY.MM.DD")} - ${end.format("MM.DD")}`;
-      case "week":
-        return `${start.format("YYYY.MM.DD")} - ${end.format("MM.DD")}`;
-      case "month":
-        return `${start.format("YYYY.MM")} - ${end.format("MM")}`;
-    }
-  };
 
   if (!showControl) return null;
 
   return (
     <div className="sticky z-30 top-24 md:top-32 bg-background flex flex-col gap-3 w-full py-3 px-6 border-b border-b-sidebar-border">
-      <div className="flex w-full justify-between items-center h-8">
-        <div className="flex items-center gap-2">
-          <ComboBoxResponsive
-            statuses={[
-              { label: "일별", value: "day" },
-              { label: "주별", value: "week" },
-              { label: "월별", value: "month" },
-            ]}
-            initial={"month"}
-            callback={(value: string) => setTimeUnit(value as TimeUnit)}
-          />
-
-          {/* Navigation Controls */}
-          <div className="flex items-center gap-2 border rounded-sm px-1 h-8">
-            <Button variant="ghost" size="sm" onClick={navigatePrevious} className="size-6 p-0">
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={navigateToToday} className="px-3 h-7 text-sm font-medium min-w-[120px] hidden md:block">
-              {formatDateRange()}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={navigateNext} className="size-6 p-0">
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <Button variant="ghost" size="sm" onClick={navigateToToday} className="text-xs font-bold text-blue-400 hover:text-blue-500 px-2 h-7">
-            오늘
-          </Button>
-        </div>
+      <div className="flex w-full justify-between items-center">
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="sm" className="font-semibold hidden md:flex" onClick={() => setDeepSearch(!deepSearch)}>
             {deepSearch ? "상세검색 끄기" : "상세검색 켜기"}
@@ -295,8 +213,8 @@ export function GanttHeader({
             </div>
           </div>
           <div className="flex items-center md:justify-end gap-2">
-            <DatePicker value={dateRange.start.toDate()} onSelect={(date) => date && calculateDateRange(dayjs(date), dateRange.end)} text="시작일" />
-            <DatePicker value={dateRange.end.toDate()} onSelect={(date) => date && calculateDateRange(dateRange.start, dayjs(date))} text="종료일" />
+            <DatePicker value={dateRange.start?.toDate()} onSelect={(date) => date && setDateRange(dayjs(date), dateRange?.end)} text="시작일" />
+            <DatePicker value={dateRange.end?.toDate()} onSelect={(date) => date && setDateRange(dateRange?.start, dayjs(date))} text="종료일" />
           </div>
         </div>
       )}

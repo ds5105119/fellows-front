@@ -22,7 +22,7 @@ export interface DateRange {
   intervals: Dayjs[];
 }
 
-export function GanttChart({ expand = true, timeunit, showControl = true }: { expand?: boolean; timeunit?: TimeUnit; showControl?: boolean }) {
+export function GanttChart({ expand = false, timeunit, showControl = true }: { expand?: boolean; timeunit?: TimeUnit; showControl?: boolean }) {
   const [taskExpended, setTaskExpanded] = useState<boolean>(expand ?? true);
   const [deepSearch, setDeepSearch] = useState<boolean>(true);
   const [status, setStatus] = useState<ERPNextTaskStatus[] | null>(null);
@@ -197,11 +197,11 @@ export function GanttChart({ expand = true, timeunit, showControl = true }: { ex
         <div className="w-full min-w-fit">
           {/* Header */}
           <div className="flex border-b bg-gray-50 h-12">
-            <div className="w-16 md:w-80 border-r bg-white flex-shrink-0 flex items-center justify-center">
+            <div className="w-16 md:w-80 shrink-0 border-r bg-white flex items-center justify-center">
               <h3 className="font-semibold">작업</h3>
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex">
+              <div className="flex h-full">
                 {dateRange.intervals.map((interval, index) => {
                   const formatted = formatInterval(interval, timeUnit);
                   const isCurrent = isCurrentInterval(interval, timeUnit);
@@ -209,7 +209,10 @@ export function GanttChart({ expand = true, timeunit, showControl = true }: { ex
                   return (
                     <div
                       key={`${interval.format()}-${index}`}
-                      className={cn("flex-1 p-2 h-full text-xs text-center border-r min-w-[60px]", isCurrent ? "bg-blue-100 text-blue-800 font-semibold" : "")}
+                      className={cn(
+                        "flex-1 flex flex-col items-center justify-center p-2 h-full text-xs text-center border-r min-w-[60px]",
+                        isCurrent ? "bg-blue-100 text-blue-800 font-semibold" : ""
+                      )}
                     >
                       <div>{formatted.main}</div>
                       <div className="text-gray-500">{formatted.sub}</div>

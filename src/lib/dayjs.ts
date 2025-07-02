@@ -19,6 +19,8 @@ export const setDayjsLocale = (locale: string) => {
 };
 
 const dayjs = _dayjs;
+const userLang = navigator.language;
+setDayjsLocale(userLang);
 
 // 외부에서 사용할 이름은 그대로 `dayjs`
 export default dayjs;
