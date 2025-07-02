@@ -8,9 +8,16 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   return (
-    <div className="flex flex-col w-full h-full items-center space-y-10 px-8 py-10">
+    <div className="flex flex-col w-full h-full items-center">
       <div className="w-full md:max-w-xl">
-        <UserProfile />
+        <div className="w-full max-w-xl px-4 lg:px-8 py-6">
+          <h2 className="text-xl font-semibold text-gray-900">계정 정보 변경</h2>
+          <p className="text-sm text-gray-500 whitespace-pre-wrap mt-1">계정의 프로필 및 연락처 정보를 변경할 수 있습니다. 모든 정보는 견고하게 보호됩니다.</p>
+        </div>
+
+        <div className="w-full px-4 lg:px-8 pt-2 pb-6">
+          <UserProfile />
+        </div>
       </div>
     </div>
   );

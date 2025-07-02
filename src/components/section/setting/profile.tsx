@@ -13,8 +13,11 @@ import { Plus, Camera, Save, Loader2, X } from "lucide-react";
 import { getUser, updateUser } from "@/hooks/fetch/server/user";
 import { UpdateUserAttributesSchema, type UpdateUserAttributes, type UserAttributes } from "@/@types/accounts/userdata";
 import { getPresignedPutUrl, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
+import { useRouter } from "next/navigation";
 
 export default function UserProfile() {
+  const router = useRouter();
+
   const [user, setUser] = useState<UserAttributes | undefined>();
   const [loading, setLoading] = useState(true);
   const [links, setLinks] = useState<string[]>([]);
@@ -109,6 +112,9 @@ export default function UserProfile() {
         setValue("picture", [result]);
         setUser((prev) => ({ ...prev, picture: [result] }));
         await updateUser({ picture: [result] });
+        await fetch("/api/user/update");
+
+        router.refresh();
       } catch (error) {
         console.error("업로드 중 오류:", error);
       } finally {
@@ -134,31 +140,6 @@ export default function UserProfile() {
     setLinks(newLinks);
   };
 
-  if (loading) {
-    return (
-      <div className="max-w-3xl mx-auto p-6">
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="animate-pulse">
-          <div className="flex items-center gap-8 mb-12">
-            <div className="w-36 h-36 bg-gray-200 rounded-full"></div>
-            <div className="flex-1 space-y-4">
-              <div className="h-8 bg-gray-200 rounded-xl w-1/3"></div>
-              <div className="h-4 bg-gray-200 rounded-xl w-1/2"></div>
-              <div className="h-4 bg-gray-200 rounded-xl w-2/3"></div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="max-w-3xl mx-auto p-6 text-center">
-        <p className="text-gray-500">Failed to load user data</p>
-      </div>
-    );
-  }
-
   const genderOptions = [
     { value: "male", label: "남성" },
     { value: "female", label: "여성" },
@@ -171,66 +152,64 @@ export default function UserProfile() {
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full space-y-16">
-          {/* Profile Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="w-full flex items-center gap-2 p-4 rounded-xl bg-muted"
-          >
-            <motion.div whileTap={{ scale: 0.98 }} className="relative select-none w-fit">
-              <input id="profile" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading || isSubmitting} />
-
-              <label htmlFor="profile" className="cursor-pointer">
-                <motion.div initial={{ opacity: 1 }} whileHover={{ opacity: 0.3 }} className="transition-opacity">
-                  <Avatar className="size-18">
-                    <AvatarImage src={currentPicture || "/placeholder.svg"} alt={user?.name?.[0] || ""} />
-                    <AvatarFallback className="text-3xl bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                      {user?.name?.[0]?.charAt(0) || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                  className="absolute inset-0 z-10 rounded-full bg-zinc-50 flex items-center justify-center"
-                >
-                  <Camera className="size-5 text-gray-600" />
-                </motion.div>
-
-                {uploading && (
-                  <motion.div className="absolute inset-0 z-30 rounded-full bg-zinc-50 flex items-center justify-center">
-                    <Loader2 className="size-5 text-gray-600 animate-spin" />
-                  </motion.div>
-                )}
-              </label>
-            </motion.div>
-
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel className="sr-only">Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      value={field.value?.[0] || ""}
-                      onChange={(e) => field.onChange([e.target.value])}
-                      placeholder="이름을 입력하세요"
-                      className="md:text-xl font-bold h-12 text-black w-full shadow-none border-0 focus-visible:ring-0"
-                      disabled={isSubmitting}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </motion.div>
-
           {/* Personal Information */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-900">개인정보</h2>
+
+            {/* Profile Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="w-full flex items-center gap-2 p-4 rounded-xl bg-muted"
+            >
+              <motion.div whileTap={{ scale: 0.98 }} className="relative select-none w-fit">
+                <input id="profile" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading || isSubmitting} />
+
+                <label htmlFor="profile" className="cursor-pointer">
+                  <motion.div initial={{ opacity: 1 }} whileHover={{ opacity: 0.3 }} className="transition-opacity">
+                    <Avatar className="size-12 md:size-16">
+                      <AvatarImage className="object-cover" src={currentPicture || "/placeholder.svg"} alt={user?.name?.[0] || ""} />
+                      <AvatarFallback className="text-2xl">{user?.name?.[0]?.charAt(0) || "U"}</AvatarFallback>
+                    </Avatar>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    className="absolute inset-0 z-10 rounded-full bg-zinc-50 flex items-center justify-center"
+                  >
+                    <Camera className="size-5 text-gray-600" />
+                  </motion.div>
+
+                  {uploading && (
+                    <motion.div className="absolute inset-0 z-30 rounded-full bg-zinc-50 flex items-center justify-center">
+                      <Loader2 className="size-5 text-gray-600 animate-spin" />
+                    </motion.div>
+                  )}
+                </label>
+              </motion.div>
+
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel className="sr-only">Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        value={field.value?.[0] || ""}
+                        onChange={(e) => field.onChange([e.target.value])}
+                        placeholder="이름을 입력하세요"
+                        className="md:text-xl font-bold h-12 text-black w-full shadow-none border-0 focus-visible:ring-0"
+                        disabled={isSubmitting}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </motion.div>
 
             <FormField
               control={form.control}

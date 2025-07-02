@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Keycloak from "next-auth/providers/keycloak";
 import { JWT } from "next-auth/jwt";
+import { jwtDecode } from "jwt-decode";
 import { redirect } from "next/navigation";
 import { UserData, userData } from "@/@types/accounts/userdata";
 
@@ -94,9 +95,12 @@ async function refreshAccessToken(token: JWT) {
   if (!response.ok) throw refreshedTokens;
 
   const access_token = refreshedTokens.access_token;
+  const id_token = refreshedTokens.id_token;
   const refresh_token = refreshedTokens.refresh_token || token.refresh_token;
   const expires_at = expiresIntoAt(refreshedTokens.expires_in);
   const refresh_token_expires_at = refreshedTokens.refresh_token_expires_at;
+
+  const decoded: Partial<JWT> = jwtDecode(id_token || access_token);
 
   return {
     ...token,
@@ -104,6 +108,7 @@ async function refreshAccessToken(token: JWT) {
     expires_at,
     refresh_token,
     refresh_token_expires_at,
+    ...decoded,
   };
 }
 
