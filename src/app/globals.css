@@ -354,3 +354,7 @@
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-tertiary);
 }
+
+pre.shiki {
+  margin: 0;
+}
