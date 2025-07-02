@@ -7,7 +7,10 @@ import type { ComponentProps } from "react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { cn } from "@/lib/utils";
+import { WrapText } from "lucide-react";
 
 interface MarkdownPreviewProps extends ComponentProps<typeof ReactMarkdown> {
   loading?: boolean;
@@ -242,6 +245,45 @@ export default function MarkdownPreview({
         {children}
       </td>
     ),
+    code({ node, inline, className, children, ...props }: any) {
+      const match = /language-(\w+)/.exec(className || "");
+
+      const rawCode =
+        !inline && node?.children?.[0]?.value
+          ? node.children[0].value
+          : typeof children === "string"
+          ? children
+          : Array.isArray(children)
+          ? children.join("")
+          : String(children);
+
+      const codeString = rawCode
+        .split("\n")
+        .map((line: string) => line.replace(/^(\s+)/, (spaces: string) => spaces.replace(/ /g, "\u00A0")))
+        .join("\n\n");
+
+      return !inline && match ? (
+        <SyntaxHighlighter
+          style={oneDark}
+          language={match[1]}
+          customStyle={{
+            borderRadius: "0.5rem",
+            padding: "1rem",
+            overflowX: "auto",
+            whiteSpace: "pre-wrap",
+            fontFamily: "monospace",
+            lineHeight: "1.4",
+          }}
+          {...props}
+        >
+          {codeString}
+        </SyntaxHighlighter>
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    },
   };
 
   return !loading && children ? (
