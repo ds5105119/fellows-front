@@ -95,7 +95,7 @@ export default function SettingsSidebar() {
   return (
     <div
       className={cn(
-        "h-full overflow-y-auto bg-white border-r border-gray-200 shrink-0 w-full lg:w-[24rem]",
+        "sticky top-0 z-10 h-full overflow-y-auto bg-white border-r border-gray-200 shrink-0 w-full lg:w-[24rem]",
         pathname === "/service/settings" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
       )}
     >

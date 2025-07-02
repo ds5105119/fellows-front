@@ -63,8 +63,8 @@ declare module "next-auth/jwt" {
       region: string;
       postal_code: string;
       country: string;
-      sub_locality: string;
     };
+    sub_locality: string;
     gender: string;
     userData?: string;
     groups: string[];
@@ -178,7 +178,7 @@ export const {
       session.iat = token.iat;
       session.jti = token.jti;
       session.sub = token.sub;
-      session.user.address = token.address;
+      session.user.address = { ...token.address, sub_locality: token.sub_locality };
       session.user.email = token.email;
       session.user.username = token.username;
       session.user.name = token.name;

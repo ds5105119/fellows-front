@@ -16,11 +16,12 @@ import { UpdateUserAttributesSchema, type UpdateUserAttributes } from "@/@types/
 import { getPresignedPutUrl, removeFile, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
+import { useDaumPostcodePopup } from "react-daum-postcode";
 
 export default function UserProfile({ session }: { session: Session }) {
   const router = useRouter();
+  const open = useDaumPostcodePopup();
   const [uploading, setUploading] = useState(false);
-
   console.log(session);
 
   const form = useForm<UpdateUserAttributes>({
@@ -108,6 +109,18 @@ export default function UserProfile({ session }: { session: Session }) {
       newLinks[index] = value;
       form.setValue("link", newLinks);
     }
+  };
+
+  const handleKoreanAddress = () => {
+    open({
+      onComplete: (data) => {
+        setValue("street", [data.roadAddress]);
+        setValue("postal_code", [data.zonecode]);
+        setValue("region", [data.sido]);
+        setValue("locality", [data.sigungu]);
+        setValue("country", ["대한민국"]);
+      },
+    });
   };
 
   const genderOptions = [
@@ -290,6 +303,8 @@ export default function UserProfile({ session }: { session: Session }) {
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-8">
             <h2 className="text-xl font-semibold text-gray-900">주소</h2>
 
+            <Button onClick={handleKoreanAddress}>주소 검색</Button>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
@@ -334,7 +349,7 @@ export default function UserProfile({ session }: { session: Session }) {
                 name="locality"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">도시</FormLabel>
+                    <FormLabel className="text-sm font-medium text-gray-600">시/구/군</FormLabel>
                     <FormControl>
                       <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} placeholder="도시" disabled={isSubmitting} />
                     </FormControl>
@@ -348,7 +363,7 @@ export default function UserProfile({ session }: { session: Session }) {
                 name="region"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">주/지역</FormLabel>
+                    <FormLabel className="text-sm font-medium text-gray-600">도/광역시</FormLabel>
                     <FormControl>
                       <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} placeholder="주/지역" disabled={isSubmitting} />
                     </FormControl>
