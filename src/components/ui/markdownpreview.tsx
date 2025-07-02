@@ -299,7 +299,7 @@ export default function MarkdownPreview({
           })
           .replace(/<span class="line">/g, '<span style="display:block">');
 
-        return <div {...props} style={{ filter: "drop-shadow(0 0 20px rgba(59, 130, 246, 0.8))" }} dangerouslySetInnerHTML={{ __html: html }} />;
+        return <div {...props} style={{ filter: "drop-shadow(0 0 20px rgba(59, 130, 246, 0.8))", zIndex: 1 }} dangerouslySetInnerHTML={{ __html: html }} />;
       }
 
       return (
