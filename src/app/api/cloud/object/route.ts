@@ -10,7 +10,7 @@ export async function DELETE(request: Request) {
   const key = url.searchParams.get("key");
   const sse_key = url.searchParams.get("sse_key");
 
-  if (!key || !sse_key) {
+  if (!key) {
     throw new Error("Invalid request");
   }
 

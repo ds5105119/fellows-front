@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { signOut } from "next-auth/react";
 import { Session } from "next-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,13 +19,8 @@ interface NavUserProps {
   session: Session | null;
 }
 
-export function NavUser({ session: _session }: NavUserProps) {
-  const [session, setSesstion] = useState(_session);
+export function NavUser({ session }: NavUserProps) {
   const { isMobile } = useSidebar();
-
-  useEffect(() => {
-    setSesstion(_session);
-  }, [_session]);
 
   return (
     <SidebarMenu>

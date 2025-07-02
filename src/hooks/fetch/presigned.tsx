@@ -256,10 +256,10 @@ export function SSECFileDownloadButton({ file, children, className }: { file: ER
   );
 }
 
-export const removeFile = async (key: string, sse_key: string) => {
+export const removeFile = async (key: string, sse_key?: string) => {
   const params = new URLSearchParams();
   params.append("key", key);
-  params.append("sse_key", sse_key);
+  if (sse_key) params.append("sse_key", sse_key);
 
   await fetch(`/api/cloud/object?${params.toString()}`, {
     method: "DELETE",

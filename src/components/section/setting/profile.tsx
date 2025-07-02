@@ -12,14 +12,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Plus, Camera, Save, Loader2, X } from "lucide-react";
 import { getUser, updateUser } from "@/hooks/fetch/server/user";
 import { UpdateUserAttributesSchema, type UpdateUserAttributes, type UserAttributes } from "@/@types/accounts/userdata";
-import { getPresignedPutUrl, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
+import { getPresignedPutUrl, removeFile, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
 import { useRouter } from "next/navigation";
 
 export default function UserProfile() {
   const router = useRouter();
 
   const [user, setUser] = useState<UserAttributes | undefined>();
-  const [loading, setLoading] = useState(true);
   const [links, setLinks] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
 
@@ -63,8 +62,6 @@ export default function UserProfile() {
         reset(userData);
       } catch (error) {
         console.error("Failed to fetch user:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -107,6 +104,7 @@ export default function UserProfile() {
       try {
         const presigned = await getPresignedPutUrl();
         await uploadFileToPresignedUrl({ file, presigned });
+        await removeFile(presigned.key);
         const result = `${process.env.NEXT_PUBLIC_R2_URL}/${presigned.key}`;
 
         setValue("picture", [result]);
