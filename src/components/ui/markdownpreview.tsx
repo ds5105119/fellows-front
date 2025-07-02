@@ -91,8 +91,8 @@ export default function MarkdownPreview({
     "prose prose-sm md:prose-base max-w-none",
     "prose-headings:font-medium prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg",
     "prose-a:text-primary prose-img:rounded-md",
-    "prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl prose-pre:p-3 prose-pre:overflow-clip",
-    "[&_pre]:whitespace-pre-wrap [&_pre]:break-words",
+    "prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl prose-pre:p-3 prose-pre:overflow-visible",
+    "[&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_pre]:overflow-visible",
     "[&_code]:break-words",
     // 표를 제외한 요소들에만 break-words 적용
     "[&_*:not(table):not(thead):not(tbody):not(tr):not(th):not(td)]:max-w-full",
@@ -299,7 +299,19 @@ export default function MarkdownPreview({
           })
           .replace(/<span class="line">/g, '<span style="display:block">');
 
-        return <div {...props} style={{ filter: "drop-shadow(0 0 20px rgba(59, 130, 246, 0.8))", zIndex: 1 }} dangerouslySetInnerHTML={{ __html: html }} />;
+        return (
+          <div
+            {...props}
+            style={{
+              filter: "drop-shadow(0 0 20px rgba(59, 130, 246, 0.8))",
+              zIndex: 1,
+              transform: "translate3d(0, 0, 0)",
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+            }}
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        );
       }
 
       return (
