@@ -141,7 +141,7 @@ export default function UserBusinessDataForm({ data }: UserBusinessDataFormProps
         <div className="w-full sticky bottom-0 z-20">
           <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
           <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
-            <Button className="w-full h-[3.75rem] rounded-2xl text-lg font-semibold" type="submit">
+            <Button className="w-full h-[3.5rem] rounded-2xl text-lg font-semibold" type="submit">
               정보 저장하기
             </Button>
           </div>

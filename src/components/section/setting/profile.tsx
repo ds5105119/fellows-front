@@ -10,19 +10,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Plus, Camera, Save, Loader2, X } from "lucide-react";
+import { Camera, Loader2, X } from "lucide-react";
 import { updateUser } from "@/hooks/fetch/server/user";
 import { UpdateUserAttributesSchema, type UpdateUserAttributes } from "@/@types/accounts/userdata";
 import { getPresignedPutUrl, removeFile, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
-import { useDaumPostcodePopup } from "react-daum-postcode";
+import DaumPostcodeEmbed from "react-daum-postcode";
+import { cn } from "@/lib/utils";
 
 export default function UserProfile({ session }: { session: Session }) {
   const router = useRouter();
-  const open = useDaumPostcodePopup();
   const [uploading, setUploading] = useState(false);
-  console.log(session);
+  const [addressSearching, setAddressSearching] = useState(false);
 
   const form = useForm<UpdateUserAttributes>({
     resolver: zodResolver(UpdateUserAttributesSchema),
@@ -111,18 +111,6 @@ export default function UserProfile({ session }: { session: Session }) {
     }
   };
 
-  const handleKoreanAddress = () => {
-    open({
-      onComplete: (data) => {
-        setValue("street", [data.roadAddress]);
-        setValue("postal_code", [data.zonecode]);
-        setValue("region", [data.sido]);
-        setValue("locality", [data.sigungu]);
-        setValue("country", ["대한민국"]);
-      },
-    });
-  };
-
   const genderOptions = [
     { value: "male", label: "남성" },
     { value: "female", label: "여성" },
@@ -131,7 +119,7 @@ export default function UserProfile({ session }: { session: Session }) {
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="w-full space-y-16">
+        <div className="w-full space-y-16">
           {/* Personal Information */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-900">개인정보</h2>
@@ -141,14 +129,14 @@ export default function UserProfile({ session }: { session: Session }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="w-full flex items-center gap-2 p-4 rounded-xl bg-muted"
+              className="w-full flex items-center gap-2 p-3 md:p-4 rounded-xl bg-muted"
             >
               <motion.div whileTap={{ scale: 0.98 }} className="relative select-none w-fit">
                 <input id="profile" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading || isSubmitting} />
 
                 <label htmlFor="profile" className="cursor-pointer">
                   <motion.div initial={{ opacity: 1 }} whileHover={{ opacity: 0.3 }} className="transition-opacity">
-                    <Avatar className="size-12 md:size-16">
+                    <Avatar className="size-16">
                       <AvatarImage className="object-cover" src={session.user.image || "/placeholder.svg"} alt={session.user?.name?.[0] || ""} />
                       <AvatarFallback className="text-2xl">{session.user?.name?.[0]?.charAt(0) || "U"}</AvatarFallback>
                     </Avatar>
@@ -203,7 +191,7 @@ export default function UserProfile({ session }: { session: Session }) {
                       onChange={(e) => field.onChange([e.target.value])}
                       placeholder="자신에 대해 알려주세요..."
                       maxLength={100}
-                      className="min-h-[80px] resize-none"
+                      className="min-h-[80px] resize-none rounded-sm"
                       disabled={isSubmitting}
                     />
                   </FormControl>
@@ -220,7 +208,13 @@ export default function UserProfile({ session }: { session: Session }) {
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-gray-600">생년월일</FormLabel>
                     <FormControl>
-                      <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} type="date" disabled={isSubmitting} />
+                      <Input
+                        value={field.value?.[0] || ""}
+                        onChange={(e) => field.onChange([e.target.value])}
+                        type="date"
+                        disabled={isSubmitting}
+                        className="rounded-sm"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -254,16 +248,169 @@ export default function UserProfile({ session }: { session: Session }) {
             </div>
           </motion.section>
 
+          {/* Address Information */}
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-8">
+            <div className="w-full flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-gray-900">주소</h2>
+
+              <button
+                type="button"
+                className="px-2 py-1 rounded-md border border-zinc-200 bg-zinc-50 flex items-center text-xs font-bold"
+                onClick={() => setAddressSearching(!addressSearching)}
+                disabled={isSubmitting}
+              >
+                주소 검색
+              </button>
+            </div>
+
+            <div className="relative">
+              {addressSearching && (
+                <DaumPostcodeEmbed
+                  onComplete={(data) => {
+                    setAddressSearching(false);
+                    setValue("street", [data.roadAddress]);
+                    setValue("postal_code", [data.zonecode]);
+                    setValue("region", [data.sido]);
+                    setValue("locality", [data.sigungu]);
+                    setValue("country", ["대한민국"]);
+                  }}
+                  className="absolute top-0 left-0 h-full w-full bg-white border border-gray-300 rounded-md overflow-hidden"
+                />
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+              <FormField
+                control={form.control}
+                name="street"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        value={field.value?.[0] || ""}
+                        onChange={(e) => field.onChange([e.target.value])}
+                        placeholder="도로명 주소"
+                        disabled={isSubmitting}
+                        className="rounded-sm"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="sub_locality"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        value={field.value?.[0] || ""}
+                        onChange={(e) => field.onChange([e.target.value])}
+                        placeholder="상세 주소"
+                        disabled={isSubmitting}
+                        className="rounded-sm"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="locality"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        value={field.value?.[0] || ""}
+                        onChange={(e) => field.onChange([e.target.value])}
+                        placeholder="도시"
+                        disabled={isSubmitting}
+                        className="rounded-sm"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="region"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        value={field.value?.[0] || ""}
+                        onChange={(e) => field.onChange([e.target.value])}
+                        placeholder="주/지역"
+                        disabled={isSubmitting}
+                        className="rounded-sm"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="postal_code"
+                render={({ field }) => (
+                  <FormItem className="pt-4">
+                    <FormLabel className="text-sm font-medium text-gray-600">우편번호</FormLabel>
+                    <FormControl>
+                      <Input
+                        value={field.value?.[0] || ""}
+                        onChange={(e) => field.onChange([e.target.value])}
+                        placeholder="우편번호"
+                        disabled={isSubmitting}
+                        className="rounded-sm"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="country"
+                render={({ field }) => (
+                  <FormItem className="pt-4">
+                    <FormLabel className="text-sm font-medium text-gray-600">국가</FormLabel>
+                    <FormControl>
+                      <Input
+                        value={field.value?.[0] || ""}
+                        onChange={(e) => field.onChange([e.target.value])}
+                        placeholder="국가"
+                        disabled={isSubmitting}
+                        className="rounded-sm"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </motion.section>
+
           {/* Links */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-8">
-            <div className="flex items-center justify-between">
+            <div className="w-full flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900">링크</h2>
-              {(!session.user.link || session.user.link.length < 4) && (
-                <Button onClick={addLink} variant="outline" type="button" disabled={isSubmitting}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  링크 추가
-                </Button>
-              )}
+
+              <button
+                type="button"
+                className="px-2 py-1 rounded-md border border-zinc-200 bg-zinc-50 flex items-center text-xs font-bold"
+                onClick={addLink}
+                disabled={isSubmitting}
+              >
+                링크 추가
+              </button>
             </div>
 
             <FormField
@@ -272,7 +419,7 @@ export default function UserProfile({ session }: { session: Session }) {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                       {field.value?.map((link, index) => (
                         <div key={index} className="flex items-center gap-3">
                           <div className="flex-1">
@@ -299,131 +446,15 @@ export default function UserProfile({ session }: { session: Session }) {
             />
           </motion.section>
 
-          {/* Address Information */}
-          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-8">
-            <h2 className="text-xl font-semibold text-gray-900">주소</h2>
-
-            <Button onClick={handleKoreanAddress}>주소 검색</Button>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="street"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">도로명 주소</FormLabel>
-                    <FormControl>
-                      <Input
-                        value={field.value?.[0] || ""}
-                        onChange={(e) => field.onChange([e.target.value])}
-                        placeholder="도로명 주소"
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="sub_locality"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">상세 주소</FormLabel>
-                    <FormControl>
-                      <Input
-                        value={field.value?.[0] || ""}
-                        onChange={(e) => field.onChange([e.target.value])}
-                        placeholder="상세 주소"
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="locality"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">시/구/군</FormLabel>
-                    <FormControl>
-                      <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} placeholder="도시" disabled={isSubmitting} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="region"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">도/광역시</FormLabel>
-                    <FormControl>
-                      <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} placeholder="주/지역" disabled={isSubmitting} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="postal_code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">우편번호</FormLabel>
-                    <FormControl>
-                      <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} placeholder="우편번호" disabled={isSubmitting} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">국가</FormLabel>
-                    <FormControl>
-                      <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} placeholder="국가" disabled={isSubmitting} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <div className="w-full sticky bottom-0 z-20">
+            <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
+            <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
+              <Button className={cn("w-full h-[3.5rem] rounded-2xl text-lg font-semibold")} disabled={isSubmitting || !isDirty} type="submit">
+                {isSubmitting ? <Loader2 className="!size-5 mr-2 animate-spin" /> : "프로필 저장"}
+              </Button>
             </div>
-          </motion.section>
-
-          {/* Submit Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="flex justify-end pt-8 border-t border-gray-200"
-          >
-            <Button type="submit" disabled={isSubmitting || !isDirty} className="px-8 py-3">
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  저장 중...
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" />
-                  프로필 저장
-                </>
-              )}
-            </Button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </form>
     </Form>
   );
