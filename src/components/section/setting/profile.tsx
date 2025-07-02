@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { Session } from "next-auth";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -14,13 +17,12 @@ import { Camera, Loader2, X } from "lucide-react";
 import { updateUser } from "@/hooks/fetch/server/user";
 import { UpdateUserAttributesSchema, type UpdateUserAttributes } from "@/@types/accounts/userdata";
 import { getPresignedPutUrl, removeFile, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
-import { useRouter } from "next/navigation";
-import { Session } from "next-auth";
 import DaumPostcodeEmbed from "react-daum-postcode";
-import { cn } from "@/lib/utils";
+import useGeolocation from "@/lib/geolocation";
 
 export default function UserProfile({ session }: { session: Session }) {
   const router = useRouter();
+  const geoLocation = useGeolocation();
   const [uploading, setUploading] = useState(false);
   const [addressSearching, setAddressSearching] = useState(false);
 
@@ -115,6 +117,25 @@ export default function UserProfile({ session }: { session: Session }) {
     { value: "male", label: "남성" },
     { value: "female", label: "여성" },
   ];
+
+  useEffect(() => {
+    if (
+      geoLocation.location.loaded &&
+      geoLocation.location.response &&
+      geoLocation.location.response.documents &&
+      geoLocation.location.response.documents.length > 0
+    ) {
+      setAddressSearching(false);
+      setValue("sub_locality", [geoLocation.location.response.documents[0].road_address.building_name]);
+      setValue("street", [
+        geoLocation.location.response.documents[0].road_address.road_name + " " + geoLocation.location.response.documents[0].road_address.main_building_no,
+      ]);
+      setValue("postal_code", [geoLocation.location.response.documents[0].road_address.zone_no]);
+      setValue("region", [geoLocation.location.response.documents[0].road_address.region_1depth_name]);
+      setValue("locality", [geoLocation.location.response.documents[0].road_address.region_2depth_name]);
+      setValue("country", ["대한민국"]);
+    }
+  }, [geoLocation.location]);
 
   return (
     <Form {...form}>
@@ -267,15 +288,24 @@ export default function UserProfile({ session }: { session: Session }) {
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-8">
             <div className="w-full flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900">주소</h2>
-
-              <button
-                type="button"
-                className="px-2 py-1 rounded-md border border-zinc-200 bg-zinc-50 flex items-center text-xs font-bold"
-                onClick={() => setAddressSearching(!addressSearching)}
-                disabled={isSubmitting}
-              >
-                주소 검색
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  type="button"
+                  className="px-2 py-1 rounded-md border border-zinc-200 bg-zinc-50 flex items-center text-xs font-bold"
+                  onClick={() => geoLocation.get()}
+                  disabled={isSubmitting}
+                >
+                  현재 위치
+                </button>
+                <button
+                  type="button"
+                  className="px-2 py-1 rounded-md border border-zinc-200 bg-zinc-50 flex items-center text-xs font-bold"
+                  onClick={() => setAddressSearching(!addressSearching)}
+                  disabled={isSubmitting}
+                >
+                  주소 검색
+                </button>
+              </div>
             </div>
 
             <div className="relative">
