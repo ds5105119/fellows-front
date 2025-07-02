@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -350,12 +350,7 @@ export default function UserProfile({ session }: { session: Session }) {
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-gray-600">주/지역</FormLabel>
                     <FormControl>
-                      <Input
-                        value={field.value?.[0] || ""}
-                        onChange={(e) => field.onChange([e.target.value])}
-                        placeholder="주/지역"
-                        disabled={isSubmitting}
-                      />
+                      <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} placeholder="주/지역" disabled={isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -369,12 +364,7 @@ export default function UserProfile({ session }: { session: Session }) {
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-gray-600">우편번호</FormLabel>
                     <FormControl>
-                      <Input
-                        value={field.value?.[0] || ""}
-                        onChange={(e) => field.onChange([e.target.value])}
-                        placeholder="우편번호"
-                        disabled={isSubmitting}
-                      />
+                      <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} placeholder="우편번호" disabled={isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
