@@ -1297,6 +1297,18 @@
   resolved "https://registry.yarnpkg.com/@panva/hkdf/-/hkdf-1.2.1.tgz#cb0d111ef700136f4580349ff0226bf25c853f23"
   integrity sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw==
 
+"@paper-design/shaders-react@^0.0.43":
+  version "0.0.43"
+  resolved "https://registry.yarnpkg.com/@paper-design/shaders-react/-/shaders-react-0.0.43.tgz#b063cc7ea1c5724a5621b4d1974419e6c30fbc97"
+  integrity sha512-r/4mI1jETeWAfTn73jlaWfFvUzy3McvPl7GT2/MsqjGBSs2CCaFvSJYG+Z6sRKxDSnWGEk5tKZvbyQl9W0DAcg==
+  dependencies:
+    "@paper-design/shaders" "0.0.39"
+
+"@paper-design/shaders@0.0.39":
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@paper-design/shaders/-/shaders-0.0.39.tgz#f1979ab24413934435f52288cfca8b89bf338753"
+  integrity sha512-qW4QpJOAq2j9V5jzV0HQYrI9ppgaSAyX9/2f/kwPlGSBHmzryOaMwWlf8WrBVuaN246JNCrDAFM/UEgkaJC9zw==
+
 "@radix-ui/colors@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@radix-ui/colors/-/colors-3.0.0.tgz#e8a591a303c44e503bd1212cacf40a09511165e0"

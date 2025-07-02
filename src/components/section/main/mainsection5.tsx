@@ -1,13 +1,13 @@
-export default function MainSection4() {
+export default function MainSection5() {
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-2">
       <div className="col-span-full px-4 flex flex-col space-y-4 md:space-y-6 pb-12 lg:pb-16">
-        <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">다른 업체와는 비교 불허</h1>
+        <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">SaaS를 통한 간편한 외주 상태 관리</h1>
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
           <h4 className="text-base md:text-lg font-semibold text-foreground">
-            글로벌 개발 파트너사의 AI 전문가 등
+            진행 상황, 대시보드, 웹훅 연동, Open API
             <br />
-            100명 이상의 전문가들과 협력하고 있어요.
+            Fellows에서 전부 무료로 이용하고 추적하세요.
           </h4>
         </div>
       </div>
