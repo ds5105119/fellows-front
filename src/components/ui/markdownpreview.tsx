@@ -9,7 +9,7 @@ import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import { cn } from "@/lib/utils";
 import rehypeRaw from "rehype-raw";
-import { bundledLanguages, createHighlighter, type Highlighter } from "shiki";
+import { createHighlighter, type Highlighter } from "shiki";
 import { Loader2 } from "lucide-react";
 
 interface MarkdownPreviewProps extends ComponentProps<typeof ReactMarkdown> {
