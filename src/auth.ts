@@ -13,7 +13,6 @@ declare module "next-auth" {
     bio: string;
     phoneNumber: string;
     birthdate: string;
-    sub_locality: string;
     email_verified: boolean;
     address: {
       formatted: string;
@@ -22,10 +21,12 @@ declare module "next-auth" {
       region: string;
       postal_code: string;
       country: string;
+      sub_locality: string;
     };
     gender: string;
     userData: UserData;
     groups: string[];
+    link: string[];
   }
 
   interface Session {
@@ -54,7 +55,6 @@ declare module "next-auth/jwt" {
     phoneNumber: string;
     bio: string;
     birthdate: string;
-    sub_locality: string;
     email_verified: boolean;
     address: {
       formatted: string;
@@ -63,10 +63,12 @@ declare module "next-auth/jwt" {
       region: string;
       postal_code: string;
       country: string;
+      sub_locality: string;
     };
     gender: string;
     userData?: string;
     groups: string[];
+    link: string[];
     access_token: string;
     expires_at: number;
     refresh_token: string;
@@ -77,6 +79,13 @@ declare module "next-auth/jwt" {
 }
 
 const expiresIntoAt = (expiresIn: number | undefined) => (typeof expiresIn === "number" ? Date.now() / 1000 + expiresIn - 10 : 0);
+
+function copySelectedFields<T extends object, K extends keyof T>(source: T, target: Partial<T>, keys: K[]): Partial<T> {
+  for (const key of keys) {
+    target[key] = source[key];
+  }
+  return target;
+}
 
 async function refreshAccessToken(token: JWT) {
   if (!token.refresh_token) throw new TypeError("Missing refresh_token");
@@ -103,13 +112,12 @@ async function refreshAccessToken(token: JWT) {
   const decoded: Partial<JWT> = jwtDecode(id_token || access_token);
 
   return {
-    ...token,
+    ...decoded,
     access_token,
     expires_at,
     refresh_token,
     refresh_token_expires_at,
-    ...decoded,
-  };
+  } as JWT;
 }
 
 export const {
@@ -182,12 +190,13 @@ export const {
       session.user.username = token.username;
       session.user.name = token.name;
       session.user.bio = token.bio;
+      session.user.link = token.link;
       session.user.phoneNumber = token.phoneNumber;
       session.user.birthdate = token.birthdate;
-      session.user.sub_locality = token.sub_locality;
       session.user.email_verified = token.email_verified;
       session.user.userData = userData.parse(JSON.parse(token.userData || "{}"));
       session.user.groups = token.groups;
+      session.user.gender = token.gender;
       session.access_token = token.access_token;
       session.expires_at = token.expires_at;
 

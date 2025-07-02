@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,32 +11,33 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Plus, Camera, Save, Loader2, X } from "lucide-react";
-import { getUser, updateUser } from "@/hooks/fetch/server/user";
+import { updateUser } from "@/hooks/fetch/server/user";
 import { UpdateUserAttributesSchema, type UpdateUserAttributes, type UserAttributes } from "@/@types/accounts/userdata";
 import { getPresignedPutUrl, removeFile, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
 import { useRouter } from "next/navigation";
+import { Session } from "next-auth";
 
-export default function UserProfile() {
+export default function UserProfile({ session }: { session: Session }) {
   const router = useRouter();
-
-  const [user, setUser] = useState<UserAttributes | undefined>();
-  const [links, setLinks] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+
+  console.log(session);
 
   const form = useForm<UpdateUserAttributes>({
     resolver: zodResolver(UpdateUserAttributesSchema),
     defaultValues: {
-      name: [],
-      bio: [],
-      birthdate: [],
-      gender: [],
-      link: [],
-      picture: [],
-      street: [],
-      locality: [],
-      region: [],
-      postal_code: [],
-      country: [],
+      name: [session.user.name],
+      bio: [session.user.bio],
+      birthdate: [session.user.birthdate],
+      gender: [session.user.gender],
+      link: session.user.link,
+      picture: [session.user.image ?? undefined],
+      street: [session.user.address.street_address],
+      locality: [session.user.address.locality],
+      region: [session.user.address.region],
+      postal_code: [session.user.address.postal_code],
+      country: [session.user.address.country],
+      sub_locality: [session.user.address.sub_locality],
     },
   });
 
@@ -44,54 +46,16 @@ export default function UserProfile() {
     formState: { isSubmitting, isDirty },
     reset,
     setValue,
-    watch,
   } = form;
-
-  const watchedPicture = watch("picture");
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await getUser();
-        setUser(userData);
-
-        // Set initial links
-        const userLinks = userData.link || [];
-        setLinks(userLinks);
-
-        reset(userData);
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-      }
-    };
-
-    fetchUser();
-  }, [reset]);
-
-  // Sync links state with form when links change
-  useEffect(() => {
-    setValue("link", links);
-  }, [links, setValue]);
 
   const onSubmit = async (data: UpdateUserAttributes) => {
     try {
       // Filter out empty values
-      const filteredData = Object.fromEntries(
-        Object.entries(data)
-          .filter(([, value]) => {
-            if (Array.isArray(value)) {
-              return value.length > 0 && value.some((v) => v && v.trim() !== "");
-            }
-            return false;
-          })
-          .map(([key, value]) => [key, Array.isArray(value) ? value.filter((v) => v && v.trim() !== "") : value])
-      ) as UpdateUserAttributes;
+      await updateUser(data);
+      await fetch("/api/user/update");
+      window.location.reload();
 
-      await updateUser(filteredData);
-      setUser((prev) => ({
-        ...prev,
-        ...filteredData,
-      }));
+      reset();
     } catch (error) {
       console.error("Failed to update profile:", error);
     }
@@ -108,7 +72,6 @@ export default function UserProfile() {
         const result = `${process.env.NEXT_PUBLIC_R2_URL}/${presigned.key}`;
 
         setValue("picture", [result]);
-        setUser((prev) => ({ ...prev, picture: [result] }));
         await updateUser({ picture: [result] });
         await fetch("/api/user/update");
 
@@ -122,29 +85,35 @@ export default function UserProfile() {
   };
 
   const addLink = () => {
-    if (links.length < 4) {
-      setLinks([...links, ""]);
+    const links = form.getValues("link");
+    if (!links) {
+      form.setValue("link", [""]);
+    } else if (links.length < 4) {
+      form.setValue("link", [...links, ""]);
     }
   };
 
   const removeLink = (index: number) => {
-    const newLinks = links.filter((__, i) => i !== index);
-    setLinks(newLinks);
+    const links = form.getValues("link");
+    if (links) {
+      const newLinks = links.filter((__, i) => i !== index);
+      form.setValue("link", newLinks);
+    }
   };
 
   const updateLink = (index: number, value: string) => {
-    const newLinks = [...links];
-    newLinks[index] = value;
-    setLinks(newLinks);
+    const links = form.getValues("link");
+    if (links) {
+      const newLinks = [...links];
+      newLinks[index] = value;
+      form.setValue("link", newLinks);
+    }
   };
 
   const genderOptions = [
     { value: "male", label: "남성" },
     { value: "female", label: "여성" },
   ];
-
-  // Use the watched picture value or fallback to user picture
-  const currentPicture = watchedPicture?.[0] || user?.picture?.[0] || "";
 
   return (
     <Form {...form}>
@@ -167,8 +136,8 @@ export default function UserProfile() {
                 <label htmlFor="profile" className="cursor-pointer">
                   <motion.div initial={{ opacity: 1 }} whileHover={{ opacity: 0.3 }} className="transition-opacity">
                     <Avatar className="size-12 md:size-16">
-                      <AvatarImage className="object-cover" src={currentPicture || "/placeholder.svg"} alt={user?.name?.[0] || ""} />
-                      <AvatarFallback className="text-2xl">{user?.name?.[0]?.charAt(0) || "U"}</AvatarFallback>
+                      <AvatarImage className="object-cover" src={session.user.image || "/placeholder.svg"} alt={session.user?.name?.[0] || ""} />
+                      <AvatarFallback className="text-2xl">{session.user?.name?.[0]?.charAt(0) || "U"}</AvatarFallback>
                     </Avatar>
                   </motion.div>
 
@@ -193,7 +162,7 @@ export default function UserProfile() {
                 name="name"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel className="sr-only">Name</FormLabel>
+                    <FormLabel className="sr-only">이름</FormLabel>
                     <FormControl>
                       <Input
                         value={field.value?.[0] || ""}
@@ -219,7 +188,7 @@ export default function UserProfile() {
                     <Textarea
                       value={field.value?.[0] || ""}
                       onChange={(e) => field.onChange([e.target.value])}
-                      placeholder="Tell us about yourself..."
+                      placeholder="자신에 대해 알려주세요..."
                       maxLength={100}
                       className="min-h-[80px] resize-none"
                       disabled={isSubmitting}
@@ -236,7 +205,7 @@ export default function UserProfile() {
                 name="birthdate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">Birth Date</FormLabel>
+                    <FormLabel className="text-sm font-medium text-gray-600">생년월일</FormLabel>
                     <FormControl>
                       <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} type="date" disabled={isSubmitting} />
                     </FormControl>
@@ -250,11 +219,11 @@ export default function UserProfile() {
                 name="gender"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">Gender</FormLabel>
+                    <FormLabel className="text-sm font-medium text-gray-600">성별</FormLabel>
                     <Select onValueChange={(value) => field.onChange([value])} value={field.value?.[0] || ""} disabled={isSubmitting}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select gender" />
+                          <SelectValue placeholder="성별을 선택하세요" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -275,40 +244,51 @@ export default function UserProfile() {
           {/* Links */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-8">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">Links</h2>
-              {links.length < 4 && (
+              <h2 className="text-xl font-semibold text-gray-900">링크</h2>
+              {(!session.user.link || session.user.link.length < 4) && (
                 <Button onClick={addLink} variant="outline" type="button" disabled={isSubmitting}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Link
+                  링크 추가
                 </Button>
               )}
             </div>
 
-            <div className="space-y-4">
-              {links.map((link, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <Input value={link} onChange={(e) => updateLink(index, e.target.value)} placeholder="https://example.com" disabled={isSubmitting} />
-                  </div>
-                  <Button
-                    onClick={() => removeLink(index)}
-                    variant="ghost"
-                    size="sm"
-                    type="button"
-                    disabled={isSubmitting}
-                    className="hover:bg-red-50 hover:text-red-600"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-              {links.length === 0 && <p className="text-gray-400 text-sm py-8 text-center">No links added yet</p>}
-            </div>
+            <FormField
+              control={form.control}
+              name="link"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="space-y-4">
+                      {field.value?.map((link, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          <div className="flex-1">
+                            <Input value={link} onChange={(e) => updateLink(index, e.target.value)} placeholder="https://example.com" disabled={isSubmitting} />
+                          </div>
+                          <Button
+                            onClick={() => removeLink(index)}
+                            variant="ghost"
+                            size="sm"
+                            type="button"
+                            disabled={isSubmitting}
+                            className="hover:bg-red-50 hover:text-red-600"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                      {(!field.value || field.value.length === 0) && <p className="text-gray-400 text-sm py-8 text-center">아직 링크가 없어요</p>}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </motion.section>
 
           {/* Address Information */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-8">
-            <h2 className="text-xl font-semibold text-gray-900">Address</h2>
+            <h2 className="text-xl font-semibold text-gray-900">주소</h2>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <FormField
@@ -316,12 +296,31 @@ export default function UserProfile() {
                 name="street"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">Street</FormLabel>
+                    <FormLabel className="text-sm font-medium text-gray-600">도로명 주소</FormLabel>
                     <FormControl>
                       <Input
                         value={field.value?.[0] || ""}
                         onChange={(e) => field.onChange([e.target.value])}
-                        placeholder="Street address"
+                        placeholder="도로명 주소"
+                        disabled={isSubmitting}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="sub_locality"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-600">상세 주소</FormLabel>
+                    <FormControl>
+                      <Input
+                        value={field.value?.[0] || ""}
+                        onChange={(e) => field.onChange([e.target.value])}
+                        placeholder="상세 주소"
                         disabled={isSubmitting}
                       />
                     </FormControl>
@@ -335,9 +334,9 @@ export default function UserProfile() {
                 name="locality"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">City</FormLabel>
+                    <FormLabel className="text-sm font-medium text-gray-600">도시</FormLabel>
                     <FormControl>
-                      <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} placeholder="City" disabled={isSubmitting} />
+                      <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} placeholder="도시" disabled={isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -349,12 +348,12 @@ export default function UserProfile() {
                 name="region"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">State/Region</FormLabel>
+                    <FormLabel className="text-sm font-medium text-gray-600">주/지역</FormLabel>
                     <FormControl>
                       <Input
                         value={field.value?.[0] || ""}
                         onChange={(e) => field.onChange([e.target.value])}
-                        placeholder="State/Region"
+                        placeholder="주/지역"
                         disabled={isSubmitting}
                       />
                     </FormControl>
@@ -368,12 +367,12 @@ export default function UserProfile() {
                 name="postal_code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">Postal Code</FormLabel>
+                    <FormLabel className="text-sm font-medium text-gray-600">우편번호</FormLabel>
                     <FormControl>
                       <Input
                         value={field.value?.[0] || ""}
                         onChange={(e) => field.onChange([e.target.value])}
-                        placeholder="Postal code"
+                        placeholder="우편번호"
                         disabled={isSubmitting}
                       />
                     </FormControl>
@@ -387,9 +386,9 @@ export default function UserProfile() {
                 name="country"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">Country</FormLabel>
+                    <FormLabel className="text-sm font-medium text-gray-600">국가</FormLabel>
                     <FormControl>
-                      <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} placeholder="Country" disabled={isSubmitting} />
+                      <Input value={field.value?.[0] || ""} onChange={(e) => field.onChange([e.target.value])} placeholder="국가" disabled={isSubmitting} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -409,12 +408,12 @@ export default function UserProfile() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Saving...
+                  저장 중...
                 </>
               ) : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
-                  Save Profile
+                  프로필 저장
                 </>
               )}
             </Button>

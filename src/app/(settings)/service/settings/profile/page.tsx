@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { Metadata } from "next";
 import UserProfile from "@/components/section/setting/profile";
 
@@ -7,6 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  const session = await auth();
+  if (!session) return null;
+
   return (
     <div className="flex flex-col w-full h-full items-center">
       <div className="w-full md:max-w-xl">
@@ -16,7 +20,7 @@ export default async function Page() {
         </div>
 
         <div className="w-full px-4 lg:px-8 pt-2 pb-6">
-          <UserProfile />
+          <UserProfile session={session} />
         </div>
       </div>
     </div>
