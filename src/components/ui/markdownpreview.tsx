@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -27,6 +27,12 @@ interface ThComponentProps extends React.ThHTMLAttributes<HTMLTableHeaderCellEle
 }
 
 interface TdComponentProps extends React.TdHTMLAttributes<HTMLTableDataCellElement> {
+  children?: React.ReactNode;
+}
+interface CodeComponentProps extends React.HTMLAttributes<HTMLElement> {
+  node?: any;
+  inline?: boolean;
+  className?: string;
   children?: React.ReactNode;
 }
 
@@ -244,7 +250,7 @@ export default function MarkdownPreview({
         {children}
       </td>
     ),
-    code({ node, inline, className, children, ...props }: any) {
+    code({ node, inline, className, children, ...props }: CodeComponentProps) {
       const match = /language-(\w+)/.exec(className || "");
 
       const rawCode =
