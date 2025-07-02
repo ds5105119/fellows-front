@@ -3,13 +3,14 @@
 import type React from "react";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps } from "react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { cn } from "@/lib/utils";
+import type { Element as HastElement } from "hast";
 
 interface MarkdownPreviewProps extends ComponentProps<typeof ReactMarkdown> {
   loading?: boolean;
@@ -30,7 +31,7 @@ interface TdComponentProps extends React.TdHTMLAttributes<HTMLTableDataCellEleme
   children?: React.ReactNode;
 }
 interface CodeComponentProps extends React.HTMLAttributes<HTMLElement> {
-  node?: any;
+  node?: HastElement;
   inline?: boolean;
   className?: string;
   children?: React.ReactNode;
