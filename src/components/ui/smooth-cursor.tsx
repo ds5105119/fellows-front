@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useSpring } from "motion/react";
-import { FC, JSX, useEffect, useRef, useState } from "react";
+import { FC, JSX, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 interface Position {
