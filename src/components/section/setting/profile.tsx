@@ -136,7 +136,7 @@ export default function UserProfile({ session }: { session: Session }) {
 
                 <label htmlFor="profile" className="cursor-pointer">
                   <motion.div initial={{ opacity: 1 }} whileHover={{ opacity: 0.3 }} className="transition-opacity">
-                    <Avatar className="size-16">
+                    <Avatar className="size-14 md:size-16">
                       <AvatarImage className="object-cover" src={session.user.image || "/placeholder.svg"} alt={session.user?.name?.[0] || ""} />
                       <AvatarFallback className="text-2xl">{session.user?.name?.[0]?.charAt(0) || "U"}</AvatarFallback>
                     </Avatar>
@@ -169,7 +169,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         value={field.value?.[0] || ""}
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="이름을 입력하세요"
-                        className="md:text-xl font-bold h-12 text-black w-full shadow-none border-0 focus-visible:ring-0"
+                        className="text-xl font-bold h-12 text-black w-full shadow-none border-0 focus-visible:ring-0"
                         disabled={isSubmitting}
                       />
                     </FormControl>
@@ -191,7 +191,7 @@ export default function UserProfile({ session }: { session: Session }) {
                       onChange={(e) => field.onChange([e.target.value])}
                       placeholder="자신에 대해 알려주세요..."
                       maxLength={100}
-                      className="min-h-[80px] resize-none rounded-sm"
+                      className="min-h-[80px] resize-none rounded-xs"
                       disabled={isSubmitting}
                     />
                   </FormControl>
@@ -213,7 +213,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         type="date"
                         disabled={isSubmitting}
-                        className="rounded-sm"
+                        className="rounded-xs"
                       />
                     </FormControl>
                     <FormMessage />
@@ -291,7 +291,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="도로명 주소"
                         disabled={isSubmitting}
-                        className="rounded-sm"
+                        className="rounded-xs"
                       />
                     </FormControl>
                     <FormMessage />
@@ -310,7 +310,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="상세 주소"
                         disabled={isSubmitting}
-                        className="rounded-sm"
+                        className="rounded-xs"
                       />
                     </FormControl>
                     <FormMessage />
@@ -329,7 +329,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="도시"
                         disabled={isSubmitting}
-                        className="rounded-sm"
+                        className="rounded-xs"
                       />
                     </FormControl>
                     <FormMessage />
@@ -348,7 +348,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="주/지역"
                         disabled={isSubmitting}
-                        className="rounded-sm"
+                        className="rounded-xs"
                       />
                     </FormControl>
                     <FormMessage />
@@ -368,7 +368,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="우편번호"
                         disabled={isSubmitting}
-                        className="rounded-sm"
+                        className="rounded-xs"
                       />
                     </FormControl>
                     <FormMessage />
@@ -388,7 +388,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="국가"
                         disabled={isSubmitting}
-                        className="rounded-sm"
+                        className="rounded-xs"
                       />
                     </FormControl>
                     <FormMessage />
@@ -423,7 +423,13 @@ export default function UserProfile({ session }: { session: Session }) {
                       {field.value?.map((link, index) => (
                         <div key={index} className="flex items-center gap-3">
                           <div className="flex-1">
-                            <Input value={link} onChange={(e) => updateLink(index, e.target.value)} placeholder="https://example.com" disabled={isSubmitting} />
+                            <Input
+                              value={link}
+                              onChange={(e) => updateLink(index, e.target.value)}
+                              placeholder="https://example.com"
+                              disabled={isSubmitting}
+                              className="rounded-xs"
+                            />
                           </div>
                           <Button
                             onClick={() => removeLink(index)}
