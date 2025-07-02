@@ -10,7 +10,6 @@ import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { cn } from "@/lib/utils";
-import { WrapText } from "lucide-react";
 
 interface MarkdownPreviewProps extends ComponentProps<typeof ReactMarkdown> {
   loading?: boolean;
