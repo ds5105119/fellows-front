@@ -37,7 +37,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pretendard.variable} ${satoshi.variable} h-screen`}>
+      <body className={`${pretendard.variable} ${satoshi.variable} h-dvh`}>
         <SidebarProvider
           style={
             {
