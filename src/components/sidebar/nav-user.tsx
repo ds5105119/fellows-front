@@ -133,7 +133,16 @@ export function NavUser({ session }: NavUserProps) {
           </div>
         </DialogContent>
       </Dialog>
-      {isProfileOpen && <SmoothCursor />}
+      {isProfileOpen && (
+        <SmoothCursor
+          springConfig={{
+            damping: 100,
+            stiffness: 1000,
+            mass: 1.0,
+            restDelta: 0.001,
+          }}
+        />
+      )}
     </>
   );
 }
