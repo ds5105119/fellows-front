@@ -80,7 +80,7 @@ export default function MarkdownPreview({
     const initHighlighter = async () => {
       const highlighter = await createHighlighter({
         themes: ["dark-plus"],
-        langs: Object.keys(bundledLanguages),
+        langs: ["ts", "typescript", "js", "javascript", "python", "c", "c++"],
       });
       setHighlighter(highlighter);
     };
@@ -91,7 +91,7 @@ export default function MarkdownPreview({
     "prose prose-sm md:prose-base max-w-none",
     "prose-headings:font-medium prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg",
     "prose-a:text-primary prose-img:rounded-md",
-    "prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl prose-pre:p-3",
+    "prose-pre:bg-muted/50 prose-pre:backdrop-blur prose-pre:border prose-pre:border-border/50 prose-pre:rounded-xl prose-pre:p-3 prose-pre:overflow-clip",
     "[&_pre]:whitespace-pre-wrap [&_pre]:break-words",
     "[&_code]:break-words",
     // 표를 제외한 요소들에만 break-words 적용
