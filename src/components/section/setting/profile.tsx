@@ -129,7 +129,7 @@ export default function UserProfile({ session }: { session: Session }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="w-full flex items-center gap-2 p-3 md:p-4 rounded-xl bg-muted"
+              className="w-full flex items-center gap-4 p-3 md:p-4 rounded-xl bg-muted"
             >
               <motion.div whileTap={{ scale: 0.98 }} className="relative select-none w-fit">
                 <input id="profile" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading || isSubmitting} />
@@ -158,25 +158,28 @@ export default function UserProfile({ session }: { session: Session }) {
                 </label>
               </motion.div>
 
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel className="sr-only">이름</FormLabel>
-                    <FormControl>
-                      <Input
-                        value={field.value?.[0] || ""}
-                        onChange={(e) => field.onChange([e.target.value])}
-                        placeholder="이름을 입력하세요"
-                        className="text-xl font-bold h-12 text-black w-full shadow-none border-0 focus-visible:ring-0"
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="w-full flex flex-col space-y-0.5">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel className="sr-only">이름</FormLabel>
+                      <FormControl>
+                        <Input
+                          value={field.value?.[0] || ""}
+                          onChange={(e) => field.onChange([e.target.value])}
+                          placeholder="이름을 입력하세요"
+                          className="!text-xl font-bold text-black w-full shadow-none border-0 focus-visible:ring-0 p-0 h-fit"
+                          disabled={isSubmitting}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="text-xs md:text-sm text-muted-foreground font-semibold">{session.user.username}</div>
+              </div>
             </motion.div>
 
             <FormField
@@ -191,7 +194,7 @@ export default function UserProfile({ session }: { session: Session }) {
                       onChange={(e) => field.onChange([e.target.value])}
                       placeholder="자신에 대해 알려주세요..."
                       maxLength={100}
-                      className="min-h-[80px] resize-none rounded-xs"
+                      className="min-h-[80px] resize-none rounded-[3px] shadow-none"
                       disabled={isSubmitting}
                     />
                   </FormControl>
@@ -213,7 +216,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         type="date"
                         disabled={isSubmitting}
-                        className="rounded-xs"
+                        className="rounded-[3px] shadow-none"
                       />
                     </FormControl>
                     <FormMessage />
@@ -229,7 +232,7 @@ export default function UserProfile({ session }: { session: Session }) {
                     <FormLabel className="text-sm font-medium text-gray-600">성별</FormLabel>
                     <Select onValueChange={(value) => field.onChange([value])} value={field.value?.[0] || ""} disabled={isSubmitting}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="rounded-[3px] shadow-none">
                           <SelectValue placeholder="성별을 선택하세요" />
                         </SelectTrigger>
                       </FormControl>
@@ -291,7 +294,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="도로명 주소"
                         disabled={isSubmitting}
-                        className="rounded-xs"
+                        className="rounded-[3px] shadow-none"
                       />
                     </FormControl>
                     <FormMessage />
@@ -310,7 +313,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="상세 주소"
                         disabled={isSubmitting}
-                        className="rounded-xs"
+                        className="rounded-[3px] shadow-none"
                       />
                     </FormControl>
                     <FormMessage />
@@ -329,7 +332,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="도시"
                         disabled={isSubmitting}
-                        className="rounded-xs"
+                        className="rounded-[3px] shadow-none"
                       />
                     </FormControl>
                     <FormMessage />
@@ -348,7 +351,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="주/지역"
                         disabled={isSubmitting}
-                        className="rounded-xs"
+                        className="rounded-[3px] shadow-none"
                       />
                     </FormControl>
                     <FormMessage />
@@ -368,7 +371,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="우편번호"
                         disabled={isSubmitting}
-                        className="rounded-xs"
+                        className="rounded-[3px] shadow-none"
                       />
                     </FormControl>
                     <FormMessage />
@@ -388,7 +391,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="국가"
                         disabled={isSubmitting}
-                        className="rounded-xs"
+                        className="rounded-[3px] shadow-none"
                       />
                     </FormControl>
                     <FormMessage />
@@ -428,7 +431,7 @@ export default function UserProfile({ session }: { session: Session }) {
                               onChange={(e) => updateLink(index, e.target.value)}
                               placeholder="https://example.com"
                               disabled={isSubmitting}
-                              className="rounded-xs"
+                              className="rounded-[3px] shadow-none"
                             />
                           </div>
                           <Button
