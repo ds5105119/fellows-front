@@ -122,65 +122,77 @@ export default function UserProfile({ session }: { session: Session }) {
         <div className="w-full space-y-16">
           {/* Personal Information */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900">개인정보</h2>
+            <div className="w-full space-y-3">
+              {/* Profile Header */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="w-full flex items-center gap-4 p-3 md:p-4 rounded-xl bg-muted hover:bg-zinc-200 transition-colors duration-200"
+              >
+                <motion.div whileTap={{ scale: 0.98 }} className="relative select-none w-fit">
+                  <input id="profile" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading || isSubmitting} />
 
-            {/* Profile Header */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="w-full flex items-center gap-4 p-3 md:p-4 rounded-xl bg-muted"
-            >
-              <motion.div whileTap={{ scale: 0.98 }} className="relative select-none w-fit">
-                <input id="profile" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading || isSubmitting} />
-
-                <label htmlFor="profile" className="cursor-pointer">
-                  <motion.div initial={{ opacity: 1 }} whileHover={{ opacity: 0.3 }} className="transition-opacity">
-                    <Avatar className="size-14 md:size-16">
-                      <AvatarImage className="object-cover" src={session.user.image || "/placeholder.svg"} alt={session.user?.name?.[0] || ""} />
-                      <AvatarFallback className="text-2xl">{session.user?.name?.[0]?.charAt(0) || "U"}</AvatarFallback>
-                    </Avatar>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 1 }}
-                    className="absolute inset-0 z-10 rounded-full bg-zinc-50 flex items-center justify-center"
-                  >
-                    <Camera className="size-5 text-gray-600" />
-                  </motion.div>
-
-                  {uploading && (
-                    <motion.div className="absolute inset-0 z-30 rounded-full bg-zinc-50 flex items-center justify-center">
-                      <Loader2 className="size-5 text-gray-600 animate-spin" />
+                  <label htmlFor="profile" className="cursor-pointer">
+                    <motion.div initial={{ opacity: 1 }} whileHover={{ opacity: 0.3 }} className="transition-opacity">
+                      <Avatar className="size-14 md:size-16">
+                        <AvatarImage className="object-cover" src={session.user.image || "/placeholder.svg"} alt={session.user?.name?.[0] || ""} />
+                        <AvatarFallback className="text-2xl">{session.user?.name?.[0]?.charAt(0) || "U"}</AvatarFallback>
+                      </Avatar>
                     </motion.div>
-                  )}
-                </label>
+
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 1 }}
+                      className="absolute inset-0 z-10 rounded-full bg-zinc-100 flex items-center justify-center"
+                    >
+                      <Camera className="size-5 text-gray-600" />
+                    </motion.div>
+
+                    {uploading && (
+                      <motion.div className="absolute inset-0 z-30 rounded-full bg-zinc-100 flex items-center justify-center">
+                        <Loader2 className="size-5 text-gray-600 animate-spin" />
+                      </motion.div>
+                    )}
+                  </label>
+                </motion.div>
+
+                <div className="w-full flex flex-col space-y-0.5">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="sr-only">이름</FormLabel>
+                        <FormControl>
+                          <Input
+                            value={field.value?.[0] || ""}
+                            onChange={(e) => field.onChange([e.target.value])}
+                            placeholder="이름을 입력하세요"
+                            className="!text-xl font-bold text-black w-full shadow-none border-0 focus-visible:ring-0 p-0 h-fit rounded-none"
+                            disabled={isSubmitting}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="text-xs md:text-sm text-muted-foreground font-semibold">@{session.user.username}</div>
+                </div>
               </motion.div>
 
-              <div className="w-full flex flex-col space-y-0.5">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel className="sr-only">이름</FormLabel>
-                      <FormControl>
-                        <Input
-                          value={field.value?.[0] || ""}
-                          onChange={(e) => field.onChange([e.target.value])}
-                          placeholder="이름을 입력하세요"
-                          className="!text-xl font-bold text-black w-full shadow-none border-0 focus-visible:ring-0 p-0 h-fit"
-                          disabled={isSubmitting}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="text-xs md:text-sm text-muted-foreground font-semibold">{session.user.username}</div>
-              </div>
-            </motion.div>
+              {/* Profile Header */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="w-full flex items-center gap-3">
+                <Button type="button" variant="secondary" size="sm" className="shadow-none grow hover:bg-zinc-200 transition-colors duration-200">
+                  전화번호 변경
+                </Button>
+                <Button type="button" variant="secondary" size="sm" className="shadow-none grow hover:bg-zinc-200 transition-colors duration-200">
+                  닉네임 변경
+                </Button>
+              </motion.div>
+            </div>
+
+            <h2 className="text-xl font-semibold text-gray-900">개인정보</h2>
 
             <FormField
               control={form.control}
@@ -194,7 +206,7 @@ export default function UserProfile({ session }: { session: Session }) {
                       onChange={(e) => field.onChange([e.target.value])}
                       placeholder="자신에 대해 알려주세요..."
                       maxLength={100}
-                      className="min-h-[80px] resize-none rounded-[3px] shadow-none"
+                      className="min-h-[80px] resize-none shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
                       disabled={isSubmitting}
                     />
                   </FormControl>
@@ -203,7 +215,7 @@ export default function UserProfile({ session }: { session: Session }) {
               )}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               <FormField
                 control={form.control}
                 name="birthdate"
@@ -216,7 +228,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         type="date"
                         disabled={isSubmitting}
-                        className="rounded-[3px] shadow-none"
+                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
                       />
                     </FormControl>
                     <FormMessage />
@@ -232,7 +244,7 @@ export default function UserProfile({ session }: { session: Session }) {
                     <FormLabel className="text-sm font-medium text-gray-600">성별</FormLabel>
                     <Select onValueChange={(value) => field.onChange([value])} value={field.value?.[0] || ""} disabled={isSubmitting}>
                       <FormControl>
-                        <SelectTrigger className="rounded-[3px] shadow-none">
+                        <SelectTrigger className="w-full shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200">
                           <SelectValue placeholder="성별을 선택하세요" />
                         </SelectTrigger>
                       </FormControl>
@@ -269,6 +281,7 @@ export default function UserProfile({ session }: { session: Session }) {
             <div className="relative">
               {addressSearching && (
                 <DaumPostcodeEmbed
+                  animation={true}
                   onComplete={(data) => {
                     setAddressSearching(false);
                     setValue("street", [data.roadAddress]);
@@ -282,7 +295,7 @@ export default function UserProfile({ session }: { session: Session }) {
               )}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               <FormField
                 control={form.control}
                 name="street"
@@ -294,7 +307,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="도로명 주소"
                         disabled={isSubmitting}
-                        className="rounded-[3px] shadow-none"
+                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
                       />
                     </FormControl>
                     <FormMessage />
@@ -313,7 +326,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="상세 주소"
                         disabled={isSubmitting}
-                        className="rounded-[3px] shadow-none"
+                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
                       />
                     </FormControl>
                     <FormMessage />
@@ -332,7 +345,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="도시"
                         disabled={isSubmitting}
-                        className="rounded-[3px] shadow-none"
+                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
                       />
                     </FormControl>
                     <FormMessage />
@@ -351,7 +364,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="주/지역"
                         disabled={isSubmitting}
-                        className="rounded-[3px] shadow-none"
+                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
                       />
                     </FormControl>
                     <FormMessage />
@@ -371,7 +384,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="우편번호"
                         disabled={isSubmitting}
-                        className="rounded-[3px] shadow-none"
+                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
                       />
                     </FormControl>
                     <FormMessage />
@@ -391,7 +404,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="국가"
                         disabled={isSubmitting}
-                        className="rounded-[3px] shadow-none"
+                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
                       />
                     </FormControl>
                     <FormMessage />
@@ -431,7 +444,7 @@ export default function UserProfile({ session }: { session: Session }) {
                               onChange={(e) => updateLink(index, e.target.value)}
                               placeholder="https://example.com"
                               disabled={isSubmitting}
-                              className="rounded-[3px] shadow-none"
+                              className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
                             />
                           </div>
                           <Button
