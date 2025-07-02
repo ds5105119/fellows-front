@@ -6,9 +6,8 @@ import type { ComponentProps } from "react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks"; // 줄바꿈 처리를 위한 플러그인
+import remarkBreaks from "remark-breaks";
 import { cn } from "@/lib/utils";
-import type { Element as HastElement } from "hast";
 import rehypeRaw from "rehype-raw";
 import { bundledLanguages, createHighlighter, type Highlighter } from "shiki";
 import { Loader2 } from "lucide-react";
@@ -32,7 +31,6 @@ interface TdComponentProps extends React.TdHTMLAttributes<HTMLTableDataCellEleme
 }
 
 interface CodeComponentProps extends React.HTMLAttributes<HTMLElement> {
-  node?: HastElement;
   inline?: boolean;
   className?: string;
   children?: React.ReactNode;
@@ -276,7 +274,7 @@ export default function MarkdownPreview({
         {children}
       </p>
     ),
-    code({ node, inline, className, children, ...props }: CodeComponentProps) {
+    code({ inline, className, children, ...props }: CodeComponentProps) {
       const langMatch = /language-(\w+)/.exec(className || "");
       const language = langMatch?.[1];
       const rawCode = Array.isArray(children) ? children.join("\n") : String(children);
@@ -301,7 +299,7 @@ export default function MarkdownPreview({
           })
           .replace(/<span class="line">/g, '<span style="display:block">');
 
-        return <div {...props} className="drop-shadow-xl" dangerouslySetInnerHTML={{ __html: html }} />;
+        return <div {...props} style={{ filter: "drop-shadow(0 0 20px rgba(59, 130, 246, 0.8))" }} dangerouslySetInnerHTML={{ __html: html }} />;
       }
 
       return (
