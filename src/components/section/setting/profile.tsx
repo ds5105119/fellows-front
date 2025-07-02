@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Plus, Camera, Save, Loader2, X } from "lucide-react";
 import { updateUser } from "@/hooks/fetch/server/user";
-import { UpdateUserAttributesSchema, type UpdateUserAttributes, type UserAttributes } from "@/@types/accounts/userdata";
+import { UpdateUserAttributesSchema, type UpdateUserAttributes } from "@/@types/accounts/userdata";
 import { getPresignedPutUrl, removeFile, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";

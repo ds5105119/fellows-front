@@ -80,13 +80,6 @@ declare module "next-auth/jwt" {
 
 const expiresIntoAt = (expiresIn: number | undefined) => (typeof expiresIn === "number" ? Date.now() / 1000 + expiresIn - 10 : 0);
 
-function copySelectedFields<T extends object, K extends keyof T>(source: T, target: Partial<T>, keys: K[]): Partial<T> {
-  for (const key of keys) {
-    target[key] = source[key];
-  }
-  return target;
-}
-
 async function refreshAccessToken(token: JWT) {
   if (!token.refresh_token) throw new TypeError("Missing refresh_token");
 
