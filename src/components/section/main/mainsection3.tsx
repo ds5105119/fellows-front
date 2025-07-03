@@ -151,7 +151,7 @@ export default function MainSection3() {
         {/* Navigation Controls */}
         <div className="pl-2 pr-8 flex justify-between items-center mt-5">
           <div className="flex space-x-3.5">
-            {[...Array(features.length).keys()].map((index) => (
+            {[...Array(count).keys()].map((index) => (
               <div className="size-3 flex items-center justify-center cursror-pointer" key={index}>
                 <button
                   onClick={() => api?.scrollTo(index)}
