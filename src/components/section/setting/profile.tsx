@@ -69,7 +69,7 @@ export default function UserProfile({ session }: { session: Session }) {
     if (file) {
       setUploading(true);
       try {
-        const presigned = await getPresignedPutUrl();
+        const presigned = await getPresignedPutUrl("profile", "image");
         await uploadFileToPresignedUrl({ file, presigned });
         await removeFile(presigned.key);
         const result = `${process.env.NEXT_PUBLIC_R2_URL}/${presigned.key}`;

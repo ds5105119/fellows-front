@@ -71,8 +71,8 @@ export const downloadFilefromSSECPresignedUrl = async (presigned: SSECPresignedU
   return { blob, mime };
 };
 
-export async function getPresignedPutUrl(): Promise<PresignedPutUrlResponseType> {
-  const response = await fetch(`/api/cloud/object/presigned/put`, {
+export async function getPresignedPutUrl(suffix?: string, name?: string): Promise<PresignedPutUrlResponseType> {
+  const response = await fetch(`/api/cloud/object/presigned/put?suffix=${suffix}&name=${name}`, {
     method: "get",
   });
 
@@ -84,8 +84,8 @@ export async function getPresignedPutUrl(): Promise<PresignedPutUrlResponseType>
   return PresignedPutUrlResponseSchema.parse(data);
 }
 
-export async function getSSECPresignedPutUrl(name: string): Promise<SSECPresignedUrlResponseType> {
-  const response = await fetch(`/api/cloud/object/presigned/put/sse/c?name=${name}`, {
+export async function getSSECPresignedPutUrl(suffix?: string, name?: string): Promise<SSECPresignedUrlResponseType> {
+  const response = await fetch(`/api/cloud/object/presigned/put/sse/c?suffix=${suffix}&name=${name}`, {
     method: "get",
   });
 

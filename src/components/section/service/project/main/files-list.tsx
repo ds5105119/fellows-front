@@ -49,7 +49,7 @@ export function FilesList({ project, task }: FilesListProps) {
           return;
         }
 
-        const presigned = await getSSECPresignedPutUrl(file.name);
+        const presigned = await getSSECPresignedPutUrl("project", file.name);
         const fileRecord = erpNextFileSchema.parse({
           file_name: file.name,
           key: presigned.key,
