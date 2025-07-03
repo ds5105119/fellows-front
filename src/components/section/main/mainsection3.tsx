@@ -87,9 +87,9 @@ const features = [
   },
 ];
 
-const Cell = ({ key, header, children, background }: { key: number; header?: ReactNode; children?: ReactNode; background?: ReactNode | string }) => {
+const Cell = ({ header, children, background }: { header?: ReactNode; children?: ReactNode; background?: ReactNode | string }) => {
   return (
-    <CarouselItem key={key} className="basis-[96%] md:basis-[54%] lg:basis-[32%] xl:basis-[26%]">
+    <CarouselItem className="basis-[96%] md:basis-[54%] lg:basis-[32%] xl:basis-[26%]">
       <div
         className={cn(
           "aspect-[9/16] relative w-full rounded-3xl overflow-hidden",
