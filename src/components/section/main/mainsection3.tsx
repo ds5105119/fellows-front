@@ -5,18 +5,28 @@ import { cn } from "@/lib/utils";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { MeshGradientComponent } from "@/components/resource/meshgradient";
+import Image from "next/image";
+import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 
 const features = [
   {
     header: (
       <>
-        <p className="text-emerald-500">/Team</p>
+        <p className="text-foreground text-sm md:text-base">차트와 대시보드</p>
         <p className="text-foreground leading-normal">
-          각 분야 전문가로 구성된 팀이
-          <br />
-          프로젝트 완수를 위해
+          프로젝트 진행 상황을
+          <br />한 곳에서 관리하세요
         </p>
       </>
+    ),
+    children: (
+      <div className="absolute inset-0">
+        <div className="w-[180%] absolute top-48 left-6">
+          <AspectRatio ratio={931 / 790} className="w-full">
+            <Image src="/service_dashboard.png" alt="대시보드 케러셀 이미지" fill />
+          </AspectRatio>
+        </div>
+      </div>
     ),
   },
   {
@@ -89,7 +99,7 @@ const Cell = ({ key, header, children, background }: { key: number; header?: Rea
       >
         <div className="w-full h-full flex items-end justify-center"></div>
         <div className="absolute top-6 left-6 md:top-10 md:left-10 flex flex-col space-y-1.5">
-          <div className="flex flex-col space-y-2 text-xl md:text-2xl font-extrabold tracking-normal">{header}</div>
+          <div className="flex flex-col space-y-2 text-lg md:text-xl xl:text-2xl font-extrabold tracking-normal">{header}</div>
         </div>
         {children}
         {typeof background !== "string" && typeof background !== "undefined" && background}
