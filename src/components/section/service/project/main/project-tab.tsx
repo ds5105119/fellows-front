@@ -2,8 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { SquareGanttChart, TableProperties } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function ProjectTab({ taskView, setTaskView }: { taskView?: boolean; setTaskView?: (value: boolean) => void }) {
   const router = useRouter();
@@ -34,15 +33,46 @@ export default function ProjectTab({ taskView, setTaskView }: { taskView?: boole
         })}
       </div>
       {tab === "작업 현황" && (
-        <div className="flex items-center space-x-2 group">
-          <Button variant="ghost" size="icon" onClick={() => setTaskView && setTaskView(!taskView)}>
-            {taskView ? (
-              <SquareGanttChart className="size-6 text-muted-foreground group-hover:text-zinc-800 transition-colors duration-200" />
-            ) : (
-              <TableProperties className="size-6 text-muted-foreground group-hover:text-zinc-800 transition-colors duration-200" />
-            )}
-          </Button>
-        </div>
+        <motion.div className="bg-zinc-200 p-[3px] rounded-sm inline-flex items-center relative">
+          <div className="relative">
+            <motion.button
+              onClick={() => setTaskView && setTaskView(true)}
+              className={`relative z-10 px-2 py-1 text-xs flex items-center justify-center font-medium rounded-sm transition-colors whitespace-nowrap ${
+                taskView ? "text-white" : "text-black"
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              테이블
+              {taskView && (
+                <motion.div
+                  layoutId="projectTabBackground"
+                  className="absolute inset-0 bg-black rounded-[3px] shadow-sm -z-10"
+                  transition={{ type: "spring", duration: 0.5 }}
+                />
+              )}
+            </motion.button>
+          </div>
+          <div className="relative">
+            <motion.button
+              onClick={() => setTaskView && setTaskView(false)}
+              className={`relative z-10 px-2 py-1 text-xs flex items-center justify-center font-medium rounded-sm transition-colors whitespace-nowrap ${
+                !taskView ? "text-white" : "text-black"
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              간트
+              {!taskView && (
+                <motion.div
+                  layoutId="projectTabBackground"
+                  className="absolute inset-0 bg-black rounded-[3px] shadow-sm -z-10"
+                  transition={{ type: "spring", duration: 0.5 }}
+                />
+              )}
+            </motion.button>
+          </div>
+        </motion.div>
       )}
     </div>
   );
