@@ -16,12 +16,12 @@ export const TextReveal: FC<ComponentPropsWithoutRef<"div">> = ({ className }) =
   const words = "Fellows는 브랜드, 웹 및 앱 사이트를 제작하는 디지털 에이전시입니다.".split(" ");
 
   // 이미지 애니메이션 - 텍스트 완료 후 (0.5~1 구간)
-  const imageY = useTransform(scrollYProgress, [0.5, 1], ["60%", "0%"]);
+  const imageY = useTransform(scrollYProgress, [0.5, 1], ["80%", "0%"]);
   const imageOpacity = useTransform(scrollYProgress, [0, 1], [1, 1]);
 
   return (
     <div ref={targetRef} className={cn("relative z-0 h-[200vh]", className)}>
-      <div className="sticky top-3 md:top-48 lg:top-64 flex h-[50%] max-w-5xl my-auto items-start bg-transparent py-8 md:py-16 lg:py-20 z-10 px-4 md:px-0">
+      <div className="sticky top-24 md:top-48 lg:top-64 flex h-[50%] max-w-5xl my-auto items-start bg-transparent py-8 md:py-16 lg:py-20 z-10 px-4 md:px-0">
         <span className={"flex flex-wrap font-bold tracking-wide text-2xl md:text-4xl lg:text-6xl xl:text-8xl space-x-2 md:space-x-5 lg:space-x-10"}>
           {words.map((word, i) => {
             // 텍스트 애니메이션을 0~0.5 구간으로 설정
@@ -38,7 +38,7 @@ export const TextReveal: FC<ComponentPropsWithoutRef<"div">> = ({ className }) =
 
       {/* 이미지 - 처음부터 일부 보이고 텍스트 완료 후 올라옴 */}
       <motion.div
-        className="fixed px-4 md:px-6 bottom-0 left-0 right-0 z-20 flex space-x-4 w-full"
+        className="sticky px-4 md:px-6 bottom-0 left-0 right-0 z-20 flex space-x-4 w-full h-fit bg-white"
         style={{
           y: imageY,
           opacity: imageOpacity,

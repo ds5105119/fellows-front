@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Navbar() {
+  const mobile = useIsMobile();
   const [isScrolled, setIsScrolled] = useState(false);
   const { scrollY } = useScroll();
 
@@ -20,19 +22,19 @@ export default function Navbar() {
       <motion.header
         className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-black"
         animate={{
-          height: isScrolled ? "80px" : "280px",
+          height: mobile || isScrolled ? "80px" : "280px",
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
         <motion.div className="h-full flex">
           {/* Left Side - Logo */}
           <motion.h1
-            className="font-bold text-gray-900 flex items-center justify-start border-r border-black"
+            className="font-extrabold text-gray-900 flex items-center justify-start border-r border-black"
             animate={{
-              width: isScrolled ? "172px" : "50%",
-              fontSize: isScrolled ? "48px" : "294px",
-              letterSpacing: isScrolled ? "-0.25rem" : "-2rem",
-              marginLeft: isScrolled ? "24px" : 0,
+              width: mobile || isScrolled ? "172px" : "50%",
+              fontSize: mobile || isScrolled ? "48px" : "294px",
+              letterSpacing: mobile || isScrolled ? "-0.3rem" : "-2.2rem",
+              marginLeft: mobile || isScrolled ? "24px" : 0,
             }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
@@ -40,7 +42,7 @@ export default function Navbar() {
           </motion.h1>
 
           {/* Right Side */}
-          <div className="flex flex-col justify-between flex-1">
+          <div className="hidden md:flex flex-col justify-between flex-1">
             {/* Top Navigation Menu */}
             <motion.nav className="flex items-center justify-start space-x-6 px-6 text-gray-700 h-[80px]">
               <a href="#about" className="hover:text-gray-900 transition-colors text-2xl font-semibold">
@@ -60,11 +62,11 @@ export default function Navbar() {
 
             {/* Catchphrase - Only visible when not scrolled */}
             <motion.div
-              className="flex flex-col justify-between border-t border-black"
+              className="hidden md:flex flex-col justify-between border-t border-black"
               animate={{
-                height: isScrolled ? "0px" : "200px",
-                opacity: isScrolled ? 0 : 1,
-                padding: isScrolled ? 0 : "24px",
+                height: mobile || isScrolled ? "0px" : "200px",
+                opacity: mobile || isScrolled ? 0 : 1,
+                padding: mobile || isScrolled ? 0 : "24px",
               }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
