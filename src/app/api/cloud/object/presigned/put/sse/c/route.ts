@@ -7,7 +7,7 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const params = new URLSearchParams();
-  const name = url.searchParams.get("name") || "이름 없음";
+  const name = url.searchParams.get("name") || "None";
   const suffix = url.searchParams.get("suffix") || session?.sub;
 
   if (!name || !suffix) {
