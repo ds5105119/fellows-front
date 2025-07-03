@@ -2,7 +2,8 @@ import MainSection1 from "@/components/section/main/mainsection1";
 import MainSection2 from "@/components/section/main/mainsection2";
 import MainSection3 from "@/components/section/main/mainsection3";
 import MainSection4 from "@/components/section/main/mainsection4";
-import MainSection5 from "@/components/section/main/mainsection5";
+import MainSection7 from "@/components/section/main/mainsection7";
+
 import MainCTASection from "@/components/section/main/mainctasection";
 import MainQnaSection from "@/components/section/main/mainqnasection";
 import { BlurFade } from "@/components/magicui/blur-fade";
@@ -20,7 +21,7 @@ export default async function Home() {
       </BlurFade>
 
       <BlurFade className="col-span-full py-8 lg:py-24" id="saas">
-        <MainSection5 />
+        <MainSection3 />
       </BlurFade>
 
       <div className="col-span-full relative">
@@ -31,7 +32,7 @@ export default async function Home() {
       </div>
 
       <BlurFade className="col-span-full py-8 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
-        <MainSection3 />
+        <MainSection7 />
       </BlurFade>
 
       <BlurFade className="col-span-full py-8 lg:py-24 px-4 lg:px-16 w-full lg:mx-auto bg-amber-100">

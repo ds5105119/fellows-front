@@ -1,74 +1,140 @@
-import Link from "next/link";
-import BreathingSparkles from "@/components/resource/breathingsparkles";
-import { ArrowUpRight, Zap } from "lucide-react";
+"use client";
 
-export default async function MainSection3() {
+import { ReactNode, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import { MeshGradientComponent } from "@/components/resource/meshgradient";
+
+const features = [
+  {
+    header: (
+      <>
+        <p className="text-emerald-500">/Team</p>
+        <p className="text-foreground leading-normal">
+          각 분야 전문가로 구성된 팀이
+          <br />
+          프로젝트 완수를 위해
+        </p>
+      </>
+    ),
+  },
+  {
+    header: (
+      <>
+        <p className="text-emerald-500">/Team</p>
+        <p className="text-foreground leading-normal">
+          각 분야 전문가로 구성된 팀이
+          <br />
+          프로젝트 완수를 위해
+        </p>
+      </>
+    ),
+    background: "bg-gradient-to-t from-cyan-300/80 via-cyan-300/70 to-blue-300/80",
+  },
+  {
+    header: (
+      <>
+        <p className="text-emerald-500">/Team</p>
+        <p className="text-foreground leading-normal">
+          각 분야 전문가로 구성된 팀이
+          <br />
+          프로젝트 완수를 위해
+        </p>
+      </>
+    ),
+    background: (
+      <div className="absolute inset-0">
+        <MeshGradientComponent className="opacity-100" colors={["#73c5ff", "rgb(90, 230, 255)", "#a8d8ff", "#94adff"]} />
+      </div>
+    ),
+  },
+];
+
+const Cell = ({ key, header, children, background }: { key: number; header?: ReactNode; children?: ReactNode; background?: ReactNode | string }) => {
   return (
-    <div>
-      <div className="grid grid-cols-1 md:grid-cols-2">
-        <div className="col-span-full pb-8 md:pb-10">
-          <div className="px-4 flex flex-col space-y-4 md:space-y-6">
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">단순한 개발 작업을 넘어</h1>
-            <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
-              <h4 className="text-base md:text-lg font-semibold text-foreground">
-                Fellows에서는 귀사의 요구사항에 부합하여,
-                <br />
-                끊임없이 더 나은 경험을 제공할 수 있도록 노력합니다.
-              </h4>
-              <Link href="/" className="flex items-center md:px-3 md:py-1.5 md:rounded-sm md:hover:bg-muted select-none">
-                <ArrowUpRight className="!size-7 text-blue-500" />
-                <p className="text-lg md:text-xl font-semibold text-blue-500">전체 사용사례 알아보기</p>
-              </Link>
-            </div>
-          </div>
+    <CarouselItem key={key} className="basis-[96%] md:basis-[54%] lg:basis-[32%] xl:basis-[26%]">
+      <div
+        className={cn(
+          "aspect-[9/16] relative w-full rounded-3xl overflow-hidden",
+          typeof background === "string" && background,
+          typeof background === "undefined" && "bg-muted"
+        )}
+      >
+        <div className="w-full h-full flex items-end justify-center"></div>
+        <div className="absolute top-6 left-6 md:top-10 md:left-10 flex flex-col space-y-1.5">
+          <div className="flex flex-col space-y-2 text-xl md:text-2xl font-extrabold tracking-normal">{header}</div>
         </div>
-        <div className="col-span-1 md:pr-4 aspect-[7/9] md:aspect-[11/9] mb-10 md:mb-0">
-          <div className="w-full h-full bg-muted rounded-3xl flex items-end justify-center overflow-hidden">
-            <video
-              width="100"
-              height="100"
-              preload="none"
-              className="w-1/2 md:w-1/3 rounded-t-2xl drop-shadow-2xl drop-shadow-gray-300"
-              autoPlay
-              loop
-              muted
-              playsInline
-            >
-              <source src="/hero-description-1.mp4" />
-            </video>
-          </div>
-          <div className="pt-6 px-4 flex flex-col space-y-1.5">
-            <div className="flex space-x-2 items-center">
-              <BreathingSparkles />
-              <p className="text-lg font-extrabold tracking-normal text-foreground">AI 프로젝트 견적</p>
-            </div>
-            <p className="text-base font-normal text-foreground">프로젝트를 분석해 기능을 추천하고 예상 견적가를 확인해 드립니다.</p>
-          </div>
-        </div>
-        <div className="col-span-1 md:pl-4 aspect-[7/9] md:aspect-[11/9]">
-          <div className="w-full h-full bg-muted rounded-3xl flex items-start justify-center overflow-hidden">
-            <video
-              width="100"
-              height="100"
-              preload="none"
-              className="w-1/2 md:w-1/3 rounded-b-2xl drop-shadow-2xl drop-shadow-gray-300"
-              autoPlay
-              loop
-              muted
-              playsInline
-            >
-              <source src="/hero-description-1.mp4" />
-            </video>
-          </div>
-          <div className="pt-6 px-4 flex flex-col space-y-1.5">
-            <div className="flex space-x-2 items-center">
-              <Zap size={24} className="text-blue-500" fill="currentColor" />
-              <p className="text-lg font-extrabold tracking-normal text-foreground">SaaS로 제공되는 프로젝트 개발 현황 관리</p>
-            </div>
-            <p className="text-base font-normal text-foreground">간편하게 프로젝트의 이슈, 상태, 소요시간을 관리해 보세요.</p>
-          </div>
+        {children}
+        {typeof background !== "string" && typeof background !== "undefined" && background}
+      </div>
+    </CarouselItem>
+  );
+};
+
+export default function MainSection3() {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api, setCount, setCurrent]);
+
+  return (
+    <div className="w-full grid grid-cols-1 md:grid-cols-2">
+      <div className="col-span-full flex flex-col space-y-4 md:space-y-6 px-8 lg:px-16 xl:px-36 w-full pb-12 lg:pb-16">
+        <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">다른 업체와는 비교 불허</h1>
+        <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
+          <h4 className="text-base md:text-lg font-semibold text-foreground">
+            글로벌 개발 파트너사의 AI 전문가 등
+            <br />
+            100명 이상의 전문가들과 협력하고 있어요.
+          </h4>
         </div>
       </div>
+
+      <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        className="col-span-full w-full pl-4 lg:pl-16 xl:pl-36"
+        setApi={setApi}
+        plugins={[
+          Autoplay({
+            delay: 10000,
+          }),
+        ]}
+      >
+        <CarouselContent className="w-full !overflow-visible" style={{ overflow: "visible" }}>
+          {features.map((feature, index) => (
+            <Cell key={index} {...feature} />
+          ))}
+        </CarouselContent>
+
+        {/* Navigation Controls */}
+        <div className="pl-2 pr-8 flex justify-between items-center mt-5">
+          <div className="flex space-x-3.5">
+            {[...Array(count + 1).keys()].map((index) => (
+              <div key={index} className={cn("w-2 h-2 rounded-full", index === current ? "bg-slate-500" : "bg-slate-300")} />
+            ))}
+          </div>
+          <div className="flex space-x-2">
+            <CarouselPrevious className="relative translate-y-0 left-0 size-11 bg-black/5 backdrop-blur-sm border-0" />
+            <CarouselNext className="relative translate-y-0 right-0 size-11 bg-black/5 backdrop-blur-sm border-0" />
+          </div>
+        </div>
+      </Carousel>
     </div>
   );
 }
