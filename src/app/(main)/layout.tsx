@@ -34,7 +34,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-y-auto`}>
         <LenisProvider>
           <div className="relative overscroll-none">

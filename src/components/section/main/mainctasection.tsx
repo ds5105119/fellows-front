@@ -1,10 +1,8 @@
-"use client";
-
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 
-export default function MainCTASection() {
+export default async function MainCTASection() {
   return (
     <div className="w-full">
       <div className="relative w-full hidden md:block">

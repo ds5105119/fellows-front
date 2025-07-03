@@ -1,10 +1,8 @@
-"use client";
-
 import Link from "next/link";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import { ArrowUpRight, Zap } from "lucide-react";
 
-export default function MainSection3() {
+export default async function MainSection3() {
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2">

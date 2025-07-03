@@ -13,10 +13,12 @@ interface BlurFadeDebugProps extends MotionProps {
   direction?: "up" | "down" | "left" | "right";
   blur?: string;
   debugName?: string;
+  id?: string;
 }
 
 export function BlurFade({
   children,
+  id,
   className,
   duration = 0.6,
   delay = 0,
@@ -67,6 +69,7 @@ export function BlurFade({
   return (
     <motion.div
       ref={ref}
+      id={id}
       initial="hidden"
       animate={animationState}
       variants={variants}

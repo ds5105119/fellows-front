@@ -75,7 +75,7 @@ const features = [
         <ChevronRight className="size-5 text-gray-700 md:hidden" />
       </div>
     ),
-    href: "#",
+    href: "#saas",
     cta: "더 알아보기",
     className: "col-span-3 md:col-span-2 bg-gradient-to-b to-cyan-400/10 via-cyan-500/10 from-blue-400/10 transition-colors duration-300 ease-in-out",
     background: (
@@ -122,7 +122,7 @@ const features = [
   },
 ];
 
-export default function MainSection2() {
+export default async function MainSection2() {
   return (
     <div className="w-full">
       <div className="px-4 flex flex-col space-y-4 md:space-y-6 pb-12 lg:pb-16">

@@ -15,22 +15,22 @@ export default async function Home() {
         <MainSection1 />
       </div>
 
-      <BlurFade className="col-span-full py-8 lg:py-24 px-4 lg:px-16 w-full max-w-[1400px] lg:mx-auto">
+      <BlurFade className="col-span-full py-8 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
         <MainSection2 />
       </BlurFade>
 
-      <BlurFade className="col-span-full py-8 lg:py-24 px-4 lg:px-16 w-full max-w-[1400px] lg:mx-auto">
+      <BlurFade className="col-span-full py-8 lg:py-24" id="saas">
         <MainSection5 />
       </BlurFade>
 
       <div className="col-span-full relative">
-        <BlurFade className="col-span-full py-8 lg:py-24 px-4 lg:px-16 w-full max-w-[1400px] lg:mx-auto">
+        <BlurFade className="col-span-full py-8 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
           <MainSection4 />
         </BlurFade>
         <MeshGradientComponent className="opacity-35" colors={["#bcffd6", "#caffe1", "#a8ffd6", "#e9fcee"]} />
       </div>
 
-      <BlurFade className="col-span-full py-8 lg:py-16 px-4 lg:px-16 w-full max-w-[1400px] lg:mx-auto">
+      <BlurFade className="col-span-full py-8 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
         <MainSection3 />
       </BlurFade>
 
@@ -42,11 +42,11 @@ export default async function Home() {
         </div>
       </BlurFade>
 
-      <BlurFade className="col-span-full py-8 lg:py-16 px-4 lg:px-16 w-full max-w-[1400px] lg:mx-auto">
+      <BlurFade className="col-span-full py-8 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
         <MainQnaSection />
       </BlurFade>
 
-      <BlurFade className="col-span-full py-8 lg:py-16 px-4 lg:px-16 w-full max-w-[1400px] lg:mx-auto">
+      <BlurFade className="col-span-full py-8 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
         <MainCTASection />
       </BlurFade>
     </div>
