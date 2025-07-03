@@ -13,7 +13,7 @@ export default async function Page() {
       <Onboarding />
 
       <div className="col-span-full md:col-span-10 md:col-start-2 px-6 py-12 md:p-8 gap-6 bg-white md:rounded-3xl">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 pb-4">
           <h2 className="text-2xl font-bold">작업 현황</h2>
           <p className="text-sm text-muted-foreground">기간 작업양을 확인해보세요.</p>
         </div>
@@ -21,14 +21,12 @@ export default async function Page() {
         <TaskOverviewChart />
       </div>
 
-      <div className="col-span-full p-8 md:col-span-3 md:col-start-2 flex flex-col gap-3 bg-white md:rounded-3xl">
-        <div className="flex flex-col gap-2">
+      <div className="col-span-full md:col-span-10 md:col-start-2 px-6 py-12 md:p-8 gap-6 bg-white md:rounded-3xl">
+        <div className="flex flex-col gap-2 pb-4">
           <h2 className="text-2xl font-bold">프로젝트 진행 현황</h2>
         </div>
 
-        <div className="mx-auto">
-          <ProjectOverviewChart />
-        </div>
+        <ProjectOverviewChart />
       </div>
 
       <div className="col-span-full p-8 md:col-span-7 md:col-start-5 flex flex-col gap-6 bg-white md:rounded-3xl">

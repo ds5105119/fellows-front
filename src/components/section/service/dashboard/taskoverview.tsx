@@ -101,27 +101,25 @@ export function TaskOverviewChart() {
   }, [tasks.data, timeRange]);
 
   return (
-    <div className="w-full pt-0">
-      <div className="flex items-center justify-end gap-4 space-y-0 py-5 sm:flex-row">
-        <div className="text-xl font-bold items-end gap-2 hidden md:flex">
-          <div>{dayjs(dateRange.start).format("YYYY")}</div>
-          <div>
-            {dayjs(dateRange.start).format("MMMM")}
-            <span>~</span>
-            {dayjs(dateRange.end).format("MMMM")}
-          </div>
-        </div>
+    <div className="w-full">
+      <div className="flex items-center justify-between gap-4 space-y-0 sm:flex-row">
         <ToggleGroup
           type="single"
           value={timeRange}
           onValueChange={setTimeRange}
-          variant="default"
+          variant="outline"
           className="*:data-[slot=toggle-group-item]:!px-3 !shadow-none !rounded-sm"
         >
           <ToggleGroupItem value="7">일주일 전후</ToggleGroupItem>
           <ToggleGroupItem value="30">한달 전후</ToggleGroupItem>
           <ToggleGroupItem value="90">한분기 전후</ToggleGroupItem>
         </ToggleGroup>
+
+        <div className="text-lg font-bold items-end gap-2 hidden md:flex">
+          {dayjs(dateRange.start).format("LL")}
+          <span>~</span>
+          {dayjs(dateRange.end).format("LL")}
+        </div>
       </div>
 
       <div className="pt-4 sm:pt-6 w-full">
