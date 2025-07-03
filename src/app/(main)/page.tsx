@@ -16,26 +16,26 @@ export default async function Home() {
         <MainSection1 />
       </div>
 
-      <BlurFade className="col-span-full py-8 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+      <BlurFade className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
         <MainSection2 />
       </BlurFade>
 
-      <BlurFade className="col-span-full py-8 lg:py-24" id="saas">
+      <BlurFade className="col-span-full py-10 lg:py-24" id="saas">
         <MainSection3 />
       </BlurFade>
 
       <div className="col-span-full relative">
-        <BlurFade className="col-span-full py-8 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+        <BlurFade className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
           <MainSection4 />
         </BlurFade>
         <MeshGradientComponent className="opacity-35" colors={["#bcffd6", "#caffe1", "#a8ffd6", "#e9fcee"]} />
       </div>
 
-      <BlurFade className="col-span-full py-8 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
         <MainSection7 />
       </BlurFade>
 
-      <BlurFade className="col-span-full py-8 lg:py-24 px-4 lg:px-16 w-full lg:mx-auto bg-amber-100">
+      <BlurFade className="col-span-full py-10 lg:py-24 px-4 lg:px-16 w-full lg:mx-auto bg-amber-100">
         <div className="text-center text-3xl md:text-5xl font-extrabold leading-tight">
           <span className="text-amber-500">제대로 된 디자인이 필요하다면?</span>
           <br />
@@ -43,11 +43,11 @@ export default async function Home() {
         </div>
       </BlurFade>
 
-      <BlurFade className="col-span-full py-8 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
         <MainQnaSection />
       </BlurFade>
 
-      <BlurFade className="col-span-full py-8 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
         <MainCTASection />
       </BlurFade>
     </div>

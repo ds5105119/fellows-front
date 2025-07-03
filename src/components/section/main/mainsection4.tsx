@@ -16,8 +16,8 @@ export default async function MainSection4() {
         <div className="w-full h-full bg-white rounded-3xl flex items-end justify-center overflow-hidden"></div>
         <div className="absolute top-10 left-10 flex flex-col space-y-1.5">
           <div className="flex flex-col space-y-2">
-            <p className="text-2xl font-extrabold tracking-normal text-emerald-500">/Team</p>
-            <p className="text-2xl font-extrabold tracking-normal text-foreground leading-normal">
+            <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/Team</p>
+            <p className="text-xl md:text-2xl font-extrabold tracking-normal text-foreground leading-normal">
               각 분야 전문가로 구성된 팀이
               <br />
               프로젝트 완수를 위해
@@ -29,8 +29,8 @@ export default async function MainSection4() {
         <div className="w-full h-full bg-emerald-200 rounded-3xl flex items-end justify-center overflow-hidden"></div>
         <div className="absolute top-10 left-10 flex flex-col space-y-1.5">
           <div className="flex flex-col space-y-2">
-            <p className="text-2xl font-extrabold tracking-normal text-emerald-500">/ERP</p>
-            <p className="text-2xl font-extrabold tracking-normal text-foreground leading-normal">
+            <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/ERP</p>
+            <p className="text-xl md:text-2xl font-extrabold tracking-normal text-foreground leading-normal">
               자체 ERP로 정교하게 관리되는
               <br />
               인력 시스템으로 예산 낭비 제로

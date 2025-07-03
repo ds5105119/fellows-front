@@ -125,7 +125,7 @@ export default function MainSection3() {
         {/* Navigation Controls */}
         <div className="pl-2 pr-8 flex justify-between items-center mt-5">
           <div className="flex space-x-3.5">
-            {[...Array(count + 1).keys()].map((index) => (
+            {[...Array(count).keys()].map((index) => (
               <div key={index} className={cn("w-2 h-2 rounded-full", index === current ? "bg-slate-500" : "bg-slate-300")} />
             ))}
           </div>
