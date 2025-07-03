@@ -6,8 +6,8 @@ import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { useTasks } from "@/hooks/fetch/project";
 import { type ERPNextTaskForUser, type ERPNextTaskStatus, erpNextTaskStatusEnum } from "@/@types/service/project";
-import dayjs from "@/lib/dayjs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import dayjs from "@/lib/dayjs";
 
 export const description = "An interactive area chart showing task status over time";
 
@@ -102,15 +102,29 @@ export function TaskOverviewChart() {
 
   return (
     <div className="w-full pt-0">
-      <div className="flex items-center justify-end gap-2 space-y-0 border-b py-5 sm:flex-row">
-        <ToggleGroup type="single" value={timeRange} onValueChange={setTimeRange} variant="outline" className="*:data-[slot=toggle-group-item]:!px-4">
+      <div className="flex items-center justify-end gap-4 space-y-0 py-5 sm:flex-row">
+        <div className="text-xl font-bold items-end gap-2 hidden md:flex">
+          <div>{dayjs(dateRange.start).format("YYYY")}</div>
+          <div>
+            {dayjs(dateRange.start).format("MMMM")}
+            <span>~</span>
+            {dayjs(dateRange.end).format("MMMM")}
+          </div>
+        </div>
+        <ToggleGroup
+          type="single"
+          value={timeRange}
+          onValueChange={setTimeRange}
+          variant="default"
+          className="*:data-[slot=toggle-group-item]:!px-3 !shadow-none !rounded-sm"
+        >
           <ToggleGroupItem value="7">일주일 전후</ToggleGroupItem>
           <ToggleGroupItem value="30">한달 전후</ToggleGroupItem>
           <ToggleGroupItem value="90">한분기 전후</ToggleGroupItem>
         </ToggleGroup>
       </div>
 
-      <div className="px-2 pt-4 sm:px-6 sm:pt-6">
+      <div className="pt-4 sm:pt-6 w-full">
         <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
           <AreaChart data={chartData}>
             <defs>
@@ -121,7 +135,7 @@ export function TaskOverviewChart() {
                 </linearGradient>
               ))}
             </defs>
-            <CartesianGrid vertical={false} />
+            <CartesianGrid />
             <XAxis
               dataKey="date"
               tickLine={false}
@@ -130,11 +144,12 @@ export function TaskOverviewChart() {
               minTickGap={32}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return dayjs(date).format("MM/DD");
+                return dayjs(date).format("MMMM DD");
               }}
             />
             <ChartTooltip
-              cursor={false}
+              accessibilityLayer
+              cursor={true}
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => {

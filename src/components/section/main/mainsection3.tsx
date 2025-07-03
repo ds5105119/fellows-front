@@ -30,6 +30,19 @@ const features = [
         </p>
       </>
     ),
+    background: "bg-emerald-100",
+  },
+  {
+    header: (
+      <>
+        <p className="text-emerald-500">/Team</p>
+        <p className="text-foreground leading-normal">
+          각 분야 전문가로 구성된 팀이
+          <br />
+          프로젝트 완수를 위해
+        </p>
+      </>
+    ),
     background: "bg-gradient-to-t from-cyan-300/80 via-cyan-300/70 to-blue-300/80",
   },
   {
@@ -45,9 +58,22 @@ const features = [
     ),
     background: (
       <div className="absolute inset-0">
-        <MeshGradientComponent className="opacity-100" colors={["#73c5ff", "rgb(90, 230, 255)", "#a8d8ff", "#94adff"]} />
+        <MeshGradientComponent className="opacity-100" colors={["#be73ff", "rgb(255, 90, 214)", "#ff2323", "#ff9849"]} />
       </div>
     ),
+  },
+  {
+    header: (
+      <>
+        <p className="text-emerald-500">/Team</p>
+        <p className="text-foreground leading-normal">
+          각 분야 전문가로 구성된 팀이
+          <br />
+          프로젝트 완수를 위해
+        </p>
+      </>
+    ),
+    background: "bg-gradient-to-t from-cyan-500/80 via-cyan-500/70 to-blue-500/80 brightness-80",
   },
 ];
 
@@ -125,11 +151,19 @@ export default function MainSection3() {
         {/* Navigation Controls */}
         <div className="pl-2 pr-8 flex justify-between items-center mt-5">
           <div className="flex space-x-3.5">
-            {[...Array(count).keys()].map((index) => (
-              <div key={index} className={cn("w-2 h-2 rounded-full", index === current ? "bg-slate-500" : "bg-slate-300")} />
+            {[...Array(features.length).keys()].map((index) => (
+              <div className="size-3 flex items-center justify-center cursror-pointer" key={index}>
+                <button
+                  onClick={() => api?.scrollTo(index)}
+                  className={cn(
+                    "w-2 h-2 rounded-full hover:scale-130 hover:ring-2 transition-all duration-300",
+                    index === current ? "bg-slate-500 ring-slate-600" : "bg-slate-300 ring-slate-400"
+                  )}
+                />
+              </div>
             ))}
           </div>
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 pr-4 lg:pr-16 xl:pr-36">
             <CarouselPrevious className="relative translate-y-0 left-0 size-11 bg-black/5 backdrop-blur-sm border-0" />
             <CarouselNext className="relative translate-y-0 right-0 size-11 bg-black/5 backdrop-blur-sm border-0" />
           </div>
