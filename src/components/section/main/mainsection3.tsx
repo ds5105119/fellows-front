@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
@@ -118,6 +118,15 @@ export default function MainSection3() {
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
 
+  // 스와이프 관련 상태
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [initialSlideIndex, setInitialSlideIndex] = useState(0);
+  const [accumulatedSteps, setAccumulatedSteps] = useState(0); // 누적된 스텝 수
+  const indicatorRef = useRef<HTMLDivElement>(null);
+
+  const threshold = 30;
+
   useEffect(() => {
     if (!api) {
       return;
@@ -130,6 +139,97 @@ export default function MainSection3() {
       setCurrent(api.selectedScrollSnap());
     });
   }, [api, setCount, setCurrent]);
+
+  // 터치/마우스 이벤트 핸들러
+  const handleStart = (clientX: number) => {
+    setIsDragging(true);
+    setStartX(clientX);
+    setInitialSlideIndex(current);
+    setAccumulatedSteps(0);
+  };
+
+  const handleMove = (clientX: number) => {
+    if (!isDragging) return;
+
+    const deltaX = clientX - startX;
+
+    // 현재 드래그 거리를 기반으로 스텝 계산 (방향 포함)
+    const currentSteps =
+      deltaX < 0
+        ? -Math.floor(Math.abs(deltaX) / threshold) // 왼쪽: 음수
+        : Math.floor(deltaX / threshold); // 오른쪽: 양수
+
+    // 스텝이 변경되었을 때만 슬라이드 이동
+    if (currentSteps !== accumulatedSteps) {
+      const targetIndex = initialSlideIndex + currentSteps;
+
+      // 경계 체크
+      const clampedIndex = Math.max(0, Math.min(count - 1, targetIndex));
+
+      if (clampedIndex !== current) {
+        api?.scrollTo(clampedIndex);
+      }
+
+      // 누적 스텝 업데이트
+      setAccumulatedSteps(currentSteps);
+    }
+  };
+
+  const handleEnd = () => {
+    if (!isDragging) return;
+
+    setIsDragging(false);
+    setStartX(0);
+    setAccumulatedSteps(0);
+  };
+
+  // 마우스 이벤트
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleStart(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    handleMove(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    handleEnd();
+  };
+
+  // 터치 이벤트
+  const handleTouchStart = (e: React.TouchEvent) => {
+    handleStart(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    handleMove(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    handleEnd();
+  };
+
+  // 전역 마우스 이벤트 리스너
+  useEffect(() => {
+    if (isDragging) {
+      const handleGlobalMouseMove = (e: MouseEvent) => {
+        handleMove(e.clientX);
+      };
+
+      const handleGlobalMouseUp = () => {
+        handleEnd();
+      };
+
+      document.addEventListener("mousemove", handleGlobalMouseMove);
+      document.addEventListener("mouseup", handleGlobalMouseUp);
+
+      return () => {
+        document.removeEventListener("mousemove", handleGlobalMouseMove);
+        document.removeEventListener("mouseup", handleGlobalMouseUp);
+      };
+    }
+  }, [isDragging, startX, current, count, api, initialSlideIndex, accumulatedSteps]);
 
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-2">
@@ -165,19 +265,27 @@ export default function MainSection3() {
 
         {/* Navigation Controls */}
         <div className="pl-2 pr-8 flex justify-between items-center mt-5">
-          <div className="flex space-x-3.5">
+          <div
+            ref={indicatorRef}
+            className={cn("flex p-1.5 rounded-full group h-fit w-fit relative overflow-hidden select-none", isDragging ? "cursor-grabbing" : "cursor-grab")}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             {[...Array(count).keys()].map((index) => (
-              <div className="size-3 flex items-center justify-center cursror-pointer" key={index}>
+              <div className="h-3 w-6 flex items-center justify-center cursor-pointer" key={index}>
                 <button
                   onClick={() => api?.scrollTo(index)}
-                  className={cn(
-                    "w-2 h-2 rounded-full hover:scale-130 hover:ring-2 transition-all duration-300",
-                    index === current ? "bg-slate-500 ring-slate-600" : "bg-slate-300 ring-slate-400"
-                  )}
+                  className={cn("w-2 h-2 rounded-full hover:scale-130 transition-all duration-300", index === current ? "bg-zinc-500" : "bg-zinc-300")}
                 />
               </div>
             ))}
+            <div className={cn("absolute inset-0 transition-colors duration-300 -z-10", isDragging ? "bg-zinc-300/50" : "group-hover:bg-zinc-300/50")} />
           </div>
+
           <div className="flex space-x-2 pr-4 lg:pr-16 xl:pr-36">
             <CarouselPrevious className="relative translate-y-0 left-0 size-11 bg-black/5 backdrop-blur-sm border-0" />
             <CarouselNext className="relative translate-y-0 right-0 size-11 bg-black/5 backdrop-blur-sm border-0" />
