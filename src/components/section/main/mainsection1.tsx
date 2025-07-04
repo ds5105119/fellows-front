@@ -14,7 +14,7 @@ export default function MainSection1() {
 
   return (
     <div className="relative w-full h-full">
-      <div className="flex flex-col mt-2 md:mt-0 gap-8 items-center justify-center w-full h-full">
+      <div className="flex flex-col mt-4 md:mt-0 gap-8 items-center justify-center w-full h-full">
         {/* Main Control */}
         <motion.div className="bg-white/75 p-[4px] rounded-full inline-flex items-center relative drop-shadow-2xl drop-shadow-black/30">
           <div className="relative">
