@@ -264,7 +264,7 @@ export default function MainSection3() {
         </CarouselContent>
 
         {/* Navigation Controls */}
-        <div className="pl-2 pr-8 flex justify-between items-center mt-5">
+        <div className="pl-2 pr-6 lg:pr-18 xl:pr-38 flex justify-between items-center mt-5">
           <div
             ref={indicatorRef}
             className={cn("flex p-1.5 rounded-full group h-fit w-fit relative overflow-hidden select-none", isDragging ? "cursor-grabbing" : "cursor-grab")}
@@ -286,7 +286,7 @@ export default function MainSection3() {
             <div className={cn("absolute inset-0 transition-colors duration-300 -z-10", isDragging ? "bg-zinc-300/50" : "group-hover:bg-zinc-300/50")} />
           </div>
 
-          <div className="flex space-x-2 pr-4 lg:pr-16 xl:pr-36">
+          <div className="flex space-x-2">
             <CarouselPrevious className="relative translate-y-0 left-0 size-11 bg-black/5 backdrop-blur-sm border-0" />
             <CarouselNext className="relative translate-y-0 right-0 size-11 bg-black/5 backdrop-blur-sm border-0" />
           </div>
