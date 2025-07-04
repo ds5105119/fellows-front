@@ -1,11 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
-import { ChevronRight } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { MeshGradientComponent } from "@/components/resource/meshgradient";
+
 export default async function MainSection1() {
   return (
     <div className="relative grid grid-cols-1 lg:grid-cols-12">

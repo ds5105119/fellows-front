@@ -7,7 +7,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { MeshGradientComponent } from "@/components/resource/meshgradient";
 import Image from "next/image";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
-import { AlertTriangle, Bell, CalendarIcon, CheckCircle2, Clock, FileText, MessageSquare, SettingsIcon, TrendingUp, UserIcon, Zap } from "lucide-react";
+import { AlertTriangle, CalendarIcon, CheckCircle2, Clock, FileText, MessageSquare, SettingsIcon, TrendingUp, UserIcon, Zap } from "lucide-react";
 
 const features = [
   {
