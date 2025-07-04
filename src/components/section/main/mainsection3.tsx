@@ -40,7 +40,7 @@ const features = [
         </p>
       </>
     ),
-    background: "bg-emerald-100",
+    background: "bg-gradient-to-t from-cyan-300/80 via-cyan-300/70 to-blue-300/80",
   },
   {
     header: (
@@ -53,8 +53,13 @@ const features = [
         </p>
       </>
     ),
-    background: "bg-gradient-to-t from-cyan-300/80 via-cyan-300/70 to-blue-300/80",
+    background: (
+      <div className="absolute inset-0 -z-10">
+        <Image src="/service-carousel-background.jpg" alt="대시보드 케러셀 이미지" fill />
+      </div>
+    ),
   },
+
   {
     header: (
       <>
