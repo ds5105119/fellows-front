@@ -15,12 +15,12 @@ import { CreateProjectTermsSection } from "./createprojecttermssection";
 import { RecommendationLoading } from "./recommandationloading";
 import { Loader2 } from "lucide-react";
 
-export default function CreateProject() {
+export default function CreateProject({ title }: { title?: string }) {
   const targetRef = useRef<HTMLDivElement>(null);
   const [isReachedEnd, setIsReachedEnd] = useState(false);
 
   const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
-    useProjectForm();
+    useProjectForm(title);
 
   const { isSuccess, isRecommending, handleRecommendAgain } = useFeatureRecommendation(form, currentStep);
 

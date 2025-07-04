@@ -23,7 +23,7 @@ export function MeshGradientComponent({ style, className, ...props }: MeshGradie
         ...style,
       }}
       minPixelRatio={0.5}
-      maxPixelCount={500_000}
+      maxPixelCount={300_000}
       webGlContextAttributes={{
         antialias: false,
         depth: false,

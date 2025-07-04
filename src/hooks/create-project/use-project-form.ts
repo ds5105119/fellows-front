@@ -11,18 +11,7 @@ import { createProject } from "@/hooks/fetch/project";
 import { stepsMeta } from "@/components/resource/project";
 import { type CreateERPNextProject, createERPNextProjectSchema } from "@/@types/service/project";
 
-const initialProjectInfo = createERPNextProjectSchema.parse({
-  custom_project_title: "",
-  custom_project_summary: "",
-  custom_readiness_level: "idea",
-  custom_platforms: [],
-  custom_features: [],
-  custom_preferred_tech_stacks: [],
-  custom_design_urls: [],
-  custom_maintenance_required: false,
-});
-
-export function useProjectForm() {
+export function useProjectForm(title?: string) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +19,16 @@ export function useProjectForm() {
 
   const form = useForm<CreateERPNextProject>({
     resolver: zodResolver(createERPNextProjectSchema),
-    defaultValues: initialProjectInfo,
+    defaultValues: createERPNextProjectSchema.parse({
+      custom_project_title: title || "",
+      custom_project_summary: "",
+      custom_readiness_level: "idea",
+      custom_platforms: [],
+      custom_features: [],
+      custom_preferred_tech_stacks: [],
+      custom_design_urls: [],
+      custom_maintenance_required: false,
+    }),
     mode: "onChange",
   });
 
@@ -128,9 +126,10 @@ export function useProjectForm() {
         if (!project) throw new Error("Project creation failed");
 
         toast.success("프로젝트 정보가 성공적으로 저장되었습니다.");
+        reset();
+
         router.push(`/service/project`);
         router.refresh();
-        reset(initialProjectInfo);
       } catch (error) {
         console.error("Project creation error:", error);
         toast.error("프로젝트 저장 중 오류가 발생했어요");

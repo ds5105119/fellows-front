@@ -58,7 +58,7 @@ const features = [
         </div>
 
         {/* 태스크 카드들 */}
-        <div className="absolute bottom-8 left-4 right-4 space-y-2">
+        <div className="absolute bottom-4 left-4 right-4 space-y-2">
           <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
@@ -104,7 +104,7 @@ const features = [
                 <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
                 <span className="text-sm font-medium text-gray-800">QA 테스트 대기</span>
               </div>
-              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">대기중</span>
+              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">열림</span>
             </div>
           </div>
         </div>
@@ -176,7 +176,7 @@ const features = [
         </div>
 
         {/* 이슈 카드들 */}
-        <div className="absolute bottom-8 left-4 right-4 space-y-2">
+        <div className="absolute bottom-4 left-4 right-4 space-y-2">
           <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
@@ -249,24 +249,8 @@ const features = [
     background: "bg-gradient-to-t from-emerald-500/80 via-emerald-500/70 to-teal-500/80 brightness-90",
     children: (
       <div className="absolute inset-0">
-        {/* 알림 헤더 */}
-        <div className="absolute top-36 xl:top-40 left-4 right-4">
-          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 border border-white/30">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Bell className="w-4 h-4 text-white" />
-                <span className="text-white font-medium text-sm">실시간 알림</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-white/80 text-xs">온라인</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* 알림 목록 */}
-        <div className="absolute bottom-8 left-4 right-4 space-y-2">
+        <div className="absolute bottom-4 left-4 right-4 space-y-2">
           <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
             <div className="flex items-start space-x-3">
               <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">

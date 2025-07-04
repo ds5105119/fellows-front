@@ -1,144 +1,128 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
-import { ChevronRight } from "lucide-react";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2 } from "lucide-react";
+import SelectLogo from "@/components/resource/selectlogo";
 
-export default async function MainSection1() {
+export default function MainSection1() {
+  const [title, setTitle] = useState<string>("");
+  const [tab, setTab] = useState<boolean>(true);
+
   return (
-    <div className="relative grid grid-cols-1 lg:grid-cols-12">
-      <div className="col-span-full">
-        <div className="relative w-full hidden md:block">
-          {/* Base image */}
-          <AspectRatio ratio={3146 / 1332}>
-            <Image src="/hero-desktop-2.jpg" fill alt="Image" className="rounded-md object-cover" priority />
-          </AspectRatio>
-
-          {/* Filter image layered above */}
-          <div className="absolute inset-0 z-10 pointer-events-none">
-            <AspectRatio ratio={3146 / 1332} className="hidden md:block">
-              <img src="/hero-desktop-filter.svg" alt="Filter" className="object-cover w-full h-full" />
-            </AspectRatio>
+    <div className="relative w-full h-full">
+      <div className="flex flex-col gap-8 items-center justify-center w-full h-full">
+        {/* Main Control */}
+        <motion.div className="bg-white/75 p-[4px] rounded-full inline-flex items-center relative drop-shadow-2xl drop-shadow-black/30">
+          <div className="relative">
+            <motion.button
+              onClick={() => setTab(true)}
+              className={`relative z-10 px-4 py-1 text-sm flex items-center justify-center font-medium rounded-full transition-colors whitespace-nowrap ${
+                tab ? "text-white" : "text-black"
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              메인
+              {tab && (
+                <motion.div
+                  layoutId="projectTabBackground"
+                  className="absolute inset-0 bg-black rounded-full shadow-sm -z-10"
+                  transition={{ type: "spring", duration: 0.5 }}
+                />
+              )}
+            </motion.button>
           </div>
-
-          {/* CTA */}
-          <div className="absolute inset-0 flex z-20 items-center justify-center">
-            <div className="w-[87%] h-[80%] flex flex-col gap-3 text-end items-end justify-end">
-              <div className="w-fit mb-2 hidden lg:block">
-                <Link
-                  href="/service/welfare"
-                  className="group overflow-clip relative mx-auto flex items-center justify-center rounded-full px-4 py-1.5 shadow-[inset_0_-8px_10px_#8fdfff1f] transition-shadow duration-500 ease-out hover:shadow-[inset_0_-5px_10px_#8fdfff3f] "
-                >
-                  <span
-                    className={cn(
-                      "absolute inset-0 block h-full w-full animate-gradient rounded-[inherit] bg-gradient-to-r from-[#ffaa40]/50 via-[#9c40ff]/50 to-[#ffaa40]/50 bg-[length:300%_100%] p-[1px]"
-                    )}
-                    style={{
-                      WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                      WebkitMaskComposite: "destination-out",
-                      mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                      maskComposite: "subtract",
-                      WebkitClipPath: "padding-box",
-                    }}
-                  />
-                  🎉 <hr className="mx-2 h-4 w-px shrink-0 bg-neutral-500" />
-                  <AnimatedGradientText className="text-sm font-semibold">정부지원사업 탐색 서비스 출시</AnimatedGradientText>
-                  <ChevronRight className="ml-1 size-4 stroke-neutral-500 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
-                  <div className="absolute inset-0 bg-white -z-10" />
-                </Link>
-              </div>
-
-              <h1 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">Web, App 개발</h1>
-              <h1 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">
-                <span className="font-black">Fellows℠</span>에서 앞서나가세요
-              </h1>
-
-              <h4 className="scroll-m-20 text-lg font-semibold leading-tight text-muted ml-1 md:mt-2">
-                최대 40% 더 적은 비용으로 주목받는 페이지를 만들어보세요.<span className="text-[#e64646] font-black">*</span>
-              </h4>
-
-              <div className="space-x-4 mt-3 flex">
-                <Button size="lg" className="px-16 h-16 text-lg rounded-xl bg-black" asChild>
-                  <Link href="/service/dashboard">시작하기</Link>
-                </Button>
-                <Button size="lg" variant="secondary" className="px-16 h-16 text-lg rounded-xl">
-                  가격 및 플랜
-                </Button>
-              </div>
-            </div>
+          <div className="relative">
+            <motion.a
+              onClick={() => setTab(false)}
+              className={`relative z-10 px-4 py-1 text-sm flex items-center justify-center font-medium rounded-full transition-colors whitespace-nowrap ${
+                !tab ? "text-white" : "text-black"
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              href="/service/dashboard"
+            >
+              대시보드
+              {!tab && (
+                <motion.div
+                  layoutId="projectTabBackground"
+                  className="absolute inset-0 bg-black rounded-full shadow-sm -z-10"
+                  transition={{ type: "spring", duration: 0.5 }}
+                />
+              )}
+            </motion.a>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="relative w-full block md:hidden">
-          {/* Base image */}
-          <AspectRatio ratio={987 / 1040}>
-            <Image src="/hero-desktop-2.jpg" fill alt="Image" className="rounded-md object-cover" priority />
-            <div className="absolute inset-0 flex z-10 items-center justify-center">
-              <div className="w-[85%] h-[100%] flex flex-col gap-3 text-end items-end justify-end">
-                <div className="flex w-full mb-auto mt-7">
-                  <div className="w-fit">
-                    <Link
-                      href="/service/welfare"
-                      className="group overflow-clip relative mx-auto flex items-center justify-center rounded-full px-4 py-1.5 shadow-[inset_0_-8px_10px_#8fdfff1f] transition-shadow duration-500 ease-out hover:shadow-[inset_0_-5px_10px_#8fdfff3f] "
-                    >
-                      <span
-                        className={cn(
-                          "absolute inset-0 block h-full w-full animate-gradient rounded-[inherit] bg-gradient-to-r from-[#ffaa40]/50 via-[#9c40ff]/50 to-[#ffaa40]/50 bg-[length:300%_100%] p-[1px]"
-                        )}
-                        style={{
-                          WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                          WebkitMaskComposite: "destination-out",
-                          mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                          maskComposite: "subtract",
-                          WebkitClipPath: "padding-box",
-                        }}
-                      />
-                      🎉 <hr className="mx-2 h-4 w-px shrink-0 bg-neutral-500" />
-                      <AnimatedGradientText className="text-sm font-semibold">정부지원사업 탐색 서비스 출시</AnimatedGradientText>
-                      <ChevronRight className="ml-1 size-4 stroke-neutral-500 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
-                      <div className="absolute inset-0 bg-white -z-10" />
-                    </Link>
-                  </div>
-                </div>
-                <div className="flex flex-col w-full mb-7">
-                  <h1 className="text-3xl font-extrabold tracking-normal text-background hidden">Web, App 개발</h1>
-                  <h1 className="text-3xl font-extrabold tracking-normal text-background">
-                    <span className="font-black">Fellows℠</span>에서 앞서나가세요
+        {/* Main Content */}
+        <AnimatePresence mode="wait">
+          {tab ? (
+            // Main CTA
+            <motion.div
+              key="main-cta"
+              initial={{ opacity: 0, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="md:min-w-xl flex w-fit h-fit flex-col z-20 items-center justify-center rounded-2xl bg-white/75 backdrop-blur-xl drop-shadow-2xl drop-shadow-black/30"
+            >
+              <SelectLogo className="pt-6" />
+              <div className="w-full px-6 md:px-16 pb-10 pt-2 flex flex-col gap-3 items-center justify-center">
+                <div className="w-full flex flex-col col gap-1 md:gap-2 items-center justify-center text-foreground text-center">
+                  <h1 className="text-2xl xl:text-3xl font-extrabold tracking-normal">Web, App 개발</h1>
+                  <h1 className="text-2xl xl:text-3xl font-extrabold tracking-normal">
+                    <span className="font-black tracking-tighter">Fellows℠</span>에서 앞서나가세요
                   </h1>
-
-                  <h4 className="scroll-m-20 text-sm font-semibold leading-tight text-muted ml-1 mt-2">
-                    제작부터 관리까지 최대 40% 더 적은 비용으로
-                    <br />
-                    주목받는 페이지를 만들어보세요.<span className="text-[#e64646] font-black">*</span>
-                  </h4>
+                </div>
+                <h4 className="scroll-m-20 text-xs md:text-sm text-center font-medium leading-normal text-muted-foreground ml-1 md:mt-2">
+                  최대 40% 더 적은 비용으로 주목받는 페이지를 만들어보세요.
+                  <span className="text-[#e64646] font-black">*</span>
+                  <br />
+                  원하는 사이트의 제목을 입력하고 AI 견적서를 받아보세요.
+                </h4>
+                <div className="mt-6 w-full relative flex items-center justify-start p-1 rounded-full focus:ring-2 bg-black/5 border border-black/8">
+                  <Input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="사이트 제목을 입력하세요"
+                    className="grow bg-transparent border-none focus-visible:ring-0 outline-none shadow-none h-8 md:h-8.5"
+                  />
+                  <Button className="h-8 md:h-8.5 text-sm font-semibold bg-black rounded-full" asChild>
+                    <Link href={`/service/project/new?title=${title}`}>시작하기</Link>
+                  </Button>
                 </div>
               </div>
-            </div>
-          </AspectRatio>
-          {/* Filter image layered above */}
-          <div className="absolute -inset-[1px] z-20 pointer-events-none">
-            <AspectRatio ratio={987 / 1040} className="block md:hidden">
-              <img src="/hero-mobile-filter.svg" alt="Filter" className="object-cover w-full h-full" />
-            </AspectRatio>
-          </div>
-        </div>
-      </div>
-
-      <div className="col-span-full flex flex-col space-y-2 pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
-        <div>
-          <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
-        </div>
-        <div>
-          <span className="text-[#e64646] font-black">**</span> 서비스는 7월 22일부터 정식 제공됩니다
-        </div>
-      </div>
-
-      <div className="col-span-full w-full flex z-20 md:hidden pt-4">
-        <Button size="lg" className="w-full px-16 h-[3.5rem] text-lg font-semibold rounded-2xl bg-black active:bg-black" asChild>
-          <Link href="/service/dashboard">시작하기</Link>
-        </Button>
+              <div className="w-full flex h-10 items-center justify-end px-4 text-xs text-right text-muted-foreground font-light bg-black/7">
+                <p>
+                  <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
+                </p>
+              </div>
+            </motion.div>
+          ) : (
+            // Dashboard Loading
+            <motion.div
+              key="dashboard-loading"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="md:min-w-xl flex w-fit h-fit flex-col z-20 items-center justify-center rounded-2xl bg-white/75 backdrop-blur-xl drop-shadow-2xl"
+            >
+              <div className="w-full px-6 md:px-16 py-16 flex flex-col gap-2 items-center justify-center">
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}>
+                  <Loader2 className="!size-6 text-muted-foreground" />
+                </motion.div>
+                <div className="flex text-center">
+                  <p className="text-xs text-muted-foreground">불러오는 중입니다...</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
