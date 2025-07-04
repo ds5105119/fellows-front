@@ -7,6 +7,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { MeshGradientComponent } from "@/components/resource/meshgradient";
 import Image from "next/image";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
+import { AlertTriangle, Bell, CalendarIcon, CheckCircle2, Clock, FileText, MessageSquare, SettingsIcon, TrendingUp, UserIcon, Zap } from "lucide-react";
 
 const features = [
   {
@@ -32,15 +33,83 @@ const features = [
   {
     header: (
       <>
-        <p className="text-emerald-500">/Team</p>
+        <p className="text-blue-500 text-base font-bold">실시간 태스크 관리</p>
         <p className="text-foreground leading-normal">
-          각 분야 전문가로 구성된 팀이
+          할당된 업무를 한눈에
           <br />
-          프로젝트 완수를 위해
+          우선순위별로 정리하세요
         </p>
       </>
     ),
-    background: "bg-gradient-to-t from-cyan-300/80 via-cyan-300/70 to-blue-300/80",
+    background: "bg-gradient-to-t from-blue-400/80 via-blue-400/70 to-indigo-400/80",
+    children: (
+      <div className="absolute inset-0">
+        {/* 진행률 표시 */}
+        <div className="absolute top-36 xl:top-40 left-6 right-6">
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 border border-white/30">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white/90 text-sm font-medium">전체 진행률</span>
+              <span className="text-white text-sm font-bold">68%</span>
+            </div>
+            <div className="w-full bg-white/20 rounded-full h-2">
+              <div className="bg-white h-2 rounded-full" style={{ width: "68%" }}></div>
+            </div>
+          </div>
+        </div>
+
+        {/* 태스크 카드들 */}
+        <div className="absolute bottom-8 left-4 right-4 space-y-2">
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                <span className="text-sm font-medium text-gray-800">UI 디자인 완료</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <UserIcon className="w-3 h-3 text-gray-500" />
+                <span className="text-xs text-gray-500">김디자인</span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <CalendarIcon className="w-3 h-3 text-gray-400" />
+              <span className="text-xs text-gray-500">12월 15일 완료</span>
+            </div>
+          </div>
+
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <Clock className="w-4 h-4 text-yellow-600" />
+                <span className="text-sm font-medium text-gray-800">API 개발 진행중</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <UserIcon className="w-3 h-3 text-gray-500" />
+                <span className="text-xs text-gray-500">박개발</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <CalendarIcon className="w-3 h-3 text-gray-400" />
+                <span className="text-xs text-gray-500">12월 20일 마감</span>
+              </div>
+              <div className="w-16 bg-gray-200 rounded-full h-1.5">
+                <div className="bg-yellow-500 h-1.5 rounded-full" style={{ width: "75%" }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
+                <span className="text-sm font-medium text-gray-800">QA 테스트 대기</span>
+              </div>
+              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">대기중</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
   },
   {
     header: (
@@ -68,15 +137,14 @@ const features = [
       </div>
     ),
   },
-
   {
     header: (
       <>
-        <p className="text-emerald-500">/Team</p>
+        <p className="text-purple-500 text-base font-bold">이슈 트래킹</p>
         <p className="text-foreground leading-normal">
-          각 분야 전문가로 구성된 팀이
+          문제 발생부터 해결까지
           <br />
-          프로젝트 완수를 위해
+          모든 과정을 투명하게
         </p>
       </>
     ),
@@ -85,19 +153,174 @@ const features = [
         <MeshGradientComponent className="opacity-100" colors={["#be73ff", "rgb(255, 90, 214)", "#ff2323", "#ff9849"]} />
       </div>
     ),
+    children: (
+      <div className="absolute inset-0">
+        {/* 이슈 통계 */}
+        <div className="absolute top-36 xl:top-40 left-4 right-4">
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 border border-white/30">
+            <div className="grid grid-cols-3 gap-3 text-center">
+              <div>
+                <div className="text-white text-lg font-bold">3</div>
+                <div className="text-white/80 text-xs">긴급</div>
+              </div>
+              <div>
+                <div className="text-white text-lg font-bold">7</div>
+                <div className="text-white/80 text-xs">진행중</div>
+              </div>
+              <div>
+                <div className="text-white text-lg font-bold">12</div>
+                <div className="text-white/80 text-xs">해결됨</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 이슈 카드들 */}
+        <div className="absolute bottom-8 left-4 right-4 space-y-2">
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <AlertTriangle className="w-4 h-4 text-red-600" />
+                <span className="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded-full">긴급</span>
+              </div>
+              <span className="text-xs text-gray-500">#ISS-001</span>
+            </div>
+            <p className="text-sm font-medium text-gray-800 mb-2">로그인 시스템 오류 발생</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">김</span>
+                </div>
+                <span className="text-xs text-gray-600">김개발 담당</span>
+              </div>
+              <span className="text-xs text-gray-500">2시간 전</span>
+            </div>
+          </div>
+
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <SettingsIcon className="w-4 h-4 text-yellow-600" />
+                <span className="text-xs font-semibold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full">보통</span>
+              </div>
+              <span className="text-xs text-gray-500">#ISS-002</span>
+            </div>
+            <p className="text-sm font-medium text-gray-800 mb-2">UI 개선 요청사항</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">이</span>
+                </div>
+                <span className="text-xs text-gray-600">이디자인 담당</span>
+              </div>
+              <span className="text-xs text-gray-500">1일 전</span>
+            </div>
+          </div>
+
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">해결됨</span>
+              </div>
+              <span className="text-xs text-gray-500">#ISS-003</span>
+            </div>
+            <p className="text-sm font-medium text-gray-800 mb-2">데이터베이스 최적화 완료</p>
+            <div className="flex items-center space-x-2">
+              <TrendingUp className="w-3 h-3 text-green-600" />
+              <span className="text-xs text-green-600">성능 30% 향상</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
   },
   {
     header: (
       <>
-        <p className="text-emerald-500">/Team</p>
+        <p className="text-emerald-500 text-base font-bold">실시간 알림</p>
         <p className="text-foreground leading-normal">
-          각 분야 전문가로 구성된 팀이
+          중요한 업데이트를
           <br />
-          프로젝트 완수를 위해
+          놓치지 마세요
         </p>
       </>
     ),
-    background: "bg-gradient-to-t from-cyan-500/80 via-cyan-500/70 to-blue-500/80 brightness-80",
+    background: "bg-gradient-to-t from-emerald-500/80 via-emerald-500/70 to-teal-500/80 brightness-90",
+    children: (
+      <div className="absolute inset-0">
+        {/* 알림 헤더 */}
+        <div className="absolute top-36 xl:top-40 left-4 right-4">
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 border border-white/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Bell className="w-4 h-4 text-white" />
+                <span className="text-white font-medium text-sm">실시간 알림</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-white/80 text-xs">온라인</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 알림 목록 */}
+        <div className="absolute bottom-8 left-4 right-4 space-y-2">
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <CheckCircle2 className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800">프로젝트 승인 완료</p>
+                <p className="text-xs text-gray-600 mt-1">'모바일 앱 개발' 프로젝트가 승인되었습니다</p>
+                <span className="text-xs text-gray-500">방금 전</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <FileText className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800">새 태스크 할당됨</p>
+                <p className="text-xs text-gray-600 mt-1">김개발님이 'API 문서 작성' 태스크를 할당했습니다</p>
+                <span className="text-xs text-gray-500">5분 전</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <MessageSquare className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800">새 댓글 알림</p>
+                <p className="text-xs text-gray-600 mt-1">이디자인님이 댓글을 남겼습니다</p>
+                <span className="text-xs text-gray-500">10분 전</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <div className="flex items-start space-x-3">
+              <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <Zap className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800">마감일 임박</p>
+                <p className="text-xs text-gray-600 mt-1">'UI 디자인 수정' 태스크 마감까지 2일 남았습니다</p>
+                <span className="text-xs text-gray-500">1시간 전</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
   },
 ];
 
