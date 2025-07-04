@@ -36,7 +36,7 @@ const containerProps = {
   draft: { name: "계획 중", bg: "bg-gray-500/10", text: "text-gray-500", border: "border-gray-300", className: "col-span-1" },
   process: { name: "진행 중", bg: "bg-blue-500/10", text: "text-blue-500", border: "border-blue-300", className: "col-span-1" },
   complete: { name: "완료", bg: "bg-violet-500/10", text: "text-violet-500", border: "border-violet-300", className: "col-span-1" },
-  maintenance: { name: "유지보수", bg: "bg-[rgb(255, 243, 237)]", text: "text-amber-500", border: "border-amber-300", className: "col-span-1" },
+  maintenance: { name: "유지보수", bg: "bg-[#fff3ed]", text: "text-amber-500", border: "border-amber-300", className: "col-span-1" },
 };
 
 const orders = [
