@@ -119,7 +119,8 @@ export default function MainSection3() {
   const [count, setCount] = useState(0);
 
   // 스와이프 관련 상태
-  const [isDragging, setIsDragging] = useState(false);
+  const [isDragging, setIsDragging] = useState(false); // 마우스 드래그 상태
+  const [isTouching, setIsTouching] = useState(false); // 터치 상태
   const [startX, setStartX] = useState(0);
   const [initialSlideIndex, setInitialSlideIndex] = useState(0);
   const [accumulatedSteps, setAccumulatedSteps] = useState(0); // 누적된 스텝 수
@@ -140,16 +141,16 @@ export default function MainSection3() {
     });
   }, [api, setCount, setCurrent]);
 
-  // 터치/마우스 이벤트 핸들러
+  // 공통 시작 핸들러
   const handleStart = (clientX: number) => {
-    setIsDragging(true);
     setStartX(clientX);
     setInitialSlideIndex(current);
     setAccumulatedSteps(0);
   };
 
+  // 공통 이동 핸들러
   const handleMove = (clientX: number) => {
-    if (!isDragging) return;
+    if (!isDragging && !isTouching) return;
 
     const deltaX = clientX - startX;
 
@@ -175,10 +176,10 @@ export default function MainSection3() {
     }
   };
 
+  // 공통 종료 핸들러
   const handleEnd = () => {
-    if (!isDragging) return;
-
     setIsDragging(false);
+    setIsTouching(false);
     setStartX(0);
     setAccumulatedSteps(0);
   };
@@ -186,6 +187,7 @@ export default function MainSection3() {
   // 마우스 이벤트
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
+    setIsDragging(true);
     handleStart(e.clientX);
   };
 
@@ -199,14 +201,18 @@ export default function MainSection3() {
 
   // 터치 이벤트
   const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault(); // 기본 터치 동작 방지
+    setIsTouching(true);
     handleStart(e.touches[0].clientX);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault(); // 스크롤 방지
     handleMove(e.touches[0].clientX);
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault(); // 기본 터치 동작 방지
     handleEnd();
   };
 
@@ -230,6 +236,25 @@ export default function MainSection3() {
       };
     }
   }, [isDragging, startX, current, count, api, initialSlideIndex, accumulatedSteps]);
+
+  // 터치 중일 때만 body 스크롤 방지
+  useEffect(() => {
+    if (isTouching) {
+      // 스크롤 방지
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+    } else {
+      // 스크롤 복원
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    }
+
+    // 컴포넌트 언마운트 시 정리
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    };
+  }, [isTouching]);
 
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-2">
@@ -267,7 +292,11 @@ export default function MainSection3() {
         <div className="pl-2 pr-6 lg:pr-18 xl:pr-38 flex justify-between items-center mt-5">
           <div
             ref={indicatorRef}
-            className={cn("flex p-1.5 rounded-full group h-fit w-fit relative overflow-hidden select-none", isDragging ? "cursor-grabbing" : "cursor-grab")}
+            className={cn(
+              "flex p-1.5 rounded-full group h-fit w-fit relative overflow-hidden select-none",
+              isDragging || isTouching ? "cursor-grabbing" : "cursor-grab"
+            )}
+            style={{ touchAction: "pan-x" }} // X축 터치만 허용
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
@@ -283,7 +312,12 @@ export default function MainSection3() {
                 />
               </div>
             ))}
-            <div className={cn("absolute inset-0 transition-colors duration-300 -z-10", isDragging ? "bg-zinc-300/50" : "group-hover:bg-zinc-300/50")} />
+            <div
+              className={cn(
+                "absolute inset-0 transition-colors duration-300 -z-10",
+                isDragging || isTouching ? "bg-zinc-300/50" : "group-hover:bg-zinc-300/50"
+              )}
+            />
           </div>
 
           <div className="flex space-x-2">
