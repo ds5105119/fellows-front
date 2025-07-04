@@ -274,7 +274,7 @@ const features = [
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-800">프로젝트 승인 완료</p>
-                <p className="text-xs text-gray-600 mt-1">'모바일 앱 개발' 프로젝트가 승인되었습니다</p>
+                <p className="text-xs text-gray-600 mt-1">모바일 앱 개발 프로젝트가 승인되었습니다</p>
                 <span className="text-xs text-gray-500">방금 전</span>
               </div>
             </div>
@@ -287,7 +287,7 @@ const features = [
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-800">새 태스크 할당됨</p>
-                <p className="text-xs text-gray-600 mt-1">김개발님이 'API 문서 작성' 태스크를 할당했습니다</p>
+                <p className="text-xs text-gray-600 mt-1">김개발님이 API 문서 작성 태스크를 할당했습니다</p>
                 <span className="text-xs text-gray-500">5분 전</span>
               </div>
             </div>
@@ -313,7 +313,7 @@ const features = [
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-800">마감일 임박</p>
-                <p className="text-xs text-gray-600 mt-1">'UI 디자인 수정' 태스크 마감까지 2일 남았습니다</p>
+                <p className="text-xs text-gray-600 mt-1">UI 디자인 수정 태스크 마감까지 2일 남았습니다</p>
                 <span className="text-xs text-gray-500">1시간 전</span>
               </div>
             </div>
