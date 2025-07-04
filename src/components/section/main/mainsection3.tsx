@@ -45,17 +45,26 @@ const features = [
   {
     header: (
       <>
-        <p className="text-emerald-500">/Team</p>
+        <p className="text-foreground text-base font-bold">비즈니스 페이지도 매장 쇼핑몰도</p>
         <p className="text-foreground leading-normal">
-          각 분야 전문가로 구성된 팀이
+          어떤 프로젝트든
           <br />
-          프로젝트 완수를 위해
+          부담 없이 계획하세요
         </p>
       </>
     ),
     background: (
       <div className="absolute inset-0 -z-10">
-        <Image src="/service-carousel-background.jpg" alt="대시보드 케러셀 이미지" fill />
+        <Image src="/service-carousel-background.jpg" alt="대시보드 케러셀 이미지" fill className="object-cover" />
+      </div>
+    ),
+    children: (
+      <div className="absolute inset-0">
+        <div className="w-[100%] absolute top-36 xl:top-40 left-6 xl:left-8">
+          <AspectRatio ratio={9 / 16} className="w-full">
+            <Image src="/service-carousel-main.jpg" alt="대시보드 케러셀 이미지" fill className="rounded-md object-cover border border-zinc-300" />
+          </AspectRatio>
+        </div>
       </div>
     ),
   },

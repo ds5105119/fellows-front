@@ -115,7 +115,7 @@ const features = [
     href: "#",
     cta: "더 알아보기",
     background: (
-      <div className="absolute -right-48 md:-right-30 -bottom-20 md:-bottom-5 origin-top-right rounded-md border transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)] group-hover:scale-110">
+      <div className="absolute -right-48 md:-right-30 -bottom-20 md:-bottom-5 origin-top-right rounded-md border transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)] group-hover:scale-105">
         <Image src="/funnel.png" alt="Image" className="rounded-md object-cover" width={500} height={500} priority />
       </div>
     ),
