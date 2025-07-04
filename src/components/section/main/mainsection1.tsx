@@ -68,23 +68,23 @@ export default function MainSection1() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="md:min-w-xl flex w-fit h-fit flex-col z-20 items-center justify-center rounded-2xl bg-white/75 backdrop-blur-xl drop-shadow-2xl drop-shadow-black/30"
+              className="md:min-w-xl flex w-fit h-fit flex-col z-20 items-center justify-center rounded-2xl md:bg-white/75 md:backdrop-blur-xl md:drop-shadow-2xl drop-shadow-black/30"
             >
-              <SelectLogo className="pt-6" />
-              <div className="w-full px-6 md:px-16 pb-10 pt-2 flex flex-col gap-3 items-center justify-center">
-                <div className="w-full flex flex-col col gap-1 md:gap-2 items-center justify-center text-foreground text-center">
+              <SelectLogo className="pt-6 hidden md:block" />
+              <div className="w-full px-4 md:px-16 pb-10 pt-2 flex flex-col gap-3 items-center justify-center">
+                <div className="w-full flex flex-col col gap-1 md:gap-2 items-center justify-center text-background md:text-foreground text-center">
                   <h1 className="text-2xl xl:text-3xl font-extrabold tracking-normal">Web, App 개발</h1>
                   <h1 className="text-2xl xl:text-3xl font-extrabold tracking-normal">
                     <span className="font-black tracking-tighter">Fellows℠</span>에서 앞서나가세요
                   </h1>
                 </div>
-                <h4 className="scroll-m-20 text-xs md:text-sm text-center font-medium leading-normal text-muted-foreground ml-1 md:mt-2">
+                <h4 className="scroll-m-20 text-xs md:text-sm text-center font-medium leading-normal text-muted md:text-muted-foreground ml-1 md:mt-2">
                   최대 40% 더 적은 비용으로 주목받는 페이지를 만들어보세요.
                   <span className="text-[#e64646] font-black">*</span>
                   <br />
                   원하는 사이트의 제목을 입력하고 AI 견적서를 받아보세요.
                 </h4>
-                <div className="mt-6 w-full relative flex items-center justify-start p-1 rounded-full focus:ring-2 bg-black/5 border border-black/8">
+                <div className="mt-6 w-full relative flex items-center justify-start p-1 rounded-full focus:ring-2 bg-white/50 md:bg-black/5 border border-white/60 md:border-black/8">
                   <Input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
@@ -96,7 +96,7 @@ export default function MainSection1() {
                   </Button>
                 </div>
               </div>
-              <div className="w-full flex h-10 items-center justify-end px-4 text-xs text-right text-muted-foreground font-light bg-black/7">
+              <div className="w-full hidden md:flex h-10 items-center justify-end px-4 text-xs text-right text-muted-foreground font-light bg-black/7">
                 <p>
                   <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
                 </p>
@@ -110,14 +110,14 @@ export default function MainSection1() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="md:min-w-xl flex w-fit h-fit flex-col z-20 items-center justify-center rounded-2xl bg-white/75 backdrop-blur-xl drop-shadow-2xl"
+              className="md:min-w-xl flex w-fit h-fit flex-col z-20 items-center justify-center rounded-2xl md:bg-white/75 backdrop-blur-xl drop-shadow-2xl"
             >
               <div className="w-full px-6 md:px-16 py-16 flex flex-col gap-2 items-center justify-center">
                 <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}>
-                  <Loader2 className="!size-6 text-muted-foreground" />
+                  <Loader2 className="!size-6 text-muted md:text-muted-foreground" />
                 </motion.div>
                 <div className="flex text-center">
-                  <p className="text-xs text-muted-foreground">불러오는 중입니다...</p>
+                  <p className="text-xs text-muted md:text-muted-foreground">불러오는 중입니다...</p>
                 </div>
               </div>
             </motion.div>
