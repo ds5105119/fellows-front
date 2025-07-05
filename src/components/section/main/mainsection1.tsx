@@ -96,7 +96,7 @@ export default function MainSection1() {
                   </Button>
                 </div>
               </div>
-              <div className="w-full h-10 items-center justify-end px-4 text-xs text-center md:text-right text-muted md:text-muted-foreground font-light md:bg-black/7">
+              <div className="w-full flex h-10 items-center justify-end px-4 text-xs text-center md:text-right text-muted md:text-muted-foreground font-light md:bg-black/7">
                 <p>
                   <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
                 </p>

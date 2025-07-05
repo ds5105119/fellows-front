@@ -494,7 +494,7 @@ export default function MainSection3() {
         setApi={setApi}
         plugins={[
           Autoplay({
-            delay: 10000,
+            delay: 60000,
           }),
         ]}
       >
