@@ -16,7 +16,7 @@ export default function MainSection1() {
     <div className="relative w-full h-full">
       <div className="flex flex-col mt-7 md:mt-0 gap-8 items-center justify-center w-full h-full">
         {/* Main Control */}
-        <motion.div className="bg-white/75 p-[4px] rounded-full inline-flex items-center relative drop-shadow-2xl drop-shadow-black/30">
+        <motion.div className="bg-white/75 p-[4px] rounded-full inline-flex items-center relative shadow-[0_4px_32px_rgba(0,0,0,0.3)]">
           <div className="relative">
             <motion.button
               onClick={() => setTab(true)}
@@ -68,7 +68,7 @@ export default function MainSection1() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="md:min-w-xl flex w-fit h-fit flex-col z-20 items-center justify-center rounded-2xl md:bg-white/75 md:backdrop-blur-xl md:drop-shadow-2xl drop-shadow-black/30"
+              className="md:min-w-xl flex w-fit h-fit flex-col z-20 items-center justify-center rounded-2xl md:bg-white/75 md:backdrop-blur-xl md:shadow-[0_4px_32px_rgba(0,0,0,0.3)] overflow-hidden"
             >
               <SelectLogo className="pt-6 hidden md:block" />
               <div className="w-full px-4 md:px-16 pb-10 pt-2 flex flex-col gap-3 items-center justify-center">

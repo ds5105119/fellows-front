@@ -33,7 +33,7 @@ const features = [
   {
     header: (
       <>
-        <p className="text-blue-500 text-base font-bold">실시간 태스크 관리</p>
+        <p className="text-base font-bold">실시간 태스크 관리</p>
         <p className="text-foreground leading-normal">
           할당된 업무를 한눈에
           <br />
@@ -140,7 +140,7 @@ const features = [
   {
     header: (
       <>
-        <p className="text-purple-500 text-base font-bold">이슈 트래킹</p>
+        <p className="text-base font-bold">이슈 트래킹</p>
         <p className="text-foreground leading-normal">
           문제 발생부터 해결까지
           <br />
@@ -238,7 +238,7 @@ const features = [
   {
     header: (
       <>
-        <p className="text-emerald-500 text-base font-bold">실시간 알림</p>
+        <p className="text-base font-bold">실시간 알림</p>
         <p className="text-foreground leading-normal">
           중요한 업데이트를
           <br />
@@ -313,7 +313,7 @@ const Cell = ({ header, children, background }: { header?: ReactNode; children?:
     <CarouselItem className="basis-[96%] md:basis-[54%] lg:basis-[32%] xl:basis-[26%]">
       <div
         className={cn(
-          "aspect-[9/16] relative w-full rounded-3xl overflow-hidden",
+          "aspect-[9/16] relative w-full rounded-3xl overflow-hidden select-none",
           typeof background === "string" && background,
           typeof background === "undefined" && "bg-muted"
         )}

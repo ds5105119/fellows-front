@@ -35,7 +35,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-y-auto`}>
+      <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-y-auto selection:bg-blue-400 selection:text-white`}>
         <LenisProvider>
           <div className="relative overscroll-none">
             <MainHeader />

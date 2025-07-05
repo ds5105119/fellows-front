@@ -38,7 +38,7 @@ const BentoCard = ({ name, className, background, description, href, cta, ...pro
     href={href}
     {...props}
   >
-    <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-2 p-8 lg:p-12 transition-all">
+    <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-2 p-6 lg:p-10 transition-all">
       <div className="max-w-lg text-lg font-semibold text-foreground whitespace-pre-wrap block">{description}</div>
       <h3 className="text-xl lg:text-[26px] font-extrabold text-foreground whitespace-pre-wrap dark:text-neutral-300">{name}</h3>
     </div>
