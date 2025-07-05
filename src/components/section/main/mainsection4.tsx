@@ -10,7 +10,7 @@ function calculateScale(width: number): number {
 }
 
 const fixedIcons = [
-  { id: "google-drive", alt: "Google Drive", x: 5, y: 15, size: 120, delay: 0.1, src: "/main-section-4-1.png" },
+  { id: "google-drive", alt: "Google Drive", x: 5, y: 15, size: 120, delay: 0.1, src: "/main-section-4-3.png" },
   { id: "box", alt: "Box", x: 67, y: 8, size: 144, delay: 0.2, src: "/main-section-4-2.png" },
   { id: "canva", alt: "Canva", x: 32, y: 25, size: 112, delay: 0.3, src: "/main-section-4-3.png" },
   { id: "figma", alt: "Figma", x: 57, y: 35, size: 115, delay: 0.4, src: "/main-section-4-4.png" },

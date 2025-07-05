@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Button } from "@/components/ui/button";
 
 export default async function MainCTASection() {
   return (
