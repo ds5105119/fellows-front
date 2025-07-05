@@ -39,7 +39,7 @@ export default function MainSection4() {
         <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">다른 업체와는 비교 불허</h1>
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
           <h4 className="text-base md:text-lg font-semibold text-foreground">
-            글로벌 개발 파트너사의 AI 전문가 등<br />
+            글로벌 개발 파트너사, 디자인 하우스 등<br />
             100명 이상의 전문가들과 협력하고 있어요.
           </h4>
         </div>

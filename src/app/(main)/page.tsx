@@ -13,7 +13,7 @@ export default async function Home() {
     <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
       <div className="col-span-full px-4 lg:px-16 h-screen min-h-screen max-h-screen relative">
         <MainSection1 />
-        <MeshGradientComponent colors={["rgb(255, 255, 255)", "rgb(66, 39, 188)", "rgb(184, 168, 255)", "rgb(71, 42, 198)"]} />
+        <MeshGradientComponent colors={["rgb(207, 224, 255)", "rgb(66, 39, 188)", "rgb(184, 168, 255)", "rgb(108, 78, 243)"]} />
       </div>
 
       <BlurFade className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
