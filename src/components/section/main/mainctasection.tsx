@@ -7,17 +7,13 @@ export default async function MainCTASection() {
     <div className="w-full">
       <div className="relative w-full hidden md:block">
         {/* Base image */}
-        <AspectRatio ratio={926 / 426} className="w-full">
+        <AspectRatio ratio={926 / 295} className="w-full">
           <Image src="/footer-back-ground.png" fill alt="Image" className="rounded-md object-cover" priority />
           <div className="absolute inset-0 flex flex-col z-10 items-center justify-center">
-            <div className="p-12 flex flex-col gap-3 text-end items-center justify-center rounded-[3rem]">
-              <h1 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">Web, App 개발</h1>
-              <h1 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">
-                <span className="font-black">Fellows℠</span>와 함께 앞서나가세요
-              </h1>
+            <div className="flex flex-col items-center justify-center text-6xl font-extrabold leading-tight text-center">
+              <span className="text-amber-500">제대로 된 디자인이 필요하다면?</span>
+              Fellows에 문의하세요
             </div>
-
-            <Button className="h-18 px-36 bg-black hover:bg-zinc-800 text-xl rounded-2xl font-semibold">시작하기</Button>
           </div>
         </AspectRatio>
       </div>

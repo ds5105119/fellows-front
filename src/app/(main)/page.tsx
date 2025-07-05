@@ -11,7 +11,7 @@ import { MeshGradientComponent } from "@/components/resource/meshgradient";
 export default async function Home() {
   return (
     <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
-      <div className="col-span-full px-4 lg:px-16 h-svh relative">
+      <div className="col-span-full px-4 lg:px-16 h-screen min-h-screen max-h-screen relative">
         <MainSection1 />
         <MeshGradientComponent colors={["rgb(255, 255, 255)", "rgb(66, 39, 188)", "rgb(184, 168, 255)", "rgb(71, 42, 198)"]} />
       </div>
@@ -35,20 +35,12 @@ export default async function Home() {
         <MainSection7 />
       </BlurFade>
 
-      <BlurFade className="col-span-full py-10 lg:py-24 px-4 lg:px-16 w-full lg:mx-auto bg-amber-100">
-        <div className="text-center text-3xl md:text-5xl font-extrabold leading-tight">
-          <span className="text-amber-500">제대로 된 디자인이 필요하다면?</span>
-          <br />
-          Fellows에 문의하세요
-        </div>
+      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+        <MainCTASection />
       </BlurFade>
 
       <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
         <MainQnaSection />
-      </BlurFade>
-
-      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
-        <MainCTASection />
       </BlurFade>
     </div>
   );
