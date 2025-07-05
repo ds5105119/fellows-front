@@ -6,16 +6,16 @@ import { motion } from "framer-motion";
 
 function calculateScale(width: number): number {
   if (width > 1536) return 1;
-  return 0.4 + (width / 1536) * 0.5;
+  return 0.3 + (width / 1536) * 0.7;
 }
 
 const fixedIcons = [
-  { id: "google-drive", alt: "Google Drive", x: 5, y: 15, size: 120, delay: 0.1, src: "/main-section-4-3.png" },
+  { id: "google-drive", alt: "Google Drive", x: 6, y: 15, size: 120, delay: 0.1, src: "/main-section-4-3.png" },
   { id: "box", alt: "Box", x: 67, y: 8, size: 144, delay: 0.2, src: "/main-section-4-2.png" },
-  { id: "canva", alt: "Canva", x: 32, y: 25, size: 112, delay: 0.3, src: "/main-section-4-3.png" },
-  { id: "figma", alt: "Figma", x: 57, y: 35, size: 115, delay: 0.4, src: "/main-section-4-4.png" },
+  { id: "canva", alt: "Canva", x: 32, y: 25, size: 112, delay: 0.3, src: "/main-section-4-4.png" },
+  { id: "figma", alt: "Figma", x: 57, y: 35, size: 115, delay: 0.4, src: "/main-section-4-8.jpg" },
   { id: "notion", alt: "Notion", x: 10, y: 60, size: 115, delay: 0.5, src: "/main-section-4-5.png" },
-  { id: "word", alt: "Microsoft Word", x: 35, y: 50, size: 88, delay: 0.6, src: "/main-section-4-6.png" },
+  { id: "word", alt: "Microsoft Word", x: 35, y: 50, size: 88, delay: 0.6, src: "/main-section-4-7.png" },
   { id: "excel", alt: "Excel", x: 55, y: 70, size: 112, delay: 0.8, src: "/main-section-4-6.png" },
   { id: "powerpoint", alt: "PowerPoint", x: 80, y: 60, size: 88, delay: 1.0, src: "/main-section-4-1.png" },
 ] as const;
@@ -64,7 +64,7 @@ export default function MainSection4() {
             {fixedIcons.map((icon) => (
               <motion.div
                 key={icon.id}
-                className="absolute"
+                className="absolute select-none"
                 style={{
                   left: `${icon.x}%`,
                   top: `${icon.y}%`,
@@ -97,7 +97,7 @@ export default function MainSection4() {
                   alt={icon.alt}
                   width={icon.size}
                   height={icon.size}
-                  className="rounded-xl md:rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.12)] shrink-0"
+                  className="rounded-xl md:rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.12)] shrink-0 object-cover"
                   style={{
                     width: `${icon.size * scale}px`,
                     height: `${icon.size * scale}px`,
