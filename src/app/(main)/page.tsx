@@ -21,11 +21,11 @@ export default async function Home() {
         <MainSection2 />
       </BlurFade>
 
-      <BlurFade className="col-span-full py-10 lg:py-24" id="saas">
+      <BlurFade className="col-span-full py-10 lg:py-24" id="secondary">
         <MainSection3 />
       </BlurFade>
 
-      <div className="col-span-full relative">
+      <div className="col-span-full relative" id="primary">
         <BlurFade className="col-span-full py-0 pt-16 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
           <MainSection4 />
         </BlurFade>
@@ -36,7 +36,7 @@ export default async function Home() {
         <MobileCTASection />
       </div>
 
-      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="quaternary">
         <MainSection7 />
       </BlurFade>
 

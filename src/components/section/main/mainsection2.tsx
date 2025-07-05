@@ -40,7 +40,7 @@ const features = [
         <ChevronRight className="size-5 text-gray-700 md:hidden" />
       </div>
     ),
-    href: "#",
+    href: "#primary",
     cta: "더 알아보기",
     className: "col-span-3 md:col-span-1 ![box-shadow:0_12px_24px_rgba(0,0,0,.0)] bg-emerald-50 transition-colors duration-300 ease-in-out",
     background: (
@@ -75,7 +75,7 @@ const features = [
         <ChevronRight className="size-5 text-gray-700 md:hidden" />
       </div>
     ),
-    href: "#saas",
+    href: "#secondary",
     cta: "더 알아보기",
     className: "col-span-3 md:col-span-2 bg-gradient-to-b to-cyan-400/10 via-cyan-500/10 from-blue-400/10 transition-colors duration-300 ease-in-out",
     background: (
@@ -112,7 +112,7 @@ const features = [
       </div>
     ),
     className: "col-span-3 md:col-span-1 bg-muted transition-colors duration-300 ease-in-out",
-    href: "#",
+    href: "#quaternary",
     cta: "더 알아보기",
     background: (
       <div className="absolute left-6 md:left-10 -bottom-20 md:-bottom-5 origin-top-right rounded-md border transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)] w-[120%] group-hover:scale-102">
