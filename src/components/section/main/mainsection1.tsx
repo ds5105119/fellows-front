@@ -14,7 +14,7 @@ export default function MainSection1() {
 
   return (
     <div className="relative w-full h-full">
-      <div className="flex flex-col mt-7 md:mt-0 gap-8 items-center justify-center w-full h-full">
+      <div className="flex flex-col gap-8 items-center justify-center w-full h-full">
         {/* Main Control */}
         <motion.div className="bg-white/75 p-[4px] rounded-full inline-flex items-center relative shadow-[0_4px_32px_rgba(0,0,0,0.3)]">
           <div className="relative">
@@ -96,7 +96,7 @@ export default function MainSection1() {
                   </Button>
                 </div>
               </div>
-              <div className="w-full flex h-10 items-center justify-end px-4 text-xs text-center md:text-right text-muted md:text-muted-foreground font-light md:bg-black/7">
+              <div className="w-full flex h-10 items-center justify-center md:justify-end px-4 text-xs text-muted md:text-muted-foreground font-light md:bg-black/7">
                 <p>
                   <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
                 </p>
