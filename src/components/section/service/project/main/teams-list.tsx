@@ -17,6 +17,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { inviteProjectGroup, updateProjectGroup } from "@/hooks/fetch/project";
@@ -40,7 +42,7 @@ const getRoleDetails = (level: number) => {
 };
 
 export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
-  const { data: project } = projectSwr;
+  const { data: project, mutate } = projectSwr;
 
   const [email, setEmail] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -69,6 +71,7 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
       // 에러 메시지나 토스트를 여기에 추가할 수 있습니다
     } finally {
       setIsInviting(false);
+      mutate();
     }
   };
 
@@ -77,6 +80,39 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
       project?.project_name || "",
       teamMembers.filter((member) => member.member != sub)
     );
+    mutate();
+  };
+
+  const handleLevelChange = (memberId: string, newLevel: number) => {
+    if (!project) return;
+
+    const customerId = project.custom_team.find((member) => member.level === 0)?.member || "";
+
+    // 먼저 변경된 팀 구성원 리스트 생성
+    const updatedTeam = project.custom_team.map((member) => {
+      if (member.member === memberId) {
+        return { ...member, level: Number(newLevel) };
+      }
+      return member;
+    });
+
+    // 권한 제약 로직 적용: customer는 0, 그 외는 최소 1
+    const enforcedTeam = updatedTeam.map((member) => {
+      // customer는 반드시 level 0
+      if (member.member === customerId) {
+        return { ...member, level: 0 };
+      }
+
+      // customer가 아닌 경우 level이 1 미만이면 강제로 1로 설정
+      if (member.level < 1) {
+        return { ...member, level: 1 };
+      }
+
+      return member;
+    });
+
+    updateProjectGroup(project.project_name, enforcedTeam);
+    mutate();
   };
 
   const isValidEmail = (email: string) => {
@@ -107,68 +143,68 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
       )}
 
       <section className="space-y-2">
-        {!isLoading && teamMembers.length > 0 && users ? (
-          users.map((user, idx) => {
-            const teamMember = teamMembers[idx];
-            if (!teamMember) return null;
+        {users?.map((user, idx) => {
+          const teamMember = teamMembers[idx];
+          if (!teamMember) return null;
 
-            const role = getRoleDetails(teamMember.level);
-            const userName = session.sub == teamMember.member ? session.user?.name + "(나)" : user.name?.[0] || "Unknown User";
-            const userPicture = user.picture?.[0];
+          const role = getRoleDetails(teamMember.level);
+          const userName = session.sub == teamMember.member ? session.user?.name + "(나)" : user.name?.[0] || "Unknown User";
+          const userPicture = user.picture?.[0];
 
-            return canEdit ? (
-              <div
-                key={teamMember.member}
-                className="grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm pl-3 pr-4 py-2 text-sm font-medium hover:bg-zinc-100 transiton-colors duration-200"
-              >
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src={userPicture || "/placeholder.svg"} alt={userName} />
-                  <AvatarFallback>{userName.substring(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{userName}</p>
-                </div>
-                <div className="flex items-center space-x-1.5">
-                  <Badge variant={role.variant}>{role.name}</Badge>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="p-1 hover:bg-zinc-200 transition-colors duration-200 rounded-md">
-                      <EllipsisVertical className="!size-5 text-muted-foreground" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuLabel>팀원 관리</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="flex items-center space-x-2 font-medium " asChild>
-                        <button onClick={() => handleDelete(teamMember.member)} className="w-full">
-                          <Trash2 className="size-4 !text-red-600" />
-                          <span className="!text-red-600">삭제</span>
-                        </button>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+          return canEdit ? (
+            <div
+              key={teamMember.member}
+              className="grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm pl-3 pr-4 py-2 text-sm font-medium hover:bg-zinc-100 transiton-colors duration-200"
+            >
+              <Avatar className="h-9 w-9">
+                <AvatarImage src={userPicture || "/placeholder.svg"} alt={userName} />
+                <AvatarFallback>{userName.substring(0, 2).toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold">{userName}</p>
               </div>
-            ) : (
-              <div
-                key={teamMember.member}
-                className={"grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm pl-3 pr-4 py-2 text-sm font-medium rouinded-sm"}
-              >
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src={userPicture || "/placeholder.svg"} alt={userName} />
-                  <AvatarFallback>{userName.substring(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{userName}</p>
-                </div>
+              <div className="flex items-center space-x-1.5">
                 <Badge variant={role.variant}>{role.name}</Badge>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="p-1 hover:bg-zinc-200 transition-colors duration-200 rounded-md">
+                    <EllipsisVertical className="!size-5 text-muted-foreground" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>팀원 관리</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuRadioGroup value={`${teamMember.level}`} onValueChange={(value) => handleLevelChange(teamMember.member, Number(value))}>
+                      <DropdownMenuRadioItem value="0">소유자</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="1">관리자</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="2">읽기 및 쓰기</DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="3">읽기</DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="flex items-center space-x-2 font-medium " asChild>
+                      <button onClick={() => handleDelete(teamMember.member)} className="w-full">
+                        <Trash2 className="size-4 !text-red-600" />
+                        <span className="!text-red-600">삭제</span>
+                      </button>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-            );
-          })
-        ) : (
-          <div className="flex flex-col items-center justify-center text-center py-12 space-y-4">
-            <div className="text-base font-semibold">No Team Members Yet</div>
-            <div className="text-sm font-medium text-muted-foreground">Invite members to collaborate on this project.</div>
-          </div>
-        )}
+            </div>
+          ) : (
+            <div
+              key={teamMember.member}
+              className={"grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm pl-3 pr-4 py-2 text-sm font-medium rouinded-sm"}
+            >
+              <Avatar className="h-9 w-9">
+                <AvatarImage src={userPicture || "/placeholder.svg"} alt={userName} />
+                <AvatarFallback>{userName.substring(0, 2).toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold">{userName}</p>
+              </div>
+              <Badge variant={role.variant}>{role.name}</Badge>
+            </div>
+          );
+        })}
       </section>
 
       {canEdit ? (

@@ -33,9 +33,10 @@ interface ProjectDetailSheetProps {
 export default function ProjectDetailSheet({ project_id, onClose, session }: ProjectDetailSheetProps) {
   // State 관리
   const project = useProject(project_id);
+  const editable = project.data?.custom_team ? project.data.custom_team.filter((member) => member.member == session.sub)[0].level < 3 : false;
   const [editedProject, setEditedProject] = useState<UserERPNextProject>();
   const [isUpdating, setIsUpdating] = useState(false);
-  const [autosave, setAutosave] = useState(true);
+  const [autosave, setAutosave] = useState(editable);
   const [activeMobileTab, setActiveMobileTab] = useState(0);
   const [activeTab1, setActiveTab1] = useState(0);
   const [activeTab2, setActiveTab2] = useState(0);
@@ -96,16 +97,17 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   }, []);
 
   const handleUpdateProject = async () => {
-    setIsUpdating(true);
-    await updateProject(project_id, updateERPNextProjectSchema.parse(editedProject));
-    await project.mutate();
-    setIsUpdating(false);
+    if (editable) {
+      setIsUpdating(true);
+      await updateProject(project_id, updateERPNextProjectSchema.parse(editedProject));
+      await project.mutate();
+      setIsUpdating(false);
+    }
   };
 
   // 프로젝트 정보 반영
   useEffect(() => {
     setEditedProject(project.data);
-    console.log(project.data);
   }, [project.data]);
 
   // 프로젝트 자동 저장
@@ -131,7 +133,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   }, [project, editedProject, isUpdating, autosave]);
 
   if (!editedProject || !project.data) {
-    return <div>로딩 중...</div>;
+    return <div className="w-full h-full flex items-center justify-center text-center">로딩 중...</div>;
   }
 
   return (
@@ -251,9 +253,14 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         {project.data.custom_project_status === "draft" ? (
           <div className="flex items-center gap-3">
             <p className="text-xs font-semibold text-muted-foreground">
-              {project.data.modified ? `${dayjs(project.data.modified).format("YYYY-MM-DD HH:mm:ss")} 수정됨` : "수정되지 않은 프로젝트"}
+              {editable
+                ? project.data.modified
+                  ? `${dayjs(project.data.modified).format("YYYY-MM-DD HH:mm:ss")} 수정됨`
+                  : "수정되지 않은 프로젝트"
+                : "읽기 전용 모드(저장되지 않습니다)"}
             </p>
             <button
+              disabled={!editable}
               onClick={() => setAutosave((prev) => !prev)}
               className={cn(
                 "py-0.5 px-1.5 text-[11px] font-semibold rounded-sm cursor-pointer select-none border",
@@ -262,19 +269,21 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             >
               {autosave ? "자동 저장 중" : "자동 저장 끔"}
             </button>
-            <button
-              onClick={handleUpdateProject}
-              disabled={isUpdating}
-              className={cn(
-                "py-0.5 px-1.5 text-[11px] font-semibold rounded-sm cursor-pointer select-none border flex items-center gap-1",
-                isUpdating
-                  ? "bg-zinc-50 border-zinc-300 text-zinc-400 cursor-not-allowed"
-                  : "bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-200 border-zinc-400 text-zinc-500"
-              )}
-            >
-              {isUpdating && <Loader2 className="!size-3 animate-spin" />}
-              {isUpdating ? "저장중" : "저장"}
-            </button>
+            {editable && (
+              <button
+                onClick={handleUpdateProject}
+                disabled={isUpdating}
+                className={cn(
+                  "py-0.5 px-1.5 text-[11px] font-semibold rounded-sm cursor-pointer select-none border flex items-center gap-1",
+                  isUpdating
+                    ? "bg-zinc-50 border-zinc-300 text-zinc-400 cursor-not-allowed"
+                    : "bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-200 border-zinc-400 text-zinc-500"
+                )}
+              >
+                {isUpdating && <Loader2 className="!size-3 animate-spin" />}
+                {isUpdating ? "저장중" : "저장"}
+              </button>
+            )}
           </div>
         ) : (
           <div className="flex items-center gap-3">

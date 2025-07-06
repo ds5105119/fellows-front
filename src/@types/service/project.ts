@@ -92,7 +92,7 @@ export const userERPNextProjectSchema = z.object({
   custom_content_pages: z.number().int().optional().nullable(),
   custom_maintenance_required: z.boolean().optional().nullable().default(false),
 
-  custom_team: ERPNextProjectTeamSchema.optional().nullable(),
+  custom_team: ERPNextProjectTeamSchema,
   custom_platforms: z.array(erpNextProjectPlatformRowSchema).optional().nullable().default([]),
   custom_features: z.array(erpNextProjectFeatureRowSchema).optional().nullable().default([]),
   custom_preferred_tech_stacks: z.array(erpNextProjectPreferredTechStackRowSchema).optional().nullable().default([]),
