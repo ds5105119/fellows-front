@@ -11,7 +11,7 @@ import {
 } from "@/@types/accounts/userdata";
 
 export const getBusinessUserData = async () => {
-  const url = `${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/business`;
+  const url = `${process.env.NEXT_PUBLIC_USER_URL}/data/welfare/business`;
   const session = await auth();
 
   const response = await fetch(url, {
@@ -33,7 +33,7 @@ export const getBusinessUserData = async () => {
 };
 
 export const createBusinessUserData = async (data: UserBusinessData) => {
-  const url = `${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/business`;
+  const url = `${process.env.NEXT_PUBLIC_USER_URL}/data/welfare/business`;
   const session = await auth();
 
   await fetch(url, {
@@ -49,7 +49,7 @@ export const createBusinessUserData = async (data: UserBusinessData) => {
 };
 
 export const updateBusinessUserData = async (data: UserBusinessData) => {
-  const url = `${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/business`;
+  const url = `${process.env.NEXT_PUBLIC_USER_URL}/data/welfare/business`;
   const session = await auth();
 
   await fetch(url, {
@@ -70,7 +70,7 @@ export const getCurrentUser = async () => {
     throw new Error("User not logged in");
   }
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}/${session.sub}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data/${session.sub}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -90,7 +90,7 @@ export const getUser = async (id: string) => {
     throw new Error("User not logged in");
   }
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -111,9 +111,9 @@ export const getUsers = async (ids: string[]) => {
   }
 
   const params = new URLSearchParams();
-  ids.forEach(id => params.append("id", id));
+  ids.forEach((id) => params.append("id", id));
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}?${params.toString()}`, {
+  const response = await fetch(`$${process.env.NEXT_PUBLIC_USER_URL}/data?${params.toString()}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -130,7 +130,7 @@ export const getUsers = async (ids: string[]) => {
 export const updateUser = async (data: UpdateUserAttributes) => {
   const session = await auth();
 
-  await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}`, {
+  await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data`, {
     method: "PATCH",
     body: JSON.stringify(data),
     headers: {

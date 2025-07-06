@@ -6,7 +6,7 @@ export async function GET() {
   const session = await auth();
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/business`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data/welfare/business`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   const body = await request.json();
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/business`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data/welfare/business`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

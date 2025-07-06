@@ -30,7 +30,6 @@ export async function AppSidebar() {
 
       <SidebarContent className="px-4 md:p-0">
         <NavGroup items={headerData.navMain} name="메인 메뉴" />
-        <NavDocuments items={headerData.documents} />
         <NavGroup items={headerData.navSecondary} className="mt-auto" />
       </SidebarContent>
 

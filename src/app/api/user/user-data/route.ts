@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const params = new URLSearchParams();
     ids.forEach((id) => params.append("sub", id));
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}?${params.toString()}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data?${params.toString()}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +44,7 @@ export async function PATCH(request: NextRequest) {
     const session = await auth();
     const body = await request.json();
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
