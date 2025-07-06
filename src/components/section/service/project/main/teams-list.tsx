@@ -8,10 +8,19 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Info, UserPlus } from "lucide-react";
+import { EllipsisVertical, Info, UserPlus } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { inviteProject } from "@/hooks/fetch/project";
+import { Session } from "next-auth";
 
 // Helper to map level to role and badge color
 const getRoleDetails = (level: number) => {
@@ -29,7 +38,7 @@ const getRoleDetails = (level: number) => {
   }
 };
 
-export function TeamsList({ project }: { project: UserERPNextProject }) {
+export function TeamsList({ project, session }: { project: UserERPNextProject; session: Session }) {
   const [email, setEmail] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
@@ -37,6 +46,11 @@ export function TeamsList({ project }: { project: UserERPNextProject }) {
   const teamMembers = project.custom_team || [];
   const userIds = teamMembers.map((user) => user.member);
   const { data: users, isLoading } = useUsers(userIds);
+
+  const canEdit =
+    project.custom_team &&
+    project.custom_team.filter((user) => user.member === session.sub) &&
+    project.custom_team.filter((user) => user.member === session.sub)[0].level < 2;
 
   const handleInvite = async () => {
     if (!email.trim()) return;
@@ -60,10 +74,15 @@ export function TeamsList({ project }: { project: UserERPNextProject }) {
     return emailRegex.test(email);
   };
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 gap-3 px-4 py-6">
-        <div className="text-sm font-bold">Team Members</div>
+  return (
+    <div className="grid grid-cols-1 gap-3 px-4 py-6">
+      <div className="text-sm font-bold">멤버: {teamMembers.length}</div>
+      <div className="flex items-center space-x-1.5 w-full rounded-sm bg-gray-100 px-4 py-2 mb-1 text-sm">
+        <Info className="!size-4" />
+        <p>프로젝트에 참여하는 팀 멤버들을 관리하세요.</p>
+      </div>
+
+      {isLoading && (
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex items-center space-x-4">
@@ -75,30 +94,52 @@ export function TeamsList({ project }: { project: UserERPNextProject }) {
             </div>
           ))}
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid grid-cols-1 gap-3 px-4 py-6">
-      <div className="text-sm font-bold">멤버: {teamMembers.length}</div>
-      <div className="flex items-center space-x-1.5 w-full rounded-sm bg-gray-100 px-4 py-2 mb-1 text-sm">
-        <Info className="!size-4" />
-        <p>프로젝트에 참여하는 팀 멤버들을 관리하세요.</p>
-      </div>
+      )}
 
       <section className="space-y-2">
-        {teamMembers.length > 0 && users ? (
+        {!isLoading && teamMembers.length > 0 && users ? (
           users.map((user, idx) => {
             const teamMember = teamMembers[idx];
             if (!teamMember) return null;
 
             const role = getRoleDetails(teamMember.level);
-            const userName = user.name?.[0] || "Unknown User";
+            const userName = session.sub == teamMember.member ? session.user?.name + "(나)" : user.name?.[0] || "Unknown User";
             const userPicture = user.picture?.[0];
 
-            return (
-              <div key={teamMember.member} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm pl-3 pr-4 py-2 text-sm font-medium">
+            return canEdit ? (
+              <div
+                key={teamMember.member}
+                className="grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm pl-3 pr-4 py-2 text-sm font-medium rouinded-sm hover:bg-zinc-100 transiton-colors duration-200"
+              >
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={userPicture || "/placeholder.svg"} alt={userName} />
+                  <AvatarFallback>{userName.substring(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">{userName}</p>
+                </div>
+                <div className="flex items-center space-x-1.5">
+                  <Badge variant={role.variant}>{role.name}</Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="p-1 hover:bg-zinc-200 transition-colors duration-200 rouinded-md">
+                      <EllipsisVertical className="!size-5 text-muted-foreground" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuLabel>팀원 관리</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>Profile</DropdownMenuItem>
+                      <DropdownMenuItem>Billing</DropdownMenuItem>
+                      <DropdownMenuItem>Team</DropdownMenuItem>
+                      <DropdownMenuItem>Subscription</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            ) : (
+              <div
+                key={teamMember.member}
+                className={"grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm pl-3 pr-4 py-2 text-sm font-medium rouinded-sm"}
+              >
                 <Avatar className="h-9 w-9">
                   <AvatarImage src={userPicture || "/placeholder.svg"} alt={userName} />
                   <AvatarFallback>{userName.substring(0, 2).toUpperCase()}</AvatarFallback>
@@ -118,47 +159,53 @@ export function TeamsList({ project }: { project: UserERPNextProject }) {
         )}
       </section>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <button className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-blue-200 hover:bg-blue-300 text-blue-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer">
-            <UserPlus className="!size-5" strokeWidth={2} />
-            <p>팀원 초대하기</p>
-          </button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>팀원 초대하기</DialogTitle>
-            <DialogDescription>초대하려는 사람의 이메일을 입력하세요.</DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">이메일 주소</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="example@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && isValidEmail(email) && !isInviting) {
-                    handleInvite();
-                  }
-                }}
-              />
+      {canEdit ? (
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <button className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-blue-200 hover:bg-blue-300 text-blue-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer">
+              <UserPlus className="!size-5" strokeWidth={2} />
+              <p>팀원 초대하기</p>
+            </button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>팀원 초대하기</DialogTitle>
+              <DialogDescription>초대하려는 사람의 이메일을 입력하세요.</DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="email">이메일 주소</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="example@company.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && isValidEmail(email) && !isInviting) {
+                      handleInvite();
+                    }
+                  }}
+                />
+              </div>
             </div>
-          </div>
-          <DialogFooter className="sm:justify-start">
-            <Button type="button" variant="default" onClick={handleInvite} disabled={!isValidEmail(email) || isInviting}>
-              {isInviting ? "초대 중..." : "초대"}
-            </Button>
-            <DialogClose asChild>
-              <Button type="button" variant="secondary">
-                취소
+            <DialogFooter className="sm:justify-start">
+              <Button type="button" variant="default" onClick={handleInvite} disabled={!isValidEmail(email) || isInviting}>
+                {isInviting ? "초대 중..." : "초대"}
               </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              <DialogClose asChild>
+                <Button type="button" variant="secondary">
+                  취소
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <button className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-zinc-200 hover:bg-zinc-300 text-zinc-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer">
+          <p>초대 권한이 부족해요</p>
+        </button>
+      )}
     </div>
   );
 }

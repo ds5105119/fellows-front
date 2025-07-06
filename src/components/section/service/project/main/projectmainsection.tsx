@@ -353,7 +353,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
 
       {/* 프로젝트 선택 시 팝업 */}
       <Sheet open={openSheet} onOpenChange={handleSheetOpenChange}>
-        <SheetContent className="w-full sm:max-w-full md:w-3/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0">
+        <SheetContent className="w-full sm:max-w-full md:w-3/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0 overflow-x-hidden">
           <SheetHeader className="sr-only">
             <SheetTitle>{selectedProject?.custom_project_title ?? "프로젝트가 선택되지 않았습니다."}</SheetTitle>
           </SheetHeader>

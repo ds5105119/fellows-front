@@ -160,10 +160,6 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
           <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none" asChild>
             <Link href={`/service/project/task?project_id=${project?.project_name}`}>작업 현황</Link>
           </Button>
-          <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none">
-            <Download className="h-4 w-4" />
-            내보내기
-          </Button>
         </div>
       </div>
 
@@ -216,7 +212,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             {/* 탭 콘텐츠 */}
             <div className="w-full grow overflow-y-auto scrollbar-hide">
               {activeTab2 === 0 && project && <FilesList project={project} />}
-              {activeTab2 === 1 && project && <TeamsList project={project} />}
+              {activeTab2 === 1 && project && <TeamsList project={project} session={session} />}
             </div>
           </div>
         </div>
