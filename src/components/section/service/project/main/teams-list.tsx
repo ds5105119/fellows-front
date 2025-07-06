@@ -12,6 +12,7 @@ import { Info, UserPlus } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { inviteProject } from "@/hooks/fetch/project";
+import { SWRResponse } from "swr";
 
 // Helper to map level to role and badge color
 const getRoleDetails = (level: number) => {
@@ -29,17 +30,18 @@ const getRoleDetails = (level: number) => {
   }
 };
 
-export function TeamsList({ project }: { project: UserERPNextProject }) {
+export function TeamsList({ projectSwr }: { projectSwr: SWRResponse<UserERPNextProject> }) {
   const [email, setEmail] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
 
-  const teamMembers = project.custom_team || [];
+  const project = projectSwr.data;
+  const teamMembers = project?.custom_team || [];
   const userIds = teamMembers.map((user) => user.member);
   const { data: users, isLoading } = useUsers(userIds);
 
   const handleInvite = async () => {
-    if (!email.trim()) return;
+    if (!email.trim() || !project?.project_name) return;
 
     try {
       setIsInviting(true);
@@ -52,6 +54,7 @@ export function TeamsList({ project }: { project: UserERPNextProject }) {
       // 에러 메시지나 토스트를 여기에 추가할 수 있습니다
     } finally {
       setIsInviting(false);
+      projectSwr.mutate(); // 프로젝트 데이터를 다시 가져오기 위해 SWR을 호출합니다
     }
   };
 
