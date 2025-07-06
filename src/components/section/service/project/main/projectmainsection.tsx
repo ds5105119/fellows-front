@@ -7,7 +7,7 @@ import ProjectContainer from "./projectcontainer";
 import ProjectDetailSheet from "./projectdetailsheet";
 import { SWRInfiniteResponse } from "swr/infinite";
 import { useCallback, useState, useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { cn } from "@/lib/utils";
 import { useInView } from "framer-motion";
@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Plus, Info, SearchIcon } from "lucide-react";
-import { ProjectsPaginatedResponse, userERPNextProjectSchema, UserERPNextProject } from "@/@types/service/project";
+import { ProjectsPaginatedResponse, UserERPNextProject } from "@/@types/service/project";
 import { useProjects } from "@/hooks/fetch/project";
 
 import dayjs from "dayjs";

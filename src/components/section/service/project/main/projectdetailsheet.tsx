@@ -5,7 +5,7 @@ import type { Session } from "next-auth";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, LinkIcon, Loader2 } from "lucide-react";
+import { ArrowLeft, LinkIcon, Loader2 } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
 import { useProject, updateProject } from "@/hooks/fetch/project";
 import { updateERPNextProjectSchema, UserERPNextProject } from "@/@types/service/project";
@@ -50,6 +50,9 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     </div>,
     <div className="flex space-x-1 items-center" key="overview">
       <span>파일</span>
+    </div>,
+    <div className="flex space-x-1 items-center" key="overview">
+      <span>팀원</span>
     </div>,
   ];
 
@@ -201,8 +204,8 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={setActiveTab2} />
             {/* 탭 콘텐츠 */}
             <div className="w-full grow overflow-y-auto scrollbar-hide">
-              {activeTab2 === 0 && project && <FilesList projectSwr={project} />}
-              {activeTab2 === 1 && project && <TeamsList projectSwr={project} session={session} />}
+              {activeTab2 === 0 && <FilesList projectSwr={project} />}
+              {activeTab2 === 1 && <TeamsList projectSwr={project} session={session} />}
             </div>
           </div>
         </div>
@@ -237,7 +240,8 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
                 </div>
               </>
             )}
-            {activeMobileTab === 1 && project && <FilesList projectSwr={project} />}
+            {activeMobileTab === 1 && <FilesList projectSwr={project} />}
+            {activeMobileTab === 2 && <TeamsList projectSwr={project} session={session} />}
           </div>
         </div>
       </div>

@@ -70,14 +70,14 @@ const ProjectDropdownMenu = ({
         <DropdownMenuLabel className="font-semibold">{project.custom_project_title}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="flex items-center space-x-2 font-medium" asChild>
-          <Link href={`/service/project/${project.project_name}?p=edit`}>
+          <Link href={`/service/project/${project.project_name}`}>
             <Edit2 className="size-4" />
             <span>수정</span>
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem className="flex items-center space-x-2 font-medium" asChild>
-          <Link href={`/service/project/${project.project_name}?p=edit`}>
+          <Link href={`/service/project/${project.project_name}`}>
             <UserPlus className="size-4" />
             <span>팀원 추가</span>
           </Link>
