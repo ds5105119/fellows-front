@@ -121,6 +121,20 @@ export const updateProject = async (projectId: string, payload: UpdateERPNextPro
   return userERPNextProjectSchema.parse(responseData);
 };
 
+export const inviteProject = async (projectId: string, email: string): Promise<UserERPNextProject> => {
+  const response = await fetch(`${API_BASE_URL}/${projectId}?email=${email}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    toast.error("프로젝트 업데이트 중 오류가 발생했습니다.");
+    throw new Error("Failed to update project");
+  }
+  const responseData = await response.json();
+  return userERPNextProjectSchema.parse(responseData);
+};
+
 // --- DELETE ---
 export const deleteProject = async (projectId: string): Promise<void> => {
   const response = await fetch(`${API_BASE_URL}/${projectId}`, {
