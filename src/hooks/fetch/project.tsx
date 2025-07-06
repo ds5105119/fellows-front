@@ -122,7 +122,7 @@ export const updateProject = async (projectId: string, payload: UpdateERPNextPro
 };
 
 export const inviteProject = async (projectId: string, email: string): Promise<UserERPNextProject> => {
-  const response = await fetch(`${API_BASE_URL}/${projectId}?email=${email}`, {
+  const response = await fetch(`${API_BASE_URL}/${projectId}/invite?email=${email}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
   });
