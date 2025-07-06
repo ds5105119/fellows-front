@@ -7,11 +7,11 @@ export const metadata: Metadata = {
   description: "이메일로 회원가입하고 맞춤형 복지 정책 정보를 받아보세요.",
 };
 
-export default async function Page({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+export default async function Page({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const session = await auth();
   if (!session) return null;
 
-  const rawTitle = searchParams.title;
+  const rawTitle = (await searchParams).title;
   const title = Array.isArray(rawTitle) ? rawTitle[0] : rawTitle;
 
   return <CreateProject title={title} />;

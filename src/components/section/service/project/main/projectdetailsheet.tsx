@@ -216,7 +216,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             {/* 탭 콘텐츠 */}
             <div className="w-full grow overflow-y-auto scrollbar-hide">
               {activeTab2 === 0 && project && <FilesList project={project} />}
-              {activeTab2 === 1 && project && <TeamsList projectSwr={detailedProject} />}
+              {activeTab2 === 1 && project && <TeamsList project={project} />}
             </div>
           </div>
         </div>

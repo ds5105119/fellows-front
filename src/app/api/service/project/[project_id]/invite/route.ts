@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
-export async function PUT(request: Request, { params }: { params: { project_id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ project_id: string }> }) {
   const session = await auth();
 
   const { searchParams } = new URL(request.url);
@@ -11,7 +11,7 @@ export async function PUT(request: Request, { params }: { params: { project_id: 
     return NextResponse.json({ error: "Missing email parameter" }, { status: 400 });
   }
 
-  const project_id = params.project_id;
+  const project_id = (await params).project_id;
   const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}/invite?email=${encodeURIComponent(email)}`;
 
   try {
