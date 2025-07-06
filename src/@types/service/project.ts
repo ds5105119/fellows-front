@@ -61,56 +61,6 @@ export type ERPNextProjectUserRow = z.infer<typeof erpNextProjectUserRowSchema>;
 
 // --- Main Project Model ---
 
-export const erpNextProjectSchema = z
-  .object({
-    creation: z.coerce.date().optional().nullable(),
-    modified: z.coerce.date().optional().nullable(),
-    naming_series: z.string().default("PROJ-.####"),
-    project_name: z.string(),
-    status: erpNextProjectStatusEnum.optional().nullable().default("Open"),
-    project_type: z.string().optional().nullable(),
-    is_active: isActiveEnum.optional().nullable(),
-    percent_complete_method: percentCompleteMethodEnum.optional().nullable().default("Task Completion"),
-    percent_complete: z.number().optional().nullable(),
-    custom_deletable: z.boolean().optional().nullable().default(true),
-    project_template: z.string().optional().nullable(),
-    expected_start_date: z.coerce.date().optional().nullable(),
-    expected_end_date: z.coerce.date().optional().nullable(),
-    actual_start_date: z.coerce.date().optional().nullable(),
-    actual_end_date: z.coerce.date().optional().nullable(),
-    actual_time: z.number().optional().nullable(),
-    priority: priorityEnum.optional().nullable(),
-    department: z.string().optional().nullable(),
-    custom_project_title: z.string().optional().nullable(),
-    custom_project_summary: z.string().optional().nullable(),
-    custom_project_status: customProjectStatusEnum.optional().nullable().default("draft"),
-    custom_ai_estimate: z.string().optional().nullable(),
-    custom_emoji: z.string().optional().nullable(),
-    custom_readiness_level: readinessLevelEnum.optional().nullable(),
-    custom_content_pages: z.number().int().optional().nullable(),
-    custom_maintenance_required: z.boolean().optional().nullable().default(false),
-    custom_sub: z.string().optional().nullable(),
-    custom_platforms: z.array(erpNextProjectPlatformRowSchema).optional().nullable().default([]),
-    custom_features: z.array(erpNextProjectFeatureRowSchema).optional().nullable().default([]),
-    custom_preferred_tech_stacks: z.array(erpNextProjectPreferredTechStackRowSchema).optional().nullable().default([]),
-    custom_design_urls: z.array(erpNextProjectDesignUrlRowSchema).optional().nullable().default([]),
-    estimated_costing: z.number().optional().nullable(),
-    total_costing_amount: z.number().optional().nullable(),
-    total_expense_claim: z.number().optional().nullable(),
-    total_purchase_cost: z.number().optional().nullable(),
-    company: z.string().default("Fellows"),
-    cost_center: z.string().optional().nullable(),
-    total_sales_amount: z.number().optional().nullable(),
-    total_billable_amount: z.number().optional().nullable(),
-    total_billed_amount: z.number().optional().nullable(),
-    total_consumed_material_cost: z.number().optional().nullable(),
-    gross_margin: z.number().optional().nullable(),
-    per_gross_margin: z.number().optional().nullable(),
-    users: z.array(erpNextProjectUserRowSchema).optional().nullable().default([]),
-  })
-  .passthrough();
-export type ERPNextProject = z.infer<typeof erpNextProjectSchema>;
-
 export const userERPNextProjectSchema = z.object({
   creation: z.coerce.date().optional().nullable(),
   modified: z.coerce.date().optional().nullable(),
@@ -137,7 +87,10 @@ export const userERPNextProjectSchema = z.object({
   custom_content_pages: z.number().int().optional().nullable(),
   custom_maintenance_required: z.boolean().optional().nullable().default(false),
 
-  custom_sub: z.string().optional().nullable(),
+  custom_team: z
+    .array(z.object({ member: z.string(), level: z.number() }))
+    .optional()
+    .nullable(),
   custom_platforms: z.array(erpNextProjectPlatformRowSchema).optional().nullable().default([]),
   custom_features: z.array(erpNextProjectFeatureRowSchema).optional().nullable().default([]),
   custom_preferred_tech_stacks: z.array(erpNextProjectPreferredTechStackRowSchema).optional().nullable().default([]),

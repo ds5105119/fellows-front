@@ -180,6 +180,7 @@ export type LocationDto = z.infer<typeof LocationSchema>;
 export type OIDCAddressDto = z.infer<typeof OIDCAddressSchema>;
 export type UserAttributes = z.infer<typeof UserAttributesSchema>;
 export type UserData = z.infer<typeof userData>;
+export type ExternalUsersAttributes = z.infer<typeof ExternalUsersAttributesSchema>;
 export type UpdateUserAttributes = z.infer<typeof UpdateUserAttributesSchema>;
 export type UserBusinessData = z.infer<typeof UserBusinessDataSchema>;
 export type UserBusinessDataNullable = z.infer<typeof UserBusinessDataNullableSchema>;
