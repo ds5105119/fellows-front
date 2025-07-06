@@ -25,6 +25,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { deleteProject } from "@/hooks/fetch/project";
+import { Session } from "next-auth";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -33,6 +34,7 @@ const animationPlayedMap = new Map<string, boolean>();
 
 export default function ProjectContainer({
   meta,
+  session,
   status,
   bg,
   text,
@@ -41,6 +43,7 @@ export default function ProjectContainer({
   setSelectedProject,
 }: {
   meta: SWRMeta;
+  session: Session;
   status: string;
   bg: string;
   text: string;
@@ -195,6 +198,7 @@ export default function ProjectContainer({
                   layout={justDropped !== `project-${idx}`} // 드롭된 아이템은 layout 애니메이션 비활성화
                 >
                   <ProjectItem
+                    session={session}
                     project={project}
                     idx={idx}
                     openMenu={openMenu}
@@ -343,6 +347,7 @@ function TrashZone({ isOverTrash }: { isOverTrash: boolean }) {
 }
 
 interface ProjectItemProps extends React.HTMLAttributes<HTMLDivElement> {
+  session: Session;
   project: UserERPNextProject;
   idx: number;
   openMenu: string | null;
@@ -353,7 +358,7 @@ interface ProjectItemProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 // 드래그 가능한 프로젝트 아이템 컴포넌트
-function ProjectItem({ project, idx, openMenu, setOpenMenu, meta, id, justDropped, ...props }: ProjectItemProps) {
+function ProjectItem({ session, project, idx, openMenu, setOpenMenu, meta, id, justDropped, ...props }: ProjectItemProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: id,
     data: {
@@ -389,17 +394,19 @@ function ProjectItem({ project, idx, openMenu, setOpenMenu, meta, id, justDroppe
           </div>
 
           <div className="flex items-center space-x-2 flex-shrink-0">
-            <div
-              className="size-6 rounded-sm items-center justify-center hover:bg-neutral-200 cursor-grab active:cursor-grabbing hidden lg:flex"
-              ref={setNodeRef}
-              {...attributes}
-              {...listeners}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <SquareMousePointer className="!size-4" />
-            </div>
+            {project.customer === session.sub && (
+              <div
+                className="size-6 rounded-sm items-center justify-center hover:bg-neutral-200 cursor-grab active:cursor-grabbing hidden lg:flex"
+                ref={setNodeRef}
+                {...attributes}
+                {...listeners}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <SquareMousePointer className="!size-4" />
+              </div>
+            )}
             <div className="w-6 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-              <ProjectDropdownMenu openMenu={openMenu} setOpenMenu={setOpenMenu} meta={meta} idx={idx} />
+              <ProjectDropdownMenu openMenu={openMenu} setOpenMenu={setOpenMenu} meta={meta} idx={idx} session={session} />
             </div>
           </div>
         </div>

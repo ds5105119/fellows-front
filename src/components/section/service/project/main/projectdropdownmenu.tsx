@@ -13,19 +13,24 @@ import {
 import { toast } from "sonner";
 import { EllipsisVertical, Edit2, UserPlus, Trash2 } from "lucide-react";
 import { SWRMeta } from "./projectmainsection";
+import { Session } from "next-auth";
 
 const ProjectDropdownMenu = ({
   openMenu,
   setOpenMenu,
   meta,
   idx,
+  session,
 }: {
   openMenu: string | null;
   setOpenMenu: (val: string | null) => void;
   meta: SWRMeta;
   idx: number;
+  session: Session;
 }) => {
   const project = meta.data.items[idx];
+
+  const canDelete = project.custom_team?.some((t) => t.member == session.sub) && project.custom_team?.filter((t) => t.member == session.sub)[0].level == 0;
 
   const removeProject = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -81,10 +86,15 @@ const ProjectDropdownMenu = ({
         <DropdownMenuSeparator />
 
         <DropdownMenuItem className="flex items-center space-x-2 font-medium " asChild>
-          {project.custom_deletable ? (
+          {project.custom_deletable && canDelete ? (
             <button onClick={(e) => removeProject(e)} className="w-full">
               <Trash2 className="size-4 !text-red-600" />
               <span className="!text-red-600">삭제</span>
+            </button>
+          ) : !canDelete ? (
+            <button onClick={() => toast.info("소유자만 프로젝트를 삭제할 수 있어요")} className="w-full">
+              <Trash2 className={cn("size-4", project.custom_deletable ? "!text-red-600" : "!text-red-200")} />
+              <span className={cn(project.custom_deletable ? "!text-red-600" : "!text-red-200")}>삭제</span>
             </button>
           ) : (
             <button

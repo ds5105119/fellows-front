@@ -55,12 +55,14 @@ export type SWRMeta = {
  * 헬퍼 컴포넌트: 각 상태(status)별 컬럼을 담당합니다.
  */
 const ProjectStatusColumn = ({
+  session,
   status,
   keyword,
   orderBy,
   setSelectedProject,
   onProcessCountChange,
 }: {
+  session: Session;
   status: Status;
   keyword: string;
   orderBy: string;
@@ -100,7 +102,7 @@ const ProjectStatusColumn = ({
 
   return (
     <div className="flex flex-col">
-      <ProjectContainer meta={meta} status={status} {...containerProps[status]} setSelectedProject={setSelectedProject} />
+      <ProjectContainer meta={meta} session={session} status={status} {...containerProps[status]} setSelectedProject={setSelectedProject} />
       <div className="w-full h-1" ref={ref} />
     </div>
   );
@@ -307,6 +309,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
             </div>
 
             <ProjectStatusColumn
+              session={session}
               status={status}
               keyword={keyword}
               orderBy={orderBy}
@@ -339,6 +342,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
         </div>
 
         <ProjectStatusColumn
+          session={session}
           status={statuses[tabIndex]}
           keyword={keyword}
           orderBy={orderBy}

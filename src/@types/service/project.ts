@@ -77,6 +77,7 @@ export const userERPNextProjectSchema = z.object({
   actual_start_date: z.coerce.date().optional().nullable(),
   actual_end_date: z.coerce.date().optional().nullable(),
   actual_time: z.number().optional().nullable(),
+  customer: z.string(),
 
   custom_project_title: z.string().optional().nullable(),
   custom_project_summary: z.string().optional().nullable(),
