@@ -142,7 +142,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
   }, [project, editedProject, isUpdating, autosave]);
 
   return (
-    <div className="flex flex-col w-full h-full overflow-y-auto md:overflow-hidden pb-12">
+    <div className="flex flex-col w-full h-full overflow-y-auto overflow-x-hidden md:overflow-hidden pb-12">
       {/* 헤더 */}
       <div className="sticky top-0 shrink-0 flex items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4 bg-background z-20">
         <div className="flex items-center gap-3">
@@ -168,7 +168,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
       </div>
 
       {/* 메인 콘텐츠 */}
-      <div className="grid grid-cols-1 md:grid-cols-5 md:overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-5 md:overflow-hidden overflow-x-hidden">
         {/* 데스크톱 왼쪽 패널 */}
         <div className="hidden md:block md:col-span-3 h-full overflow-y-auto scrollbar-hide border-r-1 border-b-sidebar-border">
           <div className="flex flex-col h-full w-full">
@@ -222,7 +222,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
         </div>
 
         {/* 모바일 전체 화면 탭 인터페이스 */}
-        <div className="md:hidden col-span-full h-full flex flex-col">
+        <div className="md:hidden col-span-full h-full flex flex-col overflow-x-hidden">
           {/* 모바일 탭 */}
           <Flattabs tabs={mobileTabs} activeTab={activeMobileTab} handleTabChange={setActiveMobileTab} />
 
