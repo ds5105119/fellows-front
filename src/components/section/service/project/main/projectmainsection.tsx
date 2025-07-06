@@ -7,7 +7,7 @@ import ProjectContainer from "./projectcontainer";
 import ProjectDetailSheet from "./projectdetailsheet";
 import { SWRInfiniteResponse } from "swr/infinite";
 import { useCallback, useState, useEffect, useRef } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { cn } from "@/lib/utils";
 import { useInView } from "framer-motion";
@@ -113,140 +113,32 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const [inputText, setInputText] = useState<string>("");
   const [processCount, setProcessCount] = useState(0);
   const [tabIndex, setTabIndex] = useState<number>(0);
-  const [selectedProject, setSelectedProject] = useState<UserERPNextProject | null>(null);
-  const [openSheet, setOpenSheet] = useState(project_id ? true : false);
+
+  // selectedProject state는 더 이상 필요 없습니다.
+  // const [selectedProject, setSelectedProject] = useState<UserERPNextProject | null>(null);
+
   const keyword = useThrottle(inputText, 1000);
-  const pathname = usePathname();
-  const isInitialized = useRef(false);
+  const router = useRouter(); // Next.js의 useRouter를 사용합니다.
 
-  // URL에서 project_id를 추출하는 헬퍼 함수
-  const getProjectIdFromUrl = useCallback((pathname: string): string | null => {
-    const segments = pathname.split("/");
-    if (segments.length > 3 && segments[segments.length - 2] === "project") {
-      return segments[segments.length - 1];
-    }
-    return null;
-  }, []);
-
-  // 프로젝트 데이터를 찾는 함수 (실제 구현 필요)
-  const findProjectById = useCallback((projectId: string): UserERPNextProject | null => {
-    try {
-      return userERPNextProjectSchema.parse({
-        project_name: projectId,
-      });
-    } catch {
-      return null;
-    }
-  }, []);
-
-  // 네이티브 네비게이션을 사용한 URL 변경 함수
-  const navigateToProject = useCallback(
-    (projectName: string) => {
-      const segments = pathname.split("/");
-      let newPath;
-
-      if (segments[segments.length - 1] === "project") {
-        newPath = `${pathname}/${projectName}`;
-      } else if (segments[segments.length - 2] === "project") {
-        segments[segments.length - 1] = projectName;
-        newPath = segments.join("/");
-      } else {
-        newPath = `/service/project/${projectName}`;
-      }
-
-      // window.location.href를 사용하여 네이티브 네비게이션 수행
-      // 이렇게 하면 스크롤 위치가 유지되고 히스토리가 생성됩니다
-      window.history.pushState(null, "", newPath);
-    },
-    [pathname]
-  );
-
-  const navigateToProjectList = useCallback(() => {
-    const segments = pathname.split("/");
-    const newPath = segments.slice(0, -1).join("/");
-    window.history.pushState(null, "", newPath);
-  }, [pathname]);
-
-  // 프로젝트 선택 핸들러 - 네이티브 네비게이션 사용
+  // handleProjectSelect는 이제 URL을 변경하는 역할만 합니다.
   const handleProjectSelect = useCallback(
     (project: UserERPNextProject | null) => {
-      if (!project) {
-        setSelectedProject(null);
-        setOpenSheet(false);
-        return;
-      }
-
-      setSelectedProject(project);
-      setOpenSheet(true);
-
-      // URL 업데이트 - 네이티브 네비게이션 사용
-      const currentProjectId = getProjectIdFromUrl(pathname);
-      if (currentProjectId !== project.project_name) {
-        navigateToProject(project.project_name);
+      if (project) {
+        router.push(`/service/project/${project.project_name}`, { scroll: false });
       }
     },
-    [pathname, getProjectIdFromUrl, navigateToProject]
+    [router]
   );
 
-  // 시트 열기/닫기 핸들러 - 네이티브 네비게이션 사용
+  // Sheet를 닫을 때는 project 목록 페이지로 URL을 변경합니다.
   const handleSheetOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        setOpenSheet(false);
-        setSelectedProject(null);
-
-        const projectIdFromUrl = getProjectIdFromUrl(pathname);
-        if (projectIdFromUrl) {
-          navigateToProjectList();
-        }
+        router.push("/service/project", { scroll: false });
       }
     },
-    [pathname, getProjectIdFromUrl, navigateToProjectList]
+    [router]
   );
-
-  // 초기 로드 시 URL에서 프로젝트 복원 - 한 번만 실행
-  useEffect(() => {
-    if (isInitialized.current) return;
-
-    const projectIdFromUrl = getProjectIdFromUrl(pathname);
-
-    if (projectIdFromUrl) {
-      const foundProject = findProjectById(projectIdFromUrl);
-      if (foundProject) {
-        setSelectedProject(foundProject);
-        setOpenSheet(true);
-      } else {
-        // 프로젝트를 찾을 수 없으면 프로젝트 목록으로 리다이렉트
-        window.location.href = "/service/project";
-        return;
-      }
-    }
-
-    isInitialized.current = true;
-  }, [pathname, getProjectIdFromUrl, findProjectById, isInitialized]);
-
-  // 브라우저 뒤로가기/앞으로가기 처리
-  useEffect(() => {
-    if (!isInitialized.current) return;
-
-    const handlePopState = () => {
-      const projectIdFromUrl = getProjectIdFromUrl(window.location.pathname);
-
-      if (projectIdFromUrl) {
-        const foundProject = findProjectById(projectIdFromUrl);
-        if (foundProject) {
-          setSelectedProject(foundProject);
-          setOpenSheet(true);
-        }
-      } else {
-        setSelectedProject(null);
-        setOpenSheet(false);
-      }
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [isInitialized, getProjectIdFromUrl, findProjectById]);
 
   return (
     <div className="flex flex-col w-full h-full space-y-4">
@@ -351,13 +243,12 @@ export default function ProjectMainSection({ session, project_id }: { session: S
         />
       </div>
 
-      {/* 프로젝트 선택 시 팝업 */}
-      <Sheet open={openSheet} onOpenChange={handleSheetOpenChange}>
+      <Sheet open={!!project_id} onOpenChange={handleSheetOpenChange}>
         <SheetContent className="w-full sm:max-w-full md:w-3/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0 overflow-x-hidden">
           <SheetHeader className="sr-only">
-            <SheetTitle>{selectedProject?.custom_project_title ?? "프로젝트가 선택되지 않았습니다."}</SheetTitle>
+            <SheetTitle>프로젝트 상세</SheetTitle>
           </SheetHeader>
-          <ProjectDetailSheet project={selectedProject} onClose={() => handleSheetOpenChange(false)} session={session} />
+          {project_id && <ProjectDetailSheet project_id={project_id} onClose={() => handleSheetOpenChange(false)} session={session} />}
           <SheetDescription className="sr-only" />
         </SheetContent>
       </Sheet>

@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EllipsisVertical, Info, UserPlus } from "lucide-react";
+import { EllipsisVertical, Info, Trash2, UserPlus } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -19,8 +19,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { inviteProject } from "@/hooks/fetch/project";
+import { inviteProjectGroup, updateProjectGroup } from "@/hooks/fetch/project";
 import { Session } from "next-auth";
+import { SWRResponse } from "swr";
 
 // Helper to map level to role and badge color
 const getRoleDetails = (level: number) => {
@@ -38,26 +39,28 @@ const getRoleDetails = (level: number) => {
   }
 };
 
-export function TeamsList({ project, session }: { project: UserERPNextProject; session: Session }) {
+export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
+  const { data: project } = projectSwr;
+
   const [email, setEmail] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
 
-  const teamMembers = project.custom_team || [];
+  const teamMembers = project?.custom_team || [];
   const userIds = teamMembers.map((user) => user.member);
   const { data: users, isLoading } = useUsers(userIds);
 
   const canEdit =
-    project.custom_team &&
-    project.custom_team.filter((user) => user.member === session.sub) &&
-    project.custom_team.filter((user) => user.member === session.sub)[0].level < 2;
+    project?.custom_team &&
+    project?.custom_team.filter((user) => user.member === session.sub) &&
+    project?.custom_team.filter((user) => user.member === session.sub)[0].level < 2;
 
   const handleInvite = async () => {
     if (!email.trim()) return;
 
     try {
       setIsInviting(true);
-      await inviteProject(project.project_name, email.trim());
+      await inviteProjectGroup(project?.project_name || "", email.trim());
       setEmail("");
       setIsDialogOpen(false);
       // 성공 메시지나 토스트를 여기에 추가할 수 있습니다
@@ -67,6 +70,13 @@ export function TeamsList({ project, session }: { project: UserERPNextProject; s
     } finally {
       setIsInviting(false);
     }
+  };
+
+  const handleDelete = async (sub: string) => {
+    updateProjectGroup(
+      project?.project_name || "",
+      teamMembers.filter((member) => member.member != sub)
+    );
   };
 
   const isValidEmail = (email: string) => {
@@ -109,7 +119,7 @@ export function TeamsList({ project, session }: { project: UserERPNextProject; s
             return canEdit ? (
               <div
                 key={teamMember.member}
-                className="grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm pl-3 pr-4 py-2 text-sm font-medium rouinded-sm hover:bg-zinc-100 transiton-colors duration-200"
+                className="grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm pl-3 pr-4 py-2 text-sm font-medium hover:bg-zinc-100 transiton-colors duration-200"
               >
                 <Avatar className="h-9 w-9">
                   <AvatarImage src={userPicture || "/placeholder.svg"} alt={userName} />
@@ -121,16 +131,18 @@ export function TeamsList({ project, session }: { project: UserERPNextProject; s
                 <div className="flex items-center space-x-1.5">
                   <Badge variant={role.variant}>{role.name}</Badge>
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="p-1 hover:bg-zinc-200 transition-colors duration-200 rouinded-md">
+                    <DropdownMenuTrigger className="p-1 hover:bg-zinc-200 transition-colors duration-200 rounded-md">
                       <EllipsisVertical className="!size-5 text-muted-foreground" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuLabel>팀원 관리</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>Profile</DropdownMenuItem>
-                      <DropdownMenuItem>Billing</DropdownMenuItem>
-                      <DropdownMenuItem>Team</DropdownMenuItem>
-                      <DropdownMenuItem>Subscription</DropdownMenuItem>
+                      <DropdownMenuItem className="flex items-center space-x-2 font-medium " asChild>
+                        <button onClick={() => handleDelete(teamMember.member)} className="w-full">
+                          <Trash2 className="size-4 !text-red-600" />
+                          <span className="!text-red-600">삭제</span>
+                        </button>
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

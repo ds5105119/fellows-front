@@ -12,7 +12,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ proj
   }
 
   const project_id = (await params).project_id;
-  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}/invite?email=${encodeURIComponent(email)}`;
+  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}/group/invite?email=${encodeURIComponent(email)}`;
 
   try {
     const response = await fetch(url, {

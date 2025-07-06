@@ -9,15 +9,14 @@ import { getSSECPresignedPutUrl, removeFile, SSECFileDownloadButton, uploadFileT
 import { ERPNextFile, erpNextFileSchema, UserERPNextProject } from "@/@types/service/project";
 import { toast } from "sonner";
 import { createFile, deleteFile, useFiles } from "@/hooks/fetch/project";
+import { SWRResponse } from "swr";
 
-interface FilesListProps {
-  project: UserERPNextProject;
-}
+export function FilesList({ projectSwr }: { projectSwr: SWRResponse<UserERPNextProject> }) {
+  const { data: project } = projectSwr;
 
-export function FilesList({ project }: FilesListProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const files = useFiles({ projectId: project.project_name, params: { size: 20 } });
+  const files = useFiles({ projectId: project?.project_name || "", params: { size: 20 } });
   const allFiles = files.data?.flatMap((page) => page.items) || [];
 
   const [fileProgress, setFileProgress] = useState(() =>
@@ -48,7 +47,7 @@ export function FilesList({ project }: FilesListProps) {
           return;
         }
 
-        const presigned = await getSSECPresignedPutUrl("project", project.custom_project_title ?? "None");
+        const presigned = await getSSECPresignedPutUrl("project", project?.custom_project_title ?? "None");
         const fileRecord = erpNextFileSchema.parse({
           file_name: file.name,
           key: presigned.key,
@@ -90,7 +89,7 @@ export function FilesList({ project }: FilesListProps) {
           },
         });
 
-        await createFile({ projectId: project.project_name, filePayload: fileRecord });
+        await createFile({ projectId: project?.project_name || "", filePayload: fileRecord });
 
         toast.success("파일이 성공적으로 업로드되었습니다.");
       } catch (error) {
@@ -98,7 +97,7 @@ export function FilesList({ project }: FilesListProps) {
         toast.error("업로드에 실패했습니다.");
       }
     },
-    [files, project.project_name]
+    [files, project?.project_name]
   );
 
   const handleChangeUpload = useCallback(
@@ -119,7 +118,7 @@ export function FilesList({ project }: FilesListProps) {
       if (!sse_key) return;
       try {
         await removeFile(key, sse_key);
-        await deleteFile({ projectId: project.project_name, key });
+        await deleteFile({ projectId: project?.project_name || "", key });
 
         files.mutate(
           (currentPages) => {
@@ -145,7 +144,7 @@ export function FilesList({ project }: FilesListProps) {
         toast.error("파일 삭제에 실패했습니다.");
       }
     },
-    [files, project.project_name]
+    [files, project?.project_name]
   );
 
   return (

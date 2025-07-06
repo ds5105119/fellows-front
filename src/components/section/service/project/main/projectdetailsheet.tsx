@@ -25,27 +25,15 @@ import dayjs from "dayjs";
 import Link from "next/link";
 
 interface ProjectDetailSheetProps {
-  project: UserERPNextProject | null;
+  project_id: string;
   onClose: () => void;
   session: Session;
 }
 
-export default function ProjectDetailSheet({ project, onClose, session }: ProjectDetailSheetProps) {
-  if (!project) return null;
-
-  return <ProjectDetailSheetInner project={project} onClose={onClose} session={session} />;
-}
-
-interface ProjectDetailSheetInnerProps {
-  project: UserERPNextProject;
-  onClose: () => void;
-  session: Session;
-}
-
-function ProjectDetailSheetInner({ project: initialProject, onClose, session }: ProjectDetailSheetInnerProps) {
+export default function ProjectDetailSheet({ project_id, onClose, session }: ProjectDetailSheetProps) {
   // State 관리
-  const [project, setProject] = useState<UserERPNextProject>(initialProject);
-  const [editedProject, setEditedProject] = useState<UserERPNextProject>(initialProject);
+  const project = useProject(project_id);
+  const [editedProject, setEditedProject] = useState<UserERPNextProject>();
   const [isUpdating, setIsUpdating] = useState(false);
   const [autosave, setAutosave] = useState(true);
   const [activeMobileTab, setActiveMobileTab] = useState(0);
@@ -54,7 +42,6 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // 데이터 페칭
-  const detailedProject = useProject(initialProject.project_name);
 
   // 탭 구성
   const mobileTabs = [
@@ -98,7 +85,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
 
   const handleCopy = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(project.project_name);
+      await navigator.clipboard.writeText(project_id);
       toast.success("프로젝트 번호가 복사되었습니다.");
     } catch {
       toast.error("프로젝트 번호 복사에 실패했습니다.");
@@ -107,17 +94,16 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
 
   const handleUpdateProject = async () => {
     setIsUpdating(true);
-    await updateProject(project.project_name, updateERPNextProjectSchema.parse(editedProject));
-    await detailedProject.mutate();
+    await updateProject(project_id, updateERPNextProjectSchema.parse(editedProject));
+    await project.mutate();
     setIsUpdating(false);
   };
 
   // 프로젝트 정보 반영
   useEffect(() => {
-    if (!initialProject || !session || !detailedProject.data) return;
-    setProject(detailedProject.data);
-    setEditedProject(detailedProject.data);
-  }, [initialProject, detailedProject.data, session]);
+    setEditedProject(project.data);
+    console.log(project.data);
+  }, [project.data]);
 
   // 프로젝트 자동 저장
   useEffect(() => {
@@ -141,6 +127,10 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
     };
   }, [project, editedProject, isUpdating, autosave]);
 
+  if (!editedProject || !project.data) {
+    return <div>로딩 중...</div>;
+  }
+
   return (
     <div className="flex flex-col w-full h-full overflow-y-auto md:overflow-hidden pb-12">
       {/* 헤더 */}
@@ -158,7 +148,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             이용 가이드
           </Button>
           <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none" asChild>
-            <Link href={`/service/project/task?project_id=${project?.project_name}`}>작업 현황</Link>
+            <Link href={`/service/project/task?project_id=${project_id}`}>작업 현황</Link>
           </Button>
         </div>
       </div>
@@ -211,8 +201,8 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={setActiveTab2} />
             {/* 탭 콘텐츠 */}
             <div className="w-full grow overflow-y-auto scrollbar-hide">
-              {activeTab2 === 0 && project && <FilesList project={project} />}
-              {activeTab2 === 1 && project && <TeamsList project={project} session={session} />}
+              {activeTab2 === 0 && project && <FilesList projectSwr={project} />}
+              {activeTab2 === 1 && project && <TeamsList projectSwr={project} session={session} />}
             </div>
           </div>
         </div>
@@ -247,17 +237,17 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
                 </div>
               </>
             )}
-            {activeMobileTab === 1 && project && <FilesList project={project} />}
+            {activeMobileTab === 1 && project && <FilesList projectSwr={project} />}
           </div>
         </div>
       </div>
 
       {/* 시트 푸터 */}
       <div className="absolute bottom-0 w-full flex items-center justify-between h-12 border-t-1 border-t-sidebar-border px-4 bg-zinc-50 z-20">
-        {project.custom_project_status === "draft" ? (
+        {project.data.custom_project_status === "draft" ? (
           <div className="flex items-center gap-3">
             <p className="text-xs font-semibold text-muted-foreground">
-              {project.modified ? `${dayjs(project.modified).format("YYYY-MM-DD HH:mm:ss")} 수정됨` : "수정되지 않은 프로젝트"}
+              {project.data.modified ? `${dayjs(project.data.modified).format("YYYY-MM-DD HH:mm:ss")} 수정됨` : "수정되지 않은 프로젝트"}
             </p>
             <button
               onClick={() => setAutosave((prev) => !prev)}
@@ -287,7 +277,7 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             <p className="text-xs font-semibold text-muted-foreground">진행 중인 프로젝트는 수정할 수 없어요.</p>
           </div>
         )}
-        {project.custom_project_status === "draft" ? (
+        {project.data.custom_project_status === "draft" ? (
           <div className="hidden md:flex items-center gap-2">
             <Button variant="outline" size="sm" className="h-8 text-xs font-semibold rounded-sm border-gray-200 shadow-none">
               이용 약관

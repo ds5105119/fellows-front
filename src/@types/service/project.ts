@@ -61,6 +61,10 @@ export type ERPNextProjectUserRow = z.infer<typeof erpNextProjectUserRowSchema>;
 
 // --- Main Project Model ---
 
+export const ERPNextProjectTeamSchema = z.array(z.object({ member: z.string(), level: z.number() }));
+
+export type ERPNextProjectTeam = z.infer<typeof ERPNextProjectTeamSchema>;
+
 export const userERPNextProjectSchema = z.object({
   creation: z.coerce.date().optional().nullable(),
   modified: z.coerce.date().optional().nullable(),
@@ -77,7 +81,7 @@ export const userERPNextProjectSchema = z.object({
   actual_start_date: z.coerce.date().optional().nullable(),
   actual_end_date: z.coerce.date().optional().nullable(),
   actual_time: z.number().optional().nullable(),
-  customer: z.string(),
+  customer: z.string().optional().nullable(),
 
   custom_project_title: z.string().optional().nullable(),
   custom_project_summary: z.string().optional().nullable(),
@@ -88,10 +92,7 @@ export const userERPNextProjectSchema = z.object({
   custom_content_pages: z.number().int().optional().nullable(),
   custom_maintenance_required: z.boolean().optional().nullable().default(false),
 
-  custom_team: z
-    .array(z.object({ member: z.string(), level: z.number() }))
-    .optional()
-    .nullable(),
+  custom_team: ERPNextProjectTeamSchema.optional().nullable(),
   custom_platforms: z.array(erpNextProjectPlatformRowSchema).optional().nullable().default([]),
   custom_features: z.array(erpNextProjectFeatureRowSchema).optional().nullable().default([]),
   custom_preferred_tech_stacks: z.array(erpNextProjectPreferredTechStackRowSchema).optional().nullable().default([]),

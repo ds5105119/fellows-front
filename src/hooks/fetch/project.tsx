@@ -26,6 +26,7 @@ import {
   ERPNextTaskPaginatedResponse,
   QuoteSlots,
   quoteSlotsSchema,
+  ERPNextProjectTeam,
 } from "@/@types/service/project";
 import dayjs from "@/lib/dayjs";
 
@@ -40,7 +41,9 @@ const fetcher = async (url: string) => {
     toast.error(errorMessage);
     throw new Error(errorMessage);
   }
-  return response.json();
+  const responseData = await response.json();
+
+  return responseData;
 };
 
 // =================================================================
@@ -67,7 +70,14 @@ export const createProject = async (payload: CreateERPNextProject): Promise<User
 // --- READ (Single) ---
 export const useProject = (projectId: string | null): SWRResponse<UserERPNextProject> => {
   const url = projectId ? `${API_BASE_URL}/${projectId}` : null;
-  return useSWR(url, async (url: string) => userERPNextProjectSchema.parse(await fetcher(url)));
+  return useSWR(url, async (url: string) => {
+    try {
+      return userERPNextProjectSchema.parse(await fetcher(url));
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  });
 };
 
 // --- READ (List) ---
@@ -121,10 +131,23 @@ export const updateProject = async (projectId: string, payload: UpdateERPNextPro
   return userERPNextProjectSchema.parse(responseData);
 };
 
-export const inviteProject = async (projectId: string, email: string) => {
-  const response = await fetch(`${API_BASE_URL}/${projectId}/invite?email=${email}`, {
+export const inviteProjectGroup = async (projectId: string, email: string) => {
+  const response = await fetch(`${API_BASE_URL}/${projectId}/group/invite?email=${email}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    toast.error("프로젝트 업데이트 중 오류가 발생했습니다.");
+    throw new Error("Failed to update project");
+  }
+};
+
+export const updateProjectGroup = async (projectId: string, payload: ERPNextProjectTeam) => {
+  const response = await fetch(`${API_BASE_URL}/${projectId}/group`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
