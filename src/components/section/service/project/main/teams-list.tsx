@@ -1,9 +1,13 @@
+"use client";
+
 import { UserERPNextProject } from "@/@types/service/project";
 import { useUsers } from "@/hooks/fetch/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Info, UserPlus } from "lucide-react";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 // Helper to map level to role and badge color
 const getRoleDetails = (level: number) => {
@@ -86,10 +90,33 @@ export function TeamsList({ project }: { project: UserERPNextProject }) {
         )}
       </section>
 
-      <button className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-blue-200 hover:bg-blue-300 text-blue-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer">
-        <UserPlus className="!size-5" strokeWidth={2} />
-        <p>팀원 초대하기</p>
-      </button>
+      <Dialog>
+        <DialogTrigger asChild>
+          <button className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-blue-200 hover:bg-blue-300 text-blue-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer">
+            <UserPlus className="!size-5" strokeWidth={2} />
+            <p>팀원 초대하기</p>
+          </button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Share link</DialogTitle>
+            <DialogDescription>Anyone who has this link will be able to view this.</DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center gap-2">
+            <div className="grid flex-1 gap-2"></div>
+          </div>
+          <DialogFooter className="sm:justify-start">
+            <Button type="button" variant="default">
+              초대
+            </Button>
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">
+                취소
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
