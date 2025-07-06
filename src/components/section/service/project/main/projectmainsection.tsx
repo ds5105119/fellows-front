@@ -8,7 +8,6 @@ import ProjectDetailSheet from "./projectdetailsheet";
 import { SWRInfiniteResponse } from "swr/infinite";
 import { useCallback, useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { cn } from "@/lib/utils";
 import { useInView } from "framer-motion";
@@ -116,8 +115,6 @@ export default function ProjectMainSection({ session, project_id }: { session: S
   const [openSheet, setOpenSheet] = useState(project_id ? true : false);
   const keyword = useThrottle(inputText, 1000);
   const pathname = usePathname();
-  const router = useRouter();
-  const project = useProjects({ size: 1 });
   const isInitialized = useRef(false);
 
   // URL에서 project_id를 추출하는 헬퍼 함수

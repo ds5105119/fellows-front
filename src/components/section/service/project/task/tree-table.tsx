@@ -11,7 +11,7 @@ import type { ERPNextTaskForUser, ERPNextTaskStatus } from "@/@types/service/pro
 import { StatusBadge } from "./status-badge";
 import { PriorityIndicator } from "./priority-indicator";
 import { buildTree, getInitialExpandedState } from "@/lib/task-utils";
-import { useProjectOverView, useTasks } from "@/hooks/fetch/project";
+import { useTasks } from "@/hooks/fetch/project";
 import useThrottle from "@/lib/useThrottle";
 import type { Dayjs } from "dayjs";
 import { useInView } from "framer-motion";
@@ -61,8 +61,6 @@ export function TreeTable({ expand = false, showControl = true }: { expand?: boo
   const hasTaskSwr = useTasks({ size: 1 }, { refreshInterval: 0 });
   const hasTaskIsLoading = hasTaskSwr.isLoading || (hasTaskSwr.data && hasTaskSwr.size > 0 && typeof hasTaskSwr.data[hasTaskSwr.size - 1] === "undefined");
   const hasTasks = (hasTaskSwr.data?.flatMap((task) => task.items) ?? []).length != 0;
-
-  const overviewProjectSwr = useProjectOverView();
 
   // Memoize tree data with stable reference
   const treeData = useMemo(() => {

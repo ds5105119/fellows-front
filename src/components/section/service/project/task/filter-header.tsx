@@ -123,13 +123,13 @@ export function FilterHeader({
   const navigatePrevious = () => {
     switch (timeUnit) {
       case "day":
-        setCurrentDate && currentDate && setCurrentDate(currentDate.subtract(1, "week"));
+        if (setCurrentDate && currentDate) setCurrentDate(currentDate.subtract(1, "week"));
         break;
       case "week":
-        setCurrentDate && currentDate && setCurrentDate(currentDate.subtract(1, "week"));
+        if (setCurrentDate && currentDate) setCurrentDate(currentDate.subtract(1, "week"));
         break;
       case "month":
-        setCurrentDate && currentDate && setCurrentDate(currentDate.subtract(1, "month"));
+        if (setCurrentDate && currentDate) setCurrentDate(currentDate.subtract(1, "month"));
         break;
     }
   };
@@ -137,19 +137,19 @@ export function FilterHeader({
   const navigateNext = () => {
     switch (timeUnit) {
       case "day":
-        setCurrentDate && currentDate && setCurrentDate(currentDate.add(1, "week"));
+        if (setCurrentDate && currentDate) setCurrentDate(currentDate.add(1, "week"));
         break;
       case "week":
-        setCurrentDate && currentDate && setCurrentDate(currentDate.add(1, "week"));
+        if (setCurrentDate && currentDate) setCurrentDate(currentDate.add(1, "week"));
         break;
       case "month":
-        setCurrentDate && currentDate && setCurrentDate(currentDate.add(1, "month"));
+        if (setCurrentDate && currentDate) setCurrentDate(currentDate.add(1, "month"));
         break;
     }
   };
 
   const navigateToToday = () => {
-    setCurrentDate && setCurrentDate(dayjs());
+    if (setCurrentDate) setCurrentDate(dayjs());
   };
 
   // Format date range for display
@@ -181,11 +181,6 @@ export function FilterHeader({
       const newProjectId = projectId.filter((id) => id !== projectToRemove);
       setProjectId(newProjectId.length > 0 ? newProjectId : null);
     }
-  };
-
-  // 키워드 제거
-  const removeKeyword = () => {
-    setKeywordText("");
   };
 
   // 모든 필터 제거
