@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { NavGroup } from "@/components/sidebar/nav-group";
-import { NavDocuments } from "@/components/sidebar/nav-documents";
 import { NavUser } from "@/components/sidebar/nav-user";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { headerData } from "@/components/resource/header";
