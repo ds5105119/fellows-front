@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -20,7 +20,6 @@ interface DatePickerProps {
 
 export default function DatePicker({ value, text, onSelect, className }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -30,64 +29,12 @@ export default function DatePicker({ value, text, onSelect, className }: DatePic
     sunday: (date: Date) => date.getDay() === 0,
   };
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
   const handleSelect = (date: Date | undefined) => {
     onSelect(date);
     if (date) {
       setIsOpen(false);
     }
   };
-
-  const handleNativeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const dateValue = e.target.value;
-    if (dateValue) {
-      const selectedDate = new Date(dateValue);
-      onSelect(selectedDate);
-    } else {
-      onSelect(undefined);
-    }
-  };
-
-  const formatDateForInput = (date: Date | undefined) => {
-    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
-      return "";
-    }
-    return format(date, "yyyy-MM-dd");
-  };
-
-  if (isMobile) {
-    return (
-      <div className={cn("relative flex", className)}>
-        {/* label로 버튼 전체를 감싸기 */}
-        <label htmlFor="date" className="absolute inset-0 z-10 cursor-pointer">
-          {/* 완전히 투명한 input이 아니라, label이 클릭을 input에 전달함 */}
-        </label>
-
-        <input
-          id="date"
-          type="date"
-          value={formatDateForInput(value)}
-          onChange={handleNativeChange}
-          className="absolute opacity-0" // 접근성 지키면서 완전히 숨김
-        />
-
-        <Button variant="secondary" size="sm" className="shadow-none w-full pointer-events-none">
-          {text && <span className="text-sm text-muted-foreground font-semibold">{text}</span>}
-          <span className="text-sm text-foreground font-medium">{formatDateForInput(value)}</span>
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className={cn("grid gap-2", className)}>

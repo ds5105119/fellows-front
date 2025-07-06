@@ -1,5 +1,5 @@
 import { type Issue, type CreateIssueData, type UpdateIssueData, IssueSchema, IssueListResponseSchema, IssueListResponse } from "@/@types/service/issue";
-import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
+import useSWRInfinite, { SWRInfiniteConfiguration, SWRInfiniteKeyLoader } from "swr/infinite";
 
 const API_BASE_URL = "/api/service/project";
 
@@ -44,11 +44,12 @@ const issuesGetKeyFactory = (params: IssueFilters): SWRInfiniteKeyLoader<IssueLi
   };
 };
 
-export function useIssues(params: IssueFilters = {}) {
+export function useIssues(params: IssueFilters = {}, options: SWRInfiniteConfiguration | undefined = {}) {
   const getKey = issuesGetKeyFactory(params);
   return useSWRInfinite(getKey, async (url: string) => IssueListResponseSchema.parse(await fetcher(url)), {
     refreshInterval: 60000,
     focusThrottleInterval: 60000,
+    ...options,
   });
 }
 

@@ -3,7 +3,7 @@ import { auth, signIn } from "@/auth";
 import { SessionProvider } from "next-auth/react";
 import ProjectTab from "@/components/section/service/project/main/project-tab";
 import ProjectMainSection from "@/components/section/service/project/main/projectmainsection";
-import { getUser, updateUser } from "@/hooks/fetch/server/user";
+import { getCurrentUser, updateUser } from "@/hooks/fetch/server/user";
 import { userData } from "@/@types/accounts/userdata";
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 async function setOnBoarding() {
-  const user = await getUser();
+  const user = await getCurrentUser();
   if (user.userData) {
     const rawUserData = JSON.parse(user.userData[0] || "{}");
     const user_data = userData.parse(rawUserData);

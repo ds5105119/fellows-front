@@ -110,6 +110,17 @@ export const UserAttributesSchema = z.object({
   userData: z.array(z.string()).optional().nullable(),
 });
 
+export const ExternalUserAttributesSchema = z.object({
+  bio: z.array(z.string()).optional().nullable(),
+  birthdate: z.array(z.string()).optional().nullable(),
+  gender: z.array(z.string()).optional().nullable(),
+  link: z.array(z.string().url()).optional().nullable(),
+  name: z.array(z.string()).optional().nullable(),
+  picture: z.array(z.string()).optional().nullable(),
+});
+
+export const ExternalUsersAttributesSchema = z.array(ExternalUserAttributesSchema);
+
 export const UpdateUserAttributesSchema = z.object({
   bio: z.array(z.string()).optional().nullable(),
   birthdate: z.array(z.string()).optional().nullable(),

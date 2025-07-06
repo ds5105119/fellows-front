@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 // 분리된 컴포넌트들 import
 import { CustomerInfo } from "./customer-info";
 import { FilesList } from "./files-list";
+import { TeamsList } from "./teams-list";
 import { ProjectHeader } from "./project-header";
 import { ProjectBasicInfo } from "./project-basic-info";
 import { ProjectStatus } from "./project-status";
@@ -21,6 +22,7 @@ import { ProjectDetails } from "./project-details";
 import { ProjectActions } from "./project-actions";
 import { ProjectNotices } from "./project-notices";
 import dayjs from "dayjs";
+import Link from "next/link";
 
 interface ProjectDetailSheetProps {
   project: UserERPNextProject | null;
@@ -89,6 +91,9 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
     <div className="flex space-x-1 items-center" key="overview">
       <span>파일</span>
     </div>,
+    <div className="flex space-x-1 items-center" key="overview">
+      <span>팀원</span>
+    </div>,
   ];
 
   const handleCopy = useCallback(async () => {
@@ -152,6 +157,9 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
           <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none">
             이용 가이드
           </Button>
+          <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none" asChild>
+            <Link href={`/service/project/task?project_id=${project?.project_name}`}>작업 현황</Link>
+          </Button>
           <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none">
             <Download className="h-4 w-4" />
             내보내기
@@ -206,7 +214,10 @@ function ProjectDetailSheetInner({ project: initialProject, onClose, session }: 
             {/* 일반 정보 탭 */}
             <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={setActiveTab2} />
             {/* 탭 콘텐츠 */}
-            <div className="w-full grow overflow-y-auto scrollbar-hide">{activeTab2 === 0 && project && <FilesList project={project} />}</div>
+            <div className="w-full grow overflow-y-auto scrollbar-hide">
+              {activeTab2 === 0 && project && <FilesList project={project} />}
+              {activeTab2 === 1 && project && <TeamsList project={project} />}
+            </div>
           </div>
         </div>
 

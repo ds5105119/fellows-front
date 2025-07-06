@@ -1,7 +1,14 @@
 "use server";
 
 import { auth } from "@/auth";
-import { UserBusinessDataNullableSchema, UserBusinessData, UpdateUserAttributes, UserAttributesSchema } from "@/@types/accounts/userdata";
+import {
+  UserBusinessDataNullableSchema,
+  UserBusinessData,
+  UpdateUserAttributes,
+  UserAttributesSchema,
+  ExternalUserAttributesSchema,
+  ExternalUsersAttributesSchema,
+} from "@/@types/accounts/userdata";
 
 export const getBusinessUserData = async () => {
   const url = `${process.env.NEXT_PUBLIC_USERDATA_URL}/welfare/business`;
@@ -57,10 +64,13 @@ export const updateBusinessUserData = async (data: UserBusinessData) => {
   });
 };
 
-export const getUser = async () => {
+export const getCurrentUser = async () => {
   const session = await auth();
+  if (!session) {
+    throw new Error("User not logged in");
+  }
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}/${session.sub}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -72,6 +82,49 @@ export const getUser = async () => {
 
   const data = await response.json();
   return UserAttributesSchema.parse(data);
+};
+
+export const getUser = async (id: string) => {
+  const session = await auth();
+  if (!session) {
+    throw new Error("User not logged in");
+  }
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+    },
+    redirect: "follow",
+    credentials: "include",
+  });
+
+  const data = await response.json();
+  return ExternalUserAttributesSchema.parse(data);
+};
+
+export const getUsers = async (ids: string[]) => {
+  const session = await auth();
+  if (!session) {
+    throw new Error("User not logged in");
+  }
+
+  const params = new URLSearchParams();
+  ids.forEach(id => params.append("id", id));
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_USERDATA_URL}?${params.toString()}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+    },
+    redirect: "follow",
+    credentials: "include",
+  });
+
+  const data = await response.json();
+  return ExternalUsersAttributesSchema.parse(data);
 };
 
 export const updateUser = async (data: UpdateUserAttributes) => {

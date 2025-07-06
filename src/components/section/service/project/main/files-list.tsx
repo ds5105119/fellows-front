@@ -12,10 +12,9 @@ import { createFile, deleteFile, useFiles } from "@/hooks/fetch/project";
 
 interface FilesListProps {
   project: UserERPNextProject;
-  task?: ERPNextTaskForUser;
 }
 
-export function FilesList({ project, task }: FilesListProps) {
+export function FilesList({ project }: FilesListProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const files = useFiles({ projectId: project.project_name, params: { size: 20 } });
@@ -57,7 +56,6 @@ export function FilesList({ project, task }: FilesListProps) {
           sse_key: presigned.sse_key,
           uploader: "user",
           project: project?.project_name,
-          task: task?.name,
         });
 
         files.mutate(

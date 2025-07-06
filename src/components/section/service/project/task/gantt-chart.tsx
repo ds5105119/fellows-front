@@ -7,10 +7,10 @@ import type { Dayjs } from "dayjs";
 import { cn } from "@/lib/utils";
 import type { ERPNextTaskForUser, ERPNextTaskStatus } from "@/@types/service/project";
 import { buildTree, getAllExpandableTaskIds } from "@/lib/task-utils";
-import { useProjectOverView, useTasks } from "@/hooks/fetch/project";
+import { useTasks } from "@/hooks/fetch/project";
 import { TaskSkeleton } from "./task-loading";
 import useThrottle from "@/lib/useThrottle";
-import { GanttHeader } from "./gantt-header";
+import { FilterHeader } from "./filter-header";
 import { GanttTaskRow } from "./gantt-task-row";
 import { EmptyState } from "./empty-state";
 
@@ -22,11 +22,21 @@ export interface DateRange {
   intervals: Dayjs[];
 }
 
-export function GanttChart({ expand = false, timeunit, showControl = true }: { expand?: boolean; timeunit?: TimeUnit; showControl?: boolean }) {
+export function GanttChart({
+  expand = false,
+  timeunit,
+  showControl = true,
+  initalProjectId = [],
+}: {
+  expand?: boolean;
+  timeunit?: TimeUnit;
+  showControl?: boolean;
+  initalProjectId: string[];
+}) {
   const [taskExpended, setTaskExpanded] = useState<boolean>(expand ?? true);
-  const [deepSearch, setDeepSearch] = useState<boolean>(true);
+  const [deepSearch, setDeepSearch] = useState<boolean>(initalProjectId ? true : false);
   const [status, setStatus] = useState<ERPNextTaskStatus[] | null>(null);
-  const [projectId, setProjectId] = useState<string[] | null>(null);
+  const [projectId, setProjectId] = useState<string[] | null>(initalProjectId ? initalProjectId : null);
   const [keywordText, setKeywordText] = useState<string>("");
   const keyword = useThrottle(keywordText, 3000);
 
@@ -59,8 +69,6 @@ export function GanttChart({ expand = false, timeunit, showControl = true }: { e
   const hasTaskSwr = useTasks({ size: 1 }, { refreshInterval: 0 });
   const hasTaskIsLoading = hasTaskSwr.isLoading || (hasTaskSwr.data && hasTaskSwr.size > 0 && typeof hasTaskSwr.data[hasTaskSwr.size - 1] === "undefined");
   const hasTasks = (hasTaskSwr.data?.flatMap((task) => task.items) ?? []).length != 0;
-
-  const overviewProjectSwr = useProjectOverView();
 
   const treeData = useMemo(() => buildTree(tasks), [tasks]);
   const expandableTaskIds = useMemo(() => getAllExpandableTaskIds(tasks), [tasks]);
@@ -103,7 +111,8 @@ export function GanttChart({ expand = false, timeunit, showControl = true }: { e
     return result;
   }, [treeData, expandedTasks]);
 
-  const calculateDateRange = (start: Dayjs, end: Dayjs) => {
+  const calculateDateRange = (start?: Dayjs, end?: Dayjs) => {
+    if (!start || !end) return;
     switch (timeUnit) {
       case "day":
         const intervals_day = [];
@@ -172,15 +181,14 @@ export function GanttChart({ expand = false, timeunit, showControl = true }: { e
 
   return (
     <div className="w-full h-full">
-      <GanttHeader
+      <FilterHeader
         showControl={showControl}
-        projectsOverview={overviewProjectSwr.data}
         timeUnit={timeUnit}
         setTimeUnit={setTimeUnit}
         currentDate={currentDate}
         setCurrentDate={setCurrentDate}
         dateRange={dateRange}
-        calculateDateRange={calculateDateRange}
+        setDateRange={calculateDateRange}
         taskExpended={taskExpended}
         setTaskExpanded={setTaskExpanded}
         deepSearch={deepSearch}

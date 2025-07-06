@@ -249,20 +249,6 @@ export default function ProjectMainSection({ session, project_id }: { session: S
     return () => window.removeEventListener("popstate", handlePopState);
   }, [isInitialized, getProjectIdFromUrl, findProjectById]);
 
-  useEffect(() => {
-    if (
-      !project.isLoading &&
-      !project.error &&
-      !project.isValidating &&
-      project.data &&
-      project.data.length > 0 &&
-      project.data[0].items.length == 0 &&
-      !project_id
-    ) {
-      router.push("/service/project/new");
-    }
-  }, [project]);
-
   return (
     <div className="flex flex-col w-full h-full space-y-4">
       {/* 상단 탭 */}

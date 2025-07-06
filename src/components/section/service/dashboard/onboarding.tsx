@@ -1,7 +1,7 @@
 import { auth, signIn } from "@/auth";
 import type { Session } from "next-auth";
 import { projectsPaginatedResponseSchema, type UserERPNextProject } from "@/@types/service/project";
-import { getUser, updateUser } from "@/hooks/fetch/server/user";
+import { getCurrentUser, updateUser } from "@/hooks/fetch/server/user";
 import { UserData, userData } from "@/@types/accounts/userdata";
 import { OnboardingClient } from "./onboarding-client";
 import { SessionProvider } from "next-auth/react";
@@ -58,7 +58,7 @@ const getOnboarding = async ({ session }: { session: Session }): Promise<Onboard
     const hasInQuery = inQueryResponseParsedData.items.length > 0;
 
     // 온보딩 2가 진행되었는가?
-    const user = await getUser();
+    const user = await getCurrentUser();
     const rawUserData = JSON.parse(user.userData ? user.userData[0] : "{}");
 
     return {

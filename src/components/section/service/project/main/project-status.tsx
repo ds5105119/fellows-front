@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Session } from "next-auth";
 import { platformEnum, type UserERPNextProject } from "@/@types/service/project";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DatePicker from "./datepicker";
+import generatePDF from "react-to-pdf";
 
 export function ProjectStatus({
   project,
@@ -32,6 +33,7 @@ export function ProjectStatus({
   setEditedProject: (project: UserERPNextProject) => void;
 }) {
   const canEdit = project.custom_project_status === "draft";
+  const targetRef = useRef<HTMLDivElement>(null);
 
   const [openPlatform, setOpenPlatform] = useState(false);
   const [openEndDate, setOpenEndDate] = useState(false);
@@ -48,6 +50,14 @@ export function ProjectStatus({
       return day === 0 || day === 6;
     },
   ];
+
+  const downloadPDF = () => {
+    generatePDF(targetRef, {
+      method: "save",
+      filename: `${project.custom_project_title} AI 견젹서 - ${dayjs().format("YYYY-MM-DD")}`,
+      resolution: 5,
+    });
+  };
 
   return (
     <>
@@ -138,21 +148,18 @@ export function ProjectStatus({
             <div className="flex flex-col h-full overflow-y-auto scrollbar-hide">
               <div className="sticky top-0 shrink-0 flex flex-row-reverse md:flex-row items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4 bg-background z-20">
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none">
+                  <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none" onClick={downloadPDF}>
                     <DownloadIcon className="h-4 w-4" />
                     내보내기
                   </Button>
                 </div>
                 <div className="flex flex-row-reverse md:flex-row items-center gap-3">
-                  <Button variant="ghost" size="icon" className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
-                    <DownloadIcon className="!size-5" />
-                  </Button>
                   <Button variant="ghost" size="icon" className="hover:bg-blue-500/10 border-0 focus-visible:ring-0" onClick={() => setOpenSheet(false)}>
                     <XIcon className="!size-5" />
                   </Button>
                 </div>
               </div>
-              <div className="p-5 md:p-8">
+              <div className="p-5 md:p-8" ref={targetRef}>
                 <div className="flex flex-col gap-5">
                   <div className="flex flex-col">
                     <SelectLogo />

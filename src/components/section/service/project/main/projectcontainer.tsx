@@ -156,18 +156,7 @@ export default function ProjectContainer({
     if (!project) return;
 
     if (window.confirm("프로젝트를 삭제하면 모든 정보가 삭제됩니다. 계속 진행하시겠습니까?")) {
-      await meta.swr.mutate(
-        (pages) =>
-          pages &&
-          pages.map((page) => ({
-            items: page.items.filter((item) => item.project_name !== project.project_name),
-          })),
-        {
-          revalidate: false,
-          populateCache: true,
-          rollbackOnError: true,
-        }
-      );
+      await meta.swr.mutate();
       await deleteProject(project.project_name);
     }
   };

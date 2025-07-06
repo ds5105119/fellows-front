@@ -15,9 +15,9 @@ import { useProjectOverView, useTasks } from "@/hooks/fetch/project";
 import useThrottle from "@/lib/useThrottle";
 import type { Dayjs } from "dayjs";
 import { useInView } from "framer-motion";
-import { TreeHeader } from "./tree-header";
 import { EmptyState } from "./empty-state";
 import { cn } from "@/lib/utils";
+import { FilterHeader } from "./filter-header";
 
 export interface DateRange {
   start?: Dayjs;
@@ -43,8 +43,8 @@ export function TreeTable({ expand = false, showControl = true }: { expand?: boo
     project_id: projectId,
     size: 50,
     status: status,
-    start: stableDateRange.start?.startOf("year").toDate(),
-    end: stableDateRange.end?.endOf("year").toDate(),
+    start: stableDateRange.start?.startOf("day").toDate(),
+    end: stableDateRange.end?.endOf("day").toDate(),
     keyword: keyword,
   });
 
@@ -256,9 +256,8 @@ export function TreeTable({ expand = false, showControl = true }: { expand?: boo
 
   return (
     <div className="w-full max-w-full">
-      <TreeHeader
+      <FilterHeader
         showControl={showControl}
-        projectsOverview={overviewProjectSwr.data}
         dateRange={stableDateRange}
         setDateRange={handleDateRangeChange}
         taskExpended={taskExpended}

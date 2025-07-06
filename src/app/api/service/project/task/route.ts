@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   const size = searchParams.get("size") ?? "20";
   const start = searchParams.get("start");
   const end = searchParams.get("end");
-  const project_id = searchParams.get("project_id");
+  const project_id = searchParams.getAll("project_id");
   const keyword = searchParams.get("keyword");
   const order_by = searchParams.getAll("order_by");
   const status = searchParams.getAll("status");
@@ -35,7 +35,8 @@ export async function GET(request: Request) {
   }
 
   if (project_id) {
-    queryParams.append("project_id", project_id);
+    const project_idValues = Array.isArray(project_id) ? project_id : [project_id];
+    project_idValues.forEach((value) => queryParams.append("project_id", value));
   }
 
   if (keyword) {

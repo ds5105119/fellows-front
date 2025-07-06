@@ -1,26 +1,26 @@
-"use client";
+"use client"
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { type Issue, type CreateIssueData, type UpdateIssueData, CreateIssueSchema } from "@/@types/service/issue";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { type Issue, type CreateIssueData, type UpdateIssueData, CreateIssueSchema } from "@/@types/service/issue"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Loader2 } from "lucide-react"
 
 interface IssueFormProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: CreateIssueData | UpdateIssueData) => Promise<void>;
-  issue?: Issue | null;
-  isLoading?: boolean;
+  isOpen: boolean
+  onClose: () => void
+  onSubmit: (data: CreateIssueData | UpdateIssueData) => Promise<void>
+  issue?: Issue | null
+  isLoading?: boolean
 }
 
-export default function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading = false }: IssueFormProps) {
-  const isEdit = !!issue;
+export function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading = false }: IssueFormProps) {
+  const isEdit = !!issue
 
   const form = useForm<CreateIssueData>({
     resolver: zodResolver(CreateIssueSchema),
@@ -31,22 +31,22 @@ export default function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading 
       description: issue?.description || "",
       project: issue?.project || "",
     },
-  });
+  })
 
   const handleSubmit = async (data: CreateIssueData) => {
     try {
-      await onSubmit(data);
-      form.reset();
-      onClose();
+      await onSubmit(data)
+      form.reset()
+      onClose()
     } catch (error) {
-      console.error("Failed to submit issue:", error);
+      console.error("Failed to submit issue:", error)
     }
-  };
+  }
 
   const handleClose = () => {
-    form.reset();
-    onClose();
-  };
+    form.reset()
+    onClose()
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -54,7 +54,6 @@ export default function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading 
         <DialogHeader>
           <DialogTitle>{isEdit ? "이슈 수정" : "새 이슈 등록"}</DialogTitle>
         </DialogHeader>
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 gap-4">
@@ -120,21 +119,19 @@ export default function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading 
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="project"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>프로젝트</FormLabel>
-                      <FormControl>
-                        <Input placeholder="프로젝트명" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="project"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>프로젝트</FormLabel>
+                    <FormControl>
+                      <Input placeholder="프로젝트명" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
@@ -143,7 +140,11 @@ export default function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading 
                   <FormItem>
                     <FormLabel>설명</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="이슈에 대한 자세한 설명을 입력하세요" className="min-h-[120px]" {...field} />
+                      <Textarea
+                        placeholder="이슈에 대한 자세한 설명을 입력하세요"
+                        className="min-h-[120px]"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -164,5 +165,5 @@ export default function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading 
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
