@@ -138,11 +138,20 @@ export const inviteProjectGroup = async (projectId: string, email: string) => {
   });
 
   if (!response.ok) {
-    toast.error("프로젝트 업데이트 중 오류가 발생했습니다.");
-    throw new Error("Failed to update project");
+    toast.error("초대에 실패했어요.");
   }
 };
 
+export const acceptInviteProjectGroup = async (projectId: string) => {
+  const response = await fetch(`${API_BASE_URL}/${projectId}/group/invite/accept`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    toast.error("초대를 수락할 수 없어요.");
+  }
+};
 export const updateProjectGroup = async (projectId: string, payload: ERPNextProjectTeam) => {
   const response = await fetch(`${API_BASE_URL}/${projectId}/group`, {
     method: "PUT",
@@ -151,8 +160,7 @@ export const updateProjectGroup = async (projectId: string, payload: ERPNextProj
   });
 
   if (!response.ok) {
-    toast.error("프로젝트 업데이트 중 오류가 발생했습니다.");
-    throw new Error("Failed to update project");
+    toast.error("팀원을 업데이트 할 수 없어요.");
   }
 };
 

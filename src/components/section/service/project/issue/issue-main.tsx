@@ -34,8 +34,6 @@ export default function IssueMain() {
   const hasIssueLoading = hasIssueSwr.isLoading || (hasIssueSwr.data && hasIssueSwr.size > 0 && typeof hasIssueSwr.data[hasIssueSwr.size - 1] === "undefined");
   const hasIssue = (hasIssueSwr.data?.flatMap((issue) => issue.items) ?? []).length !== 0;
 
-  console.log(hasIssue, hasIssueLoading, isLoading, issues.length);
-
   // 무한 스크롤
   const infinitRef = useRef<HTMLDivElement>(null);
   const isReachingEnd = useInView(infinitRef, {
