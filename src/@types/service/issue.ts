@@ -6,7 +6,7 @@ export const TaskStatusEnum = z.enum(["Open", "Working", "Pending Review", "Over
 export const IssueSchema = z.object({
   name: z.string(),
   subject: z.string(),
-  custom_sub: z.string(),
+  customer: z.string(),
   creation: z.string().transform((v, ctx) => {
     const d = new Date(v.replace(" ", "T"));
     if (isNaN(d.getTime())) {
@@ -44,18 +44,18 @@ export const IssueListResponseSchema = z.object({
 
 export const CreateIssueSchema = z.object({
   subject: z.string().min(1, "제목을 입력해주세요"),
+  project: z.string(),
   priority: z.string().optional(),
   issue_type: IssueTypeEnum.optional(),
   description: z.string().optional(),
-  project: z.string().optional(),
 });
 
 export const UpdateIssueSchema = z.object({
   subject: z.string().optional(),
+  project: z.string().optional(),
   priority: z.string().optional(),
   issue_type: IssueTypeEnum.optional(),
   description: z.string().optional(),
-  project: z.string().optional(),
 });
 
 export type Issue = z.infer<typeof IssueSchema>;

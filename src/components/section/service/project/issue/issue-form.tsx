@@ -1,26 +1,33 @@
-"use client"
+"use client";
 
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { type Issue, type CreateIssueData, type UpdateIssueData, CreateIssueSchema } from "@/@types/service/issue"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Loader2 } from "lucide-react"
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { type Issue, type CreateIssueData, type UpdateIssueData, CreateIssueSchema } from "@/@types/service/issue";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Check, ChevronDownIcon, Loader2 } from "lucide-react";
+import { useProjectOverView } from "@/hooks/fetch/project";
+import { cn } from "@/lib/utils";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface IssueFormProps {
-  isOpen: boolean
-  onClose: () => void
-  onSubmit: (data: CreateIssueData | UpdateIssueData) => Promise<void>
-  issue?: Issue | null
-  isLoading?: boolean
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: CreateIssueData | UpdateIssueData) => Promise<void>;
+  issue?: Issue | null;
+  isLoading?: boolean;
 }
 
 export function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading = false }: IssueFormProps) {
-  const isEdit = !!issue
+  const isEdit = !!issue;
+
+  const projectsOverview = useProjectOverView();
+  const overviewProjects = projectsOverview?.data?.items || [];
 
   const form = useForm<CreateIssueData>({
     resolver: zodResolver(CreateIssueSchema),
@@ -31,22 +38,22 @@ export function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading = false 
       description: issue?.description || "",
       project: issue?.project || "",
     },
-  })
+  });
 
   const handleSubmit = async (data: CreateIssueData) => {
     try {
-      await onSubmit(data)
-      form.reset()
-      onClose()
+      await onSubmit(data);
+      form.reset();
+      onClose();
     } catch (error) {
-      console.error("Failed to submit issue:", error)
+      console.error("Failed to submit issue:", error);
     }
-  }
+  };
 
   const handleClose = () => {
-    form.reset()
-    onClose()
-  }
+    form.reset();
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -108,9 +115,9 @@ export function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading = false 
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="높음">높음</SelectItem>
-                          <SelectItem value="보통">보통</SelectItem>
-                          <SelectItem value="낮음">낮음</SelectItem>
+                          <SelectItem value="High">높음</SelectItem>
+                          <SelectItem value="Medium">보통</SelectItem>
+                          <SelectItem value="Log">낮음</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -126,7 +133,38 @@ export function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading = false 
                   <FormItem>
                     <FormLabel>프로젝트</FormLabel>
                     <FormControl>
-                      <Input placeholder="프로젝트명" {...field} />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button variant="outline" role="combobox" className={cn("w-[200px] justify-between", !field.value && "text-muted-foreground")}>
+                              {field.value ? overviewProjects.find((p) => p.project_name === field.value)?.custom_project_title : "Select language"}
+                              <ChevronDownIcon className="opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[200px] p-0">
+                          <Command>
+                            <CommandInput placeholder="Search framework..." className="h-9" />
+                            <CommandList>
+                              <CommandEmpty>No framework found.</CommandEmpty>
+                              <CommandGroup>
+                                {overviewProjects.map((p) => (
+                                  <CommandItem
+                                    value={p.project_name}
+                                    key={p.project_name}
+                                    onSelect={() => {
+                                      form.setValue("project", p.project_name);
+                                    }}
+                                  >
+                                    {p.custom_project_title}
+                                    <Check className={cn("ml-auto", p.project_name === field.value ? "opacity-100" : "opacity-0")} />
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -140,11 +178,7 @@ export function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading = false 
                   <FormItem>
                     <FormLabel>설명</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="이슈에 대한 자세한 설명을 입력하세요"
-                        className="min-h-[120px]"
-                        {...field}
-                      />
+                      <Textarea placeholder="이슈에 대한 자세한 설명을 입력하세요" className="min-h-[120px]" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -165,5 +199,5 @@ export function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading = false 
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

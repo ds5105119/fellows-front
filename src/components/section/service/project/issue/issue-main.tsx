@@ -34,6 +34,8 @@ export default function IssueMain() {
   const hasIssueLoading = hasIssueSwr.isLoading || (hasIssueSwr.data && hasIssueSwr.size > 0 && typeof hasIssueSwr.data[hasIssueSwr.size - 1] === "undefined");
   const hasIssue = (hasIssueSwr.data?.flatMap((issue) => issue.items) ?? []).length !== 0;
 
+  console.log(hasIssue, hasIssueLoading, isLoading, issues.length);
+
   // 무한 스크롤
   const infinitRef = useRef<HTMLDivElement>(null);
   const isReachingEnd = useInView(infinitRef, {
@@ -93,10 +95,10 @@ export default function IssueMain() {
 
   // Effects
   useEffect(() => {
-    if (isReachingEnd && !isLoading && !isReachedEnd) {
+    if (isReachingEnd && !isLoading && !isReachedEnd && hasIssue) {
       IssueSwr.setSize((s) => s + 1);
     }
-  }, [isReachingEnd, isLoading, isReachedEnd]);
+  }, [isReachingEnd, isLoading, isReachedEnd, hasIssue]);
 
   return (
     <div className="w-full h-full">
@@ -113,7 +115,7 @@ export default function IssueMain() {
 
         <IssueList issues={issues} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} isValidating={IssueSwr.isValidating} />
 
-        {isLoading && <IssueSkeleton count={IssueSwr.data?.length === 1 ? 3 : 8} />}
+        {isLoading && hasIssue && <IssueSkeleton count={IssueSwr.data?.length === 1 ? 3 : 8} />}
 
         <div ref={infinitRef} />
 

@@ -53,7 +53,7 @@ export function useIssues(params: IssueFilters = {}, options: SWRInfiniteConfigu
   });
 }
 
-export async function createIssue(data: CreateIssueData): Promise<Issue> {
+export async function createIssue(data: CreateIssueData) {
   const response = await fetch(`${API_BASE_URL}/issue`, {
     method: "POST",
     body: JSON.stringify(data),
@@ -62,12 +62,9 @@ export async function createIssue(data: CreateIssueData): Promise<Issue> {
   if (!response.ok) {
     throw new Error("Failed to create issue");
   }
-
-  const result = await response.json();
-  return IssueSchema.parse(result);
 }
 
-export async function updateIssue(name: string, data: UpdateIssueData): Promise<Issue> {
+export async function updateIssue(name: string, data: UpdateIssueData) {
   const response = await fetch(`${API_BASE_URL}/issue/${name}`, {
     method: "PUT",
     body: JSON.stringify(data),
@@ -76,9 +73,6 @@ export async function updateIssue(name: string, data: UpdateIssueData): Promise<
   if (!response.ok) {
     throw new Error("Failed to update issue");
   }
-
-  const result = await response.json();
-  return IssueSchema.parse(result);
 }
 
 export async function deleteIssue(name: string): Promise<void> {
