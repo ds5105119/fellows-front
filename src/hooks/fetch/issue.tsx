@@ -1,4 +1,4 @@
-import { type Issue, type CreateIssueData, type UpdateIssueData, IssueSchema, IssueListResponseSchema, IssueListResponse } from "@/@types/service/issue";
+import { type CreateIssueData, type UpdateIssueData, IssueListResponseSchema, IssueListResponse } from "@/@types/service/issue";
 import useSWRInfinite, { SWRInfiniteConfiguration, SWRInfiniteKeyLoader } from "swr/infinite";
 
 const API_BASE_URL = "/api/service/project";

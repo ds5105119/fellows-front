@@ -1,7 +1,7 @@
 "use client";
 
 import { useAlerts } from "@/hooks/fetch/alert";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useInView } from "framer-motion";
 
 export default function AlertMain() {
@@ -19,11 +19,18 @@ export default function AlertMain() {
     margin: "-50px 0px -50px 0px",
   });
 
+  useEffect(() => {
+    if (isReachingEnd && !isLoading && !isReachedEnd) {
+      alertSwr.setSize((s) => s + 1);
+    }
+  }, [isReachingEnd, isLoading, isReachedEnd]);
+
   return (
     <div className="w-full">
       {alerts.map((alert, idx) => {
         return <div key={idx}>{alert.message}</div>;
       })}
+      <div ref={infinitRef} />
     </div>
   );
 }

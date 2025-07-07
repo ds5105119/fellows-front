@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
-export async function PUT(request: Request, { params }: { params: Promise<{ project_id: string }> }) {
+export async function POST(request: Request, { params }: { params: Promise<{ project_id: string }> }) {
   const session = await auth();
 
   const { searchParams } = new URL(request.url);
@@ -16,7 +16,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ proj
 
   try {
     const response = await fetch(url, {
-      method: "PUT",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
