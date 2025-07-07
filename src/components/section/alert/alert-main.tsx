@@ -5,10 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { useInView, motion, AnimatePresence, type PanInfo, useMotionValue, useTransform } from "framer-motion";
 import { Bell, X, ExternalLink } from "lucide-react";
 import dayjs from "@/lib/dayjs";
+import { AlertDto } from "@/@types/accounts/alert";
 
 interface AlertItemProps {
-  alert: any;
-  onDelete: (alert: any) => void;
+  alert: AlertDto;
+  onDelete: (alert: AlertDto) => void;
 }
 
 function AlertItem({ alert, onDelete }: AlertItemProps) {
@@ -31,9 +32,6 @@ function AlertItem({ alert, onDelete }: AlertItemProps) {
     }
     // 제자리로 돌아가기는 animate={{ x: 0 }}이 자동 처리
   };
-
-  // 현재 드래그 위치에 따른 삭제 힌트 표시 여부
-  const showDeleteHint = useTransform(x, (value) => Math.abs(value) > 50);
 
   return (
     <motion.div
@@ -68,7 +66,7 @@ function AlertItem({ alert, onDelete }: AlertItemProps) {
           mass: 0.6,
         }}
         className={`
-          relative bg-white rounded-2xl p-4 shadow-lg border border-gray-100
+          relative bg-white rounded-2xl p-4 glass border border-gray-100
           ${!alert.is_read ? "bg-blue-50 border-blue-200" : ""}
           ${isDragging ? "cursor-grabbing" : "cursor-grab"}
           transition-shadow duration-200
@@ -128,14 +126,10 @@ function AlertItem({ alert, onDelete }: AlertItemProps) {
 
 export default function AlertMain() {
   const alertSwr = useAlerts(50);
-  const [deletedAlerts, setDeletedAlerts] = useState<Set<string>>(new Set());
 
   // 데이터 처리
   const alerts = alertSwr.data?.flatMap((issue) => issue.items) ?? [];
-  const filteredAlerts = alerts.filter((alert) => !deletedAlerts.has(`${alert.id}`));
-
   const isReachedEnd = alertSwr.data && alertSwr.data.length > 0 && alertSwr.data[alertSwr.data.length - 1].items.length === 0;
-
   const isLoading = !isReachedEnd && (alertSwr.isLoading || (alertSwr.data && alertSwr.size > 0 && typeof alertSwr.data[alertSwr.size - 1] === "undefined"));
 
   // 무한 스크롤
@@ -151,13 +145,7 @@ export default function AlertMain() {
     }
   }, [isReachingEnd, isLoading, isReachedEnd]);
 
-  const handleDeleteAlert = (alert: any) => {
-    const alertId = alert.id || alert.message;
-    setDeletedAlerts((prev) => new Set([...prev, alertId]));
-
-    // 실제 삭제 API 호출이 필요하다면 여기에 추가
-    // deleteAlert(alertId)
-  };
+  const handleDeleteAlert = () => {};
 
   return (
     <div className="relative w-full">
@@ -165,7 +153,7 @@ export default function AlertMain() {
       <div className="sticky top-0 backdrop-blur-md border-b border-gray-200 px-4 py-4 z-10">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-gray-900">알림</h1>
-          <span className="text-sm text-gray-500">{filteredAlerts.filter((alert) => !alert.is_read).length}개의 새 알림</span>
+          <span className="text-sm text-gray-500">{alerts.filter((alert) => !alert.is_read).length}개의 새 알림</span>
         </div>
       </div>
 
@@ -176,7 +164,7 @@ export default function AlertMain() {
 
       {/* Alerts list */}
       <div className="pt-4 pb-20">
-        {filteredAlerts.length === 0 && !isLoading ? (
+        {alerts.length === 0 && !isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 px-4">
             <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-4">
               <Bell className="w-8 h-8 text-gray-400" />
@@ -186,7 +174,7 @@ export default function AlertMain() {
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
-            {filteredAlerts.map((alert, idx) => (
+            {alerts.map((alert, idx) => (
               <AlertItem key={alert.id || `${alert.message}-${idx}`} alert={alert} onDelete={handleDeleteAlert} />
             ))}
           </AnimatePresence>
