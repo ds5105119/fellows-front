@@ -3,7 +3,7 @@ import type { Session } from "next-auth";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LinkIcon, Loader2, RefreshCw, Home, Search } from "lucide-react";
+import { ArrowLeft, LinkIcon, Loader2, RefreshCw } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
 import { useProject, updateProject, acceptInviteProjectGroup } from "@/hooks/fetch/project";
 import { updateERPNextProjectSchema, type UserERPNextProject } from "@/@types/service/project";
