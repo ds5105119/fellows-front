@@ -1,21 +1,22 @@
 "use client";
 
-import { useAlerts } from "@/hooks/fetch/alert";
+import { deleteAlert, useAlerts } from "@/hooks/fetch/alert";
 import { useEffect, useRef, useState } from "react";
 import { useInView, motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { Bell, X, Eye } from "lucide-react";
+import { Bell, X, ExternalLinkIcon } from "lucide-react";
 import dayjs from "@/lib/dayjs";
 import type { AlertDto } from "@/@types/accounts/alert";
+import { useRouter } from "next/navigation";
 
 interface AlertItemProps {
   alert: AlertDto;
   onDelete: (alert: AlertDto) => void;
-  onRead: (alert: AlertDto) => void;
+  onOpen: (alert: AlertDto) => void;
 }
 
-function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
+function AlertItem({ alert, onDelete, onOpen }: AlertItemProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [swipeState, setSwipeState] = useState<"none" | "delete" | "read">("none");
+  const [swipeState, setSwipeState] = useState<"none" | "delete" | "open">("none");
   const x = useMotionValue(0);
 
   // 버튼이 나타나는 임계점
@@ -37,7 +38,7 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
     if (currentX < -BUTTON_THRESHOLD) {
       setSwipeState("delete");
     } else if (currentX > BUTTON_THRESHOLD) {
-      setSwipeState("read");
+      setSwipeState("open");
     } else {
       setSwipeState("none");
     }
@@ -52,7 +53,7 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
       onDelete(alert);
       return;
     } else if (currentX > AUTO_ACTION_THRESHOLD) {
-      onRead(alert);
+      onOpen(alert);
       return;
     }
 
@@ -62,7 +63,7 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
       setSwipeState("delete");
     } else if (currentX > BUTTON_THRESHOLD) {
       x.set(BUTTON_THRESHOLD);
-      setSwipeState("read");
+      setSwipeState("open");
     } else {
       // 임계점을 넘지 않으면 원래 위치로
       x.set(0);
@@ -74,8 +75,8 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
     onDelete(alert);
   };
 
-  const handleReadClick = () => {
-    onRead(alert);
+  const handleOpenClick = () => {
+    onOpen(alert);
   };
 
   // 다른 곳을 터치하면 원래 위치로 복귀
@@ -117,14 +118,14 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
       <motion.div className="absolute inset-0 rounded-2xl flex items-center justify-start" style={{ opacity: readOpacity }}>
         <motion.button
           className="flex items-center justify-center w-18 h-full bg-blue-50/70 rounded-2xl backdrop-blur-xl drop-shadow-2xl drop-shadow-black/10"
-          onClick={handleReadClick}
+          onClick={handleOpenClick}
           whileTap={{ scale: 0.95 }}
           animate={{
-            scale: swipeState === "read" ? 1 : 0.8,
-            opacity: swipeState === "read" ? 1 : 0.7,
+            scale: swipeState === "open" ? 1 : 0.8,
+            opacity: swipeState === "open" ? 1 : 0.7,
           }}
         >
-          <Eye className="w-6 h-6 text-blue-500" />
+          <ExternalLinkIcon className="w-6 h-6 text-blue-500" />
         </motion.button>
       </motion.div>
 
@@ -182,6 +183,7 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
 
 export default function AlertMain() {
   const alertSwr = useAlerts(50);
+  const router = useRouter();
 
   // 데이터 처리
   const alerts = alertSwr.data?.flatMap((issue) => issue.items) ?? [];
@@ -201,18 +203,16 @@ export default function AlertMain() {
     }
   }, [isReachingEnd, isLoading, isReachedEnd]);
 
-  const handleDeleteAlert = (alert: AlertDto) => {
-    // 삭제 로직 구현
-    console.log("Delete alert:", alert);
+  const handleDeleteAlert = async (alert: AlertDto) => {
+    await deleteAlert(`${alert.id}`);
   };
 
-  const handleReadAlert = (alert: AlertDto) => {
-    // 읽음 처리 로직 구현
-    console.log("Mark as read:", alert);
+  const handleOpenAlert = (alert: AlertDto) => {
+    router.push(alert.link);
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full overflow-x-hidden">
       {/* Header */}
       <div className="sticky top-0 backdrop-blur-md border-b border-gray-200 px-4 py-4 z-10">
         <div className="flex items-center justify-between">
@@ -239,7 +239,7 @@ export default function AlertMain() {
         ) : (
           <AnimatePresence mode="popLayout">
             {alerts.map((alert, idx) => (
-              <AlertItem key={alert.id || `${alert.message}-${idx}`} alert={alert} onDelete={handleDeleteAlert} onRead={handleReadAlert} />
+              <AlertItem key={alert.id || `${alert.message}-${idx}`} alert={alert} onDelete={handleDeleteAlert} onOpen={handleOpenAlert} />
             ))}
           </AnimatePresence>
         )}
@@ -248,9 +248,9 @@ export default function AlertMain() {
         {isLoading && (
           <div className="flex justify-center py-8">
             <div className="flex space-x-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" />
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+              <div className="size-1.5 bg-zinc-500 rounded-full animate-bounce" />
+              <div className="size-1.5 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
+              <div className="size-1.5 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
             </div>
           </div>
         )}
