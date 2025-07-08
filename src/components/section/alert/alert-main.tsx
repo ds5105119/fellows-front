@@ -2,7 +2,7 @@
 
 import { useAlerts } from "@/hooks/fetch/alert";
 import { useEffect, useRef, useState } from "react";
-import { useInView, motion, AnimatePresence, type PanInfo, useMotionValue, useTransform } from "framer-motion";
+import { useInView, motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { Bell, X, Eye } from "lucide-react";
 import dayjs from "@/lib/dayjs";
 import type { AlertDto } from "@/@types/accounts/alert";
