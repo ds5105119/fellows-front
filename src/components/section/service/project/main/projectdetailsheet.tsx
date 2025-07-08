@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LinkIcon, Loader2, RefreshCw, Home, Search } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
-import { useProject, updateProject } from "@/hooks/fetch/project";
+import { useProject, updateProject, acceptInviteProjectGroup } from "@/hooks/fetch/project";
 import { updateERPNextProjectSchema, type UserERPNextProject } from "@/@types/service/project";
 import { cn } from "@/lib/utils";
 // 분리된 컴포넌트들 import
@@ -27,8 +27,7 @@ interface ProjectDetailSheetProps {
   session: Session;
 }
 
-// 애플 스타일 404 컴포넌트
-function Apple404({ onClose, onRetry }: { onClose: () => void; onRetry: () => void }) {
+function Project404({ onClose, onRetry }: { onClose: () => void; onRetry: () => void }) {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 relative overflow-hidden">
       {/* 메인 콘텐츠 */}
@@ -63,8 +62,7 @@ function Apple404({ onClose, onRetry }: { onClose: () => void; onRetry: () => vo
   );
 }
 
-// 애플 스타일 로딩 컴포넌트
-function AppleLoading() {
+function ProjectLoading() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center text-center text-xs space-y-1.5 text-muted-foreground">
       <Loader2 className="!size-6 animate-spin" />
@@ -83,6 +81,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const [activeMobileTab, setActiveMobileTab] = useState(0);
   const [activeTab1, setActiveTab1] = useState(0);
   const [activeTab2, setActiveTab2] = useState(0);
+  const [isInvited, setIsInvited] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // 탭 구성
@@ -150,6 +149,12 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     project.mutate();
   }, [project]);
 
+  const acceptInvite = useCallback(async () => {
+    console.log(project_id);
+    await acceptInviteProjectGroup(project_id);
+    project.mutate();
+  }, [project]);
+
   // 프로젝트 정보 반영
   useEffect(() => {
     setEditedProject(project.data);
@@ -176,27 +181,36 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     };
   }, [project.data, editedProject, isUpdating, autosave]);
 
+  useEffect(() => {
+    setIsInvited(project.data?.custom_team.filter((member) => member.member == session.sub)[0].level == 4);
+  }, [project.data, session.sub]);
+
   // 로딩 상태
-  if (project.isLoading) {
-    return <AppleLoading />;
+  if (!editedProject || !project.data || project.isLoading) {
+    return <ProjectLoading />;
   }
 
   // 에러 상태 (404)
-  if (!editedProject || !project.data || project.error) {
-    return <Apple404 onClose={onClose} onRetry={handleRetry} />;
+  if (project.error) {
+    return <Project404 onClose={onClose} onRetry={handleRetry} />;
   }
 
   return (
     <div className="flex flex-col w-full h-full overflow-y-auto md:overflow-hidden pb-12">
       {/* 초대된 프로젝트의 경우 */}
-      {project.data.custom_team.filter((member) => member.member == session.sub)[0].level == 4 && (
+      {isInvited && (
         <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black/20 backdrop-blur-xs z-50">
-          <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg shadow-md">
+          <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg">
             <p className="text-sm text-gray-700 mb-2">이 프로젝트는 초대된 프로젝트입니다.</p>
             <p className="text-xs text-gray-500 mb-4">초대를 수락하시겠습니까?</p>
-            <Button variant="outline" size="sm" onClick={onClose}>
-              닫기
-            </Button>
+            <div className="flex space-x-3">
+              <Button variant="default" size="sm" onClick={acceptInvite}>
+                수락
+              </Button>
+              <Button variant="secondary" size="sm" onClick={onClose}>
+                닫기
+              </Button>
+            </div>
           </div>
         </div>
       )}

@@ -25,13 +25,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
       credentials: "include",
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
-      return NextResponse.json({ error: data.message || "Failed to invite user" }, { status: response.status });
+      return NextResponse.json({ error: "Failed to invite user" }, { status: response.status });
     }
 
-    return NextResponse.json(data);
+    if (response.status === 204) {
+      return new NextResponse(null, { status: 204 });
+    }
+
+    return NextResponse.json({ success: true }, { status: response.status });
   } catch (error) {
     console.error("API error:", error);
     return NextResponse.json({ error: "Failed to process invitation" }, { status: 500 });
