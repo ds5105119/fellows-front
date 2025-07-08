@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { useInView, motion, AnimatePresence, type PanInfo, useMotionValue, useTransform } from "framer-motion";
 import { Bell, X, Eye } from "lucide-react";
 import dayjs from "@/lib/dayjs";
-import { useRouter } from "next/navigation";
 import type { AlertDto } from "@/@types/accounts/alert";
 
 interface AlertItemProps {
@@ -18,7 +17,6 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [swipeState, setSwipeState] = useState<"none" | "delete" | "read">("none");
   const x = useMotionValue(0);
-  const router = useRouter();
 
   // 버튼이 나타나는 임계점
   const BUTTON_THRESHOLD = 80;
@@ -45,7 +43,7 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
     }
   };
 
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+  const handleDragEnd = () => {
     setIsDragging(false);
     const currentX = x.get();
 
