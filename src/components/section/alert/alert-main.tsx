@@ -3,34 +3,89 @@
 import { useAlerts } from "@/hooks/fetch/alert";
 import { useEffect, useRef, useState } from "react";
 import { useInView, motion, AnimatePresence, type PanInfo, useMotionValue, useTransform } from "framer-motion";
-import { Bell, X, ExternalLink } from "lucide-react";
+import { Bell, X, Eye } from "lucide-react";
 import dayjs from "@/lib/dayjs";
-import { AlertDto } from "@/@types/accounts/alert";
+import { useRouter } from "next/navigation";
+import type { AlertDto } from "@/@types/accounts/alert";
 
 interface AlertItemProps {
   alert: AlertDto;
   onDelete: (alert: AlertDto) => void;
+  onRead: (alert: AlertDto) => void;
 }
 
-function AlertItem({ alert, onDelete }: AlertItemProps) {
+function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [swipeState, setSwipeState] = useState<"none" | "delete" | "read">("none");
   const x = useMotionValue(0);
+  const router = useRouter();
 
-  // x 값에 따른 삭제 배경 투명도 계산
-  const deleteOpacity = useTransform(x, [-100, 0, 100], [1, 0, 1]);
+  // 버튼이 나타나는 임계점
+  const BUTTON_THRESHOLD = 80;
+  // 자동 실행되는 임계점
+  const AUTO_ACTION_THRESHOLD = 150;
+
+  // x 값에 따른 배경 투명도 계산
+  const deleteOpacity = useTransform(x, [-BUTTON_THRESHOLD, 0], [1, 0]);
+  const readOpacity = useTransform(x, [0, BUTTON_THRESHOLD], [0, 1]);
 
   const handleDragStart = () => {
     setIsDragging(true);
   };
 
+  const handleDrag = () => {
+    const currentX = x.get();
+
+    if (currentX < -BUTTON_THRESHOLD) {
+      setSwipeState("delete");
+    } else if (currentX > BUTTON_THRESHOLD) {
+      setSwipeState("read");
+    } else {
+      setSwipeState("none");
+    }
+  };
+
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     setIsDragging(false);
+    const currentX = x.get();
 
-    // 스와이프 거리가 충분하면 삭제 (100px 이상)
-    if (Math.abs(info.offset.x) > 100) {
+    // 자동 실행 임계점을 넘으면 바로 실행
+    if (currentX < -AUTO_ACTION_THRESHOLD) {
       onDelete(alert);
+      return;
+    } else if (currentX > AUTO_ACTION_THRESHOLD) {
+      onRead(alert);
+      return;
     }
-    // 제자리로 돌아가기는 animate={{ x: 0 }}이 자동 처리
+
+    // 버튼 임계점을 넘으면 버튼 위치에 스냅
+    if (currentX < -BUTTON_THRESHOLD) {
+      x.set(-BUTTON_THRESHOLD);
+      setSwipeState("delete");
+    } else if (currentX > BUTTON_THRESHOLD) {
+      x.set(BUTTON_THRESHOLD);
+      setSwipeState("read");
+    } else {
+      // 임계점을 넘지 않으면 원래 위치로
+      x.set(0);
+      setSwipeState("none");
+    }
+  };
+
+  const handleDeleteClick = () => {
+    onDelete(alert);
+  };
+
+  const handleReadClick = () => {
+    onRead(alert);
+  };
+
+  // 다른 곳을 터치하면 원래 위치로 복귀
+  const resetPosition = () => {
+    if (!isDragging && swipeState !== "none") {
+      x.set(0);
+      setSwipeState("none");
+    }
   };
 
   return (
@@ -43,10 +98,36 @@ function AlertItem({ alert, onDelete }: AlertItemProps) {
         x: x.get() > 0 ? 300 : -300,
         transition: { duration: 0.3 },
       }}
+      onTap={resetPosition}
     >
       {/* Delete background */}
       <motion.div className="absolute inset-0 bg-red-500 rounded-2xl flex items-center justify-end pr-6" style={{ opacity: deleteOpacity }}>
-        <X className="w-6 h-6 text-white" />
+        <motion.button
+          className="flex items-center justify-center w-16 h-16 bg-red-600 rounded-xl shadow-lg"
+          onClick={handleDeleteClick}
+          whileTap={{ scale: 0.95 }}
+          animate={{
+            scale: swipeState === "delete" ? 1 : 0.8,
+            opacity: swipeState === "delete" ? 1 : 0.7,
+          }}
+        >
+          <X className="w-6 h-6 text-white" />
+        </motion.button>
+      </motion.div>
+
+      {/* Read background */}
+      <motion.div className="absolute inset-0 bg-blue-500 rounded-2xl flex items-center justify-start pl-6" style={{ opacity: readOpacity }}>
+        <motion.button
+          className="flex items-center justify-center w-16 h-16 bg-blue-600 rounded-xl shadow-lg"
+          onClick={handleReadClick}
+          whileTap={{ scale: 0.95 }}
+          animate={{
+            scale: swipeState === "read" ? 1 : 0.8,
+            opacity: swipeState === "read" ? 1 : 0.7,
+          }}
+        >
+          <Eye className="w-6 h-6 text-white" />
+        </motion.button>
       </motion.div>
 
       {/* Alert card */}
@@ -55,10 +136,12 @@ function AlertItem({ alert, onDelete }: AlertItemProps) {
         dragDirectionLock={true}
         dragElastic={0.1}
         dragMomentum={false}
+        dragConstraints={{ left: -AUTO_ACTION_THRESHOLD, right: AUTO_ACTION_THRESHOLD }}
         onDragStart={handleDragStart}
+        onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         style={{ x }}
-        animate={isDragging ? {} : { x: 0 }}
+        animate={isDragging ? {} : {}}
         transition={{
           type: "spring",
           stiffness: 400,
@@ -66,60 +149,51 @@ function AlertItem({ alert, onDelete }: AlertItemProps) {
           mass: 0.6,
         }}
         className={`
-          relative bg-white rounded-2xl p-4 glass border border-gray-100
-          ${!alert.is_read ? "bg-blue-50 border-blue-200" : ""}
+          relative bg-white/70 rounded-2xl p-4 backdrop-blur-xl drop-shadow-2xl drop-shadow-black/10
           ${isDragging ? "cursor-grabbing" : "cursor-grab"}
           transition-shadow duration-200
         `}
         whileDrag={{
-          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.1)",
+          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.15)",
         }}
       >
-        <div className="flex items-start space-x-3">
+        <div className="flex items-center space-x-3">
           {/* Icon */}
           <div
             className={`
-            flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
+            flex-shrink-0 size-12 rounded-lg flex items-center justify-center
             ${!alert.is_read ? "bg-blue-500" : "bg-gray-400"}
           `}
           >
-            <Bell className="w-5 h-5 text-white" />
+            <Bell className="!size-5 text-white" />
           </div>
 
           {/* Content */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 h-fit flex flex-col justify-center">
             <div className="flex items-center justify-between mb-1">
               <h3 className="text-sm font-semibold text-gray-900 truncate">알림</h3>
               <span className="text-xs text-gray-500 flex-shrink-0 ml-2">{dayjs(alert.created_at).fromNow()}</span>
             </div>
-
-            <p className="text-sm text-gray-700 leading-relaxed mb-2">{alert.message}</p>
-
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-400">{dayjs(alert.created_at).format("YYYY년 M월 D일 HH:mm")}</span>
-
-              {alert.link && (
-                <button className="text-blue-500 hover:text-blue-600 transition-colors" onClick={() => window.open(alert.link, "_blank")}>
-                  <ExternalLink className="w-4 h-4" />
-                </button>
-              )}
-            </div>
+            <p className="text-sm text-gray-700 leading-relaxed">{alert.message}</p>
           </div>
-
-          {/* Unread indicator */}
-          {!alert.is_read && <div className="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2" />}
         </div>
-
-        {/* Swipe hint - 50px 이상 드래그했을 때만 표시 */}
-        <motion.div
-          className="absolute top-1/2 right-4 transform -translate-y-1/2 text-red-500 text-xs font-medium pointer-events-none"
-          style={{
-            opacity: useTransform(x, [-100, -50, 0, 50, 100], [1, 1, 0, 1, 1]),
-          }}
-        >
-          놓아서 삭제
-        </motion.div>
       </motion.div>
+
+      {/* Swipe indicator */}
+      {swipeState !== "none" && (
+        <motion.div
+          className="absolute -bottom-2 left-1/2 transform -translate-x-1/2"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+        >
+          <div className="bg-black/20 backdrop-blur-sm rounded-full px-3 py-1">
+            <span className="text-xs text-white">
+              {swipeState === "delete" ? "삭제하려면 더 밀거나 버튼을 누르세요" : "읽음 처리하려면 더 밀거나 버튼을 누르세요"}
+            </span>
+          </div>
+        </motion.div>
+      )}
     </motion.div>
   );
 }
@@ -145,7 +219,15 @@ export default function AlertMain() {
     }
   }, [isReachingEnd, isLoading, isReachedEnd]);
 
-  const handleDeleteAlert = () => {};
+  const handleDeleteAlert = (alert: AlertDto) => {
+    // 삭제 로직 구현
+    console.log("Delete alert:", alert);
+  };
+
+  const handleReadAlert = (alert: AlertDto) => {
+    // 읽음 처리 로직 구현
+    console.log("Mark as read:", alert);
+  };
 
   return (
     <div className="relative w-full">
@@ -158,8 +240,8 @@ export default function AlertMain() {
       </div>
 
       {/* Instructions */}
-      <div className="mx-4 mt-4 bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-gray-200">
-        <p className="text-xs text-gray-600 text-center">💡 알림을 좌우로 밀어서 삭제할 수 있습니다</p>
+      <div className="mx-4 mt-4 bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg">
+        <p className="text-xs text-gray-600 text-center">💡 왼쪽으로 밀면 삭제, 오른쪽으로 밀면 읽음 처리</p>
       </div>
 
       {/* Alerts list */}
@@ -175,7 +257,7 @@ export default function AlertMain() {
         ) : (
           <AnimatePresence mode="popLayout">
             {alerts.map((alert, idx) => (
-              <AlertItem key={alert.id || `${alert.message}-${idx}`} alert={alert} onDelete={handleDeleteAlert} />
+              <AlertItem key={alert.id || `${alert.message}-${idx}`} alert={alert} onDelete={handleDeleteAlert} onRead={handleReadAlert} />
             ))}
           </AnimatePresence>
         )}

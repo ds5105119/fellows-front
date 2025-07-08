@@ -29,3 +29,26 @@ export const useAlerts = (size?: number) => {
     initialSize: 2,
   });
 };
+
+// UPDATE
+
+export const markAlertAsRead = async (alertId: string[]) => {
+  const searchParams = new URLSearchParams();
+  alertId.forEach((alert) => searchParams.append("alert_id", alert));
+
+  const res = await fetch(`/api/user/alert/read/${searchParams.toString()}`, {
+    method: "POST",
+  });
+  if (!res.ok) throw new Error("Failed to mark alert as read");
+  return res.json();
+};
+
+// DELETE
+
+export const deleteAlert = async (alertId: string) => {
+  const res = await fetch(`/api/user/alert/${alertId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete alert");
+  return res.json();
+};
