@@ -37,7 +37,7 @@ const features = [
   {
     header: (
       <>
-        <p className="text-base font-bold">실시간 태스크 관리</p>
+        <p className="text-foreground text-base font-bold">실시간 태스크 관리</p>
         <p className="text-foreground leading-normal">
           할당된 업무를 한눈에
           <br />
@@ -144,8 +144,8 @@ const features = [
   {
     header: (
       <>
-        <p className="text-base font-bold">팀원 관리</p>
-        <p className="text-foreground leading-normal">
+        <p className="text-background text-base font-bold">팀원 관리</p>
+        <p className="text-background leading-normal">
           팀원과 함께 업무 과정,
           <br />
           권한을 체계적으로 관리하세요
@@ -162,8 +162,8 @@ const features = [
   {
     header: (
       <>
-        <p className="text-base font-bold">이슈 트래킹</p>
-        <p className="text-foreground leading-normal">
+        <p className="text-background text-base font-bold">이슈 트래킹</p>
+        <p className="text-background leading-normal">
           문제 발생부터 해결까지
           <br />
           모든 과정을 투명하게
@@ -476,7 +476,7 @@ function TeamMembersSection() {
 
 const Cell = ({ header, children, background }: { header?: ReactNode; children?: ReactNode; background?: ReactNode | string }) => {
   return (
-    <CarouselItem className="basis-[96%] md:basis-[54%] lg:basis-[32%] xl:basis-[26%]">
+    <CarouselItem className="basis-[96%] md:basis-[54%] lg:basis-[32%] xl:basis-[27%]">
       <div
         className={cn(
           "aspect-[9/16] relative w-full rounded-3xl overflow-hidden select-none",
