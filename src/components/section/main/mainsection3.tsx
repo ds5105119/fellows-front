@@ -8,10 +8,10 @@ import Autoplay from "embla-carousel-autoplay";
 import { MeshGradientComponent } from "@/components/resource/meshgradient";
 import Image from "next/image";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
-import { AlertTriangle, CalendarIcon, CheckCircle2, Clock, SettingsIcon, TrendingUp, UserIcon, Crown, Shield, Edit3, UserPlus, Users } from "lucide-react";
+import { AlertTriangle, CalendarIcon, CheckCircle2, Clock, SettingsIcon, TrendingUp, UserIcon, Crown, Shield, Edit3, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { AnimatePresence, motion, useAnimation, useInView, Variant } from "framer-motion";
+import { AnimatePresence, motion, useAnimation, useInView } from "framer-motion";
 
 const features = [
   {
