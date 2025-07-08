@@ -1,13 +1,17 @@
 "use client";
 
-import { ReactNode, useEffect, useState, useRef } from "react";
+import { type ReactNode, useEffect, useState, useRef } from "react";
+import type React from "react";
 import { cn } from "@/lib/utils";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { MeshGradientComponent } from "@/components/resource/meshgradient";
 import Image from "next/image";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
-import { AlertTriangle, CalendarIcon, CheckCircle2, Clock, FileText, MessageSquare, SettingsIcon, TrendingUp, UserIcon, Zap } from "lucide-react";
+import { AlertTriangle, CalendarIcon, CheckCircle2, Clock, SettingsIcon, TrendingUp, UserIcon, Crown, Shield, Edit3, UserPlus, Users } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { AnimatePresence, motion, useAnimation, useInView, Variant } from "framer-motion";
 
 const features = [
   {
@@ -58,7 +62,7 @@ const features = [
         </div>
 
         {/* 태스크 카드들 */}
-        <div className="absolute bottom-4 left-4 right-4 space-y-2">
+        <div className="absolute bottom-4 left-4 right-4 space-y-3">
           <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
@@ -140,11 +144,11 @@ const features = [
   {
     header: (
       <>
-        <p className="text-base font-bold">이슈 트래킹</p>
+        <p className="text-base font-bold">팀원 관리</p>
         <p className="text-foreground leading-normal">
-          문제 발생부터 해결까지
+          팀원과 함께 업무 과정,
           <br />
-          모든 과정을 투명하게
+          권한을 체계적으로 관리하세요
         </p>
       </>
     ),
@@ -153,6 +157,20 @@ const features = [
         <MeshGradientComponent className="opacity-100" colors={["#be73ff", "rgb(255, 90, 214)", "#ff2323", "#ff9849"]} />
       </div>
     ),
+    children: <TeamMembersSection />,
+  },
+  {
+    header: (
+      <>
+        <p className="text-base font-bold">이슈 트래킹</p>
+        <p className="text-foreground leading-normal">
+          문제 발생부터 해결까지
+          <br />
+          모든 과정을 투명하게
+        </p>
+      </>
+    ),
+    background: "bg-gradient-to-t from-emerald-500/80 via-emerald-500/70 to-teal-500/80 brightness-90",
     children: (
       <div className="absolute inset-0">
         {/* 이슈 통계 */}
@@ -176,7 +194,7 @@ const features = [
         </div>
 
         {/* 이슈 카드들 */}
-        <div className="absolute bottom-4 left-4 right-4 space-y-2">
+        <div className="absolute bottom-4 left-4 right-4 space-y-3">
           <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
@@ -235,78 +253,194 @@ const features = [
       </div>
     ),
   },
-  {
-    header: (
-      <>
-        <p className="text-base font-bold">실시간 알림</p>
-        <p className="text-foreground leading-normal">
-          중요한 업데이트를
-          <br />
-          놓치지 마세요
-        </p>
-      </>
-    ),
-    background: "bg-gradient-to-t from-emerald-500/80 via-emerald-500/70 to-teal-500/80 brightness-90",
-    children: (
-      <div className="absolute inset-0">
-        {/* 알림 목록 */}
-        <div className="absolute bottom-4 left-4 right-4 space-y-2">
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-            <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <CheckCircle2 className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800">프로젝트 승인 완료</p>
-                <p className="text-xs text-gray-600 mt-1">모바일 앱 개발 프로젝트가 승인되었습니다</p>
-                <span className="text-xs text-gray-500">방금 전</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-            <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <FileText className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800">새 태스크 할당됨</p>
-                <p className="text-xs text-gray-600 mt-1">김개발님이 API 문서 작성 태스크를 할당했습니다</p>
-                <span className="text-xs text-gray-500">5분 전</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-            <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <MessageSquare className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800">새 댓글 알림</p>
-                <p className="text-xs text-gray-600 mt-1">이디자인님이 댓글을 남겼습니다</p>
-                <span className="text-xs text-gray-500">10분 전</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-            <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <Zap className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800">마감일 임박</p>
-                <p className="text-xs text-gray-600 mt-1">UI 디자인 수정 태스크 마감까지 2일 남았습니다</p>
-                <span className="text-xs text-gray-500">1시간 전</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    ),
-  },
 ];
+
+function TeamMembersSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, {
+    once: true,
+    margin: "-50px",
+    amount: 0.2,
+  });
+
+  const [visibleMembers, setVisibleMembers] = useState(0);
+  const buttonControls = useAnimation();
+
+  // 팀원 데이터
+  const teamMembers = [
+    {
+      id: "owner",
+      name: "김재현 (나)",
+      email: "kim@company.com",
+      avatar: "/teams-avatar-1.png",
+      fallback: "김",
+      role: "소유자",
+      icon: Crown,
+      iconColor: "text-yellow-600",
+      badgeVariant: "destructive" as const,
+    },
+    {
+      id: "admin",
+      name: "이태영",
+      email: "lee@company.com",
+      avatar: "/teams-avatar-2.png",
+      fallback: "이",
+      role: "관리자",
+      icon: Shield,
+      iconColor: "text-blue-600",
+      badgeVariant: "secondary" as const,
+    },
+    {
+      id: "editor",
+      name: "박소희",
+      email: "park@company.com",
+      avatar: "/teams-avatar-3.png",
+      fallback: "박",
+      role: "편집/읽기",
+      icon: Edit3,
+      iconColor: "text-green-600",
+      badgeVariant: "default" as const,
+    },
+    {
+      id: "reader",
+      name: "최민수",
+      email: "choi@company.com",
+      avatar: "/teams-avatar-1.png",
+      fallback: "최",
+      role: "읽기",
+      icon: Edit3,
+      iconColor: "text-gray-600",
+      badgeVariant: "outline" as const,
+    },
+  ];
+
+  // 순차적으로 팀원 표시
+  useEffect(() => {
+    if (isInView) {
+      // 처음에는 소유자만 표시
+      setVisibleMembers(1);
+
+      // 0.8초 후부터 0.6초 간격으로 팀원 추가
+      const timers = teamMembers.slice(1).map((_, index) => {
+        return setTimeout(() => {
+          setVisibleMembers((prev) => prev + 1);
+        }, 800 + index * 600);
+      });
+
+      return () => {
+        timers.forEach((timer) => clearTimeout(timer));
+      };
+    }
+  }, [isInView]);
+
+  // 팀원이 추가될 때마다 버튼 누르는 애니메이션
+  useEffect(() => {
+    if (visibleMembers > 1) {
+      // 팀원이 추가될 때마다 버튼 누르는 효과
+      buttonControls.start({
+        scale: [1, 0.9, 1],
+        transition: {
+          duration: 0.2,
+          ease: "easeInOut",
+        },
+      });
+    }
+  }, [visibleMembers, buttonControls]);
+
+  // 멤버 카드 애니메이션
+  const memberVariants = {
+    hidden: {
+      opacity: 0,
+      y: 100,
+      scale: 0.8,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring" as const,
+        stiffness: 200,
+        damping: 20,
+        duration: 0.8,
+      },
+    },
+  };
+
+  // 기존 멤버들이 위로 밀려나는 애니메이션
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  return (
+    <div className="absolute inset-0" ref={ref}>
+      {/* 팀원 목록 컨테이너 */}
+      <div className="absolute bottom-4 left-4 right-4">
+        <motion.div className="space-y-3" variants={containerVariants} initial="hidden" animate="visible">
+          <AnimatePresence mode="sync">
+            {teamMembers.slice(0, visibleMembers).map((member, index) => {
+              const IconComponent = member.icon;
+              return (
+                <motion.div
+                  key={member.id}
+                  className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20"
+                  variants={memberVariants}
+                  initial="hidden"
+                  animate="visible"
+                  layout
+                  layoutId={member.id}
+                  style={{
+                    zIndex: teamMembers.length - index,
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src={member.avatar || "/placeholder.svg"} />
+                        <AvatarFallback>{member.fallback}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">{member.name}</p>
+                        <p className="text-xs text-gray-600">{member.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <IconComponent className={`w-3 h-3 ${member.iconColor}`} />
+                      <Badge variant={member.badgeVariant} className="text-xs">
+                        {member.role}
+                      </Badge>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+
+          {/* 팀원 초대 버튼 - 고정 위치, 팀원 추가시마다 누르는 효과 */}
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <motion.div
+              className="flex items-center justify-center space-x-2 text-emerald-700 cursor-pointer"
+              animate={buttonControls}
+              whileHover={{
+                scale: 1.02,
+                transition: { type: "spring", stiffness: 400, damping: 10 },
+              }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <UserPlus className="w-4 h-4" />
+              <span className="text-sm font-medium">새 팀원 초대하기</span>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
 
 const Cell = ({ header, children, background }: { header?: ReactNode; children?: ReactNode; background?: ReactNode | string }) => {
   return (
@@ -542,6 +676,20 @@ export default function MainSection3() {
           </div>
         </div>
       </Carousel>
+
+      <div className="col-span-full flex flex-col space-y-4 md:space-y-6 py-10 lg:py-24 px-8 lg:px-16 xl:px-36 w-full pb-12 lg:pb-16">
+        <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
+          <h4 className="text-xl md:text-3xl font-extrabold text-foreground">
+            프로젝트 관리도 한 곳에서
+            <br />
+            불투명한 외주 작업으로 스트레스는 그만.
+          </h4>
+        </div>
+
+        <AspectRatio ratio={3240 / 1616} className="mt-6 lg:mt-8 rounded-3xl overflow-hidden">
+          <Image src="/main-section-3-1.png" alt="feature1" className="object-cover" fill />
+        </AspectRatio>
+      </div>
     </div>
   );
 }
