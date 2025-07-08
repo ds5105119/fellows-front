@@ -21,7 +21,7 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
   // 버튼이 나타나는 임계점
   const BUTTON_THRESHOLD = 80;
   // 자동 실행되는 임계점
-  const AUTO_ACTION_THRESHOLD = 150;
+  const AUTO_ACTION_THRESHOLD = 200;
 
   // x 값에 따른 배경 투명도 계산
   const deleteOpacity = useTransform(x, [-BUTTON_THRESHOLD, 0], [1, 0]);
@@ -99,9 +99,9 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
       onTap={resetPosition}
     >
       {/* Delete background */}
-      <motion.div className="absolute inset-0 bg-red-500 rounded-2xl flex items-center justify-end pr-6" style={{ opacity: deleteOpacity }}>
+      <motion.div className="absolute inset-0 rounded-2xl flex items-center justify-end" style={{ opacity: deleteOpacity }}>
         <motion.button
-          className="flex items-center justify-center w-16 h-16 bg-red-600 rounded-xl shadow-lg"
+          className="flex items-center justify-center w-18 h-full bg-red-50/70 rounded-2xl backdrop-blur-xl drop-shadow-2xl drop-shadow-black/10"
           onClick={handleDeleteClick}
           whileTap={{ scale: 0.95 }}
           animate={{
@@ -109,14 +109,14 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
             opacity: swipeState === "delete" ? 1 : 0.7,
           }}
         >
-          <X className="w-6 h-6 text-white" />
+          <X className="w-6 h-6 text-red-500" />
         </motion.button>
       </motion.div>
 
       {/* Read background */}
-      <motion.div className="absolute inset-0 bg-blue-500 rounded-2xl flex items-center justify-start pl-6" style={{ opacity: readOpacity }}>
+      <motion.div className="absolute inset-0 rounded-2xl flex items-center justify-start" style={{ opacity: readOpacity }}>
         <motion.button
-          className="flex items-center justify-center w-16 h-16 bg-blue-600 rounded-xl shadow-lg"
+          className="flex items-center justify-center w-18 h-full bg-blue-50/70 rounded-2xl backdrop-blur-xl drop-shadow-2xl drop-shadow-black/10"
           onClick={handleReadClick}
           whileTap={{ scale: 0.95 }}
           animate={{
@@ -124,7 +124,7 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
             opacity: swipeState === "read" ? 1 : 0.7,
           }}
         >
-          <Eye className="w-6 h-6 text-white" />
+          <Eye className="w-6 h-6 text-blue-500" />
         </motion.button>
       </motion.div>
 
@@ -176,22 +176,6 @@ function AlertItem({ alert, onDelete, onRead }: AlertItemProps) {
           </div>
         </div>
       </motion.div>
-
-      {/* Swipe indicator */}
-      {swipeState !== "none" && (
-        <motion.div
-          className="absolute -bottom-2 left-1/2 transform -translate-x-1/2"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-        >
-          <div className="bg-black/20 backdrop-blur-sm rounded-full px-3 py-1">
-            <span className="text-xs text-white">
-              {swipeState === "delete" ? "삭제하려면 더 밀거나 버튼을 누르세요" : "읽음 처리하려면 더 밀거나 버튼을 누르세요"}
-            </span>
-          </div>
-        </motion.div>
-      )}
     </motion.div>
   );
 }
