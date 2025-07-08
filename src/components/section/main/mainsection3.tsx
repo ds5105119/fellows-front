@@ -486,7 +486,7 @@ const Cell = ({ header, children, background }: { header?: ReactNode; children?:
       >
         <div className="w-full h-full flex items-end justify-center"></div>
         <div className="absolute top-6 left-6 right-6 md:top-8 md:left-8 md:right-8 flex flex-col space-y-1.5">
-          <div className="flex flex-col space-y-2 text-xl xl:text-2xl font-extrabold tracking-normal">{header}</div>
+          <div className="flex flex-col space-y-1.5 text-xl xl:text-2xl font-extrabold tracking-normal">{header}</div>
         </div>
         {children}
         {typeof background !== "string" && typeof background !== "undefined" && background}
