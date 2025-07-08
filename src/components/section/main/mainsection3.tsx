@@ -170,7 +170,7 @@ const features = [
         </p>
       </>
     ),
-    background: "bg-gradient-to-t from-emerald-500/80 via-emerald-500/70 to-teal-500/80 brightness-90",
+    background: "bg-gradient-to-t from-emerald-500/80 via-emerald-500/70 to-teal-500/80",
     children: (
       <div className="absolute inset-0">
         {/* 이슈 통계 */}
@@ -314,21 +314,45 @@ function TeamMembersSection() {
     },
   ];
 
-  // 순차적으로 팀원 표시
+  // 팀원 추가 애니메이션 함수
+  const startTeamAnimation = () => {
+    // 처음에는 소유자만 표시
+    setVisibleMembers(1);
+
+    // 0.8초 후부터 0.6초 간격으로 팀원 추가
+    const timers = teamMembers.slice(1).map((_, index) => {
+      return setTimeout(() => {
+        setVisibleMembers((prev) => prev + 1);
+      }, 800 + index * 600);
+    });
+
+    return timers;
+  };
+
+  // 무한 반복 애니메이션
   useEffect(() => {
     if (isInView) {
-      // 처음에는 소유자만 표시
-      setVisibleMembers(1);
+      // 첫 번째 애니메이션 시작
+      let timers = startTeamAnimation();
 
-      // 0.8초 후부터 0.6초 간격으로 팀원 추가
-      const timers = teamMembers.slice(1).map((_, index) => {
-        return setTimeout(() => {
-          setVisibleMembers((prev) => prev + 1);
-        }, 800 + index * 600);
-      });
+      // 1분(60초)마다 애니메이션 반복
+      const infiniteInterval = setInterval(() => {
+        // 기존 타이머들 정리
+        timers.forEach((timer) => clearTimeout(timer));
+
+        // 팀원 수를 0으로 리셋 (모든 팀원 사라짐)
+        setVisibleMembers(0);
+
+        // 0.5초 후 새로운 애니메이션 시작
+        setTimeout(() => {
+          timers = startTeamAnimation();
+        }, 500);
+      }, 20000);
 
       return () => {
+        // 컴포넌트 언마운트 시 모든 타이머 정리
         timers.forEach((timer) => clearTimeout(timer));
+        clearInterval(infiniteInterval);
       };
     }
   }, [isInView]);
@@ -392,6 +416,14 @@ function TeamMembersSection() {
                   variants={memberVariants}
                   initial="hidden"
                   animate="visible"
+                  exit={{
+                    opacity: 0,
+                    y: -50,
+                    scale: 0.9,
+                    transition: {
+                      duration: 0.3,
+                    },
+                  }}
                   layout
                   layoutId={member.id}
                   style={{
