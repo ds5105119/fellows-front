@@ -1,16 +1,13 @@
 "use client";
-
 import type { Session } from "next-auth";
-
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LinkIcon, Loader2 } from "lucide-react";
+import { ArrowLeft, LinkIcon, Loader2, RefreshCw, Home, Search } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
 import { useProject, updateProject } from "@/hooks/fetch/project";
-import { updateERPNextProjectSchema, UserERPNextProject } from "@/@types/service/project";
+import { updateERPNextProjectSchema, type UserERPNextProject } from "@/@types/service/project";
 import { cn } from "@/lib/utils";
-
 // 분리된 컴포넌트들 import
 import { CustomerInfo } from "./customer-info";
 import { FilesList } from "./files-list";
@@ -30,6 +27,52 @@ interface ProjectDetailSheetProps {
   session: Session;
 }
 
+// 애플 스타일 404 컴포넌트
+function Apple404({ onClose, onRetry }: { onClose: () => void; onRetry: () => void }) {
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 relative overflow-hidden">
+      {/* 메인 콘텐츠 */}
+      <div className="relative z-10 flex flex-col items-center text-center max-w-md mx-auto px-6">
+        {/* 메시지 */}
+        <div className="mb-8 space-y-3">
+          <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">프로젝트를 찾을 수 없습니다</h1>
+          <p className="text-gray-600 leading-relaxed">요청하신 프로젝트가 삭제되었거나 접근 권한이 없습니다.</p>
+        </div>
+
+        {/* 액션 버튼들 */}
+        <div className="flex flex-col sm:flex-row gap-3 w-full">
+          <Button
+            onClick={onRetry}
+            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            다시 시도
+          </Button>
+
+          <Button
+            onClick={onClose}
+            variant="outline"
+            className="flex-1 bg-white/80 backdrop-blur-sm border-gray-200 hover:bg-white hover:border-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            돌아가기
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 애플 스타일 로딩 컴포넌트
+function AppleLoading() {
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center text-center text-xs space-y-1.5 text-muted-foreground">
+      <Loader2 className="!size-6 animate-spin" />
+      <p>로딩 중</p>
+    </div>
+  );
+}
+
 export default function ProjectDetailSheet({ project_id, onClose, session }: ProjectDetailSheetProps) {
   // State 관리
   const project = useProject(project_id);
@@ -42,17 +85,15 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const [activeTab2, setActiveTab2] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 데이터 페칭
-
   // 탭 구성
   const mobileTabs = [
     <div className="flex space-x-1 items-center" key="overview">
       <span>개요</span>
     </div>,
-    <div className="flex space-x-1 items-center" key="overview">
+    <div className="flex space-x-1 items-center" key="files">
       <span>파일</span>
     </div>,
-    <div className="flex space-x-1 items-center" key="overview">
+    <div className="flex space-x-1 items-center" key="teams">
       <span>팀원</span>
     </div>,
   ];
@@ -79,10 +120,10 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   );
 
   const tabs2 = [
-    <div className="flex space-x-1 items-center" key="overview">
+    <div className="flex space-x-1 items-center" key="files">
       <span>파일</span>
     </div>,
-    <div className="flex space-x-1 items-center" key="overview">
+    <div className="flex space-x-1 items-center" key="teams">
       <span>팀원</span>
     </div>,
   ];
@@ -94,7 +135,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     } catch {
       toast.error("프로젝트 번호 복사에 실패했습니다.");
     }
-  }, []);
+  }, [project_id]);
 
   const handleUpdateProject = async () => {
     if (editable) {
@@ -105,6 +146,10 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     }
   };
 
+  const handleRetry = useCallback(() => {
+    project.mutate();
+  }, [project]);
+
   // 프로젝트 정보 반영
   useEffect(() => {
     setEditedProject(project.data);
@@ -113,9 +158,8 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   // 프로젝트 자동 저장
   useEffect(() => {
     intervalRef.current = setInterval(async () => {
-      const original = JSON.stringify(project);
+      const original = JSON.stringify(project.data);
       const current = JSON.stringify(editedProject);
-
       if (original !== current && !isUpdating && autosave) {
         try {
           await handleUpdateProject();
@@ -130,15 +174,16 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         clearInterval(intervalRef.current);
       }
     };
-  }, [project, editedProject, isUpdating, autosave]);
+  }, [project.data, editedProject, isUpdating, autosave]);
 
-  if (!editedProject || !project.data) {
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center text-center text-xs space-y-1.5 text-muted-foreground">
-        <Loader2 className="!size-6 animate-spin" />
-        <p>로딩 중</p>
-      </div>
-    );
+  // 로딩 상태
+  if (project.isLoading) {
+    return <AppleLoading />;
+  }
+
+  // 에러 상태 (404)
+  if (!editedProject || !project.data || project.error) {
+    return <Apple404 onClose={onClose} onRetry={handleRetry} />;
   }
 
   return (
@@ -167,10 +212,10 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
           </Button>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none">
+          <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none bg-transparent">
             이용 가이드
           </Button>
-          <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none" asChild>
+          <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none bg-transparent" asChild>
             <Link href={`/service/project/task?project_id=${project_id}`}>작업 현황</Link>
           </Button>
         </div>
@@ -184,19 +229,14 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             <div className="pt-12 pb-5 px-8">
               <ProjectHeader project={editedProject} />
             </div>
-
             <div className="px-8 py-6">
               <ProjectBasicInfo project={editedProject} />
             </div>
-
             <ProjectStatus project={editedProject} session={session} setEditedProject={setEditedProject} />
-
             <div className="p-8">
               <ProjectDetails project={editedProject} setEditedProject={setEditedProject} />
             </div>
-
             <ProjectActions project={editedProject} />
-
             <div className="px-8 pt-1 pb-5">
               <ProjectNotices />
             </div>
@@ -218,7 +258,6 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
               )}
             </div>
           </div>
-
           <div className="w-full hidden md:block">
             {/* 일반 정보 탭 */}
             <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={setActiveTab2} />
@@ -234,7 +273,6 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         <div className="md:hidden col-span-full h-full flex flex-col overflow-x-hidden">
           {/* 모바일 탭 */}
           <Flattabs tabs={mobileTabs} activeTab={activeMobileTab} handleTabChange={setActiveMobileTab} />
-
           {/* 모바일 탭 콘텐츠 */}
           <div className="flex flex-col h-full w-full">
             {activeMobileTab === 0 && (
@@ -242,19 +280,14 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
                 <div className="pt-12 pb-5 px-4">
                   <ProjectHeader project={editedProject} />
                 </div>
-
                 <div className="px-4 py-6">
                   <ProjectBasicInfo project={editedProject} />
                 </div>
-
                 <ProjectStatus project={editedProject} session={session} setEditedProject={setEditedProject} />
-
                 <div className="p-4">
                   <ProjectDetails project={editedProject} setEditedProject={setEditedProject} />
                 </div>
-
                 <ProjectActions project={editedProject} />
-
                 <div className="px-4 pt-1 pb-5">
                   <ProjectNotices />
                 </div>
@@ -310,13 +343,13 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         )}
         {project.data.custom_project_status === "draft" ? (
           <div className="hidden md:flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-8 text-xs font-semibold rounded-sm border-gray-200 shadow-none">
+            <Button variant="outline" size="sm" className="h-8 text-xs font-semibold rounded-sm border-gray-200 shadow-none bg-transparent">
               이용 약관
             </Button>
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-8 text-xs font-semibold rounded-sm border-gray-200 shadow-none">
+            <Button variant="outline" size="sm" className="h-8 text-xs font-semibold rounded-sm border-gray-200 shadow-none bg-transparent">
               이용 약관
             </Button>
           </div>

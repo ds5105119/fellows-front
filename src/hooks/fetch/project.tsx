@@ -70,13 +70,17 @@ export const createProject = async (payload: CreateERPNextProject): Promise<User
 // --- READ (Single) ---
 export const useProject = (projectId: string | null): SWRResponse<UserERPNextProject> => {
   const url = projectId ? `${API_BASE_URL}/${projectId}` : null;
-  return useSWR(url, async (url: string) => {
-    try {
-      return userERPNextProjectSchema.parse(await fetcher(url));
-    } catch (error) {
-      throw error;
-    }
-  });
+  return useSWR(
+    url,
+    async (url: string) => {
+      try {
+        return userERPNextProjectSchema.parse(await fetcher(url));
+      } catch (error) {
+        throw error;
+      }
+    },
+    { shouldRetryOnError: false }
+  );
 };
 
 // --- READ (List) ---
