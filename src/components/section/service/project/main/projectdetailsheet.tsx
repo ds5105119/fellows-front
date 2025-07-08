@@ -81,7 +81,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const [activeMobileTab, setActiveMobileTab] = useState(0);
   const [activeTab1, setActiveTab1] = useState(0);
   const [activeTab2, setActiveTab2] = useState(0);
-  const [isInvited, setIsInvited] = useState(false);
+  const [level, setLevel] = useState(5);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // 탭 구성
@@ -182,7 +182,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   }, [project.data, editedProject, isUpdating, autosave]);
 
   useEffect(() => {
-    setIsInvited(project.data?.custom_team.filter((member) => member.member == session.sub)[0].level == 4);
+    setLevel(project.data?.custom_team.filter((member) => member.member == session.sub)[0].level ?? 5);
   }, [project.data, session.sub]);
 
   // 로딩 상태
@@ -198,7 +198,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   return (
     <div className="flex flex-col w-full h-full overflow-y-auto md:overflow-hidden pb-12">
       {/* 초대된 프로젝트의 경우 */}
-      {isInvited && (
+      {level == 4 && (
         <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black/20 backdrop-blur-xs z-50">
           <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg">
             <p className="text-sm text-gray-700 mb-2">이 프로젝트는 초대된 프로젝트입니다.</p>
@@ -236,7 +236,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
       </div>
 
       {/* 메인 콘텐츠 */}
-      <div className="grid grid-cols-1 md:grid-cols-5 md:overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-5 md:overflow-hidden overflow-x-hidden">
         {/* 데스크톱 왼쪽 패널 */}
         <div className="hidden md:block md:col-span-3 h-full overflow-y-auto scrollbar-hide border-r-1 border-b-sidebar-border">
           <div className="flex flex-col h-full w-full">
@@ -250,7 +250,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             <div className="p-8">
               <ProjectDetails project={editedProject} setEditedProject={setEditedProject} />
             </div>
-            <ProjectActions project={editedProject} />
+            {level < 2 && <ProjectActions project={editedProject} />}
             <div className="px-8 pt-1 pb-5">
               <ProjectNotices />
             </div>
@@ -258,7 +258,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         </div>
 
         {/* 데스크톱 오른쪽 패널 */}
-        <div className="flex flex-col md:col-span-2 h-full overflow-hidden">
+        <div className="hidden md:flex flex-col md:col-span-2 h-full overflow-hidden">
           <div className="w-full">
             {/* 상태 표시 탭 */}
             <Flattabs tabs={tabs1} activeTab={activeTab1} handleTabChange={setActiveTab1} />
@@ -284,7 +284,19 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         </div>
 
         {/* 모바일 전체 화면 탭 인터페이스 */}
-        <div className="md:hidden col-span-full h-full flex flex-col overflow-x-hidden">
+        <div className="md:hidden col-span-full h-full flex flex-col relative">
+          {/* 상태 표시 탭 */}
+          <Flattabs tabs={tabs1} activeTab={activeTab1} handleTabChange={setActiveTab1} />
+          {/* 탭 콘텐츠 */}
+          <div className="w-full bg-muted">
+            {activeTab1 === 0 && <CustomerInfo session={session} />}
+            {activeTab1 === 1 && (
+              <div className="px-6 py-4">
+                <p className="text-gray-600">문서 관련 내용이 여기에 표시됩니다.</p>
+              </div>
+            )}
+          </div>
+
           {/* 모바일 탭 */}
           <Flattabs tabs={mobileTabs} activeTab={activeMobileTab} handleTabChange={setActiveMobileTab} />
           {/* 모바일 탭 콘텐츠 */}
@@ -301,7 +313,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
                 <div className="p-4">
                   <ProjectDetails project={editedProject} setEditedProject={setEditedProject} />
                 </div>
-                <ProjectActions project={editedProject} />
+                {level < 2 && <ProjectActions project={editedProject} />}
                 <div className="px-4 pt-1 pb-5">
                   <ProjectNotices />
                 </div>
@@ -314,7 +326,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
       </div>
 
       {/* 시트 푸터 */}
-      <div className="absolute bottom-0 w-full flex items-center justify-between h-12 border-t-1 border-t-sidebar-border px-4 bg-zinc-50 z-20">
+      <div className="absolute bottom-0 w-full flex items-center justify-between h-12 border-t-1 border-t-sidebar-border px-4 bg-zinc-50 z-30">
         {project.data.custom_project_status === "draft" ? (
           <div className="flex items-center gap-3">
             <p className="text-xs font-semibold text-muted-foreground">
