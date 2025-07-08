@@ -138,9 +138,9 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
 
   if (!editedProject || !project.data) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center text-center text-sm space-y-2">
-        <Loader2 className="!size-6 text-muted animate-spin md:text-muted-foreground" />
-        로딩 중
+      <div className="w-full h-full flex flex-col items-center justify-center text-center text-xs space-y-1.5 text-muted-foreground">
+        <Loader2 className="!size-6 animate-spin" />
+        <p>로딩 중</p>
       </div>
     );
   }
