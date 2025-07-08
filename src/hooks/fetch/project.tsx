@@ -74,7 +74,6 @@ export const useProject = (projectId: string | null): SWRResponse<UserERPNextPro
     try {
       return userERPNextProjectSchema.parse(await fetcher(url));
     } catch (error) {
-      console.error(error);
       throw error;
     }
   });

@@ -113,9 +113,7 @@ export default function MainSection1() {
               className="md:min-w-xl flex w-fit h-fit flex-col z-20 items-center justify-center rounded-2xl md:bg-white/75 md:backdrop-blur-xl md:drop-shadow-2xl drop-shadow-black/30"
             >
               <div className="w-full px-6 md:px-16 py-16 flex flex-col gap-2 items-center justify-center">
-                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}>
-                  <Loader2 className="!size-6 text-muted md:text-muted-foreground" />
-                </motion.div>
+                <Loader2 className="!size-6 text-muted md:text-muted-foreground animate-spin" />
                 <div className="flex text-center">
                   <p className="text-xs text-muted md:text-muted-foreground">불러오는 중입니다...</p>
                 </div>

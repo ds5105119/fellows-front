@@ -132,8 +132,17 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     };
   }, [project, editedProject, isUpdating, autosave]);
 
+  useEffect(() => {
+    console.log(project.error, project.isLoading);
+  }, [project]);
+
   if (!editedProject || !project.data) {
-    return <div className="w-full h-full flex items-center justify-center text-center">로딩 중...</div>;
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center text-center text-sm space-y-2">
+        <Loader2 className="!size-6 text-muted animate-spin md:text-muted-foreground" />
+        로딩 중
+      </div>
+    );
   }
 
   return (
