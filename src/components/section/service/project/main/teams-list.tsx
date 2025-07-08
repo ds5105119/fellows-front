@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EllipsisVertical, Info, Trash2, UserPlus } from "lucide-react";
+import { EllipsisVertical, Info, Trash2, UserIcon, UserPlus } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -128,6 +128,13 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
         <p>프로젝트에 참여하는 팀 멤버들을 관리하세요.</p>
       </div>
 
+      {project?.custom_team && project?.custom_team.length >= 5 && (
+        <div className="flex items-center space-x-1.5 w-full rounded-sm bg-red-100 px-4 py-2 mb-1 text-sm">
+          <Info className="!size-4" />
+          <p>무료 플랜에서는 최대 5명의 팀원을 초대할 수 있어요.</p>
+        </div>
+      )}
+
       {isLoading && (
         <div className="space-y-4">
           {[...Array(projectSwr.data?.custom_team.length ?? 3)].map((_, i) => (
@@ -195,7 +202,7 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
               className={"grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm pl-3 pr-4 py-2 text-sm font-medium rouinded-sm"}
             >
               <Avatar className="h-9 w-9">
-                <AvatarImage src={userPicture || "/placeholder.svg"} alt={userName} />
+                <AvatarImage src={userPicture || "/placeholder.svg"} alt={userName} className="object-cover" />
                 <AvatarFallback>{userName.substring(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="min-w-0">
@@ -207,7 +214,37 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
         })}
       </section>
 
-      {canEdit ? (
+      {project?.custom_team.length === 1 && (
+        <div className="flex flex-col w-full">
+          <div className="h-44 flex flex-col justify-center space-y-3 items-center w-full rounded-sm bg-gradient-to-b from-[#e6ffed] via-[#daffe5] to-[#e6ffec] px-8 mb-1 text-sm select-none">
+            <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2">
+              <Avatar className="size-11">
+                <AvatarImage src="/teams-avatar-1.png" alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              <Avatar className="size-11">
+                <AvatarImage src="/teams-avatar-2.png" alt="@leerob" />
+                <AvatarFallback>LR</AvatarFallback>
+              </Avatar>
+              <Avatar className="size-11">
+                <AvatarImage src="/teams-avatar-3.png" alt="@evilrabbit" />
+                <AvatarFallback>ER</AvatarFallback>
+              </Avatar>
+              <Avatar className="size-11">
+                <AvatarImage src="/" alt="@evilrabbit" />
+                <AvatarFallback>· · ·</AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+
+          <div className="flex flex-col space-y-2 pt-4 pb-2 text-center">
+            <div className="text-base font-semibold">팀원과 함께 작업하기</div>
+            <div className="text-sm font-medium text-muted-foreground">팀원과 프로젝트, 작업 현황, 이슈를 공유할 수 있습니다.</div>
+          </div>
+        </div>
+      )}
+
+      {canEdit && project?.custom_team.length < 5 ? (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <button className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-blue-200 hover:bg-blue-300 text-blue-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer">
@@ -251,7 +288,7 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
         </Dialog>
       ) : (
         <button className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-zinc-200 hover:bg-zinc-300 text-zinc-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer">
-          <p>초대 권한이 부족해요</p>
+          <p>권한이 부족해요</p>
         </button>
       )}
     </div>

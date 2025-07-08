@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, useState } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 import { Info, Plus, Check, X, DownloadCloud } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fileIconMap, getFileExtension } from "@/components/form/fileinput";
@@ -10,9 +10,11 @@ import { ERPNextFile, erpNextFileSchema, UserERPNextProject } from "@/@types/ser
 import { toast } from "sonner";
 import { createFile, deleteFile, useFiles } from "@/hooks/fetch/project";
 import { SWRResponse } from "swr";
+import { Session } from "next-auth";
 
-export function FilesList({ projectSwr }: { projectSwr: SWRResponse<UserERPNextProject> }) {
+export function FilesList({ projectSwr, session }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
   const { data: project } = projectSwr;
+  const [level, setLevel] = useState(5);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -147,6 +149,10 @@ export function FilesList({ projectSwr }: { projectSwr: SWRResponse<UserERPNextP
     [files, project?.project_name]
   );
 
+  useEffect(() => {
+    setLevel(projectSwr.data?.custom_team.filter((member) => member.member == session.sub)[0].level ?? 5);
+  }, [projectSwr.data, session.sub]);
+
   return (
     <div className="grid grid-cols-1 gap-3 px-4 py-6">
       <div className="text-sm font-bold">파일: {allFiles.length}/50</div>
@@ -200,7 +206,7 @@ export function FilesList({ projectSwr }: { projectSwr: SWRResponse<UserERPNextP
 
       {allFiles.length === 0 && (
         <div className="flex flex-col w-full">
-          <div className="flex flex-col space-y-3 items-center w-full rounded-sm bg-gradient-to-b from-[#ffeee6] via-[#ffe5da] to-[#ffeee6] px-8 py-12 mb-1 text-sm select-none">
+          <div className="h-44 flex flex-col justify-center space-y-3 items-center w-full rounded-sm bg-gradient-to-b from-[#ffeee6] via-[#ffe5da] to-[#ffeee6] px-8 mb-1 text-sm select-none">
             <div className="flex items-center space-x-2 w-full rounded-sm bg-white px-3 py-2 text-xs font-medium drop-shadow-xl drop-shadow-black/5">
               <fileIconMap.default className="!size-4" />
               <p className="grow">Business Identity.zip</p>
@@ -217,18 +223,24 @@ export function FilesList({ projectSwr }: { projectSwr: SWRResponse<UserERPNextP
 
           <div className="flex flex-col space-y-2 pt-4 pb-2 text-center">
             <div className="text-base font-semibold">프로젝트 파일 관리하기</div>
-            <div className="text-sm font-medium text-muted-foreground">프로젝트에 사용한 파일들을 정리해드릴께요.</div>
+            <div className="text-sm font-medium text-muted-foreground">Felows에 전달하고 싶은 파일을 추가해주세요.</div>
           </div>
         </div>
       )}
 
-      <button
-        className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-blue-200 hover:bg-blue-300 text-blue-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer"
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <Plus className="!size-5" strokeWidth={2} />
-        <p>파일 추가하기</p>
-      </button>
+      {level < 3 ? (
+        <button
+          className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-blue-200 hover:bg-blue-300 text-blue-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Plus className="!size-5" strokeWidth={2} />
+          <p>파일 추가하기</p>
+        </button>
+      ) : (
+        <button className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-zinc-200 hover:bg-zinc-300 text-zinc-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer">
+          <p>권한이 부족해요</p>
+        </button>
+      )}
 
       <input id="fileInput" ref={fileInputRef} type="file" onChange={handleChangeUpload} style={{ display: "none" }} className="sr-only" />
     </div>

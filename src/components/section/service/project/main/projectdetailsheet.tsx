@@ -277,7 +277,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={setActiveTab2} />
             {/* 탭 콘텐츠 */}
             <div className="w-full grow overflow-y-auto scrollbar-hide">
-              {activeTab2 === 0 && <FilesList projectSwr={project} />}
+              {activeTab2 === 0 && <FilesList projectSwr={project} session={session} />}
               {activeTab2 === 1 && <TeamsList projectSwr={project} session={session} />}
             </div>
           </div>
@@ -319,7 +319,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
                 </div>
               </>
             )}
-            {activeMobileTab === 1 && <FilesList projectSwr={project} />}
+            {activeMobileTab === 1 && <FilesList projectSwr={project} session={session} />}
             {activeMobileTab === 2 && <TeamsList projectSwr={project} session={session} />}
           </div>
         </div>
