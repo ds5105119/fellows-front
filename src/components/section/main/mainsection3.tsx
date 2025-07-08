@@ -676,20 +676,6 @@ export default function MainSection3() {
           </div>
         </div>
       </Carousel>
-
-      <div className="col-span-full flex flex-col space-y-4 md:space-y-6 py-10 lg:py-24 px-8 lg:px-16 xl:px-36 w-full pb-12 lg:pb-16">
-        <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
-          <h4 className="text-xl md:text-3xl font-extrabold text-foreground">
-            프로젝트 관리도 한 곳에서
-            <br />
-            불투명한 외주 작업으로 스트레스는 그만.
-          </h4>
-        </div>
-
-        <AspectRatio ratio={3240 / 1616} className="mt-6 lg:mt-8 rounded-3xl overflow-hidden">
-          <Image src="/main-section-3-1.png" alt="feature1" className="object-cover" fill />
-        </AspectRatio>
-      </div>
     </div>
   );
 }
