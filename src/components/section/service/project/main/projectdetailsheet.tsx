@@ -132,10 +132,6 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     };
   }, [project, editedProject, isUpdating, autosave]);
 
-  useEffect(() => {
-    console.log(project.error, project.isLoading);
-  }, [project]);
-
   if (!editedProject || !project.data) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center text-center text-xs space-y-1.5 text-muted-foreground">
@@ -147,6 +143,19 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
 
   return (
     <div className="flex flex-col w-full h-full overflow-y-auto md:overflow-hidden pb-12">
+      {/* 초대된 프로젝트의 경우 */}
+      {project.data.custom_team.filter((member) => member.member == session.sub)[0].level == 4 && (
+        <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black/20 backdrop-blur-xs z-50">
+          <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg shadow-md">
+            <p className="text-sm text-gray-700 mb-2">이 프로젝트는 초대된 프로젝트입니다.</p>
+            <p className="text-xs text-gray-500 mb-4">초대를 수락하시겠습니까?</p>
+            <Button variant="outline" size="sm" onClick={onClose}>
+              닫기
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* 헤더 */}
       <div className="sticky top-0 shrink-0 flex items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4 bg-background z-20">
         <div className="flex items-center gap-3">
