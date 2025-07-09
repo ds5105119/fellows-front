@@ -50,7 +50,14 @@ export const BlogPostDto = z.object({
   content: z.string(),
   summary: z.string(),
   is_published: z.boolean().default(false),
-  published_at: z.coerce.date().nullable().optional(),
+  published_at: z
+    .preprocess((value) => {
+      if (typeof value === "string" && !value.endsWith("Z")) {
+        return new Date(value + "Z");
+      }
+      return new Date(value as string);
+    }, z.date())
+    .optional(),
 
   author: AuthorInlineDto,
   category: CategoryInlineDto.nullable().optional(),

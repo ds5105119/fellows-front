@@ -294,11 +294,6 @@ export default function AlertMain() {
         </div>
       </div>
 
-      {/* Instructions */}
-      <div className="mx-4 mt-4 bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg">
-        <p className="text-xs text-gray-600 text-center">💡 왼쪽으로 밀면 삭제, 오른쪽으로 밀면 읽음 처리</p>
-      </div>
-
       {/* Alerts list */}
       <div className="pt-4 pb-20">
         {alerts.length === 0 && !isLoading ? (

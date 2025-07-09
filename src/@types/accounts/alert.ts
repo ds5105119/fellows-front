@@ -6,7 +6,12 @@ export const AlertDtoSchema = z.object({
   sub: z.string(),
   message: z.string(),
   is_read: z.boolean(),
-  created_at: z.coerce.date(), // ISO string 대응
+  created_at: z.preprocess((value) => {
+    if (typeof value === "string" && !value.endsWith("Z")) {
+      return new Date(value + "Z");
+    }
+    return new Date(value as string);
+  }, z.date()),
   link: z.string(),
 });
 
