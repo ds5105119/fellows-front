@@ -6,9 +6,10 @@ import dayjs from "@/lib/dayjs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { Button } from "@/components/ui/button";
-import { FilePenLine, ClockIcon, ArrowRight } from "lucide-react";
+import { FilePenLine, ClockIcon, ArrowRight, RectangleEllipsis } from "lucide-react";
 import type { ERPNextTaskForUser } from "@/@types/service/project";
 import type { DateRange } from "./gantt-chart";
+import Link from "next/link";
 
 interface TaskBarProps {
   task: ERPNextTaskForUser;
@@ -114,14 +115,14 @@ export function TaskBar({ task, dateRange }: TaskBarProps) {
         <div className="p-4 flex flex-col space-y-4">
           <div className="flex space-x-3">
             <FilePenLine className="!size-4 mt-[1.5px] shrink-0" />
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-1">
               <div className="text-sm font-bold">{task.subject}</div>
               <div className="text-xs font-normal">{task.description}</div>
             </div>
           </div>
           <div className="flex space-x-3 w-full">
             <ClockIcon className="!size-4 shrink-0" />
-            <div className="flex flex-col space-y-1.5 w-full">
+            <div className="flex flex-col space-y-1 w-full">
               <div className="flex justify-between items-center w-full">
                 <div className="text-xs font-semibold">{dayjs(task.exp_start_date).format("LL")}</div>
                 <ArrowRight className="!size-3.5 text-zinc-400" />
@@ -130,9 +131,22 @@ export function TaskBar({ task, dateRange }: TaskBarProps) {
               <div className="text-xs font-semibold text-zinc-400">총 {task.expected_time}시간</div>
             </div>
           </div>
+          <div className="flex items-center space-x-3">
+            <RectangleEllipsis className="!size-4 mt-[1.5px] shrink-0" />
+            <div className="flex flex-col space-y-2">
+              <div className="text-xs font-normal">
+                <span className="font-bold">진행률:&nbsp;</span>
+                {task.progress}%
+              </div>
+            </div>
+          </div>
         </div>
         <hr />
-        <div className="px-2 py-2 flex justify-end space-y-4">
+        <div className="px-2 py-2 flex justify-between">
+          <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-muted-foreground w-fit" asChild>
+            <Link href={`/service/project/${task.project}`}>프로젝트로 이동</Link>
+          </Button>
+
           <PopoverClose asChild>
             <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-muted-foreground w-fit">
               확인
