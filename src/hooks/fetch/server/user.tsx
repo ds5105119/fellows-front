@@ -53,7 +53,7 @@ export const updateBusinessUserData = async (data: UserBusinessData) => {
   const session = await auth();
 
   await fetch(url, {
-    method: "PATCH",
+    method: "PUT",
     body: JSON.stringify(data),
     headers: {
       "Content-Type": "application/json",
@@ -131,8 +131,23 @@ export const updateUser = async (data: UpdateUserAttributes) => {
   const session = await auth();
 
   await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data`, {
-    method: "PATCH",
+    method: "PUT",
     body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+      ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+    },
+    redirect: "follow",
+    credentials: "include",
+  });
+};
+
+export const updateEmailRequest = async (email: string) => {
+  const session = await auth();
+
+  await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data/email`, {
+    method: "POST",
+    body: JSON.stringify({ email: email }),
     headers: {
       "Content-Type": "application/json",
       ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),

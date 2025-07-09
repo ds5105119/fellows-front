@@ -164,11 +164,12 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
               className="grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm pl-3 pr-4 py-2 text-sm font-medium hover:bg-zinc-100 transiton-colors duration-200"
             >
               <Avatar className="h-9 w-9">
-                <AvatarImage src={userPicture || "/placeholder.svg"} alt={userName} />
+                <AvatarImage src={userPicture || "/placeholder.svg"} alt={userName} className="object-cover" />
                 <AvatarFallback>{userName.substring(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold">{userName}</p>
+                <p className="truncate text-xs text-muted-foreground">{user.email || "이메일 없음"}</p>
               </div>
               <div className="flex items-center space-x-1.5">
                 <Badge variant={role.variant}>{role.name}</Badge>

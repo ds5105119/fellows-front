@@ -19,6 +19,7 @@ import { UpdateUserAttributesSchema, type UpdateUserAttributes } from "@/@types/
 import { getPresignedPutUrl, removeFile, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
 import DaumPostcodeEmbed from "react-daum-postcode";
 import useGeolocation from "@/lib/geolocation";
+import Link from "next/link";
 
 export default function UserProfile({ session }: { session: Session }) {
   const router = useRouter();
@@ -204,16 +205,28 @@ export default function UserProfile({ session }: { session: Session }) {
 
               {/* Profile Header */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="w-full flex items-center gap-3">
-                <Button type="button" variant="secondary" size="sm" className="shadow-none grow hover:bg-zinc-200 transition-colors duration-200">
+                <Button type="button" size="sm" className="shadow-none grow transition-colors duration-200">
                   전화번호 변경
                 </Button>
-                <Button type="button" variant="secondary" size="sm" className="shadow-none grow hover:bg-zinc-200 transition-colors duration-200">
+                <Button type="button" size="sm" className="shadow-none grow transition-colors duration-200">
                   닉네임 변경
                 </Button>
               </motion.div>
             </div>
 
             <h2 className="text-xl font-semibold text-gray-900">개인정보</h2>
+
+            <div className="w-full flex flex-col gap-2">
+              <div className="text-sm font-medium text-gray-600">이메일</div>
+              <div className="flex space-x-2 w-full">
+                <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-9 flex items-center md:text-sm rounded-md px-3 py-1 text-base">
+                  {session.user.email}
+                </div>
+                <Button className="h-9 shadow-none" asChild>
+                  <Link href="/service/settings/profile/email">변경</Link>
+                </Button>
+              </div>
+            </div>
 
             <FormField
               control={form.control}

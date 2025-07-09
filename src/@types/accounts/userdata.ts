@@ -108,6 +108,7 @@ export const UserAttributesSchema = z.object({
   street: z.array(z.string()).optional().nullable(),
   sub_locality: z.array(z.string()).optional().nullable(),
   userData: z.array(z.string()).optional().nullable(),
+  email: z.string().email().optional().nullable(),
 });
 
 export const ExternalUserAttributesSchema = z.object({
@@ -117,6 +118,7 @@ export const ExternalUserAttributesSchema = z.object({
   link: z.array(z.string().url()).optional().nullable(),
   name: z.array(z.string()).optional().nullable(),
   picture: z.array(z.string()).optional().nullable(),
+  email: z.string().email().optional().nullable(),
 });
 
 export const ExternalUsersAttributesSchema = z.array(ExternalUserAttributesSchema);

@@ -24,5 +24,5 @@ export const useUsers = (sub: string[]) => {
 
   const shouldFetch = validIds.length > 0;
 
-  return useSWR(shouldFetch ? `/api/user/user-data?${params.toString()}` : null, fetcher);
+  return useSWR(shouldFetch ? `/api/user/data?${params.toString()}` : null, fetcher);
 };
