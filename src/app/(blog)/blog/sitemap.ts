@@ -24,7 +24,7 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
 
   return [
     {
-      url: `https://fellows,my/blog/${id}`,
+      url: `https://fellows.my/blog/${id}`,
       lastModified: post.published_at ?? undefined,
       changeFrequency: "daily",
       priority: 0.5,
