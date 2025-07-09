@@ -6,18 +6,23 @@ import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { updateEmailRequest } from "@/hooks/fetch/server/user";
+import { toast } from "sonner";
 
 export default function EmailUpdateRequest() {
   const [updateEmail, setUpdateEmail] = useState("");
 
   const handleSubmit = async () => {
-    await updateEmailRequest(updateEmail);
+    const status = await updateEmailRequest(updateEmail);
+
+    if (status === 409) {
+      toast.error("이미 사용 중인 이메일입니다.");
+    }
   };
 
   return (
     <div className="w-full h-full flex flex-col relative">
       <div className="grow overflow-y-auto">
-        <AnimatedUnderlineInput placeholder="이메일 주소" value={updateEmail} onChange={(e) => setUpdateEmail(e.target.value)} />
+        <AnimatedUnderlineInput placeholder="이메일 주소" type="email" value={updateEmail} onChange={(e) => setUpdateEmail(e.target.value)} />
       </div>
 
       <div className="w-full sticky bottom-0 z-20">

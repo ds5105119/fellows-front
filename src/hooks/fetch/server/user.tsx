@@ -145,7 +145,7 @@ export const updateUser = async (data: UpdateUserAttributes) => {
 export const updateEmailRequest = async (email: string) => {
   const session = await auth();
 
-  await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data/email`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data/email`, {
     method: "POST",
     body: JSON.stringify({ email: email }),
     headers: {
@@ -155,4 +155,6 @@ export const updateEmailRequest = async (email: string) => {
     redirect: "follow",
     credentials: "include",
   });
+
+  return response.status;
 };
