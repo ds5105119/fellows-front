@@ -24,7 +24,9 @@ export function ProjectDetails({ project, setEditedProject }: { project: UserERP
       </div>
 
       <div className="w-full flex flex-col space-y-2">
-        <div className="text-sm font-semibold">{project.custom_project_status === "draft" ? "예상 금액" : "계약 금액"}</div>
+        <div className="text-sm font-semibold">
+          {project.custom_project_status === "draft" || project.custom_project_status === "process:1" ? "예상 금액" : "계약 금액"}
+        </div>
         {project.estimated_costing ? (
           <div className="flex flex-col space-y-2">
             <div>
