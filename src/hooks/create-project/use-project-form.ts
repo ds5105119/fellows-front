@@ -128,7 +128,7 @@ export function useProjectForm(title?: string) {
         toast.success("프로젝트 정보가 성공적으로 저장되었습니다.");
         reset();
 
-        router.push(`/service/project`);
+        router.push(`/service/project/${project.project_name}`);
         router.refresh();
       } catch (error) {
         console.error("Project creation error:", error);

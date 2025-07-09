@@ -99,14 +99,14 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
 
   const tabs1 = useMemo(
     () => [
-      session?.user.name && session?.user.phoneNumber && session?.user.email ? (
+      project.data?.customer ? (
         <div className="flex space-x-1.5 items-center" key="customer-ok">
-          <span>고객</span>
+          <span>계약자</span>
           <div className="size-2.5 rounded-full bg-emerald-500" />
         </div>
       ) : (
         <div className="flex space-x-1.5 items-center" key="customer-no">
-          <span>고객</span>
+          <span>계약자</span>
           <div className="size-2.5 rounded-full bg-red-500" />
         </div>
       ),
@@ -264,7 +264,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             <Flattabs tabs={tabs1} activeTab={activeTab1} handleTabChange={setActiveTab1} />
             {/* 탭 콘텐츠 */}
             <div className="w-full bg-muted">
-              {activeTab1 === 0 && <CustomerInfo session={session} />}
+              {activeTab1 === 0 && <CustomerInfo projectSwr={project} session={session} />}
               {activeTab1 === 1 && (
                 <div className="px-6 py-4">
                   <p className="text-gray-600">문서 관련 내용이 여기에 표시됩니다.</p>
@@ -289,7 +289,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
           <Flattabs tabs={tabs1} activeTab={activeTab1} handleTabChange={setActiveTab1} />
           {/* 탭 콘텐츠 */}
           <div className="w-full bg-muted">
-            {activeTab1 === 0 && <CustomerInfo session={session} />}
+            {activeTab1 === 0 && <CustomerInfo projectSwr={project} session={session} />}
             {activeTab1 === 1 && (
               <div className="px-6 py-4">
                 <p className="text-gray-600">문서 관련 내용이 여기에 표시됩니다.</p>

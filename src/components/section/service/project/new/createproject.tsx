@@ -1,7 +1,5 @@
 "use client";
-
 import type React from "react";
-
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -18,6 +16,8 @@ import { Loader2 } from "lucide-react";
 export default function CreateProject({ title }: { title?: string }) {
   const targetRef = useRef<HTMLDivElement>(null);
   const [isReachedEnd, setIsReachedEnd] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showTermsPrompt, setShowTermsPrompt] = useState(false);
 
   const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
     useProjectForm(title);
@@ -31,7 +31,6 @@ export default function CreateProject({ title }: { title?: string }) {
       setIsReachedEnd(false);
       return;
     }
-
     const rect = target.getBoundingClientRect();
     const isVisible = rect.top <= window.innerHeight - 92;
     setIsReachedEnd(isVisible);
@@ -42,14 +41,12 @@ export default function CreateProject({ title }: { title?: string }) {
     const handleScroll = () => {
       checkVisibility();
     };
-
     const handleResize = () => {
       checkVisibility();
     };
 
     // 초기 체크
     checkVisibility();
-
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleResize, { passive: true });
 
@@ -64,7 +61,6 @@ export default function CreateProject({ title }: { title?: string }) {
     const timer = setTimeout(() => {
       checkVisibility();
     }, 100);
-
     return () => clearTimeout(timer);
   }, [currentStep, checkVisibility]);
 
@@ -81,10 +77,8 @@ export default function CreateProject({ title }: { title?: string }) {
   const scrollToEnd = () => {
     const target = targetRef.current;
     if (!target) return;
-
     const maxScroll = target.offsetTop + target.offsetHeight - window.innerHeight + 95;
     const nextScrollTop = Math.min(window.scrollY + 500, maxScroll);
-
     window.scrollTo({
       top: nextScrollTop,
       left: 0,
@@ -97,7 +91,23 @@ export default function CreateProject({ title }: { title?: string }) {
       scrollToEnd();
       return;
     }
+
+    // 약관 미동의 시 프롬프트 표시
+    if (termsAccepted === false && currentStep === 1) {
+      setShowTermsPrompt(true);
+      return;
+    }
+
     handleNext(event);
+  };
+
+  const handleTermsAgreeAndNext = () => {
+    setTermsAccepted(true);
+    setShowTermsPrompt(false);
+    // 약간의 딜레이 후 다음 단계로
+    setTimeout(() => {
+      handleNext();
+    }, 100);
   };
 
   const handleSubmitWithScroll = () => {
@@ -140,7 +150,6 @@ export default function CreateProject({ title }: { title?: string }) {
       <div className="hidden xl:flex h-full flex-col max-w-md shrink-0 scrollbar-hide pl-20 pr-10">
         <CreateProjectSide />
       </div>
-
       <div className="flex flex-col w-full mx-auto xl:mx-0 lg:w-xl h-full scrollbar-hide shrink-0">
         <div className="w-full px-5 md:px-8 py-6 md:py-10">
           <div className="mb-10 flex items-end justify-between">
@@ -163,7 +172,7 @@ export default function CreateProject({ title }: { title?: string }) {
             </form>
           </Form>
 
-          {currentStep === 1 && <CreateProjectTermsSection />}
+          {currentStep === 1 && <CreateProjectTermsSection termsAccepted={termsAccepted} setTermsAccepted={setTermsAccepted} />}
         </div>
 
         <div ref={targetRef} className="relative grow h-1" />
@@ -178,6 +187,9 @@ export default function CreateProject({ title }: { title?: string }) {
           onNext={handleNextWithScroll}
           onPrev={handlePrev}
           onSubmit={handleSubmitWithScroll}
+          showTermsPrompt={showTermsPrompt}
+          onTermsAgreeAndNext={handleTermsAgreeAndNext}
+          termsAccepted={termsAccepted}
         />
       </div>
     </div>

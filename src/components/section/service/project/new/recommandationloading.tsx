@@ -8,7 +8,7 @@ interface RecommendationLoadingProps {
 export function RecommendationLoading({ currentStep, totalSteps }: RecommendationLoadingProps) {
   return (
     <div className="w-full px-5 md:px-8 py-6 md:py-10">
-      <div className="mb-10 flex items-end justify-between">
+      <div className="flex items-end justify-between">
         <div className="w-[80%]">
           <p className="text-sm font-medium text-blue-600">{`Step ${currentStep} / ${totalSteps}`}</p>
           <p className="text-2xl md:text-3xl font-bold mt-3">구현에 필요한 기능을 추천하고 있어요.</p>
@@ -16,7 +16,7 @@ export function RecommendationLoading({ currentStep, totalSteps }: Recommendatio
         </div>
       </div>
 
-      <div className="flex mt-16 md:mt-28 mb-64 md:mb-64">
+      <div className="flex justify-center mt-24 md:mt-36 mb-64 md:mb-64">
         <AIRecommendSkeleton isLoading={true} />
       </div>
     </div>

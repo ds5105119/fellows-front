@@ -1,13 +1,19 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { CheckIcon, XIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import useSWR from "swr";
 import { Logo } from "@/components/resource/selectlogo";
-import { toast } from "sonner";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { cn } from "@/lib/utils";
 
-export function CreateProjectTermsSection() {
+export function CreateProjectTermsSection({ termsAccepted, setTermsAccepted }: { termsAccepted: boolean; setTermsAccepted: (accepted: boolean) => void }) {
+  const [terms1Accepted, setTerms1Accepted] = useState(termsAccepted);
+  const [terms2Accepted, setTerms2Accepted] = useState(termsAccepted);
+
   const privacy = useSWR(`${process.env.NEXT_PUBLIC_TERM_URL}/service/new/privacy`, (url) => fetch(url).then((res) => res.text()), {
     revalidateIfStale: false,
     revalidateOnFocus: false,
@@ -20,6 +26,10 @@ export function CreateProjectTermsSection() {
     revalidateOnReconnect: false,
   });
 
+  useEffect(() => {
+    setTermsAccepted(terms1Accepted && terms2Accepted);
+  }, [terms1Accepted, terms2Accepted, setTermsAccepted]);
+
   return (
     <div className="flex flex-col w-full h-full mt-4">
       <div className="w-full">
@@ -27,9 +37,16 @@ export function CreateProjectTermsSection() {
       </div>
       <div className="flex flex-col w-full space-y-2">
         <div className="w-full flex items-start space-x-2">
-          <button className="flex items-center space-x-2" onClick={() => toast.info("꼭 동의가 필요한 항목이에요")}>
-            <CheckIcon className="mt-[0.25rem] !size-5 text-blue-500" strokeWidth={3} />
-            <span className="text-sm font-bold text-blue-500 px-2 py-1 rounded-full bg-blue-50 select-none">필수</span>
+          <button className="flex items-center space-x-2" onClick={() => setTerms1Accepted(!terms1Accepted)}>
+            <CheckIcon className={cn("mt-[0.25rem] !size-5", terms1Accepted || termsAccepted ? "text-blue-500" : "text-zinc-500")} strokeWidth={3} />
+            <span
+              className={cn(
+                "text-sm font-bold px-2 py-1 rounded-full bg-blue-50 select-none",
+                terms1Accepted || termsAccepted ? "text-blue-500 bg-blue-50" : "text-zinc-500 bg-zinc-50"
+              )}
+            >
+              필수
+            </span>
           </button>
           <div className="ml-1 pt-0 space-x-2">
             <span className="text-sm font-medium">Fellows 서비스 약관 및 개인정보 수집 · 이용 · 제공 동의</span>
@@ -60,9 +77,16 @@ export function CreateProjectTermsSection() {
           </div>
         </div>
         <div className="w-full flex items-start space-x-2">
-          <button className="flex items-center space-x-2" onClick={() => toast.info("꼭 동의가 필요한 항목이에요")}>
-            <CheckIcon className="mt-[0.25rem] !size-5 text-blue-500" strokeWidth={3} />
-            <span className="text-sm font-bold text-blue-500 px-2 py-1 rounded-full bg-blue-50 select-none">필수</span>
+          <button className="flex items-center space-x-2" onClick={() => setTerms2Accepted(!terms2Accepted)}>
+            <CheckIcon className={cn("mt-[0.25rem] !size-5", terms2Accepted || termsAccepted ? "text-blue-500" : "text-zinc-500")} strokeWidth={3} />
+            <span
+              className={cn(
+                "text-sm font-bold px-2 py-1 rounded-full bg-blue-50 select-none",
+                terms2Accepted || termsAccepted ? "text-blue-500 bg-blue-50" : "text-zinc-500 bg-zinc-50"
+              )}
+            >
+              필수
+            </span>
           </button>
           <div className="ml-1 pt-0 space-x-2">
             <span className="text-sm font-medium">개인정보 제 3자 제공 동의</span>

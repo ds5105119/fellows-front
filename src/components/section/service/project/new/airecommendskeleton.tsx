@@ -32,69 +32,67 @@ export default function AIRecommendSkeleton({ isLoading }: { isLoading: boolean 
   };
 
   return (
-    <div className="mx-auto p-6 space-y-6">
-      <AnimatePresence mode="wait">
-        {isLoading ? (
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="space-y-6 w-80 md:w-96"
-          >
-            {/* Single card with continuous animation */}
-            <div className="w-full h-[120px] relative">
-              <AnimatePresence>
-                <motion.div
-                  key={cardKey}
-                  initial={{ opacity: 0, y: 120, scale: 1 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -120, scale: 1 }}
-                  transition={springTransition}
-                  className="absolute w-full bg-gray-50 rounded-lg p-4 space-y-3"
-                >
-                  <div className="flex items-center space-x-3">
-                    <SkeletonBox className="w-8 h-8 rounded-md" />
-                    <SkeletonLine width="40%" />
-                  </div>
-                  <SkeletonLine width="90%" />
-                  <SkeletonLine width="75%" />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="text-center space-y-6"
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 200,
-                damping: 15,
-                delay: 0.2,
-              }}
-              className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center"
-            >
-              <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ delay: 0.4, duration: 0.5 }}>
-                <Check className="w-8 h-8 text-blue-600" />
+    <AnimatePresence mode="wait">
+      {isLoading ? (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="space-y-6 w-80 md:w-96"
+        >
+          {/* Single card with continuous animation */}
+          <div className="w-full h-[120px] relative">
+            <AnimatePresence>
+              <motion.div
+                key={cardKey}
+                initial={{ opacity: 0, y: 120, scale: 1 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -120, scale: 1 }}
+                transition={springTransition}
+                className="absolute w-full bg-gray-50 rounded-lg p-4 space-y-3"
+              >
+                <div className="flex items-center space-x-3">
+                  <SkeletonBox className="w-8 h-8 rounded-md" />
+                  <SkeletonLine width="40%" />
+                </div>
+                <SkeletonLine width="90%" />
+                <SkeletonLine width="75%" />
               </motion.div>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="space-y-2">
-              <h3 className="text-xl font-bold text-blue-600">추천이 완료되었어요.</h3>
-              <p className="text-muted-foreground">자동으로 페이지가 넘어갑니다.</p>
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="text-center space-y-6"
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 200,
+              damping: 15,
+              delay: 0.2,
+            }}
+            className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center"
+          >
+            <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ delay: 0.4, duration: 0.5 }}>
+              <Check className="w-8 h-8 text-blue-600" />
             </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="space-y-2">
+            <h3 className="text-xl font-bold text-blue-600">추천이 완료되었어요.</h3>
+            <p className="text-muted-foreground">자동으로 페이지가 넘어갑니다.</p>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

@@ -8,6 +8,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { platformEnum, readinessLevelEnum, CreateERPNextProject } from "@/@types/service/project";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
+import { readinessLevelLabels } from "@/components/resource/project";
 
 interface CreateProjectFormStep1Props {
   form: UseFormReturn<CreateERPNextProject>;
@@ -96,7 +97,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                     )}
                     onClick={() => field.onChange(level)}
                   >
-                    <div className="text-sm font-semibold">{level}</div>
+                    <div className="text-sm font-semibold">{readinessLevelLabels[level].title}</div>
                   </button>
                 ))}
               </div>
