@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { cancelSubmitProject, submitProject } from "@/hooks/fetch/project";
@@ -11,6 +10,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useQuoteSlots } from "@/hooks/fetch/project";
 import dayjs from "@/lib/dayjs";
+
 interface ProjectActionsProps {
   project: UserERPNextProject;
 }
@@ -18,6 +18,10 @@ interface ProjectActionsProps {
 export function ProjectActions({ project }: ProjectActionsProps) {
   const [date, setDate] = useState<Date | undefined>();
   const [inbound, setInbound] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const swr = useQuoteSlots();
   const availabilityData = swr.data || [];
@@ -57,21 +61,54 @@ export function ProjectActions({ project }: ProjectActionsProps) {
     }
   };
 
+  const refreshAllData = async () => {
+    window.location.reload();
+  };
+
   const handleSubmitProject = async () => {
     try {
+      setIsSubmitting(true);
       await submitProject(project.project_name, { date: date, inbound: inbound });
-      window.location.reload();
+
+      // 성공 상태로 변경
+      setIsSubmitted(true);
+
+      // 약간의 딜레이 후 성공 화면 표시
+      setTimeout(() => {
+        setShowSuccess(true);
+      }, 300);
     } catch (error) {
       console.error("Project submission failed:", error);
+      setIsSubmitting(false);
     }
   };
 
   const handleCancelSubmitProject = async () => {
     try {
       await cancelSubmitProject(project.project_name);
-      window.location.reload();
+      await refreshAllData();
     } catch (error) {
       console.error("Project submission cancellation failed:", error);
+    }
+  };
+
+  const handleCloseSuccess = async () => {
+    setShowSuccess(false);
+    setTimeout(async () => {
+      setIsDialogOpen(false);
+      setIsSubmitted(false);
+      setIsSubmitting(false);
+      await refreshAllData();
+    }, 300);
+  };
+
+  const handleDialogOpenChange = (open: boolean) => {
+    setIsDialogOpen(open);
+    if (!open) {
+      // 다이얼로그가 닫힐 때 상태 초기화
+      setIsSubmitted(false);
+      setIsSubmitting(false);
+      setShowSuccess(false);
     }
   };
 
@@ -82,10 +119,10 @@ export function ProjectActions({ project }: ProjectActionsProps) {
       <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
       <div className="w-full flex pb-4 pt-3 bg-background">
         {project.custom_project_status === "draft" ? (
-          <Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
             <DialogTrigger asChild>
               <Button size="lg" className="w-full px-16 h-[3.5rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500">
-                계약 문의하기
+                견적 의뢰하기
               </Button>
             </DialogTrigger>
             <DialogContent
@@ -96,17 +133,72 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                 <DialogTitle className="sr-only">계약 창</DialogTitle>
                 <DialogDescription className="sr-only" />
               </DialogHeader>
+
+              {/* 성공 상태 오버레이 */}
+              {isSubmitted && (
+                <div
+                  className={`absolute inset-0 bg-white/98 backdrop-blur-md z-50 flex items-center justify-center transition-all duration-500 ease-out ${
+                    showSuccess ? "opacity-100 scale-100" : "opacity-0 scale-95"
+                  }`}
+                >
+                  <div className="text-center space-y-8 px-8 max-w-md">
+                    {/* 텍스트 */}
+                    <div className="space-y-4">
+                      <h3
+                        className={`text-2xl font-bold text-gray-900 transition-all duration-500 delay-300 ease-out ${
+                          showSuccess ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                        }`}
+                      >
+                        견적 문의가 접수되었습니다!
+                      </h3>
+                      <p
+                        className={`text-gray-600 leading-relaxed transition-all duration-500 delay-500 ease-out ${
+                          showSuccess ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                        }`}
+                      >
+                        Fellows 매니저가 빠른 시일 안에
+                        <br />
+                        연락드리겠습니다.
+                      </p>
+                    </div>
+
+                    {/* 닫기 버튼 */}
+                    <div className={`transition-all duration-500 delay-700 ease-out ${showSuccess ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+                      <Button
+                        onClick={handleCloseSuccess}
+                        className="px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-full font-medium transition-all duration-200 ease-out hover:scale-105 active:scale-95"
+                      >
+                        확인
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="w-full h-full flex flex-col">
                 <div className="sticky top-0 w-full px-3.5 py-3.5 border-b border-b-muted bg-white font-bold flex justify-between">
                   <DialogClose asChild>
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" disabled={isSubmitting}>
                       <XIcon />
                     </Button>
                   </DialogClose>
-                  <Button variant="outline" onClick={handleSubmitProject}>
-                    계약 확정하기
+                  <Button
+                    variant="outline"
+                    onClick={handleSubmitProject}
+                    disabled={isSubmitting || isSubmitted}
+                    className="relative overflow-hidden bg-transparent transition-all duration-200 ease-out hover:scale-105 active:scale-95"
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span>접수 중...</span>
+                      </div>
+                    ) : (
+                      "견적 문의하기"
+                    )}
                   </Button>
                 </div>
+
                 <div className="w-full h-fit flex flex-col lg:flex-row lg:items-center lg:justify-center p-6 lg:p-8 space-y-6 lg:space-y-0">
                   <div className="lg:grow lg:h-full lg:pr-6">
                     <div className="flex flex-col space-y-2">
@@ -122,7 +214,6 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                           <p>처리 기간: 3일</p>
                         </div>
                       </div>
-
                       <div className="flex flex-col space-y-2 pt-6">
                         <div className="text-lg font-bold">상담이 필요하신가요?</div>
                         <div className="text-sm whitespace-pre-wrap">
@@ -132,14 +223,22 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                         </div>
                         <div className="flex space-x-2 items-center">
                           <div className="flex space-x-2 text-xs md:text-sm font-semibold">
-                            <input id="inbound" type="checkbox" checked={inbound} onChange={() => setInbound(!inbound)} />
+                            <input
+                              id="inbound"
+                              type="checkbox"
+                              checked={inbound}
+                              onChange={() => setInbound(!inbound)}
+                              disabled={isSubmitting || isSubmitted}
+                            />
                             <label htmlFor="inbound">상담 필요</label>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
+
                   <Separator orientation="vertical" className="hidden lg:block" />
+
                   <div className="lg:pl-6 flex flex-col space-y-4 w-full lg:w-fit">
                     <div className="flex flex-col space-y-2">
                       <div className="text-lg font-bold">희망 시작일이 있으신가요?</div>
@@ -152,7 +251,12 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                       </div>
                     </div>
                     <div className="mx-auto lg:mx-0 pt-2">
-                      <DatePicker value={date} onSelect={handleSelect} modifiers={modifiers} disabled={(date) => getAvailability(date) === 0} />
+                      <DatePicker
+                        value={date}
+                        onSelect={handleSelect}
+                        modifiers={modifiers}
+                        disabled={(date) => getAvailability(date) === 0 || isSubmitting || isSubmitted}
+                      />
                     </div>
                   </div>
                 </div>
@@ -165,7 +269,7 @@ export function ProjectActions({ project }: ProjectActionsProps) {
             className="w-full px-16 h-[3.5rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500"
             onClick={handleCancelSubmitProject}
           >
-            계약 문의 취소하기
+            견적 의뢰 취소하기
           </Button>
         )}
       </div>

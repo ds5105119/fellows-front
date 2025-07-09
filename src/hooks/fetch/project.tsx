@@ -90,7 +90,7 @@ export const useProjectOverView = (): SWRResponse<OverviewProjectsPaginatedRespo
   return useSWR(url, async (url: string) => overviewProjectsPaginatedResponseSchema.parse(await fetcher(url)));
 };
 
-const projectsGetKeyFactory = (params: {
+export const projectsGetKeyFactory = (params: {
   size?: number;
   keyword?: string;
   order_by?: string;
