@@ -56,10 +56,9 @@ export default function EmailUpdateRequest() {
 
       if (status === 200) {
         toast.success("이메일이 성공적으로 변경되었습니다!");
-        // NextAuth.js 세션 업데이트를 위한 트리거
         await fetch("/api/auth/session?update");
         router.push("/service/settings/profile");
-        router.refresh(); // 페이지를 새로고침하여 서버 컴포넌트 데이터 갱신
+        router.refresh();
       } else {
         toast.error("인증 코드가 올바르지 않거나 만료되었습니다.");
         setOtp("");
@@ -72,11 +71,8 @@ export default function EmailUpdateRequest() {
     }
   };
 
-  // form의 onSubmit 이벤트를 처리하는 핸들러
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // 페이지 새로고침 방지
-
-    // 현재 단계가 이메일 입력 단계일 때만 제출 로직 실행
+    e.preventDefault();
     if (step === 1) {
       handleSubmitEmail();
     }
