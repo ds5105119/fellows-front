@@ -14,8 +14,10 @@ import { useProjectOverView } from "@/hooks/fetch/project";
 import { cn } from "@/lib/utils";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Session } from "next-auth";
 
 interface IssueFormProps {
+  session: Session;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: CreateIssueData | UpdateIssueData) => Promise<void>;
@@ -23,7 +25,7 @@ interface IssueFormProps {
   isLoading?: boolean;
 }
 
-export function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading = false }: IssueFormProps) {
+export function IssueForm({ session, isOpen, onClose, onSubmit, issue, isLoading = false }: IssueFormProps) {
   const isEdit = !!issue;
 
   const projectsOverview = useProjectOverView();
@@ -137,29 +139,36 @@ export function IssueForm({ isOpen, onClose, onSubmit, issue, isLoading = false 
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button variant="outline" role="combobox" className={cn("w-[200px] justify-between", !field.value && "text-muted-foreground")}>
-                              {field.value ? overviewProjects.find((p) => p.project_name === field.value)?.custom_project_title : "Select language"}
+                              {field.value ? overviewProjects.find((p) => p.project_name === field.value)?.custom_project_title : "프로젝트를 선택하세요"}
                               <ChevronDownIcon className="opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
                         <PopoverContent className="w-[200px] p-0">
                           <Command>
-                            <CommandInput placeholder="Search framework..." className="h-9" />
+                            <CommandInput placeholder="프로젝트 검색..." className="h-9" />
                             <CommandList>
-                              <CommandEmpty>No framework found.</CommandEmpty>
+                              <CommandEmpty>
+                                문의할 프로젝트를
+                                <br />
+                                찾을 수 없어요
+                              </CommandEmpty>
                               <CommandGroup>
-                                {overviewProjects.map((p) => (
-                                  <CommandItem
-                                    value={p.project_name}
-                                    key={p.project_name}
-                                    onSelect={() => {
-                                      form.setValue("project", p.project_name);
-                                    }}
-                                  >
-                                    {p.custom_project_title}
-                                    <Check className={cn("ml-auto", p.project_name === field.value ? "opacity-100" : "opacity-0")} />
-                                  </CommandItem>
-                                ))}
+                                {overviewProjects
+                                  .filter((project) => project.custom_team.filter((member) => member.member == session.sub).some((member) => member.level < 3))
+                                  .filter((project) => project.custom_project_status !== "draft")
+                                  .map((p) => (
+                                    <CommandItem
+                                      value={p.project_name}
+                                      key={p.project_name}
+                                      onSelect={() => {
+                                        form.setValue("project", p.project_name);
+                                      }}
+                                    >
+                                      {p.custom_project_title}
+                                      <Check className={cn("ml-auto", p.project_name === field.value ? "opacity-100" : "opacity-0")} />
+                                    </CommandItem>
+                                  ))}
                               </CommandGroup>
                             </CommandList>
                           </Command>

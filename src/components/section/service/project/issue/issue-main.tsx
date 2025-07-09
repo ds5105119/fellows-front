@@ -12,8 +12,9 @@ import { IssueEmptyState } from "./issue-empty-state";
 import { IssueSkeleton } from "./issue-skeleton";
 import { toast } from "sonner";
 import useThrottle from "@/lib/useThrottle";
+import { Session } from "next-auth";
 
-export default function IssueMain() {
+export default function IssueMain({ session }: { session: Session }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
@@ -111,7 +112,7 @@ export default function IssueMain() {
       <div className="bg-white border-y border-gray-200">
         <IssueEmptyState hasIssue={hasIssue} hasIssueLoading={hasIssueLoading} isLoading={isLoading} issuesLength={issues.length} />
 
-        <IssueList issues={issues} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} isValidating={IssueSwr.isValidating} />
+        <IssueList issues={issues} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
 
         {isLoading && hasIssue && <IssueSkeleton count={IssueSwr.data?.length === 1 ? 3 : 8} />}
 
@@ -120,7 +121,14 @@ export default function IssueMain() {
         {issues.length > 0 && <div className="px-4 py-3 border-t border-gray-100 text-sm text-gray-500 bg-gray-50">총 {issues.length}개의 이슈</div>}
       </div>
 
-      <IssueForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} onSubmit={handleFormSubmit} issue={selectedIssue} isLoading={isSubmitting} />
+      <IssueForm
+        session={session}
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSubmit={handleFormSubmit}
+        issue={selectedIssue}
+        isLoading={isSubmitting}
+      />
 
       <IssueDeleteDialog
         isOpen={isDeleteDialogOpen}

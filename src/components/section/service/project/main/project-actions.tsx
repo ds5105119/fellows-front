@@ -183,10 +183,10 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                     </Button>
                   </DialogClose>
                   <Button
-                    variant="outline"
+                    variant="default"
                     onClick={handleSubmitProject}
                     disabled={isSubmitting || isSubmitted}
-                    className="relative overflow-hidden bg-transparent transition-all duration-200 ease-out hover:scale-105 active:scale-95"
+                    className="relative overflow-hidden transition-all duration-200 ease-out"
                   >
                     {isSubmitting ? (
                       <div className="flex items-center space-x-2">

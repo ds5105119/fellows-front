@@ -17,7 +17,7 @@ export default async function Page() {
     <SessionProvider session={session}>
       <div className="shrink-0 w-full h-full flex flex-col">
         <ProjectTab />
-        <IssuesPage />
+        <IssuesPage session={session} />
       </div>
     </SessionProvider>
   );

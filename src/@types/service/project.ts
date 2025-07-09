@@ -107,6 +107,7 @@ export const overviewERPNextProjectSchema = z.object({
   creation: z.coerce.date().optional().nullable(),
   modified: z.coerce.date().optional().nullable(),
 
+  custom_team: ERPNextProjectTeamSchema,
   project_name: z.string(),
   custom_project_title: z.string().optional().nullable(),
   custom_project_status: customProjectStatusEnum.optional().nullable().default("draft"),
