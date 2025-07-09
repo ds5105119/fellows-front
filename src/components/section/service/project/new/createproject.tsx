@@ -189,7 +189,6 @@ export default function CreateProject({ title }: { title?: string }) {
           onSubmit={handleSubmitWithScroll}
           showTermsPrompt={showTermsPrompt}
           onTermsAgreeAndNext={handleTermsAgreeAndNext}
-          termsAccepted={termsAccepted}
         />
       </div>
     </div>

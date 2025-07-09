@@ -14,7 +14,6 @@ interface ProjectFormNavigationProps {
   onSubmit: () => void;
   showTermsPrompt?: boolean;
   onTermsAgreeAndNext?: () => void;
-  termsAccepted?: boolean;
 }
 
 export function ProjectFormNavigation({
@@ -29,7 +28,6 @@ export function ProjectFormNavigation({
   onSubmit,
   showTermsPrompt = false,
   onTermsAgreeAndNext,
-  termsAccepted = false,
 }: ProjectFormNavigationProps) {
   return (
     <div className="w-full sticky bottom-0 z-20 px-5 sm:px-8">

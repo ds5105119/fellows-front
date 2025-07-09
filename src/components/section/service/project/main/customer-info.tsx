@@ -6,6 +6,7 @@ import type { Session } from "next-auth";
 import { SWRResponse } from "swr";
 import { UserERPNextProject } from "@/@types/service/project";
 import { useUsers } from "@/hooks/fetch/user";
+import { Button } from "@/components/ui/button";
 
 export function CustomerInfo({ projectSwr }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
   const project = projectSwr.data;
@@ -13,12 +14,14 @@ export function CustomerInfo({ projectSwr }: { projectSwr: SWRResponse<UserERPNe
   const customer = customerSwr.data ? customerSwr.data[0] : null;
 
   return (
-    <div className="w-full flex flex-col space-y-2">
-      <div className="w-full flex justify-between px-6 pt-4">
+    <div className="w-full flex flex-col relative">
+      <div className="w-full flex items-center justify-between border-b px-6 py-1 bg-white">
         <div className="text-sm font-medium">계약자 정보가 연동되었어요</div>
-        <WorkflowIcon className="!size-6 text-gray-500" />
+        <Button size="icon" variant="ghost" className="!p-1">
+          <WorkflowIcon className="!size-5 text-gray-500" />
+        </Button>
       </div>
-      <div className="w-full flex space-x-2.5 px-6 pb-4">
+      <div className="w-full flex space-x-2.5 px-6 py-4">
         <div className="flex flex-col space-y-2">
           <div className="text-sm font-medium">성함</div>
           <div className="text-sm font-medium">이메일</div>
