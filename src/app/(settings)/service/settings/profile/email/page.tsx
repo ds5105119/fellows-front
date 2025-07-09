@@ -24,7 +24,7 @@ export default async function Page() {
           </p>
         </div>
 
-        <div className="w-full grow px-4 lg:px-8 pt-2 pb-6">
+        <div className="w-full grow px-4 lg:px-8 pb-6">
           <EmailUpdateRequest />
         </div>
       </div>

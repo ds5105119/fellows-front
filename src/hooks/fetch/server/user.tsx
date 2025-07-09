@@ -158,3 +158,20 @@ export const updateEmailRequest = async (email: string) => {
 
   return response.status;
 };
+
+export const updateEmailVerify = async (email: string, otp: string) => {
+  const session = await auth();
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data/email/verify`, {
+    method: "POST",
+    body: JSON.stringify({ email: email, otp: otp }),
+    headers: {
+      "Content-Type": "application/json",
+      ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+    },
+    redirect: "follow",
+    credentials: "include",
+  });
+
+  return response.status;
+};
