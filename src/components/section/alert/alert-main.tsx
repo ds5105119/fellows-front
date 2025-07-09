@@ -2,7 +2,7 @@
 
 import { deleteAlert, useAlerts } from "@/hooks/fetch/alert";
 import { useEffect, useRef, useState } from "react";
-import { useInView, motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { useInView, motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
 import { Bell, X, ExternalLinkIcon } from "lucide-react";
 import dayjs from "@/lib/dayjs";
 import type { AlertDto } from "@/@types/accounts/alert";
@@ -10,23 +10,37 @@ import { useRouter } from "next/navigation";
 
 interface AlertItemProps {
   alert: AlertDto;
-  onDelete: (alert: AlertDto) => void;
+  onDelete: (alert: AlertDto) => Promise<void>;
   onOpen: (alert: AlertDto) => void;
 }
 
 function AlertItem({ alert, onDelete, onOpen }: AlertItemProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [swipeState, setSwipeState] = useState<"none" | "delete" | "open">("none");
+  const [isAnimating, setIsAnimating] = useState(false);
   const x = useMotionValue(0);
 
   // 버튼이 나타나는 임계점
-  const BUTTON_THRESHOLD = 80;
+  const BUTTON_THRESHOLD = 90;
   // 자동 실행되는 임계점
-  const AUTO_ACTION_THRESHOLD = 200;
+  const AUTO_ACTION_THRESHOLD = 250;
+  // 버튼 기본 크기
+  const BUTTON_MIN_WIDTH = 80;
 
-  // x 값에 따른 배경 투명도 계산
-  const deleteOpacity = useTransform(x, [-BUTTON_THRESHOLD, 0], [1, 0]);
-  const readOpacity = useTransform(x, [0, BUTTON_THRESHOLD], [0, 1]);
+  // x 값에 따른 버튼 투명도 계산 (임계점 이후에만 나타남)
+  const deleteOpacity = useTransform(x, [-BUTTON_THRESHOLD + 10, -BUTTON_THRESHOLD], [0, 1]);
+  const readOpacity = useTransform(x, [BUTTON_THRESHOLD - 10, BUTTON_THRESHOLD], [0, 1]);
+
+  // x 값에 따른 버튼 너비 계산 (드래그 거리만큼 늘어남, 최대 제한 없음)
+  const deleteButtonWidth = useTransform(x, (value) => {
+    if (value >= -BUTTON_THRESHOLD) return BUTTON_MIN_WIDTH;
+    return Math.abs(value + 16);
+  });
+
+  const readButtonWidth = useTransform(x, (value) => {
+    if (value <= BUTTON_THRESHOLD) return BUTTON_MIN_WIDTH;
+    return Math.abs(value - 16);
+  });
 
   const handleDragStart = () => {
     setIsDragging(true);
@@ -34,7 +48,6 @@ function AlertItem({ alert, onDelete, onOpen }: AlertItemProps) {
 
   const handleDrag = () => {
     const currentX = x.get();
-
     if (currentX < -BUTTON_THRESHOLD) {
       setSwipeState("delete");
     } else if (currentX > BUTTON_THRESHOLD) {
@@ -50,39 +63,76 @@ function AlertItem({ alert, onDelete, onOpen }: AlertItemProps) {
 
     // 자동 실행 임계점을 넘으면 바로 실행
     if (currentX < -AUTO_ACTION_THRESHOLD) {
-      onDelete(alert);
+      handleDeleteClick();
       return;
     } else if (currentX > AUTO_ACTION_THRESHOLD) {
-      onOpen(alert);
+      handleOpenClick();
       return;
     }
 
     // 버튼 임계점을 넘으면 버튼 위치에 스냅
     if (currentX < -BUTTON_THRESHOLD) {
-      x.set(-BUTTON_THRESHOLD);
+      animate(x, -BUTTON_THRESHOLD, {
+        type: "spring",
+        stiffness: 400,
+        damping: 30,
+      });
       setSwipeState("delete");
     } else if (currentX > BUTTON_THRESHOLD) {
-      x.set(BUTTON_THRESHOLD);
+      animate(x, BUTTON_THRESHOLD, {
+        type: "spring",
+        stiffness: 400,
+        damping: 30,
+      });
       setSwipeState("open");
     } else {
       // 임계점을 넘지 않으면 원래 위치로
-      x.set(0);
+      animate(x, 0, {
+        type: "spring",
+        stiffness: 400,
+        damping: 30,
+      });
       setSwipeState("none");
     }
   };
 
-  const handleDeleteClick = () => {
-    onDelete(alert);
+  const handleDeleteClick = async () => {
+    setIsAnimating(true);
+    // 왼쪽으로 스와이프 (삭제 버튼이 오른쪽에 있으므로)
+    await animate(x, -400, {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+    });
+    try {
+      await onDelete(alert);
+    } catch (error) {
+      console.error("Delete failed:", error);
+      setIsAnimating(false);
+    }
   };
 
-  const handleOpenClick = () => {
-    onOpen(alert);
+  const handleOpenClick = async () => {
+    setIsAnimating(true);
+    // 오른쪽으로 스와이프 (읽기 버튼이 왼쪽에 있으므로)
+    await animate(x, 400, {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+    });
+    setTimeout(() => {
+      onOpen(alert);
+    }, 200);
   };
 
   // 다른 곳을 터치하면 원래 위치로 복귀
   const resetPosition = () => {
-    if (!isDragging && swipeState !== "none") {
-      x.set(0);
+    if (!isDragging && swipeState !== "none" && !isAnimating) {
+      animate(x, 0, {
+        type: "spring",
+        stiffness: 400,
+        damping: 30,
+      });
       setSwipeState("none");
     }
   };
@@ -94,38 +144,53 @@ function AlertItem({ alert, onDelete, onOpen }: AlertItemProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{
         opacity: 0,
-        x: x.get() > 0 ? 300 : -300,
-        transition: { duration: 0.3 },
+        scale: 0.8,
+        transition: {
+          duration: 0.3,
+          ease: [0.4, 0.0, 0.2, 1],
+        },
       }}
       onTap={resetPosition}
     >
-      {/* Delete background */}
-      <motion.div className="absolute inset-0 rounded-2xl flex items-center justify-end" style={{ opacity: deleteOpacity }}>
+      {/* Delete button - 알림 오른쪽 끝 밖에 위치 */}
+      <motion.div
+        className="absolute top-0 bottom-0 flex items-center justify-start z-10"
+        style={{
+          right: 0,
+          opacity: deleteOpacity,
+        }}
+      >
         <motion.button
-          className="flex items-center justify-center w-18 h-full bg-red-50/70 rounded-2xl backdrop-blur-xl drop-shadow-2xl drop-shadow-black/10"
+          className="flex items-center justify-center bg-red-500 rounded-2xl shadow-lg h-full"
+          style={{
+            width: deleteButtonWidth,
+          }}
           onClick={handleDeleteClick}
           whileTap={{ scale: 0.95 }}
-          animate={{
-            scale: swipeState === "delete" ? 1 : 0.8,
-            opacity: swipeState === "delete" ? 1 : 0.7,
-          }}
+          disabled={isAnimating}
         >
-          <X className="w-6 h-6 text-red-500" />
+          <X className="w-6 h-6 text-white" />
         </motion.button>
       </motion.div>
 
-      {/* Read background */}
-      <motion.div className="absolute inset-0 rounded-2xl flex items-center justify-start" style={{ opacity: readOpacity }}>
+      {/* Read button - 알림 왼쪽 끝 밖에 위치 */}
+      <motion.div
+        className="absolute top-0 bottom-0 flex items-center justify-end z-10"
+        style={{
+          left: 0,
+          opacity: readOpacity,
+        }}
+      >
         <motion.button
-          className="flex items-center justify-center w-18 h-full bg-blue-50/70 rounded-2xl backdrop-blur-xl drop-shadow-2xl drop-shadow-black/10"
+          className="flex items-center justify-center bg-blue-500 rounded-2xl shadow-lg h-full"
+          style={{
+            width: readButtonWidth,
+          }}
           onClick={handleOpenClick}
           whileTap={{ scale: 0.95 }}
-          animate={{
-            scale: swipeState === "open" ? 1 : 0.8,
-            opacity: swipeState === "open" ? 1 : 0.7,
-          }}
+          disabled={isAnimating}
         >
-          <ExternalLinkIcon className="w-6 h-6 text-blue-500" />
+          <ExternalLinkIcon className="w-6 h-6 text-white" />
         </motion.button>
       </motion.div>
 
@@ -135,7 +200,7 @@ function AlertItem({ alert, onDelete, onOpen }: AlertItemProps) {
         dragDirectionLock={true}
         dragElastic={0.1}
         dragMomentum={false}
-        dragConstraints={{ left: -AUTO_ACTION_THRESHOLD, right: AUTO_ACTION_THRESHOLD }}
+        dragConstraints={{ left: -300, right: 300 }}
         onDragStart={handleDragStart}
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
@@ -148,12 +213,14 @@ function AlertItem({ alert, onDelete, onOpen }: AlertItemProps) {
           mass: 0.6,
         }}
         className={`
-          relative bg-white/70 rounded-2xl p-4 backdrop-blur-xl drop-shadow-2xl drop-shadow-black/10
+          relative bg-white/70 rounded-2xl p-4 backdrop-blur-xl drop-shadow-2xl drop-shadow-black/10 z-20
           ${isDragging ? "cursor-grabbing" : "cursor-grab"}
           transition-shadow duration-200
+          ${isAnimating ? "pointer-events-none" : ""}
         `}
         whileDrag={{
           boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.15)",
+          scale: 1.02,
         }}
       >
         <div className="flex items-center space-x-3">
@@ -204,7 +271,13 @@ export default function AlertMain() {
   }, [isReachingEnd, isLoading, isReachedEnd]);
 
   const handleDeleteAlert = async (alert: AlertDto) => {
-    await deleteAlert(`${alert.id}`);
+    try {
+      await deleteAlert(`${alert.id}`);
+      alertSwr.mutate();
+    } catch (error) {
+      console.error("Failed to delete alert:", error);
+      throw error;
+    }
   };
 
   const handleOpenAlert = (alert: AlertDto) => {
