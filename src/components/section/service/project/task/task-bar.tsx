@@ -1,59 +1,60 @@
-"use client"
+"use client";
 
-import { useMemo } from "react"
-import Color from "color"
-import dayjs from "@/lib/dayjs"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { PopoverClose } from "@radix-ui/react-popover"
-import { Button } from "@/components/ui/button"
-import { FilePenLine, ClockIcon, ArrowRight } from "lucide-react"
-import type { ERPNextTaskForUser } from "@/@types/service/project"
-import type { DateRange } from "./gantt-chart"
+import { useMemo } from "react";
+import Color from "color";
+import dayjs from "@/lib/dayjs";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { PopoverClose } from "@radix-ui/react-popover";
+import { Button } from "@/components/ui/button";
+import { FilePenLine, ClockIcon, ArrowRight } from "lucide-react";
+import type { ERPNextTaskForUser } from "@/@types/service/project";
+import type { DateRange } from "./gantt-chart";
 
 interface TaskBarProps {
-  task: ERPNextTaskForUser
-  dateRange: DateRange
+  task: ERPNextTaskForUser;
+  dateRange: DateRange;
 }
 
 export function TaskBar({ task, dateRange }: TaskBarProps) {
+  console.log(task);
   const barStyle = useMemo(() => {
-    if (!task.exp_start_date || !task.exp_end_date) return null
+    if (!task.exp_start_date || !task.exp_end_date) return null;
 
-    const taskStart = dayjs(task.exp_start_date)
-    const taskEnd = dayjs(task.exp_end_date)
-    const { start: rangeStart, end: rangeEnd } = dateRange
+    const taskStart = dayjs(task.exp_start_date).startOf("day");
+    const taskEnd = dayjs(task.exp_end_date).endOf("day");
+    const { start: rangeStart, end: rangeEnd } = dateRange;
 
     // 태스크가 현재 표시 범위와 전혀 겹치지 않으면 숨김
     if (taskEnd.isBefore(rangeStart) || taskStart.isAfter(rangeEnd)) {
-      return null
+      return null;
     }
 
     // 표시 범위 내에서의 위치 계산
-    const totalDuration = rangeEnd.diff(rangeStart, "minute", true)
-    const taskStartOffset = Math.max(0, taskStart.diff(rangeStart, "minute", true))
-    const taskEndOffset = Math.min(rangeEnd.diff(rangeStart, "minute", true), taskEnd.diff(rangeStart, "minute", true))
-    const taskDuration = taskEndOffset - taskStartOffset
+    const totalDuration = rangeEnd.diff(rangeStart, "minute", true);
+    const taskStartOffset = Math.max(0, taskStart.diff(rangeStart, "minute", true));
+    const taskEndOffset = Math.min(rangeEnd.diff(rangeStart, "minute", true), taskEnd.diff(rangeStart, "minute", true));
+    const taskDuration = taskEndOffset - taskStartOffset;
 
-    if (taskDuration <= 0) return null
+    if (taskDuration <= 0) return null;
 
-    const leftPercent = (taskStartOffset / totalDuration) * 100
-    const widthPercent = (taskDuration / totalDuration) * 100
+    const leftPercent = (taskStartOffset / totalDuration) * 100;
+    const widthPercent = (taskDuration / totalDuration) * 100;
 
     return {
       left: `${Math.max(0, leftPercent)}%`,
       width: `${Math.max(0.1, widthPercent)}%`,
-    }
-  }, [task.exp_start_date, task.exp_end_date, dateRange])
+    };
+  }, [task.exp_start_date, task.exp_end_date, dateRange]);
 
   if (!task.exp_start_date || !task.exp_end_date) {
     return (
       <div className="absolute top-1/2 left-1/2 -translate-1/2 border-2 px-2 border-dashed border-gray-300 rounded flex items-center justify-center">
         <span className="text-xs text-gray-500">No dates set</span>
       </div>
-    )
+    );
   }
 
-  if (!barStyle) return null
+  if (!barStyle) return null;
 
   return (
     <Popover>
@@ -78,10 +79,10 @@ export function TaskBar({ task, dateRange }: TaskBarProps) {
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = Color(task.color || "#007AFF")
               .alpha(0.3)
-              .string()
+              .string();
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent"
+            e.currentTarget.style.backgroundColor = "transparent";
           }}
         >
           {/* 배경 바 (전체 - 희미하게) */}
@@ -140,5 +141,5 @@ export function TaskBar({ task, dateRange }: TaskBarProps) {
         </div>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
