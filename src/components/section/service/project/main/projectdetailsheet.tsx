@@ -20,6 +20,7 @@ import { ProjectActions } from "./project-actions";
 import { ProjectNotices } from "./project-notices";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { ContractList } from "./contract-list";
 
 interface ProjectDetailSheetProps {
   project_id: string;
@@ -92,6 +93,10 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     <div className="flex space-x-1 items-center" key="files">
       <span>파일</span>
     </div>,
+    <div className="flex space-x-1 items-center" key="files">
+      <span>계약서</span>
+    </div>,
+
     <div className="flex space-x-1 items-center" key="teams">
       <span>팀원</span>
     </div>,
@@ -121,6 +126,9 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const tabs2 = [
     <div className="flex space-x-1 items-center" key="files">
       <span>파일</span>
+    </div>,
+    <div className="flex space-x-1 items-center" key="files">
+      <span>계약서</span>
     </div>,
     <div className="flex space-x-1 items-center" key="teams">
       <span>팀원</span>
@@ -278,7 +286,8 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             {/* 탭 콘텐츠 */}
             <div className="w-full grow overflow-y-auto scrollbar-hide">
               {activeTab2 === 0 && <FilesList projectSwr={project} session={session} />}
-              {activeTab2 === 1 && <TeamsList projectSwr={project} session={session} />}
+              {activeTab2 === 1 && <ContractList projectSwr={project} session={session} />}
+              {activeTab2 === 2 && <TeamsList projectSwr={project} session={session} />}
             </div>
           </div>
         </div>
@@ -320,7 +329,8 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
               </>
             )}
             {activeMobileTab === 1 && <FilesList projectSwr={project} session={session} />}
-            {activeMobileTab === 2 && <TeamsList projectSwr={project} session={session} />}
+            {activeMobileTab === 2 && <ContractList projectSwr={project} session={session} />}
+            {activeMobileTab === 3 && <TeamsList projectSwr={project} session={session} />}
           </div>
         </div>
       </div>
