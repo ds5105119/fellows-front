@@ -30,7 +30,7 @@ export const userERPNextContractSchema = z.object({
   custom_fee: z.number().int().nullable().optional(),
   custom_down_payment: z.number().nullable().optional(),
   custom_balance: z.number().nullable().optional(),
-  custom_maintenance: z.number().int().nullable().optional(),
+  custom_maintenance: z.number().int().default(0).nullable().optional(),
   custom_maintenance_start_date: z.string().date().nullable().optional(),
   custom_maintenance_end_date: z.string().date().nullable().optional(),
   is_signed: z.number().int().nullable().optional(),
