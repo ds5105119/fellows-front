@@ -11,6 +11,7 @@ import dayjs from "@/lib/dayjs";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import type { UserERPNextContract } from "@/@types/service/contract";
+import parse from "html-react-parser";
 
 export function ContractList({ projectSwr }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
   const { data: project } = projectSwr;
@@ -84,11 +85,46 @@ export function ContractList({ projectSwr }: { projectSwr: SWRResponse<UserERPNe
               <p className="text-xs font-medium text-muted-foreground">{dayjs(contract.modified).format("LL")}</p>
             </div>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Button variant="outline" size="sm" className="text-xs font-semibold h-7 bg-transparent">
+              <Button
+                variant="default"
+                size="sm"
+                className="text-xs font-semibold h-7"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  // DOCS 버튼의 동작 구현
+                  console.log("DOCS 버튼 클릭");
+                }}
+              >
+                결제하기
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs font-semibold h-7 bg-transparent hover:bg-zinc-200"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  // DOCS 버튼의 동작 구현
+                  console.log("DOCS 버튼 클릭");
+                }}
+              >
                 <FileText className="w-3 h-3 mr-1" />
                 DOCS
               </Button>
-              <Button variant="outline" size="sm" className="text-xs font-semibold h-7 bg-transparent">
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs font-semibold h-7 bg-transparent hover:bg-zinc-200"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  // PDF 다운로드 동작 구현
+                  console.log("PDF 버튼 클릭");
+                }}
+              >
                 <Download className="w-3 h-3 mr-1" />
                 PDF
               </Button>
@@ -320,25 +356,8 @@ export function ContractList({ projectSwr }: { projectSwr: SWRResponse<UserERPNe
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 px-4 py-1.5 text-center text-gray-500" colSpan={4}>
-                        {contract?.contract_terms || "별도 특약사항 없음"}
-                      </td>
-                    </tr>
-
-                    {/* 첨부문서 */}
-                    <tr>
-                      <td className="border border-gray-300 px-4 py-1.5 bg-gray-100 font-bold text-center" colSpan={4}>
-                        첨부문서
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-300 px-4 py-1.5" colSpan={4}>
-                        첨부 1. 일반 계약 조건
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-300 px-4 py-1.5" colSpan={4}>
-                        첨부 2. 기능 명세서
+                      <td className="border border-gray-300 px-4 py-1.5 text-gray-500" colSpan={4}>
+                        {contract?.contract_terms ? <>{parse(contract?.contract_terms)}</> : "별도 특약사항 없음"}
                       </td>
                     </tr>
 
