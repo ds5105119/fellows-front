@@ -3,10 +3,12 @@
 import type { UserERPNextProject } from "@/@types/service/project";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Info, UserPlus } from "lucide-react";
+import { Info, PenIcon, UserPlus } from "lucide-react";
 import { Session } from "next-auth";
 import { SWRResponse } from "swr";
 import { useContracts } from "@/hooks/fetch/contract";
+import dayjs from "@/lib/dayjs";
+import { Button } from "@/components/ui/button";
 
 export function ContractList({ projectSwr }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
   const { data: project } = projectSwr;
@@ -19,7 +21,7 @@ export function ContractList({ projectSwr }: { projectSwr: SWRResponse<UserERPNe
       <div className="text-sm font-bold">계약서: {}</div>
       <div className="flex items-center space-x-1.5 w-full rounded-sm bg-gray-100 px-4 py-2 mb-1 text-sm">
         <Info className="!size-4" />
-        <p>프로젝트에 참여하는 팀 멤버들을 관리하세요.</p>
+        <p>프로젝트 계약서를 한 곳에서 관리할 수 있어요.</p>
       </div>
 
       {project?.custom_team && project?.custom_team.length >= 5 && (
@@ -45,8 +47,23 @@ export function ContractList({ projectSwr }: { projectSwr: SWRResponse<UserERPNe
 
       <section className="space-y-2">
         {contracts.map((contract) => (
-          <div key={contract.name} className="flex items-center space-x-4 p-2 rounded-sm">
-            {contract.custom_name}
+          <div key={contract.name} className="flex flex-col space-y-2 p-3 rounded-sm border hover:bg-zinc-100 transition-colors duration-200 selection-none">
+            <p className="text-sm font-bold">
+              <span className="font-medium text-muted-foreground">계약명:&nbsp;</span>
+              {contract.custom_name}
+            </p>
+            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <PenIcon className="!size-3.5 inline-block mr-1" />
+              <p className="text-xs font-medium text-muted-foreground">{dayjs(contract.modified).format("LL")}</p>
+            </div>
+            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <Button variant="outline" size="sm" className="text-xs font-semibold h-7">
+                DOCS
+              </Button>
+              <Button variant="outline" size="sm" className="text-xs font-semibold h-7">
+                PDF
+              </Button>
+            </div>
           </div>
         ))}
       </section>
@@ -80,11 +97,6 @@ export function ContractList({ projectSwr }: { projectSwr: SWRResponse<UserERPNe
           </div>
         </div>
       )}
-
-      <button className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-blue-200 hover:bg-blue-300 text-blue-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer">
-        <UserPlus className="!size-5" strokeWidth={2} />
-        <p>팀원 초대하기</p>
-      </button>
     </div>
   );
 }
