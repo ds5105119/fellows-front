@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import type { UserERPNextContract } from "@/@types/service/contract";
 
-export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
+export function ContractList({ projectSwr }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
   const { data: project } = projectSwr;
   const project_id = project?.project_name ?? "";
   const { data: contractsSwr, isLoading } = useContracts({ project_id });
