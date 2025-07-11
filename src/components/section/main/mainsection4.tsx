@@ -48,7 +48,7 @@ export default function MainSection4() {
         <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">한 번 맡겨도 제대로 된 곳에서 맡기세요</h1>
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
           <h4 className="text-base md:text-lg font-semibold text-foreground">
-            Fellows는 글로벌 개발 파트너사, 디자인 하우스 등<br />
+            글로벌 개발 파트너사, 디자인 하우스 등<br />
             50명 이상의 전문가들과 협력하고 있습니다.
           </h4>
         </div>
