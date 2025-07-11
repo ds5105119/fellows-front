@@ -39,9 +39,9 @@ const features = [
       <>
         <p className="text-foreground text-base font-bold">실시간 태스크 관리</p>
         <p className="text-foreground leading-normal">
-          할당된 업무를 한눈에
+          진행 중인 작업 현황을
           <br />
-          우선순위별로 정리하세요
+          실시간으로 확인하세요
         </p>
       </>
     ),
@@ -146,9 +146,9 @@ const features = [
       <>
         <p className="text-background text-base font-bold">팀원 관리</p>
         <p className="text-background leading-normal">
-          팀원과 함께 업무 과정,
+          팀원과 함께 이 모든 것을
           <br />
-          권한을 체계적으로 관리하세요
+          체계적으로 관리하세요
         </p>
       </>
     ),
@@ -162,11 +162,11 @@ const features = [
   {
     header: (
       <>
-        <p className="text-background text-base font-bold">이슈 트래킹</p>
+        <p className="text-background text-base font-bold">한 곳에서 소통하기</p>
         <p className="text-background leading-normal">
-          문제 발생부터 해결까지
+          새로운 이슈를 생성하고
           <br />
-          모든 과정을 투명하게
+          작업 현황만 파악하면 됩니다
         </p>
       </>
     ),

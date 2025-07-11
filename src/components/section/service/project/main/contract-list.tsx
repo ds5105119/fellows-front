@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import type { UserERPNextContract } from "@/@types/service/contract";
 import parse from "html-react-parser";
+import Link from "next/link";
 
 export function ContractList({ projectSwr }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
   const { data: project } = projectSwr;
@@ -91,12 +92,10 @@ export function ContractList({ projectSwr }: { projectSwr: SWRResponse<UserERPNe
                 className="text-xs font-semibold h-7"
                 onClick={(e) => {
                   e.stopPropagation();
-                  e.preventDefault();
-                  // DOCS 버튼의 동작 구현
-                  console.log("DOCS 버튼 클릭");
                 }}
+                asChild
               >
-                결제하기
+                <Link href={`/service/project/${project_id}/payment/contract/${contract.name}`}>결제하기</Link>
               </Button>
 
               <Button
