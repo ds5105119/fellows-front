@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
       },
       redirect: "follow",
       credentials: "include",
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
