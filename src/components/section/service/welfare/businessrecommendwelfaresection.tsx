@@ -10,7 +10,7 @@ import { useState } from "react";
 import { Welfare, WelfareResponseSchema } from "@/@types/openApi/welfare";
 import { formatNumber } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Compass, Phone } from "lucide-react";
+import { Compass, EyeIcon, LinkIcon, Phone } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -232,7 +232,43 @@ export default function BusinessRecommendWelfareSection() {
         <ComboBoxResponsive statuses={orders} initial="views" callback={setOrderBy} />
       </div>
 
-      <div className="flex flex-col w-full space-x-0.5 space-y-4">
+      <div className="flex xl:hidden flex-col w-full space-y-4">
+        {data?.map((pages) => {
+          return pages.map((val, idx) => (
+            <div
+              key={idx}
+              className="w-full rounded-md p-4 bg-zinc-100 hover:bg-zinc-200 transition-colors duration-300 flex flex-col space-y-2"
+              onClick={() => setSelected(val)}
+            >
+              <div className="w-full flex space-x-1.5 items-center">
+                <p className="font-bold text-sm md:text-base">{val.service_name}</p>
+                <p className="font-medium text-xs md:text-sm text-muted-foreground">@{val.dept_name}</p>
+              </div>
+              <p className="font-medium text-xs md:text-sm">{val.service_summary}</p>
+              <div className="flex space-x-3 items-center">
+                <div className="flex space-x-1.5 items-center">
+                  <EyeIcon className="size-3 text-muted-foreground" />
+                  <p className="font-medium text-xs md:text-sm text-muted-foreground">{formatNumber(val.views)}</p>
+                </div>
+                <div className="flex space-x-1.5 items-center">
+                  <LinkIcon className="size-3 text-muted-foreground" />
+                  <p className="font-medium text-xs md:text-sm text-muted-foreground">
+                    {val.apply_url ?? val.detail_url ? (
+                      <Link href={val.apply_url ?? val.detail_url ?? ""} className="">
+                        이동하기
+                      </Link>
+                    ) : (
+                      <>❌</>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ));
+        })}
+      </div>
+
+      <div className="flex-col w-full space-x-0.5 space-y-4 hidden xl:flex">
         <Table className="table-fixed w-full">
           <TableCaption className="text-center whitespace-pre-line">
             {
