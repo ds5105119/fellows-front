@@ -89,7 +89,7 @@ export default function MainSection1() {
                     placeholder="사이트 제목을 입력하세요"
                     className="grow bg-transparent border-none focus-visible:ring-0 outline-none shadow-none h-8 md:h-8.5"
                   />
-                  <Link href={`/service/project/new?title=${title}`}>
+                  <Link href={`/service/project/new?title=${title}`} prefetch={true}>
                     <InteractiveHoverButton className="h-8 md:h-8.5 text-sm font-semibold rounded-full">시작하기</InteractiveHoverButton>
                   </Link>
                 </div>

@@ -21,8 +21,8 @@ export const TextReveal: FC<ComponentPropsWithoutRef<"div">> = ({ className }) =
 
   return (
     <div ref={targetRef} className={cn("relative z-0 h-[200vh]", className)}>
-      <div className="sticky top-24 md:top-48 lg:top-64 flex h-[50%] max-w-5xl my-auto items-start bg-transparent py-8 md:py-16 lg:py-20 z-10 px-4 md:px-0">
-        <span className={"flex flex-wrap font-bold tracking-wide text-2xl md:text-4xl lg:text-6xl xl:text-8xl space-x-2 md:space-x-5 lg:space-x-10"}>
+      <div className="sticky top-24 md:top-48 lg:top-72 flex h-[50%] max-w-5xl my-auto items-start bg-transparent py-8 md:py-16 lg:py-20 z-10 px-4 md:px-0">
+        <span className={"flex flex-wrap font-bold tracking-wider text-2xl md:text-4xl lg:text-6xl xl:text-8xl space-x-2 md:space-x-5 lg:space-x-10"}>
           {words.map((word, i) => {
             // 텍스트 애니메이션을 0~0.5 구간으로 설정
             const start = (i / words.length) * 0.5;

@@ -88,6 +88,11 @@ export default function ProposalCreationScreen() {
             </span>
           ))}
         </div>
+
+        <div className="flex flex-col space-y-2">
+          <div>1. 필수 정보 입력</div>
+          <div>2. 추가 정보 입력</div>
+        </div>
       </div>
     </div>
   );

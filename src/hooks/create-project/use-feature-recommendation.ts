@@ -11,10 +11,11 @@ export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProjec
   const [isSuccess, setIsSuccess] = useState(true);
 
   const timeoutRefs = useRef<{
-    recommend?: NodeJS.Timeout;
-    success?: NodeJS.Timeout;
-    fetch?: NodeJS.Timeout;
+    completion?: NodeJS.Timeout;
+    recommending?: NodeJS.Timeout;
   }>({});
+
+  const fetchStartTime = useRef<number | null>(null);
 
   const watchedFields = useWatch({
     name: ["custom_project_title", "custom_project_summary", "custom_readiness_level", "custom_platforms"],
@@ -35,7 +36,9 @@ export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProjec
       if (timeout) clearTimeout(timeout);
     });
     timeoutRefs.current = {};
+    fetchStartTime.current = null;
 
+    fetchStartTime.current = Date.now();
     await estimateFeatures.fetchData();
   };
 
@@ -43,57 +46,64 @@ export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProjec
   useEffect(() => {
     if (isFirstTimeInStep2 && currentStep === 2) {
       setIsFirstTimeInStep2(false);
+      fetchStartTime.current = Date.now();
       estimateFeatures.fetchData();
     }
   }, [isFirstTimeInStep2, currentStep]);
 
   // Handle loading state
   useEffect(() => {
-    if (estimateFeatures?.loading && !isRecommending && !hasCompleted) {
+    if (estimateFeatures?.loading && !hasCompleted) {
       setIsRecommending(true);
       window.scrollTo(0, 0);
     }
-  }, [estimateFeatures?.loading, isRecommending, hasCompleted]);
+  }, [estimateFeatures?.loading, hasCompleted]);
 
-  // Handle completion
+  // Handle completion and subsequent state changes
   useEffect(() => {
-    if (!estimateFeatures?.loading && isRecommending && estimateFeatures?.data) {
-      timeoutRefs.current.recommend = setTimeout(() => {
-        setIsRecommending(false);
+    if (!estimateFeatures?.loading && isRecommending && fetchStartTime.current) {
+      const fetchEndTime = Date.now();
+      const fetchDuration = fetchEndTime - fetchStartTime.current;
+      const remainingTime = Math.max(0, 3500 - fetchDuration);
+
+      timeoutRefs.current.completion = setTimeout(() => {
         setHasCompleted(true);
-      }, 3500);
+
+        timeoutRefs.current.recommending = setTimeout(() => {
+          setIsRecommending(false);
+        }, 3500);
+      }, remainingTime);
     }
-  }, [estimateFeatures?.loading, estimateFeatures?.data, isRecommending]);
+  }, [estimateFeatures?.loading, isRecommending]);
 
   // Apply recommendations to form
   useEffect(() => {
-    if (hasCompleted && estimateFeatures?.data?.feature_list?.length && estimateFeatures.data.feature_list.length > 0) {
-      if (estimateFeatures.data.feature_list.length == 1 && estimateFeatures.data.feature_list[0] == "false") {
+    if (hasCompleted && estimateFeatures?.data?.feature_list?.length) {
+      if (estimateFeatures.data.feature_list.length === 1 && estimateFeatures.data.feature_list[0] === "false") {
         setIsSuccess(false);
         toast.warning(`프로젝트 이름 및 설명이 부족해요.`);
       } else {
         setIsSuccess(true);
-
         const features = estimateFeatures.data.feature_list.map((feature) => ({
           doctype: "Features" as const,
           feature,
         }));
-
         form.setValue("custom_features", features);
       }
     }
   }, [hasCompleted, estimateFeatures?.data?.feature_list, form]);
 
-  // Handle completion
+  // Handle success message visibility
   useEffect(() => {
     if (!isSuccess) {
-      timeoutRefs.current.success = setTimeout(() => {
+      const timer = setTimeout(() => {
         setIsSuccess(true);
-      }, 100);
+      }, 100); // Consider making this duration more meaningful if needed
+      return () => clearTimeout(timer);
     }
   }, [isSuccess]);
 
-  // Cleanup
+  // Cleanup timeouts
   useEffect(() => {
     return () => {
       Object.values(timeoutRefs.current).forEach((timeout) => {
@@ -105,6 +115,7 @@ export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProjec
   return {
     isSuccess,
     isRecommending,
+    hasCompleted,
     handleRecommendAgain,
   };
 }

@@ -22,7 +22,7 @@ export default function CreateProject({ title }: { title?: string }) {
   const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
     useProjectForm(title);
 
-  const { isSuccess, isRecommending, handleRecommendAgain } = useFeatureRecommendation(form, currentStep);
+  const { isSuccess, isRecommending, hasCompleted, handleRecommendAgain } = useFeatureRecommendation(form, currentStep);
 
   // 직접 Intersection Observer 구현
   const checkVisibility = useCallback(() => {
@@ -139,7 +139,7 @@ export default function CreateProject({ title }: { title?: string }) {
           <CreateProjectSide />
         </div>
         <div className="flex flex-col w-full mx-auto xl:mx-0 lg:w-xl h-full scrollbar-hide shrink-0">
-          <RecommendationLoading currentStep={currentStep} totalSteps={totalSteps} />
+          <RecommendationLoading currentStep={currentStep} totalSteps={totalSteps} isRecommanding={isRecommending} hasCompleted={hasCompleted} />
         </div>
       </div>
     );

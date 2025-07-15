@@ -18,34 +18,32 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
   // 외부 ref와 내부 ref를 연결
   useImperativeHandle(ref, () => internalRef.current!, []);
 
+  // --- 여기부터 수정된 부분 ---
+
   // 높이 자동 조절 함수
   const adjustHeight = () => {
     const textarea = internalRef.current;
     if (textarea) {
-      // 초기 높이를 명시적으로 설정 (한 줄 높이와 동일하게)
-      const initialHeight = 40; // h-10과 동일한 40px
-
-      textarea.style.height = `${initialHeight}px`;
+      // 높이를 'auto'로 초기화하여 scrollHeight가 현재 내용에 맞게 정확히 계산되도록 함
+      textarea.style.height = "auto";
       const scrollHeight = textarea.scrollHeight;
+      const initialHeight = 40; // TailwindCSS h-10 (40px)과 일치
 
-      if (scrollHeight <= maxHeight) {
-        // 최대 높이보다 작으면 스크롤바 숨기고 높이 자동 조절
-        textarea.style.height = `${Math.max(initialHeight, scrollHeight)}px`;
-        setIsAtMaxHeight(false);
-      } else {
-        // 최대 높이에 도달하면 스크롤바 표시
+      if (scrollHeight > maxHeight) {
+        // 최대 높이를 초과하면 높이를 고정하고 스크롤을 활성화
         textarea.style.height = `${maxHeight}px`;
         setIsAtMaxHeight(true);
+      } else {
+        // scrollHeight가 초기 높이보다 작아도 최소 높이(h-10)를 유지
+        textarea.style.height = `${Math.max(scrollHeight, initialHeight)}px`;
+        setIsAtMaxHeight(false);
       }
     }
   };
 
-  // 컴포넌트 마운트 시 초기 높이 설정
-  useEffect(() => {
-    adjustHeight();
-  }, []);
+  // --- 여기까지 수정된 부분 ---
 
-  // value prop이 변경될 때 높이 조절
+  // 컴포넌트 마운트 시 및 value prop이 변경될 때 높이 조절
   useEffect(() => {
     adjustHeight();
   }, [props.value]);
@@ -64,6 +62,7 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
           setFocused(false);
           props.onBlur?.(e);
         }}
+        // onInput, onChange에서 모두 호출하여 사용자 입력에 즉시 반응
         onInput={(e) => {
           adjustHeight();
           props.onInput?.(e);
@@ -76,13 +75,13 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
         className={cn(
           "!max-w-full font-medium border-0 border-b-2 rounded-none shadow-none px-0 h-10 min-h-10 focus-visible:ring-0",
           "resize-none whitespace-pre-line break-all transition-all duration-200 ease-in-out",
-          "leading-normal py-2", // 명시적인 padding과 line-height 설정
+          "leading-normal py-2",
           isAtMaxHeight ? "overflow-y-auto" : "overflow-hidden",
           className
         )}
         style={{
           maxHeight: `${maxHeight}px`,
-          boxSizing: "border-box", // 명시적으로 box-sizing 설정
+          boxSizing: "border-box",
           ...props.style,
         }}
       />

@@ -3,9 +3,11 @@ import AIRecommendSkeleton from "@/components/section/service/project/new/aireco
 interface RecommendationLoadingProps {
   currentStep: number;
   totalSteps: number;
+  isRecommanding: boolean;
+  hasCompleted: boolean;
 }
 
-export function RecommendationLoading({ currentStep, totalSteps }: RecommendationLoadingProps) {
+export function RecommendationLoading({ currentStep, totalSteps, isRecommanding, hasCompleted }: RecommendationLoadingProps) {
   return (
     <div className="w-full px-5 md:px-8 py-6 md:py-10">
       <div className="flex items-end justify-between">
@@ -17,7 +19,7 @@ export function RecommendationLoading({ currentStep, totalSteps }: Recommendatio
       </div>
 
       <div className="flex justify-center mt-24 md:mt-36 mb-64 md:mb-64">
-        <AIRecommendSkeleton isLoading={true} />
+        <AIRecommendSkeleton isLoading={isRecommanding} hasCompleted={hasCompleted} />
       </div>
     </div>
   );

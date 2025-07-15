@@ -8,7 +8,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { platformEnum, readinessLevelEnum, CreateERPNextProject } from "@/@types/service/project";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
-import { readinessLevelLabels } from "@/components/resource/project";
+import { PLATFORM_MAPPING, readinessLevelLabels } from "@/components/resource/project";
 
 interface CreateProjectFormStep1Props {
   form: UseFormReturn<CreateERPNextProject>;
@@ -71,7 +71,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                     field.onChange(include ? current.filter((p) => p.platform !== platform) : [...current, { platform }]);
                   }}
                 >
-                  {platform === "web" ? "웹" : platform === "android" ? "Android" : "iOS"}
+                  {PLATFORM_MAPPING[platform]}
                 </Button>
               ))}
             </div>

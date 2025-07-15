@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check } from "lucide-react";
 
-export default function AIRecommendSkeleton({ isLoading }: { isLoading: boolean }) {
+export default function AIRecommendSkeleton({ isLoading, hasCompleted }: { isLoading: boolean; hasCompleted: boolean }) {
   const [cardKey, setCardKey] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -33,7 +33,7 @@ export default function AIRecommendSkeleton({ isLoading }: { isLoading: boolean 
 
   return (
     <AnimatePresence mode="wait">
-      {isLoading ? (
+      {!hasCompleted ? (
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
