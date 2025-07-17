@@ -1,14 +1,13 @@
 "use client";
-
-import { z } from "zod";
-import { UseFormReturn } from "react-hook-form";
+import type { z } from "zod";
+import type { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { platformEnum, readinessLevelEnum, CreateERPNextProject } from "@/@types/service/project";
+import { platformEnum, readinessLevelEnum, type CreateERPNextProject } from "@/@types/service/project";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
-import { PLATFORM_MAPPING, readinessLevelLabels } from "@/components/resource/project";
+import { PLATFORM_MAPPING, READYNISS_MAPPING, PROJECT_METHOD_MAPPING } from "@/components/resource/project";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CreateProjectFormStep1Props {
   form: UseFormReturn<CreateERPNextProject>;
@@ -19,7 +18,9 @@ const getEnumValues = <T extends z.ZodEnum<[string, ...string[]]>>(enumType: T):
 };
 
 export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1Props) {
-  const { control } = form;
+  const { control, getValues, setValue } = form;
+  const platforms = getValues("custom_platforms");
+  const readiness = getValues("custom_readiness_level");
 
   return (
     <>
@@ -51,36 +52,6 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
       />
       <FormField
         control={control}
-        name="custom_platforms"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm font-medium">플랫폼</FormLabel>
-            <div className="grid gap-3 grid-cols-2 md:grid-cols-3">
-              {getEnumValues(platformEnum).map((platform) => (
-                <Button
-                  className={cn(
-                    "col-span-1 h-11 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-md",
-                    (field.value || []).some((p) => p.platform == platform) ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
-                  )}
-                  type="button"
-                  key={platform as string}
-                  variant="secondary"
-                  onClick={() => {
-                    const current = field.value || [];
-                    const include = current.some((p) => p.platform === platform);
-                    field.onChange(include ? current.filter((p) => p.platform !== platform) : [...current, { platform }]);
-                  }}
-                >
-                  {PLATFORM_MAPPING[platform]}
-                </Button>
-              ))}
-            </div>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
         name="custom_readiness_level"
         render={({ field }) => (
           <FormItem>
@@ -97,7 +68,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                     )}
                     onClick={() => field.onChange(level)}
                   >
-                    <div className="text-sm font-semibold">{readinessLevelLabels[level].title}</div>
+                    <div className="text-sm font-semibold">{READYNISS_MAPPING[level].title}</div>
                   </button>
                 ))}
               </div>
@@ -106,8 +77,140 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
           </FormItem>
         )}
       />
-
-      <div className="flex flex-col space-y-2"></div>
+      <FormField
+        control={control}
+        name="custom_platforms"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-sm font-medium">플랫폼</FormLabel>
+            <div className="grid gap-3 grid-cols-2 md:grid-cols-3">
+              {getEnumValues(platformEnum).map((platform) => (
+                <button
+                  className={cn(
+                    "col-span-1 h-11 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-md text-sm",
+                    (field.value || []).some((p) => p.platform == platform) ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
+                  )}
+                  type="button"
+                  key={platform as string}
+                  onClick={() => {
+                    const current = field.value || [];
+                    const include = current.some((p) => p.platform === platform);
+                    field.onChange(include ? current.filter((p) => p.platform !== platform) : [...current, { platform }]);
+                    setValue("custom_project_method", undefined);
+                  }}
+                >
+                  {PLATFORM_MAPPING[platform]}
+                </button>
+              ))}
+            </div>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <AnimatePresence>
+        {platforms && platforms.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }}
+          >
+            <FormField
+              control={control}
+              name="custom_project_method"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">개발 방식</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-col space-y-3">
+                      {platforms.length > 0 && (
+                        <button
+                          type="button"
+                          className={cn(
+                            "flex flex-col space-y-1.5 shadow-none transition-colors duration-200 ease-in-out rounded-md text-start p-4",
+                            "code" === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
+                          )}
+                          onClick={() => (field.value !== "code" ? field.onChange("code") : field.onChange(undefined))}
+                        >
+                          <p className="w-full font-bold">{PROJECT_METHOD_MAPPING["code"].title}</p>
+                          <div className={cn("px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2 bg-foreground text-background")}>특징</div>
+                          <p className="w-full text-sm font-medium">{PROJECT_METHOD_MAPPING["code"].description}</p>
+                          <div
+                            className={cn(
+                              "px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2",
+                              "shadow-[inset_0_0_0_1px] shadow-foreground/70 text-foreground",
+                              "transform-gpu backface-hidden will-change-transform"
+                            )}
+                          >
+                            가격
+                          </div>
+                          <p className="w-full text-sm font-medium">
+                            {readiness == "idea" ? "2000만 원~" : readiness == "requirements" ? "1800만 원~" : "1000만 원~"}
+                          </p>
+                        </button>
+                      )}
+                      {platforms.length && !platforms.some((i) => i.platform == "android") && !platforms.some((i) => i.platform == "ios") && (
+                        <button
+                          type="button"
+                          className={cn(
+                            "flex flex-col space-y-1.5 shadow-none transition-colors duration-200 ease-in-out rounded-md text-start p-4",
+                            "nocode" === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
+                          )}
+                          onClick={() => (field.value !== "nocode" ? field.onChange("nocode") : field.onChange(undefined))}
+                        >
+                          <p className="w-full font-bold">{PROJECT_METHOD_MAPPING["nocode"].title}</p>
+                          <div className={cn("px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2 bg-foreground text-background")}>특징</div>
+                          <p className="w-full text-sm font-medium">{PROJECT_METHOD_MAPPING["nocode"].description}</p>
+                          <div
+                            className={cn(
+                              "px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2",
+                              "shadow-[inset_0_0_0_1px] shadow-foreground/70 text-foreground",
+                              "transform-gpu backface-hidden will-change-transform"
+                            )}
+                          >
+                            가격
+                          </div>
+                          <p className="w-full text-sm font-medium">
+                            {readiness == "idea" ? "1200만 원~" : readiness == "requirements" ? "300만 원~" : "100만 원~"}
+                          </p>
+                        </button>
+                      )}
+                      {platforms.length && !platforms.some((i) => i.platform == "android") && !platforms.some((i) => i.platform == "ios") && (
+                        <button
+                          type="button"
+                          className={cn(
+                            "flex flex-col space-y-1.5 shadow-none transition-colors duration-200 ease-in-out rounded-md text-start p-4",
+                            "shop" === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
+                          )}
+                          onClick={() => (field.value !== "shop" ? field.onChange("shop") : field.onChange(undefined))}
+                        >
+                          <p className="w-full font-bold">{PROJECT_METHOD_MAPPING["shop"].title}</p>
+                          <div className={cn("px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2 bg-foreground text-background")}>특징</div>
+                          <p className="w-full text-sm font-medium">{PROJECT_METHOD_MAPPING["shop"].description}</p>
+                          <div
+                            className={cn(
+                              "px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2",
+                              "shadow-[inset_0_0_0_1px] shadow-foreground/70 text-foreground",
+                              "transform-gpu backface-hidden will-change-transform"
+                            )}
+                          >
+                            가격
+                          </div>
+                          <p className="w-full text-sm font-medium">
+                            {readiness == "idea" ? "1300만 원~" : readiness == "requirements" ? "500만 원~" : "300만 원~"}
+                          </p>
+                        </button>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

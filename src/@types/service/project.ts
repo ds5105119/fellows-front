@@ -14,6 +14,8 @@ export const erpNextTaskStatusEnum = z.enum(["Open", "Working", "Pending Review"
 export const erpNextTaskPriorityEnum = z.enum(["Low", "Medium", "High", "Urgent"]);
 export const erpNextToDoStatusEnum = z.enum(["Open", "Closed", "Cancelled"]);
 export const erpNextToDoPriorityEnum = z.enum(["High", "Medium", "Low"]);
+export const projectMethodEnum = z.enum(["code", "nocode", "shop"]);
+export const noCodePlatformEnum = z.enum(["cafe24", "godo", "framer", "imweb", "shopify"]);
 export type ERPNextTaskStatus = z.infer<typeof erpNextTaskStatusEnum>;
 
 // --- Child Table Models for ERPNext ---
@@ -121,6 +123,8 @@ export const createERPNextProjectSchema = z.object({
   custom_project_title: z.string(),
   custom_project_summary: z.string(),
   custom_readiness_level: z.string(),
+  custom_project_method: projectMethodEnum.optional().nullable(),
+  custom_nocode_platform: noCodePlatformEnum.optional().nullable(),
 
   expected_start_date: z.string().optional().nullable(),
   expected_end_date: z.string().optional().nullable(),

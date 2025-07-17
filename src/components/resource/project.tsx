@@ -67,12 +67,6 @@ export const categorizedFeatures = [
   },
 ];
 
-export const readinessLevelLabels = {
-  idea: { icon: "💡", title: "아이디어 구상 단계", description: "아이디어를 구상하고 있습니다." },
-  requirements: { icon: "📋", title: "기획/요구사항 정의", description: "기획/요구사항을 정의하고 있습니다." },
-  wireframe: { icon: "⚒️", title: "와이어프레임/디자인", description: "와이어프레임/디자인을 정의하고 있습니다." },
-};
-
 export const stepsMeta: {
   number: number;
   title: string;
@@ -101,6 +95,30 @@ export const stepsMeta: {
     ],
   },
 ];
+
+export const PROJECT_METHOD_MAPPING = {
+  code: {
+    title: "코드 개발",
+    description:
+      "원하는 대로 커스터마이징할 수 있어, 복잡한 로직이나 차별화된 기능이 필요한 서비스에 적합해요. " +
+      "초기 개발 비용이 높고 유지 보수 인력이 필요할 수 있어요.",
+  },
+  nocode: {
+    title: "노코드 개발",
+    description: "개발 리소스가 부족한 초기 단계나 MVP 제작에 유리하지만, " + "기능 확장이나 사용자 정의에는 제약이 있어요.",
+  },
+  shop: {
+    title: "쇼핑몰",
+    description: "상품 등록, 결제, 배송 등의 핵심 기능이 기본 제공되지만, " + "쇼핑몰 외의 고유 기능 추가는 제한적이에요.",
+  },
+};
+export const NOCODE_PLATFORM_MAPPING = {};
+
+export const READYNISS_MAPPING = {
+  idea: { icon: "💡", title: "아이디어 구상 단계", description: "아이디어를 구상하고 있습니다." },
+  requirements: { icon: "📋", title: "기획/요구사항 정의", description: "기획/요구사항을 정의하고 있습니다." },
+  wireframe: { icon: "⚒️", title: "와이어프레임/디자인", description: "와이어프레임/디자인을 정의하고 있습니다." },
+};
 
 export const STATUS_MAPPING: Record<string, string> = {
   draft: "초안",
