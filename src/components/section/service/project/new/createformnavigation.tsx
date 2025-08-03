@@ -34,7 +34,7 @@ export function ProjectFormNavigation({
       <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
 
       <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
-        {currentStep > 0 && (
+        {currentStep > 1 && (
           <Button
             type="button"
             className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold"
