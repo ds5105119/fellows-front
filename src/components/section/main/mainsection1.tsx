@@ -49,7 +49,6 @@ export default function MainSection() {
   const handleSubmit = async (description: string) => {
     setIsLoading(true);
     const { info } = await getEstimateInfo({ project_summary: description });
-    if (!info) return;
 
     const params = new URLSearchParams();
     if (info.custom_project_title) params.append("title", info.custom_project_title);
