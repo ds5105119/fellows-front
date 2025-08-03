@@ -6,6 +6,7 @@ import { ChevronDown, ChevronRight, Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { getEstimateInfo } from "@/hooks/fetch/project";
+import { useRouter } from "next/navigation";
 
 const suggestionButtons = [
   {
@@ -36,6 +37,8 @@ const suggestionButtons = [
 ];
 
 export default function MainSection() {
+  const router = useRouter();
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
 
@@ -60,7 +63,7 @@ export default function MainSection() {
       });
     }
 
-    window.location.href = `/service/project/new?${params.toString()}`;
+    router.push(`/service/project/new?${params.toString()}`);
   };
 
   return (
