@@ -30,6 +30,7 @@ import {
   projectInfoEstimateResponseSchema,
 } from "@/@types/service/project";
 import dayjs from "@/lib/dayjs";
+import { signIn } from "next-auth/react";
 
 const API_BASE_URL = "/api/service/project";
 
@@ -329,6 +330,8 @@ export const getEstimateInfo = async ({ project_summary }: { project_summary: st
     const info = projectInfoEstimateResponseSchema.parse(infoJson);
     toast.success(`${ratelimit}회 남았어요.`);
     return { info, ratelimit, retryAfter };
+  } else if (response.status === 401) {
+    signIn("keycloak");
   } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
     toast.error("API 호출에 실패했습니다.");
   } else if (response.status === 429) {

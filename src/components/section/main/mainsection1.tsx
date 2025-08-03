@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronRight, Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { getEstimateInfo } from "@/hooks/fetch/project";
 import { useRouter } from "next/navigation";
+import { Session } from "next-auth";
+import { signIn } from "next-auth/react";
 
 const suggestionButtons = [
   {
@@ -36,7 +38,7 @@ const suggestionButtons = [
   },
 ];
 
-export default function MainSection() {
+export default function MainSection({ session }: { session: Session | null }) {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -53,6 +55,12 @@ export default function MainSection() {
     sessionStorage.setItem("project_info", JSON.stringify({ description, info }));
     router.push(`/service/project/new?from=session`);
   };
+
+  useEffect(() => {
+    if (description && !session) {
+      signIn("keycloak", { redirectTo: "/" });
+    }
+  });
 
   return (
     <div className="relative w-full h-full px-4">
