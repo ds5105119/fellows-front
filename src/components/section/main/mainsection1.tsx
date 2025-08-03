@@ -60,8 +60,6 @@ export default function MainSection() {
         params.append("platform", p);
       });
     }
-
-    setIsLoading(false);
     window.location.href = `/service/project/new?${params.toString()}`;
   };
 
