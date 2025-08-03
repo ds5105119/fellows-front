@@ -8,7 +8,6 @@ import MainQnaSection from "@/components/section/main/mainqnasection";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import MobileCTASection from "@/components/section/main/mobilectasection";
 import InViewBackground from "@/components/resource/inviewbackground";
-import { GradientBackground } from "@/components/resource/gradientbackground";
 
 export default async function Home() {
   return (
