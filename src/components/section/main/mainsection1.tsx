@@ -49,20 +49,9 @@ export default function MainSection() {
   const handleSubmit = async (description: string) => {
     setIsLoading(true);
     const { info } = await getEstimateInfo({ project_summary: description });
-
-    const params = new URLSearchParams();
-    if (info.custom_project_title) params.append("title", info.custom_project_title);
-    if (description) params.append("description", description);
-    if (info.custom_readiness_level) params.append("readiness", info.custom_readiness_level);
-    if (info.custom_project_method) params.append("method", info.custom_project_method);
-    if (info.custom_nocode_platform) params.append("nocode", info.custom_nocode_platform);
-    if (info.custom_platforms && info.custom_platforms.length > 0) {
-      info.custom_platforms.forEach((p) => {
-        params.append("platform", p);
-      });
-    }
-
-    router.push(`/service/project/new?${params.toString()}`);
+    if (!info) return;
+    sessionStorage.setItem("project_info", JSON.stringify({ description, info }));
+    router.push(`/service/project/new?from=session`);
   };
 
   return (
