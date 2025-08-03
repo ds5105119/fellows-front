@@ -15,11 +15,22 @@ import { RecommendationLoading } from "./recommandationloading";
 import { Loader2 } from "lucide-react";
 import { ProjectInfoEstimateResponse } from "@/@types/service/project";
 
-export default function CreateProject({ description, info }: { description?: string; info?: ProjectInfoEstimateResponse }) {
+export default function CreateProject() {
   const targetRef = useRef<HTMLDivElement>(null);
   const [isReachedEnd, setIsReachedEnd] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showTermsPrompt, setShowTermsPrompt] = useState(false);
+  const [description, setDescription] = useState<string | undefined>();
+  const [info, setInfo] = useState<ProjectInfoEstimateResponse | undefined>();
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem("project_info");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setDescription(parsed.description);
+      setInfo(parsed.info);
+    }
+  }, []);
 
   const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
     useProjectForm(description, info);

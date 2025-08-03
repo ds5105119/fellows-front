@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -33,6 +33,25 @@ export function useProjectForm(description?: string, info?: ProjectInfoEstimateR
     }),
     mode: "onChange",
   });
+
+  useEffect(() => {
+    if (info || description) {
+      form.reset(
+        createERPNextProjectSchema.parse({
+          custom_project_title: info?.custom_project_title ?? "",
+          custom_project_summary: description ?? "",
+          custom_readiness_level: info?.custom_readiness_level ?? "idea",
+          custom_platforms: info?.custom_platforms?.map((p) => ({ platform: p })) ?? [],
+          custom_project_method: info?.custom_project_method,
+          custom_nocode_platform: info?.custom_nocode_platform,
+          custom_features: [],
+          custom_preferred_tech_stacks: [],
+          custom_design_urls: [],
+          custom_maintenance_required: false,
+        })
+      );
+    }
+  }, [info, description]);
 
   const {
     trigger,
