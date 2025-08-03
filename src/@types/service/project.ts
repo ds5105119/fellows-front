@@ -358,6 +358,15 @@ export const projectFeatureEstimateRequestSchema = z.object({
 });
 export type ProjectFeatureEstimateRequest = z.infer<typeof projectFeatureEstimateRequestSchema>;
 
+export const projectInfoEstimateResponseSchema = z.object({
+  custom_project_title: z.string(),
+  custom_readiness_level: z.string(),
+  custom_project_method: projectMethodEnum.optional().nullable(),
+  custom_nocode_platform: noCodePlatformEnum.optional().nullable(),
+  custom_platforms: z.array(platformEnum).optional().default([]),
+});
+export type ProjectInfoEstimateResponse = z.infer<typeof projectInfoEstimateResponseSchema>;
+
 export const projectFeatureEstimateResponseSchema = z.object({
   feature_list: z.array(z.string()),
 });

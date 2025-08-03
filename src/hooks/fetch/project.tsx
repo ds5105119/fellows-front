@@ -27,6 +27,7 @@ import {
   QuoteSlots,
   quoteSlotsSchema,
   ERPNextProjectTeam,
+  projectInfoEstimateResponseSchema,
 } from "@/@types/service/project";
 import dayjs from "@/lib/dayjs";
 
@@ -307,6 +308,37 @@ export const useTasks = (params: ERPNextTasksRequest, options: SWRInfiniteConfig
 // =================================================================
 // ESTIMATE API
 // =================================================================
+
+export const getEstimateInfo = async ({ project_summary }: { project_summary: string }) => {
+  const params = new URLSearchParams();
+  params.append("project_summary", project_summary);
+
+  const url = `/api/service/project/estimate/info?${params.toString()}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    redirect: "follow",
+    credentials: "include",
+  });
+
+  const ratelimit = parseInt(response.headers.get("x-ratelimit-remaining") ?? "0");
+  const retryAfter = parseInt(response.headers.get("Retry-After") ?? "0");
+
+  if (response.ok) {
+    const infoJson = await response.json();
+    const info = projectInfoEstimateResponseSchema.parse(infoJson);
+    toast.success(`${ratelimit}회 남았어요.`);
+    return { info, ratelimit, retryAfter };
+  } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+    toast.error("API 호출에 실패했습니다.");
+  } else if (response.status === 429) {
+    toast.warning("API 한도를 초과했습니다.");
+  } else {
+    toast.error("API 호출에 실패했습니다.");
+  }
+
+  throw new Error("API 호출에 실패했습니다.");
+};
 
 export const getEstimateFeatures = async ({
   project_name,

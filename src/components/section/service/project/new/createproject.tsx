@@ -1,4 +1,5 @@
 "use client";
+
 import type React from "react";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -12,15 +13,16 @@ import { ProjectFormNavigation } from "./createformnavigation";
 import { CreateProjectTermsSection } from "./createprojecttermssection";
 import { RecommendationLoading } from "./recommandationloading";
 import { Loader2 } from "lucide-react";
+import { ProjectInfoEstimateResponse } from "@/@types/service/project";
 
-export default function CreateProject({ title }: { title?: string }) {
+export default function CreateProject({ description, info }: { description?: string; info?: ProjectInfoEstimateResponse }) {
   const targetRef = useRef<HTMLDivElement>(null);
   const [isReachedEnd, setIsReachedEnd] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showTermsPrompt, setShowTermsPrompt] = useState(false);
 
   const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
-    useProjectForm(title);
+    useProjectForm(description, info);
 
   const { isSuccess, isRecommending, hasCompleted, handleRecommendAgain } = useFeatureRecommendation(form, currentStep);
 

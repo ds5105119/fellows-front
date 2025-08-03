@@ -6,16 +6,16 @@ import MainSection7 from "@/components/section/main/mainsection7";
 import MainCTASection from "@/components/section/main/mainctasection";
 import MainQnaSection from "@/components/section/main/mainqnasection";
 import { BlurFade } from "@/components/magicui/blur-fade";
-import { MeshGradientComponent } from "@/components/resource/meshgradient";
 import MobileCTASection from "@/components/section/main/mobilectasection";
 import InViewBackground from "@/components/resource/inviewbackground";
+import { GradientBackground } from "@/components/resource/gradientbackground";
 
 export default async function Home() {
   return (
     <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
-      <div className="col-span-full px-4 lg:px-16 h-screen min-h-screen max-h-screen relative">
+      <div className="col-span-full h-screen min-h-screen max-h-screen relative">
         <MainSection1 />
-        <MeshGradientComponent colors={["rgb(207, 224, 255)", "rgb(66, 39, 188)", "rgb(184, 168, 255)", "rgb(108, 78, 243)"]} />
+        <GradientBackground />
       </div>
 
       <BlurFade className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">

@@ -9,9 +9,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createProject } from "@/hooks/fetch/project";
 import { stepsMeta } from "@/components/resource/project";
-import { type CreateERPNextProject, createERPNextProjectSchema } from "@/@types/service/project";
+import { type CreateERPNextProject, createERPNextProjectSchema, ProjectInfoEstimateResponse } from "@/@types/service/project";
 
-export function useProjectForm(title?: string) {
+export function useProjectForm(description?: string, info?: ProjectInfoEstimateResponse) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,10 +20,12 @@ export function useProjectForm(title?: string) {
   const form = useForm<CreateERPNextProject>({
     resolver: zodResolver(createERPNextProjectSchema),
     defaultValues: createERPNextProjectSchema.parse({
-      custom_project_title: title || "",
-      custom_project_summary: "",
-      custom_readiness_level: "idea",
-      custom_platforms: [],
+      custom_project_title: info?.custom_project_title ?? "",
+      custom_project_summary: description ?? "",
+      custom_readiness_level: info?.custom_readiness_level ?? "idea",
+      custom_platforms: info?.custom_platforms?.map((p) => ({ platform: p })) ?? [],
+      custom_project_method: info?.custom_project_method,
+      custom_nocode_platform: info?.custom_nocode_platform,
       custom_features: [],
       custom_preferred_tech_stacks: [],
       custom_design_urls: [],
