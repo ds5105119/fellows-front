@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpIcon, Loader2Icon } from "lucide-react";
+import { ChevronDown, ChevronRight, Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { getEstimateInfo } from "@/hooks/fetch/project";
@@ -46,7 +46,6 @@ export default function MainSection() {
   const handleSubmit = async (description: string) => {
     setIsLoading(true);
     const { info } = await getEstimateInfo({ project_summary: description });
-
     if (!info) return;
 
     const params = new URLSearchParams();
@@ -60,6 +59,7 @@ export default function MainSection() {
         params.append("platform", p);
       });
     }
+
     window.location.href = `/service/project/new?${params.toString()}`;
   };
 
@@ -68,80 +68,85 @@ export default function MainSection() {
       <div className="flex flex-col gap-8 items-center justify-center w-full h-full">
         {/* Main Content */}
         <AnimatePresence mode="wait">
-          {!isLoading ? (
-            <motion.div
-              key="main-cta"
-              initial={{ opacity: 0, y: 0 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="flex w-full h-full flex-col z-20 items-center justify-center rounded-2xl"
-            >
-              <div className="w-full pt-2 flex flex-col gap-3 items-center justify-center">
-                <div className="w-full flex flex-col col gap-1 md:gap-2.5 items-center justify-center text-foreground text-center">
-                  <h1 className="text-2xl xl:text-6xl font-bold tracking-normal">Web, App 개발</h1>
-                  <h1 className="text-2xl xl:text-6xl font-bold tracking-normal">Fellows℠에서 앞서나가세요</h1>
-                </div>
-                <h4 className="scroll-m-20 text-xs md:text-base text-center font-medium md:font-semibold leading-normal text-muted-foreground md:mt-5">
-                  최대 40% 더 적은 비용으로 주목받는 페이지를 만들어보세요.
-                  <span className="text-[#e64646] font-black">*</span>
-                  <br />
-                  원하는 사이트의 제목을 입력하고 AI 견적서를 받아보세요.
-                </h4>
+          <motion.div
+            key="main-cta"
+            initial={{ opacity: 0, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="flex w-full h-full flex-col z-20 items-center justify-center rounded-2xl"
+          >
+            <div className="w-full pt-2 flex flex-col gap-3 items-center justify-center">
+              <div className="w-full flex flex-col col gap-1 md:gap-2.5 items-center justify-center text-foreground text-center">
+                <h1 className="text-3xl xl:text-5xl font-bold tracking-normal">Web, App 개발</h1>
+                <h1 className="text-3xl xl:text-5xl font-bold tracking-normal">Fellows℠에 문의하세요</h1>
+              </div>
 
-                <div className="w-full max-w-4xl mx-auto mt-6">
-                  <div className="relative bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4 shadow-2xl">
-                    <div className="flex flex-col items-center space-y-4">
-                      <div className="w-full h-36 p-2 md:p-3 pl-1 flex items-end justify-center gap-2 relative rounded-2xl text-black/70 text-sm bg-white/30">
-                        <Textarea
-                          value={description}
-                          onChange={(e) => setDescription(e.target.value)}
-                          placeholder="의뢰하려는 사이트에 대해 설명해주세요."
-                          className="grow h-full bg-transparent border-none focus-visible:ring-0 outline-none shadow-none resize-none scrollbar-hide"
-                        />
-                        <Button size="icon" variant="default" className="" onClick={() => handleSubmit(description)}>
-                          <ArrowUpIcon />
-                        </Button>
-                      </div>
-
-                      <div className="w-full flex flex-col space-y-2 mt-3 px-2">
-                        <div className="text-sm">Not sure where to start? Try one of these:</div>
-                        <div className="w-full flex flex-wrap items-center justify-center gap-3 mt-2">
-                          {suggestionButtons.map((suggestion, index) => (
-                            <button
-                              key={index}
-                              onClick={() => handleSuggestionClick(suggestion.description)}
-                              className="rounded-full text-sm px-5 py-1 border border-black/50 hover:bg-white/30 transition-colors duration-200"
-                            >
-                              {suggestion.label}
-                            </button>
-                          ))}
-                        </div>
+              <div className="w-full max-w-4xl mx-auto mt-6 flex flex-col">
+                {!isLoading ? (
+                  <div className="w-full h-36 p-2 md:p-3 pl-1 flex items-end justify-center gap-2 relative rounded-2xl bg-black/5 backdrop-blur-xl border border-black/10 shadow-2xl shadow-black/10">
+                    <Textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="의뢰하려는 사이트에 대해 설명해주세요."
+                      className="grow h-full bg-transparent border-none focus-visible:ring-0 outline-none shadow-none resize-none scrollbar-hide"
+                    />
+                    <Button size="icon" variant="default" className="rounded-full" onClick={() => handleSubmit(description)}>
+                      <ChevronRight />
+                    </Button>
+                  </div>
+                ) : (
+                  // Dashboard Loading
+                  <motion.div
+                    key="dashboard-loading"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="md:min-w-xl flex w-fit h-fit flex-col z-20 items-center justify-center rounded-2xl mx-auto"
+                  >
+                    <div className="w-full px-6 md:px-16 py-16 flex flex-col gap-2 items-center justify-center">
+                      <Loader2Icon className="!size-6 text-muted-foreground animate-spin" />
+                      <div className="flex text-center">
+                        <p className="text-xs text-muted-foreground">분석중입니다...</p>
                       </div>
                     </div>
+                  </motion.div>
+                )}
+
+                <div className="w-full flex flex-col space-y-2 mt-4 px-2">
+                  <div className="text-sm">추천 항목을 참고해보세요:</div>
+                  <div className="w-full flex flex-wrap items-center justify-center gap-3 mt-2">
+                    {suggestionButtons.map((suggestion, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSuggestionClick(suggestion.description)}
+                        className="rounded-full text-sm px-5 py-1 border border-black/50 hover:bg-white/30 transition-colors duration-200"
+                      >
+                        {suggestion.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
-            </motion.div>
-          ) : (
-            // Dashboard Loading
-            <motion.div
-              key="dashboard-loading"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="md:min-w-xl flex w-fit h-fit flex-col z-20 items-center justify-center rounded-2xl"
-            >
-              <div className="w-full px-6 md:px-16 py-16 flex flex-col gap-2 items-center justify-center">
-                <Loader2Icon className="!size-6 text-muted animate-spin" />
-                <div className="flex text-center">
-                  <p className="text-xs text-muted">분석중입니다...</p>
-                </div>
-              </div>
-            </motion.div>
-          )}
+            </div>
+          </motion.div>
         </AnimatePresence>
+
+        {/* Animated ChevronDown */}
+        <motion.div
+          className="absolute bottom-4 left-1/2 -translate-x-1/2"
+          animate={{
+            y: [0, -8, 0],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
+        >
+          <ChevronDown />
+        </motion.div>
       </div>
     </div>
   );

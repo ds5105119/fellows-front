@@ -15,7 +15,6 @@ export default async function Home() {
     <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
       <div className="col-span-full h-screen min-h-screen max-h-screen relative">
         <MainSection1 />
-        <GradientBackground />
       </div>
 
       <BlurFade className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
