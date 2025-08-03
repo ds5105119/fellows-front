@@ -68,9 +68,9 @@ export default function MainSection4() {
             </div>
           </div>
           <div className="grow w-full relative">
-            {fixedIcons.map((icon) => (
+            {fixedIcons.map((icon, idx) => (
               <motion.div
-                key={icon.id}
+                key={idx}
                 className="absolute select-none"
                 style={{ left: `${icon.x}%`, top: `${icon.y}%` }}
                 animate={{
@@ -144,8 +144,8 @@ export default function MainSection4() {
                     </div>
                     <div className="flex flex-col items-center justify-center">
                       {Array.isArray(row.other) ? (
-                        row.other.map((line) => (
-                          <p key={line} className="text-[10px] sm:text-xs md:text-sm lg:text-base leading-snug">
+                        row.other.map((line, idx) => (
+                          <p key={idx} className="text-[10px] sm:text-xs md:text-sm lg:text-base leading-snug">
                             {line}
                           </p>
                         ))

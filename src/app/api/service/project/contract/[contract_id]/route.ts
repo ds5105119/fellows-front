@@ -1,0 +1,31 @@
+import { auth } from "@/auth";
+import { NextResponse } from "next/server";
+
+export async function PUT(request: Request, { params }: { params: Promise<{ contract_id: string }> }) {
+  const session = await auth();
+  const body = await request.json();
+
+  const contract_id = (await params).contract_id;
+  const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/contract/${contract_id}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+      },
+      body: JSON.stringify(body),
+      redirect: "follow",
+      credentials: "include",
+    });
+
+    const data = await response.json();
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("API error:", error);
+
+    return NextResponse.json({ error: "Failed to fetch project data" }, { status: 500 });
+  }
+}

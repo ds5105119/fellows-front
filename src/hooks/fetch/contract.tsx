@@ -2,7 +2,12 @@
 // Contract API (Sub-resource of Project)
 // =================================================================
 
-import { ERPNextContractPaginatedResponse, erpNextContractPaginatedResponseSchema, ERPNextContractRequest } from "@/@types/service/contract";
+import {
+  ERPNextContractPaginatedResponse,
+  erpNextContractPaginatedResponseSchema,
+  ERPNextContractRequest,
+  UpdateERPNextContract,
+} from "@/@types/service/contract";
 import useSWRInfinite, { SWRInfiniteConfiguration, SWRInfiniteKeyLoader } from "swr/infinite";
 
 const contractsGetKeyFactory = (params: ERPNextContractRequest): SWRInfiniteKeyLoader<ERPNextContractPaginatedResponse> => {
@@ -63,4 +68,15 @@ export const useContracts = (params: ERPNextContractRequest, options: SWRInfinit
     ...options,
   };
   return useSWRInfinite(getKey, contractsFetcher, swrOptions);
+};
+
+export const updateContracts = async (name: string, data: UpdateERPNextContract) => {
+  const response = await fetch(`/api/service/project/contract/${name}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update issue");
+  }
 };

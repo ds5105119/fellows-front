@@ -172,7 +172,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                             가격
                           </div>
                           <p className="w-full text-sm font-medium">
-                            {readiness == "idea" ? "1200만 원~" : readiness == "requirements" ? "300만 원~" : "100만 원~"}
+                            {readiness == "idea" ? "1100만 원~" : readiness == "requirements" ? "300만 원~" : "100만 원~"}
                           </p>
                         </button>
                       )}
