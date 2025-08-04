@@ -6,16 +6,19 @@ import { InertiaPlugin } from "gsap/InertiaPlugin";
 
 gsap.registerPlugin(InertiaPlugin);
 
-const throttle = (func: (...args: any[]) => void, limit: number) => {
+// --- ⬇️ 여기가 수정된 부분입니다 ⬇️ ---
+// any 대신 제네릭을 사용하여 타입 안정성을 확보한 throttle 함수
+const throttle = <F extends (...args: any[]) => void>(func: F, limit: number): ((...args: Parameters<F>) => void) => {
   let lastCall = 0;
-  return function (this: any, ...args: any[]) {
+  return (...args: Parameters<F>) => {
     const now = performance.now();
     if (now - lastCall >= limit) {
       lastCall = now;
-      func.apply(this, args);
+      func(...args);
     }
   };
 };
+// --- ⬆️ 수정 끝 ⬆️ ---
 
 interface Dot {
   cx: number;
@@ -179,15 +182,18 @@ const DotGrid: React.FC<DotGridProps> = ({
   useEffect(() => {
     buildGrid();
     let ro: ResizeObserver | null = null;
-    if ("ResizeObserver" in window) {
+    if ("ResizeObserver" in window && wrapperRef.current) {
       ro = new ResizeObserver(buildGrid);
-      wrapperRef.current && ro.observe(wrapperRef.current);
+      ro.observe(wrapperRef.current);
     } else {
-      (window as Window).addEventListener("resize", buildGrid);
+      window.addEventListener("resize", buildGrid);
     }
     return () => {
-      if (ro) ro.disconnect();
-      else window.removeEventListener("resize", buildGrid);
+      if (ro) {
+        ro.disconnect();
+      } else {
+        window.removeEventListener("resize", buildGrid);
+      }
     };
   }, [buildGrid]);
 
@@ -195,12 +201,15 @@ const DotGrid: React.FC<DotGridProps> = ({
     const onMove = (e: MouseEvent) => {
       const now = performance.now();
       const pr = pointerRef.current;
+      if (!canvasRef.current) return;
+
       const dt = pr.lastTime ? now - pr.lastTime : 16;
       const dx = e.clientX - pr.lastX;
       const dy = e.clientY - pr.lastY;
       let vx = (dx / dt) * 1000;
       let vy = (dy / dt) * 1000;
       let speed = Math.hypot(vx, vy);
+
       if (speed > maxSpeed) {
         const scale = maxSpeed / speed;
         vx *= scale;
@@ -214,7 +223,7 @@ const DotGrid: React.FC<DotGridProps> = ({
       pr.vy = vy;
       pr.speed = speed;
 
-      const rect = canvasRef.current!.getBoundingClientRect();
+      const rect = canvasRef.current.getBoundingClientRect();
       pr.x = e.clientX - rect.left;
       pr.y = e.clientY - rect.top;
 
@@ -233,8 +242,10 @@ const DotGrid: React.FC<DotGridProps> = ({
                 yOffset: 0,
                 duration: returnDuration,
                 ease: "elastic.out(1,0.75)",
+                onComplete: () => {
+                  dot._inertiaApplied = false;
+                },
               });
-              dot._inertiaApplied = false;
             },
           });
         }
@@ -242,7 +253,8 @@ const DotGrid: React.FC<DotGridProps> = ({
     };
 
     const onClick = (e: MouseEvent) => {
-      const rect = canvasRef.current!.getBoundingClientRect();
+      if (!canvasRef.current) return;
+      const rect = canvasRef.current.getBoundingClientRect();
       const cx = e.clientX - rect.left;
       const cy = e.clientY - rect.top;
       for (const dot of dotsRef.current) {
@@ -261,8 +273,10 @@ const DotGrid: React.FC<DotGridProps> = ({
                 yOffset: 0,
                 duration: returnDuration,
                 ease: "elastic.out(1,0.75)",
+                onComplete: () => {
+                  dot._inertiaApplied = false;
+                },
               });
-              dot._inertiaApplied = false;
             },
           });
         }
