@@ -88,7 +88,7 @@ export default function MainSection({ session }: { session: Session | null }) {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="의뢰하려는 사이트에 대해 설명해주세요."
-                      className="grow py-0 px-0 min-h-6.5 md:min-h-full max-h-full bg-transparent border-none focus-visible:ring-0 outline-none shadow-none resize-none scrollbar-hide"
+                      className="grow py-0 px-0 min-h-fit md:min-h-full max-h-full bg-transparent border-none focus-visible:ring-0 outline-none shadow-none resize-none scrollbar-hide"
                     />
                     <div className="flex items-end h-full py-1.5">
                       <Button size="icon" variant="default" className="rounded-full" onClick={() => handleSubmit(description)}>
