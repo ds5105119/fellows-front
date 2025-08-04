@@ -73,9 +73,9 @@ export default function MainSection({ session }: { session: Session | null }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="flex w-full h-full flex-col z-20 items-center justify-center rounded-2xl"
+            className="flex w-full flex-col z-20 items-center justify-center rounded-2xl"
           >
-            <div className="w-full pt-2 flex flex-col gap-3 items-center justify-center">
+            <div className="w-full pt-6 md:pt-2 flex flex-col gap-3 items-center justify-center">
               <div className="w-full flex flex-col col gap-1 md:gap-2.5 items-center justify-center text-foreground text-center">
                 <h1 className="text-3xl xl:text-5xl font-bold tracking-normal">Web, App 개발</h1>
                 <h1 className="text-3xl xl:text-5xl font-bold tracking-normal">Fellows℠에 문의하세요</h1>
@@ -83,12 +83,12 @@ export default function MainSection({ session }: { session: Session | null }) {
 
               <div className="w-full max-w-4xl mx-auto mt-6 flex flex-col">
                 {!isLoading ? (
-                  <div className="w-full h-36 p-2 md:p-3 pl-1 flex items-end justify-center gap-2 relative rounded-2xl bg-black/5 backdrop-blur-xl border border-black/10 shadow-2xl shadow-black/10">
+                  <div className="w-full h-36 px-3 py-2 md:px-4 md:py-3 flex items-end justify-center gap-2 relative rounded-2xl bg-black/5 backdrop-blur-xl border border-black/10 shadow-2xl shadow-black/10">
                     <Textarea
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="의뢰하려는 사이트에 대해 설명해주세요."
-                      className="grow h-full bg-transparent border-none focus-visible:ring-0 outline-none shadow-none resize-none scrollbar-hide"
+                      className="grow h-full py-0 px-0 bg-transparent border-none focus-visible:ring-0 outline-none shadow-none resize-none scrollbar-hide"
                     />
                     <Button size="icon" variant="default" className="rounded-full" onClick={() => handleSubmit(description)}>
                       <ChevronRight />
@@ -132,9 +132,9 @@ export default function MainSection({ session }: { session: Session | null }) {
           </motion.div>
         </AnimatePresence>
 
-        {/* Animated ChevronDown */}
-        <motion.div
-          className="absolute bottom-4 left-1/2 -translate-x-1/2"
+        {/* Animated ChevronDown Button */}
+        <motion.button
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 p-2 rounded-full hover:bg-black/10 transition-colors duration-300 cursor-pointer"
           animate={{
             y: [0, -8, 0],
           }}
@@ -143,9 +143,15 @@ export default function MainSection({ session }: { session: Session | null }) {
             repeat: Number.POSITIVE_INFINITY,
             ease: "easeInOut",
           }}
+          onClick={() => {
+            window.scrollBy({
+              top: window.innerHeight,
+              behavior: "smooth",
+            });
+          }}
         >
           <ChevronDown />
-        </motion.div>
+        </motion.button>
       </div>
     </div>
   );

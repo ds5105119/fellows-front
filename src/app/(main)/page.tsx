@@ -15,7 +15,7 @@ export default async function Home() {
 
   return (
     <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
-      <div className="col-span-full h-dvh min-h-dvh max-h-screen relative">
+      <div className="col-span-full h-svh min-h-svh max-h-svh relative">
         <MainSection1 session={session} />
       </div>
 
