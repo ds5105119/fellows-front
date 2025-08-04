@@ -128,7 +128,7 @@ export default function MainSection1Form({ session, initialDescription }: { sess
         className="w-full min-h-10 max-h-36 md:min-h-36 md:max-h-36 px-4 pr-1.5 md:pl-5 md:py-4 md:pr-3
         flex items-center md:items-stretch justify-center gap-2 
         relative rounded-[24px] md:rounded-2xl 
-        bg-foreground/5 backdrop-blur-xl border border-foreground/10 shadow-2xl shadow-foreground/10"
+        bg-foreground/2 backdrop-blur-xl border border-foreground/10 shadow-2xl shadow-foreground/10"
       >
         <Textarea
           ref={textareaRef}
@@ -151,14 +151,14 @@ export default function MainSection1Form({ session, initialDescription }: { sess
       </div>
 
       <div className="w-full flex flex-col space-y-2 px-2 pt-1 md:pt-0">
-        <div className="text-sm text-background">추천 항목을 참고해보세요:</div>
+        <div className="text-sm text-foreground">추천 항목을 참고해보세요:</div>
         <div className="w-full flex flex-wrap items-center justify-center gap-3 mt-2">
           {suggestionButtons.map((suggestion, index) => (
             <button
               key={index}
               type="button"
               onClick={() => handleSuggestionClick(suggestion.description)}
-              className="rounded-full text-sm text-foreground px-5 py-1 border border-foreground/50 hover:bg-foreground/30 transition-colors duration-200"
+              className="rounded-full text-sm text-foreground px-5 py-1 border border-foreground/50 hover:bg-foreground/10 transition-colors duration-200"
             >
               {suggestion.label}
             </button>

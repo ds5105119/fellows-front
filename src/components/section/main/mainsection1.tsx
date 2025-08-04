@@ -27,7 +27,7 @@ export default async function MainSection1() {
         </div>
 
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 p-2" style={{ animation: "bounce 2s infinite" }}>
-          <ChevronDown className="text-background" />
+          <ChevronDown className="text-foreground" />
         </div>
       </div>
     </div>
