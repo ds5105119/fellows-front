@@ -6,7 +6,7 @@ import { GeistSans } from "geist/font/sans";
 import { cn } from "@/lib/utils";
 
 export default function MainSection1Design() {
-  const symbols = ["✵", "✷", "✸", "✹", "✺", "❇", "❉", "❋", "❤︎", "❖", "✠", "✢", "✣", "✤", "✥", "✖"];
+  const symbols = ["✵", "✷", "✸", "✹", "✺", "❉", "❋", "❤︎", "❖", "✠", "✢", "✣", "✤", "✥", "✖"];
 
   // 세련되고 대비가 강한 Tailwind 색상들
   const colors = [
