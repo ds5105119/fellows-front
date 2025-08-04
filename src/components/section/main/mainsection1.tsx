@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronRight, Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,7 @@ const suggestionButtons = [
 
 export default function MainSection({ session }: { session: Session | null }) {
   const router = useRouter();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
@@ -57,10 +58,22 @@ export default function MainSection({ session }: { session: Session | null }) {
   };
 
   useEffect(() => {
+    if (textareaRef.current) {
+      const el = textareaRef.current;
+      const MAX_HEIGHT_PX = 144; // 부모 컨테이너의 max-h-36 (9rem = 144px)
+
+      el.style.height = "auto"; // 높이 초기화로 정확한 scrollHeight 계산
+
+      const newHeight = Math.min(el.scrollHeight, MAX_HEIGHT_PX);
+      el.style.height = `${newHeight}px`; // scrollHeight와 최대 높이 중 작은 값으로 설정
+    }
+  }, [description]);
+
+  useEffect(() => {
     if (description && !session) {
       signIn("keycloak", { redirectTo: "/" });
     }
-  });
+  }, [description, session]); // 의존성 배열 명시
 
   return (
     <div className="relative w-full h-full px-4">
@@ -83,13 +96,24 @@ export default function MainSection({ session }: { session: Session | null }) {
 
               <div className="w-full max-w-4xl mx-auto mt-3 md:mt-6 flex flex-col">
                 {!isLoading ? (
-                  <div className="w-full min-h-12 max-h-36 md:min-h-36 md:max-h-36 px-4 pr-1.5 md:pl-5 md:py-4 md:pr-3 md:pb-2 flex items-center md:items-end justify-center gap-2 relative rounded-[24px] md:rounded-2xl bg-black/5 backdrop-blur-xl border border-black/10 shadow-2xl shadow-black/10">
+                  <div
+                    className="w-full min-h-12 max-h-36 md:min-h-36 md:max-h-36 px-4 pr-1.5 md:pl-5 md:py-4 md:pr-3 md:pb-2 
+                    flex items-center md:items-end justify-center gap-2 
+                    relative rounded-[24px] md:rounded-2xl 
+                    bg-black/5 backdrop-blur-xl border border-black/10 shadow-2xl shadow-black/10"
+                  >
                     <Textarea
+                      ref={textareaRef}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
+                      rows={1}
                       placeholder="의뢰하려는 사이트에 대해 설명해주세요."
-                      className="grow py-0 px-0 min-h-fit md:min-h-full max-h-full bg-transparent border-none focus-visible:ring-0 outline-none shadow-none resize-none scrollbar-hide"
+                      className="w-full grow self-center p-0 min-h-0 bg-transparent border-none focus-visible:ring-0 outline-none 
+                                 shadow-none resize-none scrollbar-hide leading-snug
+                                 md:h-full"
+                      spellCheck="false"
                     />
+
                     <div className="flex items-end h-full py-1.5">
                       <Button size="icon" variant="default" className="rounded-full" onClick={() => handleSubmit(description)}>
                         <ChevronRight />
@@ -147,7 +171,7 @@ export default function MainSection({ session }: { session: Session | null }) {
           }}
           onClick={() => {
             window.scrollBy({
-              top: window.innerHeight,
+              top: window.innerHeight / 50,
               behavior: "smooth",
             });
           }}
