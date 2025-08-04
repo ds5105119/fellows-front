@@ -45,7 +45,7 @@ function SubmitButton({ isParentLoading }: { isParentLoading: boolean }) {
   const isLoading = pending || isParentLoading;
 
   return (
-    <Button size="icon" type="submit" variant="default" className="rounded-full" disabled={isLoading}>
+    <Button size="icon" type="submit" variant="default" className="rounded-full size-8 md:size-9" disabled={isLoading}>
       {isLoading ? <Loader2Icon className="animate-spin" /> : <ChevronRight />}
     </Button>
   );
@@ -125,7 +125,7 @@ export default function MainSection1Form({ session, initialDescription }: { sess
   return (
     <form action={handleFormSubmit} className="w-full max-w-4xl mx-auto mt-3 md:mt-6 flex flex-col gap-4">
       <div
-        className="w-full min-h-12 max-h-36 md:min-h-36 md:max-h-36 px-4 pr-1.5 md:pl-5 md:py-4 md:pr-3
+        className="w-full min-h-10 max-h-36 md:min-h-36 md:max-h-36 px-4 pr-1.5 md:pl-5 md:py-4 md:pr-3
         flex items-center md:items-stretch justify-center gap-2 
         relative rounded-[24px] md:rounded-2xl 
         bg-white/10 backdrop-blur-xl border border-white/10 shadow-2xl shadow-white/10"
@@ -139,7 +139,7 @@ export default function MainSection1Form({ session, initialDescription }: { sess
           placeholder="의뢰하려는 사이트에 대해 설명해주세요."
           onWheel={(e) => e.stopPropagation()}
           className="w-full grow self-center md:self-auto p-0 min-h-0 bg-transparent border-none focus-visible:ring-0 outline-none 
-                     shadow-none resize-none scrollbar-hide leading-snug
+                     shadow-none resize-none scrollbar-hide leading-snug text-white
                      md:h-full 
                      overflow-y-auto
                      overscroll-behavior-contain"
@@ -150,7 +150,7 @@ export default function MainSection1Form({ session, initialDescription }: { sess
         </div>
       </div>
 
-      <div className="w-full flex flex-col space-y-2 px-2">
+      <div className="w-full flex flex-col space-y-2 px-2 pt-1 md:pt-0">
         <div className="text-sm text-background">추천 항목을 참고해보세요:</div>
         <div className="w-full flex flex-wrap items-center justify-center gap-3 mt-2">
           {suggestionButtons.map((suggestion, index) => (

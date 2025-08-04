@@ -6,8 +6,6 @@ import { InertiaPlugin } from "gsap/InertiaPlugin";
 
 gsap.registerPlugin(InertiaPlugin);
 
-// --- ⬇️ 여기가 수정된 부분입니다 ⬇️ ---
-// unknown[] 대신 any[]를 사용하여 타입 호환성 문제(ts2345)를 해결합니다.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const throttle = <F extends (...args: any[]) => void>(func: F, limit: number): ((...args: Parameters<F>) => void) => {
   let lastCall = 0;
@@ -19,7 +17,6 @@ const throttle = <F extends (...args: any[]) => void>(func: F, limit: number): (
     }
   };
 };
-// --- ⬆️ 수정 끝 ⬆️ ---
 
 interface Dot {
   cx: number;

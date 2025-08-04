@@ -27,7 +27,7 @@ const comparisonData = [
   { fellows: ["기획부터 견적까지", "투명한 프로세스"], other: "-" },
   { fellows: ["반복되는 미팅, 견적요청 없이", "몇 번이고 편하게 견적 수정"], other: "-" },
   { fellows: ["MSA 환경에서 실행되는", "긴밀한 자사 홈페이지"], other: ["노코드, 바이브 코딩으로", "만들어진 홈페이지"] },
-];
+] as const;
 
 export default function MainSection4() {
   const [scale, setScale] = useState(1.0);
@@ -128,9 +128,9 @@ export default function MainSection4() {
               </div>
 
               {comparisonData.map((row, index) => (
-                <>
-                  <hr key={`${index}-hr`} className="border-gray-200 mx-3" />
-                  <div key={index} className="grid grid-cols-2 items-center py-2">
+                <div key={index}>
+                  <hr className="border-gray-200 mx-3" />
+                  <div className="grid grid-cols-2 items-center py-2">
                     <div className="flex flex-col items-center justify-center">
                       {Array.isArray(row.fellows) ? (
                         row.fellows.map((line) => (
@@ -154,7 +154,7 @@ export default function MainSection4() {
                       )}
                     </div>
                   </div>
-                </>
+                </div>
               ))}
             </div>
           </div>
