@@ -9,7 +9,6 @@ import { BlurFade } from "@/components/magicui/blur-fade";
 import MobileCTASection from "@/components/section/main/mobilectasection";
 import InViewBackground from "@/components/resource/inviewbackground";
 import FaultyTerminal from "@/components/resource/faultyterminal";
-import Aurora from "@/components/resource/aurorabackground";
 
 export default async function Home() {
   return (
