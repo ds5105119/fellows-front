@@ -9,6 +9,7 @@ import { getEstimateInfo } from "@/hooks/fetch/project";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { signIn } from "next-auth/react";
+import { ShineBorder } from "@/components/magicui/shine-border";
 
 const suggestionButtons = [
   {
@@ -83,7 +84,8 @@ export default function MainSection({ session }: { session: Session | null }) {
 
               <div className="w-full max-w-4xl mx-auto mt-6 flex flex-col">
                 {!isLoading ? (
-                  <div className="w-full h-36 px-3 py-2 md:px-4 md:py-3 flex items-end justify-center gap-2 relative rounded-2xl bg-black/5 backdrop-blur-xl border border-black/10 shadow-2xl shadow-black/10">
+                  <div className="w-full h-36 px-3 py-2 md:px-5 md:py-4 flex items-end justify-center gap-2 relative rounded-2xl bg-black/5 backdrop-blur-xl border border-black/10 shadow-2xl shadow-black/10">
+                    <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
                     <Textarea
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
