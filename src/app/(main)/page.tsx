@@ -37,7 +37,7 @@ export default async function Home() {
             brightness={1}
           />
         </div>
-        <div className="absolute inset-0 brightness-75 bg-foreground hidden md:block">
+        <div className="absolute inset-0 brightness-75 bg-foreground block md:hidden">
           <FaultyTerminal
             scale={2}
             gridMul={[1, 2]}
