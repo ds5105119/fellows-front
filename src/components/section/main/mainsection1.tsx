@@ -6,7 +6,7 @@ import { ChevronDown, ChevronRight, Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { getEstimateInfo } from "@/hooks/fetch/project";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Session } from "next-auth";
 import { signIn } from "next-auth/react";
 
@@ -40,6 +40,8 @@ const suggestionButtons = [
 
 export default function MainSection({ session }: { session: Session | null }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -50,30 +52,53 @@ export default function MainSection({ session }: { session: Session | null }) {
   };
 
   const handleSubmit = async (description: string) => {
+    if (!description.trim()) return;
+
+    if (!session) {
+      sessionStorage.setItem("pendingDescription", description);
+      signIn("keycloak", { redirectTo: "/?from=session" });
+      return;
+    }
+
     setIsLoading(true);
     const { info } = await getEstimateInfo({ project_summary: description });
-    if (!info) return;
+    if (!info) {
+      setIsLoading(false);
+      return;
+    }
     sessionStorage.setItem("project_info", JSON.stringify({ description, info }));
-    router.push(`/service/project/new?from=session`);
+    router.push(`/service/project/new`);
   };
 
   useEffect(() => {
-    if (textareaRef.current) {
-      const el = textareaRef.current;
-      const MAX_HEIGHT_PX = 144; // 부모 컨테이너의 max-h-36 (9rem = 144px)
+    const pendingDescription = sessionStorage.getItem("pendingDescription");
+    const fromSession = searchParams.get("from") === "session";
 
-      el.style.height = "auto"; // 높이 초기화로 정확한 scrollHeight 계산
+    if (session && pendingDescription && fromSession) {
+      setDescription(pendingDescription);
+      handleSubmit(pendingDescription);
 
-      const newHeight = Math.min(el.scrollHeight, MAX_HEIGHT_PX);
-      el.style.height = `${newHeight}px`; // scrollHeight와 최대 높이 중 작은 값으로 설정
+      sessionStorage.removeItem("pendingDescription");
+      router.replace("/", { scroll: false });
     }
-  }, [description]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, searchParams]);
 
   useEffect(() => {
-    if (description && !session) {
-      signIn("keycloak", { redirectTo: "/" });
+    if (textareaRef.current) {
+      if (window.innerWidth >= 768) {
+        textareaRef.current.style.height = "";
+        return;
+      }
+
+      // 모바일 뷰에서만 높이 자동 조절 실행
+      const MAX_HEIGHT_PX = 144;
+      const el = textareaRef.current;
+      el.style.height = "auto";
+      const newHeight = Math.min(el.scrollHeight, MAX_HEIGHT_PX);
+      el.style.height = `${newHeight}px`;
     }
-  }, [description, session]); // 의존성 배열 명시
+  }, [description]);
 
   return (
     <div className="relative w-full h-full px-4">
@@ -98,7 +123,7 @@ export default function MainSection({ session }: { session: Session | null }) {
                 {!isLoading ? (
                   <div
                     className="w-full min-h-12 max-h-36 md:min-h-36 md:max-h-36 px-4 pr-1.5 md:pl-5 md:py-4 md:pr-3 md:pb-2 
-                    flex items-center md:items-end justify-center gap-2 
+                    flex items-center justify-center gap-2 
                     relative rounded-[24px] md:rounded-2xl 
                     bg-black/5 backdrop-blur-xl border border-black/10 shadow-2xl shadow-black/10"
                   >
@@ -108,7 +133,7 @@ export default function MainSection({ session }: { session: Session | null }) {
                       onChange={(e) => setDescription(e.target.value)}
                       rows={1}
                       placeholder="의뢰하려는 사이트에 대해 설명해주세요."
-                      className="w-full grow self-center p-0 min-h-0 bg-transparent border-none focus-visible:ring-0 outline-none 
+                      className="w-full grow self-center md:self-auto p-0 min-h-0 bg-transparent border-none focus-visible:ring-0 outline-none 
                                  shadow-none resize-none scrollbar-hide leading-snug
                                  md:h-full"
                       spellCheck="false"
