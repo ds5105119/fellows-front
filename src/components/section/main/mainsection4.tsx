@@ -107,9 +107,9 @@ export default function MainSection4() {
             <div className="flex flex-col space-y-2">
               <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/Cost</p>
               <p className="text-xl md:text-2xl font-extrabold tracking-normal text-black leading-normal">
-                해외 개발 파트너사를 통해
+                결국 필요한 개발자,
                 <br />
-                국내 대비 최대 40% 낮은 가격
+                해외 개발자를 통해 40% 낮은 가격
               </p>
             </div>
           </div>

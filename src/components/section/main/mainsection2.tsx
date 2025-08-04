@@ -35,9 +35,9 @@ const features = [
     name: "높은 수준의 결과물을\n합리적인 가격에",
     description: (
       <div className="flex items-center space-x-2">
-        <BadgeCheckIcon className="size-5 text-emerald-500" strokeWidth={3} />
+        <BadgeCheckIcon className="size-4 md:size-5 text-emerald-500" strokeWidth={3} />
         <div>다양한 개발 영역</div>
-        <ChevronRight className="size-5 text-gray-700 md:hidden" />
+        <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
       </div>
     ),
     href: "#primary",
@@ -70,9 +70,9 @@ const features = [
     name: "SaaS로 한눈에 체계적인 프로젝트 관리 가능",
     description: (
       <div className="flex items-center space-x-2">
-        <ZapIcon className="size-5 text-blue-500" strokeWidth={3} fill="currentColor" />
+        <ZapIcon className="size-4 md:size-5 text-blue-500" strokeWidth={3} fill="currentColor" />
         <div>모든 기능이 무료</div>
-        <ChevronRight className="size-5 text-gray-700 md:hidden" />
+        <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
       </div>
     ),
     href: "#secondary",
@@ -87,10 +87,15 @@ const features = [
   {
     name: `6000↑ 데이터를 학습한 AI로\n3분만에 AI 견적서 작성`,
     description: (
-      <div className="flex items-center space-x-2">
-        <BreathingSparkles />
-        <div>AI 예상 견적 확인하기</div>
-        <ChevronRight className="size-5 text-gray-700 md:hidden" />
+      <div className="flex items-center">
+        <div className="md:block hidden">
+          <BreathingSparkles />
+        </div>
+        <div className="md:hidden block">
+          <BreathingSparkles size={20} />
+        </div>
+        <div className="ml-2">AI 예상 견적 확인하기</div>
+        <ChevronRight className="size-4 md:size-5 ml-2 text-gray-700 md:hidden" />
       </div>
     ),
     href: "#",
@@ -106,9 +111,9 @@ const features = [
     name: "지원사업 탐색부터\n팀원 관리까지 한눈에",
     description: (
       <div className="flex items-center space-x-2">
-        <CopyPlus className="size-5 text-orange-500" strokeWidth={3} />
+        <CopyPlus className="size-4 md:size-5 text-orange-500" strokeWidth={3} />
         <div>필수 부가 기능</div>
-        <ChevronRight className="size-5 text-gray-700 md:hidden" />
+        <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
       </div>
     ),
     className: "col-span-3 md:col-span-1 bg-muted transition-colors duration-300 ease-in-out",
