@@ -73,9 +73,9 @@ export default function MainSection({ session }: { session: Session | null }) {
   useEffect(() => {
     const pendingDescription = sessionStorage.getItem("pendingDescription");
     const fromSession = searchParams.get("from") === "session";
+    setDescription(pendingDescription);
 
     if (session && pendingDescription && fromSession) {
-      setDescription(pendingDescription);
       handleSubmit(pendingDescription);
 
       sessionStorage.removeItem("pendingDescription");
