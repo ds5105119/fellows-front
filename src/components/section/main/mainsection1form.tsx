@@ -128,7 +128,7 @@ export default function MainSection1Form({ session, initialDescription }: { sess
         className="w-full min-h-10 max-h-36 md:min-h-36 md:max-h-36 px-4 pr-1.5 md:pl-5 md:py-4 md:pr-3
         flex items-center md:items-stretch justify-center gap-2 
         relative rounded-[24px] md:rounded-2xl 
-        bg-white/10 backdrop-blur-xl border border-white/10 shadow-2xl shadow-white/10"
+        bg-foreground/5 backdrop-blur-xl border border-foreground/10 shadow-2xl shadow-foreground/10"
       >
         <Textarea
           ref={textareaRef}
@@ -139,7 +139,7 @@ export default function MainSection1Form({ session, initialDescription }: { sess
           placeholder="의뢰하려는 사이트에 대해 설명해주세요."
           onWheel={(e) => e.stopPropagation()}
           className="w-full grow self-center md:self-auto p-0 min-h-0 bg-transparent border-none focus-visible:ring-0 outline-none 
-                     shadow-none resize-none scrollbar-hide leading-snug text-white
+                     shadow-none resize-none scrollbar-hide leading-snug text-foreground
                      md:h-full 
                      overflow-y-auto
                      overscroll-behavior-contain"
@@ -158,7 +158,7 @@ export default function MainSection1Form({ session, initialDescription }: { sess
               key={index}
               type="button"
               onClick={() => handleSuggestionClick(suggestion.description)}
-              className="rounded-full text-sm text-white px-5 py-1 border border-white/50 hover:bg-white/30 transition-colors duration-200"
+              className="rounded-full text-sm text-foreground px-5 py-1 border border-foreground/50 hover:bg-foreground/30 transition-colors duration-200"
             >
               {suggestion.label}
             </button>

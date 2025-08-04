@@ -16,7 +16,7 @@ export default async function MainSection1() {
         <div className="flex w-full flex-col z-20 items-center justify-center rounded-2xl">
           <div className="w-full pt-6 md:pt-2 flex flex-col gap-2 md:gap-3 items-center justify-center">
             <MainSection1Design />
-            <div className="w-full flex flex-col md:flex-row gap-1 md:gap-2.5 items-center justify-center text-background text-center">
+            <div className="w-full flex flex-col md:flex-row gap-1 md:gap-2.5 items-center justify-center text-foreground text-center">
               <h1 className="text-2xl xl:text-5xl font-bold tracking-normal">Web, App 개발</h1>
               <h1 className="text-2xl xl:text-5xl font-bold tracking-normal">Fellows℠에 문의하세요</h1>
             </div>

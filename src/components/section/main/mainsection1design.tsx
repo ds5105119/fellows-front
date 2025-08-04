@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { GeistSans } from "geist/font/sans";
+import { cn } from "@/lib/utils";
 
 export default function MainSection1Design() {
-  const symbols = ["✵", "✷", "✸", "✹", "✺", "❇", "❉", "❋", "✦", "❤︎", "❖", "✠", "✢", "✣", "✤", "✥", "✖"];
+  const symbols = ["✵", "✷", "✸", "✹", "✺", "❇", "❉", "❋", "❤︎", "❖", "✠", "✢", "✣", "✤", "✥", "✖"];
 
   // 세련되고 대비가 강한 Tailwind 색상들
   const colors = [
@@ -68,7 +69,7 @@ export default function MainSection1Design() {
     <div className="flex items-center justify-center">
       <motion.div key={animationKey} className="relative" onClick={handleReplay} whileHover={{ scale: isAnimating ? 1 : 1.1 }} whileTap={{ scale: 0.95 }}>
         <motion.div
-          className={`text-[46px] font-bold transition-all duration-300 ease-out cursor-pointer select-none ${GeistSans.className}`}
+          className={cn("text-[46px] font-bold transition-all duration-300 ease-out cursor-pointer select-none", GeistSans.className)}
           style={{ color: currentColor }}
           onClick={handleReplay}
           whileHover={{ scale: isAnimating ? 1 : 1.1 }}
@@ -78,7 +79,7 @@ export default function MainSection1Design() {
         </motion.div>
 
         <motion.div
-          className={`absolute inset-0 text-[46px] font-bold blur-xl opacity-40 -z-10 transition-all duration-300 ease-out ${GeistSans.className}`}
+          className={cn("absolute inset-0 text-[46px] font-bold blur-xl opacity-40 -z-10 transition-all duration-300 ease-out", GeistSans.className)}
           style={{ color: currentColor }}
           animate={{
             scale: isAnimating ? [1, 1.15, 1] : 1,
