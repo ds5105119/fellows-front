@@ -9,7 +9,6 @@ import { getEstimateInfo } from "@/hooks/fetch/project";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { signIn } from "next-auth/react";
-import { ShineBorder } from "@/components/magicui/shine-border";
 
 const suggestionButtons = [
   {
@@ -82,19 +81,20 @@ export default function MainSection({ session }: { session: Session | null }) {
                 <h1 className="text-3xl xl:text-5xl font-bold tracking-normal">Fellows℠에 문의하세요</h1>
               </div>
 
-              <div className="w-full max-w-4xl mx-auto mt-6 flex flex-col">
+              <div className="w-full max-w-4xl mx-auto mt-3 md:mt-6 flex flex-col">
                 {!isLoading ? (
-                  <div className="w-full h-36 px-3 py-2 md:px-5 md:py-4 flex items-end justify-center gap-2 relative rounded-2xl bg-black/5 backdrop-blur-xl border border-black/10 shadow-2xl shadow-black/10">
-                    <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
+                  <div className="w-full min-h-12 max-h-36 md:min-h-36 md:max-h-36 px-4 pr-1.5 md:pl-5 md:py-4 md:pr-3 md:pb-2 flex items-center md:items-end justify-center gap-2 relative rounded-[24px] md:rounded-2xl bg-black/5 backdrop-blur-xl border border-black/10 shadow-2xl shadow-black/10">
                     <Textarea
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="의뢰하려는 사이트에 대해 설명해주세요."
-                      className="grow h-full py-0 px-0 bg-transparent border-none focus-visible:ring-0 outline-none shadow-none resize-none scrollbar-hide"
+                      className="grow py-0 px-0 min-h-6.5 md:min-h-full max-h-full bg-transparent border-none focus-visible:ring-0 outline-none shadow-none resize-none scrollbar-hide"
                     />
-                    <Button size="icon" variant="default" className="rounded-full" onClick={() => handleSubmit(description)}>
-                      <ChevronRight />
-                    </Button>
+                    <div className="flex items-end h-full py-1.5">
+                      <Button size="icon" variant="default" className="rounded-full" onClick={() => handleSubmit(description)}>
+                        <ChevronRight />
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   // Dashboard Loading
@@ -106,7 +106,7 @@ export default function MainSection({ session }: { session: Session | null }) {
                     transition={{ duration: 0.3 }}
                     className="md:min-w-xl flex w-fit h-fit flex-col z-20 items-center justify-center rounded-2xl mx-auto"
                   >
-                    <div className="w-full px-6 md:px-16 py-16 flex flex-col gap-2 items-center justify-center">
+                    <div className="w-full px-6 md:px-16 py-4 flex flex-col gap-2 items-center justify-center">
                       <Loader2Icon className="!size-6 text-muted-foreground animate-spin" />
                       <div className="flex text-center">
                         <p className="text-xs text-muted-foreground">분석중입니다...</p>
