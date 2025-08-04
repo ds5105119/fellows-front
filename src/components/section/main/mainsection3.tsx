@@ -37,6 +37,24 @@ const features = [
   {
     header: (
       <>
+        <p className="text-background text-base font-bold">팀원 관리</p>
+        <p className="text-background leading-normal">
+          팀원과 함께 이 모든 것을
+          <br />
+          체계적으로 관리하세요
+        </p>
+      </>
+    ),
+    background: (
+      <div className="absolute inset-0">
+        <MeshGradientComponent className="opacity-100" colors={["#be73ff", "rgb(255, 90, 214)", "#ff2323", "#ff9849"]} />
+      </div>
+    ),
+    children: <TeamMembersSection />,
+  },
+  {
+    header: (
+      <>
         <p className="text-foreground text-base font-bold">실시간 태스크 관리</p>
         <p className="text-foreground leading-normal">
           진행 중인 작업 현황을
@@ -48,69 +66,10 @@ const features = [
     background: "bg-gradient-to-t from-blue-400/80 via-blue-400/70 to-indigo-400/80",
     children: (
       <div className="absolute inset-0">
-        {/* 진행률 표시 */}
-        <div className="absolute top-36 xl:top-40 left-6 right-6">
-          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 border border-white/30">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-white/90 text-sm font-medium">전체 진행률</span>
-              <span className="text-white text-sm font-bold">68%</span>
-            </div>
-            <div className="w-full bg-white/20 rounded-full h-2">
-              <div className="bg-white h-2 rounded-full" style={{ width: "68%" }}></div>
-            </div>
-          </div>
-        </div>
-
-        {/* 태스크 카드들 */}
-        <div className="absolute bottom-4 left-4 right-4 space-y-3">
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span className="text-sm font-medium text-gray-800">UI 디자인 완료</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <UserIcon className="w-3 h-3 text-gray-500" />
-                <span className="text-xs text-gray-500">김디자인</span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <CalendarIcon className="w-3 h-3 text-gray-400" />
-              <span className="text-xs text-gray-500">12월 15일 완료</span>
-            </div>
-          </div>
-
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4 text-yellow-600" />
-                <span className="text-sm font-medium text-gray-800">API 개발 진행중</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <UserIcon className="w-3 h-3 text-gray-500" />
-                <span className="text-xs text-gray-500">박개발</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <CalendarIcon className="w-3 h-3 text-gray-400" />
-                <span className="text-xs text-gray-500">12월 20일 마감</span>
-              </div>
-              <div className="w-16 bg-gray-200 rounded-full h-1.5">
-                <div className="bg-yellow-500 h-1.5 rounded-full" style={{ width: "75%" }}></div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-gray-300 rounded-full"></div>
-                <span className="text-sm font-medium text-gray-800">QA 테스트 대기</span>
-              </div>
-              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">열림</span>
-            </div>
-          </div>
+        <div className="w-[280%] absolute top-36 xl:top-40 left-6 xl:left-8">
+          <AspectRatio ratio={1143 / 595} className="w-full">
+            <Image src="/service-task.png" alt="대시보드 케러셀 이미지" className="rounded-md object-cover border border-zinc-300" fill />
+          </AspectRatio>
         </div>
       </div>
     ),
@@ -140,24 +99,6 @@ const features = [
         </div>
       </div>
     ),
-  },
-  {
-    header: (
-      <>
-        <p className="text-background text-base font-bold">팀원 관리</p>
-        <p className="text-background leading-normal">
-          팀원과 함께 이 모든 것을
-          <br />
-          체계적으로 관리하세요
-        </p>
-      </>
-    ),
-    background: (
-      <div className="absolute inset-0">
-        <MeshGradientComponent className="opacity-100" colors={["#be73ff", "rgb(255, 90, 214)", "#ff2323", "#ff9849"]} />
-      </div>
-    ),
-    children: <TeamMembersSection />,
   },
   {
     header: (
