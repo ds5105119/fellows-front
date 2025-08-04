@@ -101,16 +101,24 @@ export default function MainSection1Form({ session, initialDescription }: { sess
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, initialDescription, searchParams, formAction, router]);
 
+  // 🔹 KEY CHANGE: 가장 표준적이고 안정적인 높이 조절 로직으로 변경
   useEffect(() => {
     if (textareaRef.current) {
       const el = textareaRef.current;
+
       if (window.innerWidth >= 768) {
         el.style.height = "100%";
         return;
       }
+
+      // --- 모바일 뷰 ---
+      const MAX_HEIGHT_PX = 144;
+
+      // 1. 높이를 'auto'로 초기화하여 textarea가 스스로 줄어들 수 있도록 합니다. (가장 중요!)
       el.style.height = "auto";
-      const parentMaxHeight = el.parentElement?.clientHeight || 144;
-      el.style.height = `${Math.min(el.scrollHeight, parentMaxHeight)}px`;
+
+      // 2. 초기화된 상태에서 계산된 scrollHeight를 기반으로 새로운 높이를 설정합니다.
+      el.style.height = `${Math.min(el.scrollHeight, MAX_HEIGHT_PX)}px`;
     }
   }, [description]);
 
@@ -118,7 +126,7 @@ export default function MainSection1Form({ session, initialDescription }: { sess
     <form action={handleFormSubmit} className="w-full max-w-4xl mx-auto mt-3 md:mt-6 flex flex-col gap-4">
       <div
         className="w-full min-h-12 max-h-36 md:min-h-36 md:max-h-36 px-4 pr-1.5 md:pl-5 md:py-4 md:pr-3
-        flex items-center justify-center gap-2 
+        flex items-center md:items-stretch justify-center gap-2 
         relative rounded-[24px] md:rounded-2xl 
         bg-black/5 backdrop-blur-xl border border-black/10 shadow-2xl shadow-black/10"
       >
@@ -138,7 +146,6 @@ export default function MainSection1Form({ session, initialDescription }: { sess
           spellCheck="false"
         />
         <div className="flex items-end h-full py-1.5 md:py-0">
-          {/* 🔹 KEY CHANGE 4: SubmitButton에 부모의 로딩 상태를 전달합니다. */}
           <SubmitButton isParentLoading={isParentLoading} />
         </div>
       </div>

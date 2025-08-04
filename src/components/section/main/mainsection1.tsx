@@ -23,7 +23,7 @@ export default async function MainSection1({ session }: { session: Session | nul
           </div>
         </div>
 
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 p-2 rounded-full hover:bg-black/10 transition-colors duration-300 cursor-pointer">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 p-2" style={{ animation: "bounce 2s infinite" }}>
           <ChevronDown />
         </div>
       </div>
