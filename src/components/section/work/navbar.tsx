@@ -48,11 +48,13 @@ export default function Navbar() {
 
   const logoFontSize = useTransform(scrollProgress, [0, 1], [maxFontSize, 48]);
   const logoFontSizePx = useTransform(logoFontSize, (v) => `${v}px`);
+  const mobileLogoFontSize = useTransform(scrollProgress, [0, 1], [maxFontSize, 24]);
+  const mobileLogoFontSizePx = useTransform(mobileLogoFontSize, (v) => `${v}px`);
   const logoLetterSpacing = useTransform(scrollProgress, [0, 1], ["-0.3rem", "0rem"]);
   const logoTop = useTransform(scrollProgress, [0, 1], ["100%", "0%"]);
   const logoTranslateY = useTransform(scrollProgress, [0, 1], ["-90%", "0%"]);
 
-  const navLeft = useTransform(scrollProgress, [0, 1], ["0%", "50%"]);
+  const navLeft = useTransform(scrollProgress, [0, 1], ["1%", "50%"]);
   const navTranslateX = useTransform(scrollProgress, [0, 1], ["0%", "-50%"]);
 
   return (
@@ -60,7 +62,7 @@ export default function Navbar() {
       <div className="relative h-full w-full">
         <motion.h1
           ref={logoRef}
-          className="absolute font-black text-gray-900 whitespace-nowrap px-4"
+          className="absolute font-black text-gray-900 whitespace-nowrap px-4 hidden md:block"
           style={{
             top: logoTop,
             translateY: logoTranslateY,
@@ -70,19 +72,28 @@ export default function Navbar() {
         >
           Fellows
         </motion.h1>
+        <motion.h1
+          ref={logoRef}
+          className="absolute font-black text-gray-900 whitespace-nowrap px-4 block md:hidden"
+          style={{
+            top: logoTop,
+            translateY: logoTranslateY,
+            fontSize: mobileLogoFontSizePx,
+            letterSpacing: logoLetterSpacing,
+          }}
+        >
+          Fellows
+        </motion.h1>
 
-        <motion.div className="absolute hidden md:flex h-fit w-fit px-4" style={{ left: navLeft, translateX: navTranslateX }}>
+        <motion.div className="absolute flex h-fit w-fit px-4" style={{ left: navLeft, translateX: navTranslateX }}>
           <nav className="flex items-center justify-start space-x-6 text-gray-700 h-[80px]">
-            <a href="#about" className="hover:text-gray-900 text-2xl font-semibold">
+            <a href="#about" className="hover:text-gray-900 text-sm md:text-2xl font-semibold">
               about
             </a>
-            <a href="#work" className="hover:text-gray-900 flex items-center text-2xl font-semibold">
-              work<span className="ml-1 text-xs text-gray-500">(10)</span>
-            </a>
-            <a href="#blog" className="hover:text-gray-900 text-2xl font-semibold">
+            <a href="#blog" className="hover:text-gray-900 text-sm md:text-2xl font-semibold">
               blog
             </a>
-            <a href="#contact" className="hover:text-gray-900 text-2xl font-semibold">
+            <a href="#contact" className="hover:text-gray-900 text-sm md:text-2xl font-semibold">
               contact
             </a>
           </nav>
