@@ -3,7 +3,7 @@
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
 import React, { useEffect, useRef, useMemo, useCallback } from "react";
 
-// ... (Props와 Shader 코드는 변경되지 않음) ...
+// --- Props와 셰이더, 헬퍼 함수는 이전과 동일합니다 ---
 type Vec2 = [number, number];
 
 export interface FaultyTerminalProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -22,19 +22,14 @@ export interface FaultyTerminalProps extends React.HTMLAttributes<HTMLDivElement
   tint?: string;
   mouseReact?: boolean;
   mouseStrength?: number;
-  dpr?: number; // dpr prop은 그대로 유지
+  dpr?: number;
   pageLoadAnimation?: boolean;
   brightness?: number;
 }
 
-const vertexShader = `
-// ... (변경 없음) ...
-`;
-const fragmentShader = `
-// ... (변경 없음) ...
-`;
+const vertexShader = `attribute vec2 position;attribute vec2 uv;varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,0.,1.);}`;
+const fragmentShader = `precision mediump float;varying vec2 vUv;uniform float iTime;uniform vec3 iResolution;uniform float uScale;uniform vec2 uGridMul;uniform float uDigitSize;uniform float uScanlineIntensity;uniform float uGlitchAmount;uniform float uFlickerAmount;uniform float uNoiseAmp;uniform float uChromaticAberration;uniform float uDither;uniform float uCurvature;uniform vec3 uTint;uniform vec2 uMouse;uniform float uMouseStrength;uniform float uUseMouse;uniform float uPageLoadProgress;uniform float uUsePageLoadAnimation;uniform float uBrightness;float time;float hash21(vec2 p){p=fract(p*234.56);p+=dot(p,p+34.56);return fract(p.x*p.y);}float noise(vec2 p){return sin(p.x*10.)*sin(p.y*(3.+sin(time*.090909)))+.2;}mat2 rotate(float angle){float c=cos(angle);float s=sin(angle);return mat2(c,-s,s,c);}float fbm(vec2 p){p*=1.1;float f=0.;float amp=.5*uNoiseAmp;mat2 modify0=rotate(time*.02);f+=amp*noise(p);p=modify0*p*2.;amp*=.454545;mat2 modify1=rotate(time*.02);f+=amp*noise(p);p=modify1*p*2.;amp*=.454545;mat2 modify2=rotate(time*.08);f+=amp*noise(p);return f;}float pattern(vec2 p,out vec2 q,out vec2 r){vec2 offset1=vec2(1.);vec2 offset0=vec2(0.);mat2 rot01=rotate(.1*time);mat2 rot1=rotate(.1);q=vec2(fbm(p+offset1),fbm(rot01*p+offset1));r=vec2(fbm(rot1*q+offset0),fbm(q+offset0));return fbm(p+r);}float digit(vec2 p){vec2 grid=uGridMul*15.;vec2 s=floor(p*grid)/grid;p=p*grid;vec2 q,r;float intensity=pattern(s*.1,q,r)*1.3-.03;if(uUseMouse>.5){vec2 mouseWorld=uMouse*uScale;float distToMouse=distance(s,mouseWorld);float mouseInfluence=exp(-distToMouse*8.)*uMouseStrength*10.;intensity+=mouseInfluence;float ripple=sin(distToMouse*20.-iTime*5.)*.1*mouseInfluence;intensity+=ripple;}if(uUsePageLoadAnimation>.5){float cellRandom=fract(sin(dot(s,vec2(12.9898,78.233)))*43758.5453);float cellDelay=cellRandom*.8;float cellProgress=clamp((uPageLoadProgress-cellDelay)/.2,0.,1.);float fadeAlpha=smoothstep(0.,1.,cellProgress);intensity*=fadeAlpha;}p=fract(p);p*=uDigitSize;float px5=p.x*5.;float py5=(1.-p.y)*5.;float x=fract(px5);float y=fract(py5);float i=floor(py5)-2.;float j=floor(px5)-2.;float n=i*i+j*j;float f=n*.0625;float isOn=step(.1,intensity-f);float brightness=isOn*(.2+y*.8)*(.75+x*.25);return step(0.,p.x)*step(p.x,1.)*step(0.,p.y)*step(p.y,1.)*brightness;}float onOff(float a,float b,float c){return step(c,sin(iTime+a*cos(iTime*b)))*uFlickerAmount;}float displace(vec2 look){float y=look.y-mod(iTime*.25,1.);float window=1./(1.+50.*y*y);return sin(look.y*20.+iTime)*.0125*onOff(4.,2.,.8)*(1.+cos(iTime*60.))*window;}vec3 getColor(vec2 p){float bar=step(mod(p.y+time*20.,1.),.2)*.4+1.;bar*=uScanlineIntensity;float displacement=displace(p);p.x+=displacement;if(uGlitchAmount!=1.){float extra=displacement*(uGlitchAmount-1.);p.x+=extra;}float middle=digit(p);const float off=.002;float sum=digit(p+vec2(-off,-off))+digit(p+vec2(0.,-off))+digit(p+vec2(off,-off))+digit(p+vec2(-off,0.))+digit(p+vec2(0.,0.))+digit(p+vec2(off,0.))+digit(p+vec2(-off,off))+digit(p+vec2(0.,off))+digit(p+vec2(off,off));vec3 baseColor=vec3(.9)*middle+sum*.1*vec3(1.)*bar;return baseColor;}vec2 barrel(vec2 uv){vec2 c=uv*2.-1.;float r2=dot(c,c);c*=1.+uCurvature*r2;return c*.5+.5;}void main(){time=iTime*.333333;vec2 uv=vUv;if(uCurvature!=0.){uv=barrel(uv);}vec2 p=uv*uScale;vec3 col=getColor(p);if(uChromaticAberration!=0.){vec2 ca=vec2(uChromaticAberration)/iResolution.xy;col.r=getColor(p+ca).r;col.b=getColor(p-ca).b;}col*=uTint;col*=uBrightness;if(uDither>0.){float rnd=hash21(gl_FragCoord.xy);col+=(rnd-.5)*(uDither*.003922);}gl_FragColor=vec4(col,1.);}`;
 function hexToRgb(hex: string): [number, number, number] {
-  // ... (변경 없음) ...
   let h = hex.replace("#", "").trim();
   if (h.length === 3)
     h = h
@@ -61,9 +56,6 @@ export default function FaultyTerminal({
   tint = "#ffffff",
   mouseReact = true,
   mouseStrength = 0.2,
-  // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-  // 1. 여기서 window를 사용하는 기본값 설정을 제거합니다.
-  // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
   dpr,
   pageLoadAnimation = true,
   brightness = 1,
@@ -72,42 +64,23 @@ export default function FaultyTerminal({
   ...rest
 }: FaultyTerminalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const programRef = useRef<Program | null>(null);
   const rendererRef = useRef<Renderer | null>(null);
+  const programRef = useRef<Program | null>(null);
   const mouseRef = useRef({ x: 0.5, y: 0.5 });
   const smoothMouseRef = useRef({ x: 0.5, y: 0.5 });
-  const frozenTimeRef = useRef(0);
-  const rafRef = useRef<number>(0);
-  const loadAnimationStartRef = useRef<number>(0);
-  const timeOffsetRef = useRef<number>(Math.random() * 100);
+  const timeOffsetRef = useRef(Math.random() * 100);
 
-  const tintVec = useMemo(() => hexToRgb(tint), [tint]);
-  const ditherValue = useMemo(() => (typeof dither === "boolean" ? (dither ? 1 : 0) : dither), [dither]);
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    const ctn = containerRef.current;
-    if (!ctn) return;
-    const rect = ctn.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = 1 - (e.clientY - rect.top) / rect.height;
-    mouseRef.current = { x, y };
-  }, []);
-
+  // --- 1. 초기화 (한 번만 실행되는 useEffect) ---
   useEffect(() => {
     const ctn = containerRef.current;
     if (!ctn) return;
 
-    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-    // 2. useEffect 내부에서 dpr 값을 결정합니다.
-    // 이 코드는 브라우저에서만 실행되므로 window 객체에 안전하게 접근할 수 있습니다.
-    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+    // dpr 값을 브라우저 환경에서 안전하게 결정
     const finalDpr = dpr ?? Math.min(window.devicePixelRatio, 2);
 
-    const renderer = new Renderer({ dpr: finalDpr });
+    const renderer = new Renderer({ dpr: finalDpr, alpha: true });
     rendererRef.current = renderer;
     const gl = renderer.gl;
-    gl.clearColor(0, 0, 0, 1);
-
     const geometry = new Triangle(gl);
 
     const program = new Program(gl, {
@@ -115,9 +88,8 @@ export default function FaultyTerminal({
       fragment: fragmentShader,
       uniforms: {
         iTime: { value: 0 },
-        iResolution: {
-          value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height),
-        },
+        iResolution: { value: new Color(gl.canvas.width, gl.canvas.height, 1) },
+        // 초기값 설정
         uScale: { value: scale },
         uGridMul: { value: new Float32Array(gridMul) },
         uDigitSize: { value: digitSize },
@@ -126,12 +98,10 @@ export default function FaultyTerminal({
         uFlickerAmount: { value: flickerAmount },
         uNoiseAmp: { value: noiseAmp },
         uChromaticAberration: { value: chromaticAberration },
-        uDither: { value: ditherValue },
+        uDither: { value: typeof dither === "boolean" ? (dither ? 1 : 0) : dither },
         uCurvature: { value: curvature },
-        uTint: { value: new Color(tintVec[0], tintVec[1], tintVec[2]) },
-        uMouse: {
-          value: new Float32Array([smoothMouseRef.current.x, smoothMouseRef.current.y]),
-        },
+        uTint: { value: new Color(...hexToRgb(tint)) },
+        uMouse: { value: new Float32Array([0.5, 0.5]) },
         uMouseStrength: { value: mouseStrength },
         uUseMouse: { value: mouseReact ? 1 : 0 },
         uPageLoadProgress: { value: pageLoadAnimation ? 0 : 1 },
@@ -143,97 +113,101 @@ export default function FaultyTerminal({
 
     const mesh = new Mesh(gl, { geometry, program });
 
-    function resize() {
-      if (!ctn || !rendererRef.current) return;
-      const currentRenderer = rendererRef.current;
-      currentRenderer.setSize(ctn.offsetWidth, ctn.offsetHeight);
-      if (programRef.current) {
-        programRef.current.uniforms.iResolution.value = new Color(
-          currentRenderer.gl.canvas.width,
-          currentRenderer.gl.canvas.height,
-          currentRenderer.gl.canvas.width / currentRenderer.gl.canvas.height
-        );
-      }
-    }
-
-    const resizeObserver = new ResizeObserver(() => resize());
+    // 리사이즈 로직
+    const resize = () => {
+      renderer.setSize(ctn.offsetWidth, ctn.offsetHeight);
+      program.uniforms.iResolution.value.set(gl.canvas.width, gl.canvas.height, 1);
+    };
+    const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(ctn);
     resize();
 
-    const update = (t: number) => {
-      rafRef.current = requestAnimationFrame(update);
-      const currentProgram = programRef.current;
-      if (!currentProgram) return;
+    // 마우스 이벤트 핸들러
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = ctn.getBoundingClientRect();
+      mouseRef.current.x = (e.clientX - rect.left) / rect.width;
+      mouseRef.current.y = 1.0 - (e.clientY - rect.top) / rect.height;
+    };
+    if (mouseReact) ctn.addEventListener("mousemove", handleMouseMove);
 
-      if (pageLoadAnimation && loadAnimationStartRef.current === 0) {
-        loadAnimationStartRef.current = t;
-      }
+    // 렌더링 루프
+    let rafId: number;
+    let frozenTime = 0;
+    let animStartTime = 0;
+    const update = (t: number) => {
+      rafId = requestAnimationFrame(update);
+
+      if (pageLoadAnimation && animStartTime === 0) animStartTime = t;
 
       if (!pause) {
         const elapsed = (t * 0.001 + timeOffsetRef.current) * timeScale;
-        currentProgram.uniforms.iTime.value = elapsed;
-        frozenTimeRef.current = elapsed;
+        program.uniforms.iTime.value = elapsed;
+        frozenTime = elapsed;
       } else {
-        currentProgram.uniforms.iTime.value = frozenTimeRef.current;
+        program.uniforms.iTime.value = frozenTime;
       }
 
-      if (pageLoadAnimation && loadAnimationStartRef.current > 0) {
-        const animationDuration = 2000;
-        const animationElapsed = t - loadAnimationStartRef.current;
-        const progress = Math.min(animationElapsed / animationDuration, 1);
-        currentProgram.uniforms.uPageLoadProgress.value = progress;
+      if (pageLoadAnimation) {
+        const progress = Math.min((t - animStartTime) / 2000, 1);
+        program.uniforms.uPageLoadProgress.value = progress;
       }
 
       if (mouseReact) {
-        const dampingFactor = 0.08;
-        const smoothMouse = smoothMouseRef.current;
-        const mouse = mouseRef.current;
-        smoothMouse.x += (mouse.x - smoothMouse.x) * dampingFactor;
-        smoothMouse.y += (mouse.y - smoothMouse.y) * dampingFactor;
-        const mouseUniform = currentProgram.uniforms.uMouse.value as Float32Array;
-        mouseUniform[0] = smoothMouse.x;
-        mouseUniform[1] = smoothMouse.y;
+        const smooth = smoothMouseRef.current;
+        smooth.x += (mouseRef.current.x - smooth.x) * 0.08;
+        smooth.y += (mouseRef.current.y - smooth.y) * 0.08;
+        (program.uniforms.uMouse.value as Float32Array).set([smooth.x, smooth.y]);
       }
 
-      if (rendererRef.current) {
-        rendererRef.current.render({ scene: mesh });
-      }
+      renderer.render({ scene: mesh });
     };
-    rafRef.current = requestAnimationFrame(update);
+    rafId = requestAnimationFrame(update);
+
     ctn.appendChild(gl.canvas);
 
-    if (mouseReact) ctn.addEventListener("mousemove", handleMouseMove);
-
+    // 클린업 함수
     return () => {
-      cancelAnimationFrame(rafRef.current);
+      cancelAnimationFrame(rafId);
       resizeObserver.disconnect();
-      if (ctn && mouseReact) ctn.removeEventListener("mousemove", handleMouseMove);
-      if (ctn && gl.canvas.parentElement === ctn) ctn.removeChild(gl.canvas);
+      if (mouseReact) ctn.removeEventListener("mousemove", handleMouseMove);
+      if (gl.canvas.parentElement) ctn.removeChild(gl.canvas);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
-      loadAnimationStartRef.current = 0;
-      timeOffsetRef.current = Math.random() * 100;
     };
-  }, [
-    dpr, // dpr을 의존성 배열에 추가합니다.
-    pause,
-    timeScale,
-    scale,
-    gridMul,
-    digitSize,
-    scanlineIntensity,
-    glitchAmount,
-    flickerAmount,
-    noiseAmp,
-    chromaticAberration,
-    ditherValue,
-    curvature,
-    tintVec,
-    mouseReact,
-    mouseStrength,
-    pageLoadAnimation,
-    brightness,
-    handleMouseMove,
-  ]);
+    // 의존성 배열을 비워서 이 effect가 한 번만 실행되도록 보장
+  }, []);
+
+  // --- 2. 프롭 변경에 따른 유니폼 업데이트 (여러 개의 작은 useEffect) ---
+
+  // 변경 가능한 대부분의 props를 여기서 처리합니다.
+  useEffect(() => {
+    const program = programRef.current;
+    if (!program) return;
+
+    program.uniforms.uScale.value = scale;
+    (program.uniforms.uGridMul.value as Float32Array).set(gridMul);
+    program.uniforms.uDigitSize.value = digitSize;
+    program.uniforms.uScanlineIntensity.value = scanlineIntensity;
+    program.uniforms.uGlitchAmount.value = glitchAmount;
+    program.uniforms.uFlickerAmount.value = flickerAmount;
+    program.uniforms.uNoiseAmp.value = noiseAmp;
+    program.uniforms.uChromaticAberration.value = chromaticAberration;
+    program.uniforms.uCurvature.value = curvature;
+    program.uniforms.uMouseStrength.value = mouseStrength;
+    program.uniforms.uBrightness.value = brightness;
+  }, [scale, gridMul, digitSize, scanlineIntensity, glitchAmount, flickerAmount, noiseAmp, chromaticAberration, curvature, mouseStrength, brightness]);
+
+  // boolean 이나 특별한 계산이 필요한 props는 개별적으로 처리합니다.
+  useEffect(() => {
+    const program = programRef.current;
+    if (!program) return;
+    program.uniforms.uTint.value.set(...hexToRgb(tint));
+  }, [tint]);
+
+  useEffect(() => {
+    const program = programRef.current;
+    if (!program) return;
+    program.uniforms.uDither.value = typeof dither === "boolean" ? (dither ? 1 : 0) : dither;
+  }, [dither]);
 
   return <div ref={containerRef} className={`w-full h-full relative overflow-hidden ${className}`} style={style} {...rest} />;
 }

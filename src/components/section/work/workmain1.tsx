@@ -34,15 +34,11 @@ export default function WorkMain1() {
     <div
       onTransitionEnd={handleTransitionEnd}
       className={`
-        fixed inset-0 z-50 w-full h-full flex flex-col items-center justify-center bg-black
+        fixed inset-0 z-50 w-full h-full flex flex-col items-center justify-center
         transition-transform duration-1000 ease-in-out
         ${visibility === "hiding" ? "-translate-y-full" : "translate-y-0"}
       `}
     >
-      {/* 2. FaultyTerminal을 가리던 불필요한 div를 제거했습니다. */}
-      {/* 이제 최상위 div에 직접 bg-black을 적용하여 배경색을 처리합니다. */}
-
-      {/* --- 컨텐츠 (z-index를 이용해 터미널 효과보다 위에 배치) --- */}
       <div className="relative z-10 hidden md:flex flex-col items-center space-y-0">
         <DecryptedText
           speed={60}
