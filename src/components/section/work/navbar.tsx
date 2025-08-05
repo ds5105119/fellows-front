@@ -59,8 +59,18 @@ export default function Navbar() {
       if (!logoMobileRef.current) return;
       const testSize = 1000;
       logoMobileRef.current.style.fontSize = `${testSize}px`;
+
       const width = logoMobileRef.current.getBoundingClientRect().width;
-      const newFontSize = (window.innerWidth / width) * testSize;
+      const height = logoMobileRef.current.getBoundingClientRect().height;
+
+      const maxAllowedWidth = window.innerWidth * 0.98;
+      const maxAllowedHeight = window.innerHeight * 0.3;
+
+      const widthRatio = maxAllowedWidth / width;
+      const heightRatio = maxAllowedHeight / height;
+      const scaleRatio = Math.min(widthRatio, heightRatio);
+
+      const newFontSize = testSize * scaleRatio;
       setMaxFontSizeMobile(newFontSize);
     }
 
