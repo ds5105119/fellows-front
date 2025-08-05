@@ -160,10 +160,10 @@ export default function CreateProject() {
 
   return (
     <div className="flex w-full h-full min-h-screen">
-      <div className="hidden xl:flex h-full flex-col max-w-md shrink-0 scrollbar-hide pl-20 pr-10">
+      <div className="hidden h-full flex-col max-w-md shrink-0 scrollbar-hide pl-20 pr-10">
         <CreateProjectSide />
       </div>
-      <div className="flex flex-col w-full mx-auto xl:mx-0 lg:w-xl h-full scrollbar-hide shrink-0">
+      <div className="flex flex-col w-full mx-auto lg:w-xl h-full scrollbar-hide shrink-0">
         <div className="w-full px-5 md:px-8 py-6 md:py-10">
           <div className="mb-10 flex items-end justify-between">
             <div className="w-full">

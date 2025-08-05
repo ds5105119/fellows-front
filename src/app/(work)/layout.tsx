@@ -6,20 +6,14 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
 import "lenis/dist/lenis.css";
 import GoogleAnalytics from "@/lib/googleanalytics";
-import Navbar from "@/components/design/navbar";
+import { GeistSans } from "geist/font/sans";
+import Navbar from "@/components/section/work/navbar";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
   display: "swap",
   weight: "45 920",
   variable: "--font-pretendard",
-});
-
-const satoshi = localFont({
-  src: "../../fonts/Satoshi-Variable.woff2",
-  display: "swap",
-  weight: "45 920",
-  variable: "--font-satoshi",
 });
 
 export const metadata: Metadata = {
@@ -34,7 +28,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-y-auto`}>
+      <body className={`${pretendard.variable} ${GeistSans.variable} h-screen overflow-y-auto overflow-x-hidden`}>
         <LenisProvider>
           <Navbar />
           <div className="relative overscroll-none">
