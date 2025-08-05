@@ -5,7 +5,7 @@ import { VelocityScroll } from "@/components/magicui/scroll-based-velocity";
 
 export default function WorkMain2() {
   return (
-    <div className="relative w-full h-full flex flex-col mt-[calc(100dvh-28px)]">
+    <div className="relative w-full flex flex-col mt-[calc(96vh+4px)] md:mt-[calc(96vh+4px)]">
       <div className="relative mx-4 w-full aspect-[23/9] overflow-hidden hidden md:block">
         <GridDistortion imageSrc="/workmain.avif" pixelsPerGridPoint={80} mouse={0.25} strength={0.15} className="object-cover" />
       </div>

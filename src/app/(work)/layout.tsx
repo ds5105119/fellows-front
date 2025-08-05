@@ -31,8 +31,8 @@ export default async function RootLayout({
     <html lang="en">
       <body className={cn(pretendard.variable, GeistSans.variable, "h-screen overflow-y-auto overflow-x-hidden")}>
         <LenisProvider>
-          <Navbar />
           <div className="relative overscroll-none">
+            <Navbar />
             <main className="scrollbar-hide break-keep">{children}</main>
           </div>
         </LenisProvider>
