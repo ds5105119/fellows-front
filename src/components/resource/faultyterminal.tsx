@@ -1,7 +1,7 @@
 "use client";
 
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
-import React, { useEffect, useRef, useMemo, useCallback } from "react";
+import React, { useEffect, useRef } from "react";
 
 // --- Props와 셰이더, 헬퍼 함수는 이전과 동일합니다 ---
 type Vec2 = [number, number];
