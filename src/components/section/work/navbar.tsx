@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 export default function Navbar() {
   const mobile = useIsMobile();
@@ -20,10 +21,7 @@ export default function Navbar() {
     <>
       {/* Fixed Navigation Header */}
       <motion.header
-        className="fixed top-0 left-0 right-0 bg-white z-50 border-b border-black"
-        animate={{
-          height: mobile || isScrolled ? "80px" : "280px",
-        }}
+        className={cn("fixed top-0 left-0 right-0 bg-white z-50 border-b border-black", mobile || isScrolled ? "h-[80px]" : "h-[clac(100dvh-28px)]")}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
         <motion.div className="h-full flex">
@@ -31,10 +29,10 @@ export default function Navbar() {
           <motion.h1
             className="font-extrabold text-gray-900 flex items-center justify-start border-r border-black"
             animate={{
-              width: mobile || isScrolled ? "172px" : "50%",
-              fontSize: mobile || isScrolled ? "48px" : "294px",
-              letterSpacing: mobile || isScrolled ? "-0.3rem" : "-2.2rem",
-              marginLeft: mobile || isScrolled ? "24px" : 0,
+              width: isScrolled ? "172px" : "50%",
+              fontSize: isScrolled ? "48px" : "294px",
+              letterSpacing: isScrolled ? "-0.3rem" : "-2.2rem",
+              marginLeft: isScrolled ? "24px" : 0,
             }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >

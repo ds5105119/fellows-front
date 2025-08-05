@@ -1,22 +1,20 @@
 "use client";
 
-import DecryptedText from "@/components/resource/decryptedtext";
-import { useFitText } from "@/components/resource/fittext";
 import GridDistortion from "@/components/resource/griddistortion";
+import { VelocityScroll } from "@/components/magicui/scroll-based-velocity";
 
 export default function WorkMain2() {
-  const { ref: fitTextRef, style: fitTextStyle } = useFitText<HTMLDivElement>({
-    paddingRem: 0,
-    scaleFactor: 0.98,
-  });
-
   return (
     <div className="relative w-full h-full flex flex-col mt-[calc(100dvh-28px)]">
-      <div className="mx-4 aspect-[23/9] overflow-hidden relative">
-        <GridDistortion imageSrc="/workmain.avif" mouse={0.25} strength={0.15} className="object-cover" />
+      <div className="relative mx-4 w-full aspect-[23/9] overflow-hidden hidden md:block">
+        <GridDistortion imageSrc="/workmain.avif" pixelsPerGridPoint={80} mouse={0.25} strength={0.15} className="object-cover" />
       </div>
-      <div ref={fitTextRef} style={fitTextStyle} className="absolute bottom-0 font-black text-black leading-none">
-        <DecryptedText text={`Fellows`} animateOn="view" revealDirection="start" speed={150} maxIterations={100} sequential={true} />
+      <div className="mx-4 aspect-[9/16] overflow-hidden relative block md:hidden">
+        <GridDistortion imageSrc="/workmain.avif" pixelsPerGridPoint={80} mouse={0.25} strength={0.15} className="object-cover" />
+      </div>
+      <div className="mx-4 my-4">
+        <VelocityScroll numRows={1}>Working Globally • </VelocityScroll>
+        <VelocityScroll numRows={1}>12+ years of experience • </VelocityScroll>
       </div>
     </div>
   );

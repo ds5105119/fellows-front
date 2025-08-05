@@ -8,6 +8,7 @@ import "lenis/dist/lenis.css";
 import GoogleAnalytics from "@/lib/googleanalytics";
 import { GeistSans } from "geist/font/sans";
 import Navbar from "@/components/section/work/navbar";
+import { cn } from "@/lib/utils";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
@@ -28,7 +29,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${pretendard.variable} ${GeistSans.variable} h-screen overflow-y-auto overflow-x-hidden`}>
+      <body className={cn(pretendard.variable, GeistSans.variable, "h-screen overflow-y-auto overflow-x-hidden")}>
         <LenisProvider>
           <Navbar />
           <div className="relative overscroll-none">
