@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  motion,
-  useAnimationFrame,
-  useMotionValue,
-  useScroll,
-  useSpring,
-  useTransform,
-  useVelocity,
-} from "motion/react";
+import { motion, useAnimationFrame, useMotionValue, useScroll, useSpring, useTransform, useVelocity } from "motion/react";
 import React, { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -29,11 +21,7 @@ export const wrap = (min: number, max: number, v: number) => {
   return ((((v - min) % rangeSize) + rangeSize) % rangeSize) + min;
 };
 
-function ParallaxText({
-  children,
-  baseVelocity = 100,
-  ...props
-}: ParallaxProps) {
+function ParallaxText({ children, baseVelocity = 100, ...props }: ParallaxProps) {
   const baseX = useMotionValue(0);
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
@@ -84,11 +72,7 @@ function ParallaxText({
   });
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full overflow-hidden whitespace-nowrap"
-      {...props}
-    >
+    <div ref={containerRef} className="w-full overflow-hidden whitespace-nowrap" {...props}>
       <motion.div className="inline-block" style={{ x }}>
         {Array.from({ length: repetitions }).map((_, i) => (
           <span key={i} ref={i === 0 ? textRef : null}>
@@ -100,26 +84,11 @@ function ParallaxText({
   );
 }
 
-export function VelocityScroll({
-  defaultVelocity = 5,
-  numRows = 2,
-  children,
-  className,
-  ...props
-}: VelocityScrollProps) {
+export function VelocityScroll({ defaultVelocity = 5, numRows = 2, children, className, ...props }: VelocityScrollProps) {
   return (
-    <div
-      className={cn(
-        "relative w-full text-4xl font-bold tracking-[-0.02em] md:text-7xl md:leading-[5rem]",
-        className,
-      )}
-      {...props}
-    >
+    <div className={cn("relative w-full text-4xl font-bold tracking-[-0.02em] md:text-7xl md:leading-[5rem]", className)} {...props}>
       {Array.from({ length: numRows }).map((_, i) => (
-        <ParallaxText
-          key={i}
-          baseVelocity={defaultVelocity * (i % 2 === 0 ? 1 : -1)}
-        >
+        <ParallaxText key={i} baseVelocity={defaultVelocity * (i % 2 === 0 ? 1 : -1)}>
           {children}
         </ParallaxText>
       ))}

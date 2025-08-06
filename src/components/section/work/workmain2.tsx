@@ -12,7 +12,7 @@ export default function WorkMain2() {
       <div className="mx-4 aspect-[9/16] overflow-hidden relative block md:hidden">
         <GridDistortion imageSrc="/workmain.avif" pixelsPerGridPoint={80} mouse={0.25} strength={0.15} className="object-cover" />
       </div>
-      <div className="mx-4 my-4">
+      <div className="mx-4 my-2 md:my-4 leading-0">
         <VelocityScroll numRows={1}>Working Globally • </VelocityScroll>
         <VelocityScroll numRows={1}>12+ years of experience • </VelocityScroll>
       </div>
