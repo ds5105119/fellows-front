@@ -201,7 +201,7 @@ export default function Navbar() {
       </motion.header>
 
       {/* 모바일 */}
-      <motion.header className="fixed w-full z-50 bg-white block md:hidden" ref={mobileTargetRef} style={{ height: mobileHeaderHeightPx }}>
+      <motion.header className="fixed w-full z-[100] bg-white block md:hidden" ref={mobileTargetRef} style={{ height: mobileHeaderHeightPx }}>
         <div className="relative h-full w-full">
           <motion.h1
             ref={logoMobileRef}
