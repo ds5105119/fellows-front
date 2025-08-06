@@ -36,7 +36,7 @@ export default function WorkMain1() {
     <div
       onTransitionEnd={handleTransitionEnd}
       className={`
-        fixed inset-0 z-50 w-full h-full flex flex-col items-center justify-center
+        fixed inset-0 top-0 z-[100] w-full h-full flex flex-col items-center justify-center
         transition-transform duration-1000 ease-in-out
         ${visibility === "hiding" ? "-translate-y-full" : "translate-y-0"}
       `}

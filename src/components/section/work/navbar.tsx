@@ -177,7 +177,7 @@ export default function Navbar() {
         <div className="relative h-full w-full">
           <motion.h1
             ref={logoDesktopRef}
-            className="absolute font-black text-gray-900 whitespace-nowrap px-4 hidden md:block"
+            className="absolute font-black text-gray-900 whitespace-nowrap px-4 hidden md:block select-none"
             style={{
               top: logoTop,
               translateY: logoTranslateY,
@@ -191,7 +191,7 @@ export default function Navbar() {
           <motion.div className="absolute h-fit w-fit px-4 hidden md:flex mt-5.5" style={{ left: navLeft, translateX: navTranslateX }}>
             <nav className="flex items-center justify-start space-x-6 text-gray-700">
               {menuItems.map((item, index) => (
-                <a key={index} href={item.href} className="hover:text-gray-900 text-sm md:text-2xl font-semibold">
+                <a key={index} href={item.href} className="hover:text-gray-900 text-sm md:text-2xl font-semibold select-none">
                   {item.label}
                 </a>
               ))}
@@ -230,7 +230,7 @@ export default function Navbar() {
           <>
             {/* 배경 오버레이 */}
             <motion.div
-              className="fixed inset-0 bg-black bg-opacity-50 z-[60] md:hidden"
+              className="fixed inset-0 bg-black bg-opacity-50 z-[90] md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -239,7 +239,7 @@ export default function Navbar() {
 
             {/* 메뉴 패널 */}
             <motion.div
-              className="fixed top-0 right-0 w-full h-full bg-white z-[70] md:hidden"
+              className="fixed top-0 right-0 w-full h-full bg-white z-[100] md:hidden"
               variants={menuVariants}
               initial="closed"
               animate="open"

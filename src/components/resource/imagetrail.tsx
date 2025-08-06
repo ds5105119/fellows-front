@@ -1200,7 +1200,7 @@ export default function ImageTrail({ items = [], variant = 1 }: ImageTrailProps)
   }, [variant, items]);
 
   return (
-    <div className="w-full h-full relative z-50 rounded-lg bg-transparent overflow-visible" ref={containerRef}>
+    <div className="w-full h-full relative z-30 rounded-lg bg-transparent overflow-visible" ref={containerRef}>
       {items.map((url, i) => (
         <div
           className="content__img w-[190px] aspect-[1.1] rounded-[15px] absolute top-0 left-0 opacity-0 overflow-hidden [will-change:transform,filter]"
