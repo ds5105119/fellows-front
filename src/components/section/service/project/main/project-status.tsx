@@ -90,7 +90,7 @@ export function ProjectStatus({
                 onSelect={(e) => {
                   e.preventDefault();
                 }}
-                onCheckedChange={(checked) => {
+                onCheckedChange={() => {
                   setEditedProject({
                     ...project,
                     custom_project_method: key,
