@@ -534,7 +534,9 @@ export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<
                               onClick={async () => {
                                 if (isSigned && contract) {
                                   setSign(sigCanvas.current?.toDataURL() ?? "");
-                                  await updateContracts(contract.name, { is_signed: true, custom_customer_sign: sigCanvas.current?.toDataURL() ?? "" });
+                                  if (sigCanvas.current?.toDataURL()) {
+                                    await updateContracts(contract.name, { is_signed: true, custom_customer_sign: sigCanvas.current.toDataURL() });
+                                  }
                                   sigCanvas.current?.clear();
                                   setIsSigned(false);
                                 }
