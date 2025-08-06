@@ -2,8 +2,9 @@ import { cn } from "@/lib/utils";
 import { BentoCard, BentoGrid } from "@/components/magicui/bento-grid";
 import { Marquee } from "@/components/magicui/marquee";
 import Image from "next/image";
-import { BadgeCheckIcon, ChevronRight, CopyPlus, ZapIcon } from "lucide-react";
+import { ArrowUpRight, BadgeCheckIcon, ChevronRight, CopyPlus, ZapIcon } from "lucide-react";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
+import Link from "next/link";
 
 const date = new Date();
 date.setDate(2);
@@ -138,6 +139,14 @@ export default async function MainSection2() {
             <br />
             귀사를 위한 전문 개발 팀을 합리적인 가격에 만나보세요.
           </h4>
+          <Link
+            href="https://www.figma.com/deck/zUxexfMaoALzAzayStpXzB/Mobile-Product-Review"
+            className="flex items-center md:px-3 md:py-1.5 md:rounded-sm md:hover:bg-muted select-none"
+            target="_blank"
+          >
+            <ArrowUpRight className="!size-7 text-blue-500" />
+            <p className="text-lg md:text-xl font-semibold text-blue-500">서비스 소개서</p>
+          </Link>
         </div>
       </div>
 
