@@ -78,9 +78,9 @@ export default function Navbar() {
   }, []);
 
   /** 🔹 px 단위 height 변환 */
-  const headerHeight = useTransform(scrollProgress, [0, 1], [viewportHeight * 0.96, viewportHeight * 0.08]);
+  const headerHeight = useTransform(scrollProgress, [0, 1], [viewportHeight * 0.96, 80]);
   const headerHeightPx = useTransform(headerHeight, (v) => `${v}px`);
-  const mobileHeaderHeight = useTransform(scrollProgress, [0, 1], [viewportHeight * 0.96, viewportHeight * 0.06]);
+  const mobileHeaderHeight = useTransform(scrollProgress, [0, 1], [viewportHeight * 0.96, 48]);
   const mobileHeaderHeightPx = useTransform(mobileHeaderHeight, (v) => `${v}px`);
 
   /** 🔹 폰트/위치 애니메이션 */
@@ -238,7 +238,7 @@ export default function Navbar() {
             >
               <div className="flex flex-col h-full">
                 {/* 헤더 */}
-                <div className="flex justify-between items-center px-4" style={{ height: `${viewportHeight * 0.06}px` }}>
+                <div className="flex justify-between items-center px-4 h-12">
                   <h2 className="text-2xl font-black text-gray-900">Fellows℠</h2>
                   <button onClick={closeMobileMenu} className="hover:bg-gray-100 rounded-full transition-colors">
                     <X size={24} />
