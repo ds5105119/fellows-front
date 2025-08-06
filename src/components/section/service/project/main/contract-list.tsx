@@ -422,9 +422,8 @@ export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<
                 <div className="text-xs font-semibold text-muted-foreground">
                   <div className="text-base font-bold text-foreground mb-1">제6조 (계약의 해약)</div>
                   ①수신자는 다음 각 항의 경우에는 본 계약을 해약할 수 있다. 1. 공급자가 계약조항을 위배했을 때 2. 공급자의 태만으로 소정의 기일 내에 용역을
-                  완성할 가망이 없다고 판단되었을 때 3. 수신자의 사전 승인 없이 본 계약에 의한 권리․의무를 제3자에게 양도하거나, 이 사업의 일부를 제3자에게
-                  하도급하였을 때. 4. 수신자의 특별한 사유로 이 용역의 전부 또는 일부를 취소하여야 할 사유가 발생하였을 때.
-                  <br />② 공급자는 해약된 날로부터 10일 이내에 기수령한 금액을 을에게 반환하여야 한다. 단, 제 1항 제4호의 사유로 해약될 경우에 공급자는 해약된
+                  완성할 가망이 없다고 판단되었을 때 3. 수신자의 특별한 사유로 이 용역의 전부 또는 일부를 취소하여야 할 사유가 발생하였을 때.
+                  <br />② 공급자는 해약된 날로부터 10일 이내에 기수령한 금액을 을에게 반환하여야 한다. 단, 제 1항 제3호의 사유로 해약될 경우에 공급자는 해약된
                   날로부터 10일 이내에 정산서 및 작업물을 제출한 뒤 소모된 대금을 제외한 부분에 대해서만 정산한다.
                 </div>
                 <div className="text-xs font-semibold text-muted-foreground">
@@ -535,7 +534,7 @@ export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<
                               onClick={async () => {
                                 if (isSigned && contract) {
                                   setSign(sigCanvas.current?.toDataURL() ?? "");
-                                  await updateContracts(contract.name, { is_signed: true, custom_customer_sign: sign });
+                                  await updateContracts(contract.name, { is_signed: true, custom_customer_sign: sigCanvas.current?.toDataURL() ?? "" });
                                   sigCanvas.current?.clear();
                                   setIsSigned(false);
                                 }
