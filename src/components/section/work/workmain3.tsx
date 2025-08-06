@@ -4,8 +4,7 @@ import Image from "next/image";
 export default function WorkMain3() {
   return (
     <div className="relativew-full h-full">
-      {" "}
-      <div className="relative w-full h-[calc(100%-80px)] px-4">
+      <div className="relative w-full h-[calc(100%-80px)] px-4 overflow-hidden">
         <div className="absolute bottom-4 right-4 w-full -z-10">
           <div className="w-full pl-8 text-4xl md:text-7xl leading-tight tracking-wide font-extrabold text-right flex flex-col space-x-0 select-none">
             <div className="flex justify-end flex-wrap gap-x-[1.5vw] items-center">

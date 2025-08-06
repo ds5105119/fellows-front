@@ -3,8 +3,10 @@ import { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { motion, useScroll, useTransform, useMotionValue, AnimatePresence } from "framer-motion";
 import { AlignLeft, X } from "lucide-react";
 import { debounce } from "lodash";
+import { useLenis } from "lenis/react";
 
 export default function Navbar() {
+  const lenis = useLenis();
   const targetRef = useRef<HTMLElement | null>(null);
   const mobileTargetRef = useRef<HTMLElement | null>(null);
   const logoDesktopRef = useRef<HTMLHeadingElement | null>(null);
@@ -100,11 +102,17 @@ export default function Navbar() {
 
   // 모바일 메뉴 열기/닫기 함수
   const toggleMobileMenu = () => {
+    if (isMobileMenuOpen) {
+      lenis?.start();
+    } else {
+      lenis?.stop();
+    }
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   // 모바일 메뉴 닫기 함수
   const closeMobileMenu = () => {
+    lenis?.start();
     setIsMobileMenuOpen(false);
   };
 
