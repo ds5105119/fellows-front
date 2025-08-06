@@ -111,7 +111,8 @@ export const PROJECT_METHOD_MAPPING = {
     title: "쇼핑몰",
     description: "상품 등록, 결제, 배송 등의 핵심 기능이 기본 제공되지만, " + "쇼핑몰 외의 고유 기능 추가는 제한적이에요.",
   },
-};
+} as const;
+
 export const NOCODE_PLATFORM_MAPPING = {};
 
 export const READYNISS_MAPPING = {

@@ -122,9 +122,9 @@ export function ProjectActions({ project }: ProjectActionsProps) {
   if (project.custom_project_status !== "draft" && project.custom_project_status !== "process:1") return null;
 
   return (
-    <div className="sticky bottom-0 flex flex-col z-30 px-4 w-full">
+    <div className="sticky bottom-0 flex flex-col z-30 w-full">
       <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
-      <div className="w-full flex pb-4 pt-3 bg-background">
+      <div className="w-full flex pb-4 pt-3 px-4 bg-background">
         {project.custom_project_status === "draft" ? (
           <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
             <DialogTrigger asChild>

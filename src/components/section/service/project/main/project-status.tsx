@@ -11,7 +11,7 @@ import BreathingSparkles from "@/components/resource/breathingsparkles";
 import ProjectEstimator from "./projectestimator";
 import SelectLogo from "@/components/resource/selectlogo";
 import dayjs from "dayjs";
-import { STATUS_MAPPING, PLATFORM_MAPPING } from "@/components/resource/project";
+import { STATUS_MAPPING, PLATFORM_MAPPING, PROJECT_METHOD_MAPPING } from "@/components/resource/project";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,6 +36,7 @@ export function ProjectStatus({
   const targetRef = useRef<HTMLDivElement>(null);
 
   const [openPlatform, setOpenPlatform] = useState(false);
+  const [openMethod, setOpenMethod] = useState(false);
   const [openEndDate, setOpenEndDate] = useState(false);
   const [openSheet, setOpenSheet] = useState(false);
 
@@ -66,6 +67,41 @@ export function ProjectStatus({
         <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold truncate">
           {project.custom_project_status ? STATUS_MAPPING[project.custom_project_status] : "상태 없음"}
         </div>
+      </div>
+
+      <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
+        <h3 className="text-sm font-bold">개발 방식</h3>
+        <DropdownMenu open={canEdit ? openMethod : false} onOpenChange={(val) => canEdit && setOpenMethod(val)}>
+          <DropdownMenuTrigger asChild>
+            <div className="flex space-x-2 w-44 justify-end">
+              <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
+                {project.custom_project_method && PROJECT_METHOD_MAPPING[project.custom_project_method].title}
+              </div>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="drop-shadow-white/10 drop-shadow-2xl p-0 !h-fit !w-fit overflow-y-auto scrollbar-hide focus-visible:ring-0">
+            <DropdownMenuLabel>개발 방식</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            {(Object.entries(PROJECT_METHOD_MAPPING) as [keyof typeof PROJECT_METHOD_MAPPING, { title: string; description: string }][]).map(([key, value]) => (
+              <DropdownMenuCheckboxItem
+                key={value.title}
+                checked={key === project.custom_project_method}
+                onSelect={(e) => {
+                  e.preventDefault();
+                }}
+                onCheckedChange={(checked) => {
+                  setEditedProject({
+                    ...project,
+                    custom_project_method: key,
+                  });
+                }}
+              >
+                {value.title}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
