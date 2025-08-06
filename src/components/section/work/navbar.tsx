@@ -179,7 +179,7 @@ export default function Navbar() {
           >
             Fellows
           </motion.h1>
-          <motion.div className="absolute h-fit w-fit px-4 hidden md:flex mt-5" style={{ left: navLeft, translateX: navTranslateX }}>
+          <motion.div className="absolute h-fit w-fit px-4 hidden md:flex mt-5.5" style={{ left: navLeft, translateX: navTranslateX }}>
             <nav className="flex items-center justify-start space-x-6 text-gray-700">
               {menuItems.map((item, index) => (
                 <a key={index} href={item.href} className="hover:text-gray-900 text-sm md:text-2xl font-semibold">
