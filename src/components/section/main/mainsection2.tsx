@@ -140,7 +140,7 @@ export default async function MainSection2() {
             귀사를 위한 전문 개발 팀을 합리적인 가격에 만나보세요.
           </h4>
           <Link
-            href="https://www.figma.com/deck/zUxexfMaoALzAzayStpXzB/Mobile-Product-Review"
+            href="https://www.figma.com/deck/zUxexfMaoALzAzayStpXzB/Fellows-Solutions"
             className="flex items-center md:px-3 md:py-1.5 md:rounded-sm md:hover:bg-muted select-none"
             target="_blank"
           >

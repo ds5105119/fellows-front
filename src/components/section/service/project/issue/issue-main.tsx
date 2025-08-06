@@ -102,6 +102,7 @@ export default function IssueMain({ session }: { session: Session }) {
   return (
     <div className="w-full h-full">
       <IssueFilterHeader
+        session={session}
         filters={filters}
         setFilters={setFilters}
         keywordText={keywordText}
@@ -109,7 +110,7 @@ export default function IssueMain({ session }: { session: Session }) {
         onCreateClick={handleCreateClick}
       />
 
-      <div className="bg-white border-y border-gray-200">
+      <div className="bg-white border-b border-gray-200">
         <IssueEmptyState hasIssue={hasIssue} hasIssueLoading={hasIssueLoading} isLoading={isLoading} issuesLength={issues.length} />
 
         <IssueList issues={issues} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
