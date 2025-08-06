@@ -4,8 +4,7 @@ import React, { useRef, useEffect } from "react";
 import * as THREE from "three";
 
 interface GridDistortionProps {
-  // `grid` prop을 `pixelsPerGridPoint`로 변경하여 그리드 밀도를 조절합니다.
-  pixelsPerGridPoint?: number;
+  grid?: number;
   mouse?: number;
   strength?: number;
   relaxation?: number;
@@ -38,27 +37,15 @@ void main() {
 }
 `;
 
-// prop의 기본값을 수정합니다. pixelsPerGridPoint의 기본값은 30으로 설정합니다.
-const GridDistortion: React.FC<GridDistortionProps> = ({
-  pixelsPerGridPoint = 30,
-  mouse = 0.1,
-  strength = 0.15,
-  relaxation = 0.9,
-  imageSrc,
-  className = "",
-}) => {
+const GridDistortion: React.FC<GridDistortionProps> = ({ grid = 15, mouse = 0.1, strength = 0.15, relaxation = 0.9, imageSrc, className = "" }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const imageAspectRef = useRef<number>(1);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const container = containerRef.current;
     let animationFrameId: number;
-
-    // --- 1. 그리드 크기를 컨테이너 너비에 비례하여 동적으로 계산 ---
-    const initialWidth = container.offsetWidth;
-    // 너비를 pixelsPerGridPoint로 나누어 그리드 개수를 정하고, 최소 2 이상이 되도록 보장합니다.
-    const size = Math.max(2, Math.round(initialWidth / pixelsPerGridPoint));
 
     const scene = new THREE.Scene();
     const renderer = new THREE.WebGLRenderer({
@@ -79,15 +66,17 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
       uDataTexture: { value: null as THREE.DataTexture | null },
     };
 
-    let imageAspect = 1;
+    let plane: THREE.Mesh;
+
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(imageSrc, (texture) => {
       texture.minFilter = THREE.LinearFilter;
-      imageAspect = texture.image.width / texture.image.height;
+      imageAspectRef.current = texture.image.width / texture.image.height;
       uniforms.uTexture.value = texture;
+      handleResize(); // 텍스처 로드 후 리사이즈 호출
     });
 
-    // 동적으로 계산된 'size'를 사용하여 데이터 텍스처를 생성합니다.
+    const size = grid;
     const data = new Float32Array(4 * size * size);
     for (let i = 0; i < size * size; i++) {
       data[i * 4] = Math.random() * 255 - 125;
@@ -105,9 +94,8 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
       fragmentShader,
     });
 
-    // 마찬가지로 동적 'size'를 사용하여 지오메트리를 생성합니다.
     const geometry = new THREE.PlaneGeometry(1, 1, size - 1, size - 1);
-    const plane = new THREE.Mesh(geometry, material);
+    plane = new THREE.Mesh(geometry, material);
     scene.add(plane);
 
     const handleResize = () => {
@@ -115,12 +103,19 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
       const width = container.offsetWidth;
       const height = container.offsetHeight;
       const containerAspect = width / height;
+      const imageAspect = imageAspectRef.current;
 
       renderer.setSize(width, height);
 
-      // 이미지 비율을 유지하며 컨테이너를 꽉 채우는 스케일 계산 (object-fit: cover 와 유사)
-      const scale = Math.max(height / width / (1 / imageAspect), 1);
-      plane.scale.set(containerAspect, 1, 1).multiplyScalar(scale);
+      // object-fit: cover 효과를 위한 스케일 계산
+      plane.scale.x = containerAspect;
+      plane.scale.y = 1;
+
+      if (containerAspect > imageAspect) {
+        plane.scale.y = containerAspect / imageAspect;
+      } else {
+        plane.scale.x = imageAspect;
+      }
 
       const frustumHeight = 1;
       const frustumWidth = frustumHeight * containerAspect;
@@ -151,14 +146,13 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
     container.addEventListener("mousemove", handleMouseMove);
     container.addEventListener("mouseleave", handleMouseLeave);
 
-    // --- 2. ResizeObserver를 사용하여 컨테이너 크기 변경 감지 ---
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(container);
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       uniforms.time.value += 0.05;
-      const data = dataTexture.image.data as Float32Array;
+      const data = (uniforms.uDataTexture.value as THREE.DataTexture).image.data as Float32Array;
 
       for (let i = 0; i < size * size; i++) {
         data[i * 4] *= relaxation;
@@ -181,13 +175,12 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
         }
       }
 
-      dataTexture.needsUpdate = true;
+      (uniforms.uDataTexture.value as THREE.DataTexture).needsUpdate = true;
       renderer.render(scene, camera);
     };
     animate();
 
     return () => {
-      // 컴포넌트 언마운트 시 모든 리소스 정리
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
       container.removeEventListener("mousemove", handleMouseMove);
@@ -201,8 +194,7 @@ const GridDistortion: React.FC<GridDistortionProps> = ({
       dataTexture.dispose();
       if (uniforms.uTexture.value) uniforms.uTexture.value.dispose();
     };
-    // useEffect의 dependency array를 수정합니다.
-  }, [pixelsPerGridPoint, mouse, strength, relaxation, imageSrc]);
+  }, [grid, mouse, strength, relaxation, imageSrc]);
 
   return <div ref={containerRef} className={`w-full h-full overflow-hidden ${className}`} />;
 };
