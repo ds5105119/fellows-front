@@ -10,6 +10,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useQuoteSlots } from "@/hooks/fetch/project";
 import dayjs from "@/lib/dayjs";
+import { cn } from "@/lib/utils";
 
 interface ProjectActionsProps {
   project: UserERPNextProject;
@@ -29,7 +30,13 @@ export function ProjectActions({ project }: ProjectActionsProps) {
 
   const getAvailability = (date: Date) => {
     const dateString = dayjs(date).format("YYYY-MM-DD");
-    return Number(availabilityMap.get(dateString)) || 0;
+    return Number(
+      project.expected_end_date
+        ? dayjs(dateString).isBefore(project.expected_end_date)
+          ? availabilityMap.get(dateString) || 0
+          : 0
+        : availabilityMap.get(dateString) || 0
+    );
   };
 
   const modifiers = {
@@ -135,11 +142,12 @@ export function ProjectActions({ project }: ProjectActionsProps) {
               </DialogHeader>
 
               {/* 성공 상태 오버레이 */}
-              {isSubmitted && (
+              {isSubmitted ? (
                 <div
-                  className={`absolute inset-0 bg-white/98 backdrop-blur-md z-50 flex items-center justify-center transition-all duration-500 ease-out ${
+                  className={cn(
+                    "absolute inset-0 bg-white/98 backdrop-blur-md z-50 flex items-center justify-center transition-all duration-500 ease-out",
                     showSuccess ? "opacity-100 scale-100" : "opacity-0 scale-95"
-                  }`}
+                  )}
                 >
                   <div className="text-center space-y-8 px-8 max-w-md">
                     {/* 텍스트 */}
@@ -173,94 +181,94 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                     </div>
                   </div>
                 </div>
-              )}
-
-              <div className="w-full h-full flex flex-col">
-                <div className="sticky top-0 w-full px-3.5 py-3.5 border-b border-b-muted bg-white font-bold flex justify-between">
-                  <DialogClose asChild>
-                    <Button variant="ghost" size="icon" disabled={isSubmitting}>
-                      <XIcon />
+              ) : (
+                <div className="w-full h-full flex flex-col">
+                  <div className="sticky top-0 w-full px-3.5 py-3.5 border-b border-b-muted bg-white font-bold flex justify-between">
+                    <DialogClose asChild>
+                      <Button variant="ghost" size="icon" disabled={isSubmitting}>
+                        <XIcon />
+                      </Button>
+                    </DialogClose>
+                    <Button
+                      variant="default"
+                      onClick={handleSubmitProject}
+                      disabled={isSubmitting || isSubmitted}
+                      className="relative overflow-hidden transition-all duration-200 ease-out"
+                    >
+                      {isSubmitting ? (
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                          <span>접수 중...</span>
+                        </div>
+                      ) : (
+                        "견적 문의하기"
+                      )}
                     </Button>
-                  </DialogClose>
-                  <Button
-                    variant="default"
-                    onClick={handleSubmitProject}
-                    disabled={isSubmitting || isSubmitted}
-                    className="relative overflow-hidden transition-all duration-200 ease-out"
-                  >
-                    {isSubmitting ? (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                        <span>접수 중...</span>
-                      </div>
-                    ) : (
-                      "견적 문의하기"
-                    )}
-                  </Button>
-                </div>
+                  </div>
 
-                <div className="w-full h-fit flex flex-col lg:flex-row lg:items-center lg:justify-center p-6 lg:p-8 space-y-6 lg:space-y-0">
-                  <div className="lg:grow lg:h-full lg:pr-6">
-                    <div className="flex flex-col space-y-2">
-                      <Image src="/fellows/logo.svg" alt="펠로우즈 로고" width={120} height={120} className="select-none pb-4" priority />
-                      <div className="text-lg font-bold">견적 문의</div>
-                      <div className="flex flex-col space-y-1.5">
-                        <div className="text-sm flex space-x-3 items-center text-zinc-800">
-                          <ClockIcon className="size-4" />
-                          <p>{inbound ? "8시간" : "4시간"}</p>
+                  <div className="w-full h-fit flex flex-col lg:flex-row lg:items-center lg:justify-center p-6 lg:p-8 space-y-6 lg:space-y-0">
+                    <div className="lg:grow lg:h-full lg:pr-6">
+                      <div className="flex flex-col space-y-2">
+                        <Image src="/fellows/logo.svg" alt="펠로우즈 로고" width={120} height={120} className="select-none pb-4" priority />
+                        <div className="text-lg font-bold">견적 문의</div>
+                        <div className="flex flex-col space-y-1.5">
+                          <div className="text-sm flex space-x-3 items-center text-zinc-800">
+                            <ClockIcon className="size-4" />
+                            <p>{inbound ? "8시간" : "4시간"}</p>
+                          </div>
+                          <div className="text-sm flex space-x-3 items-center text-zinc-800">
+                            <CalendarIcon className="size-4" />
+                            <p>처리 기간: 3일</p>
+                          </div>
                         </div>
-                        <div className="text-sm flex space-x-3 items-center text-zinc-800">
-                          <CalendarIcon className="size-4" />
-                          <p>처리 기간: 3일</p>
-                        </div>
-                      </div>
-                      <div className="flex flex-col space-y-2 pt-6">
-                        <div className="text-lg font-bold">상담이 필요하신가요?</div>
-                        <div className="text-sm whitespace-pre-wrap">
-                          시작 전에 펠로우즈 매니저와 상담을 진행해보세요.
-                          <br />
-                          개발 방향 및 디자인 등 준비되지 않은 상태에서 적합합니다.
-                        </div>
-                        <div className="flex space-x-2 items-center">
-                          <div className="flex space-x-2 text-xs md:text-sm font-semibold">
-                            <input
-                              id="inbound"
-                              type="checkbox"
-                              checked={inbound}
-                              onChange={() => setInbound(!inbound)}
-                              disabled={isSubmitting || isSubmitted}
-                            />
-                            <label htmlFor="inbound">상담 필요</label>
+                        <div className="flex flex-col space-y-2 pt-6">
+                          <div className="text-lg font-bold">상담이 필요하신가요?</div>
+                          <div className="text-sm whitespace-pre-wrap">
+                            시작 전에 펠로우즈 매니저와 상담을 진행해보세요.
+                            <br />
+                            개발 방향 및 디자인 등 준비되지 않은 상태에서 적합합니다.
+                          </div>
+                          <div className="flex space-x-2 items-center">
+                            <div className="flex space-x-2 text-xs md:text-sm font-semibold">
+                              <input
+                                id="inbound"
+                                type="checkbox"
+                                checked={inbound}
+                                onChange={() => setInbound(!inbound)}
+                                disabled={isSubmitting || isSubmitted}
+                              />
+                              <label htmlFor="inbound">상담 필요</label>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <Separator orientation="vertical" className="hidden lg:block" />
+                    <Separator orientation="vertical" className="hidden lg:block" />
 
-                  <div className="lg:pl-6 flex flex-col space-y-4 w-full lg:w-fit">
-                    <div className="flex flex-col space-y-2">
-                      <div className="text-lg font-bold">희망 시작일이 있으신가요?</div>
-                      <div className="text-sm">프로젝트 시작일을 결정할 수 있습니다.</div>
-                      <div className="flex space-x-2 items-center">
-                        <p className="text-sm">지연 확률</p>
-                        <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-emerald-200">낮음</div>
-                        <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-amber-200">보통</div>
-                        <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-red-200">높음</div>
+                    <div className="lg:pl-6 flex flex-col space-y-4 w-full lg:w-fit">
+                      <div className="flex flex-col space-y-2">
+                        <div className="text-lg font-bold">희망 시작일이 있으신가요?</div>
+                        <div className="text-sm">프로젝트 시작일을 결정할 수 있습니다.</div>
+                        <div className="flex space-x-2 items-center">
+                          <p className="text-sm">지연 확률</p>
+                          <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-emerald-200">낮음</div>
+                          <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-amber-200">보통</div>
+                          <div className="px-2 py-1 text-xs font-bold text-black rounded-sm bg-red-200">높음</div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="mx-auto lg:mx-0 pt-2">
-                      <DatePicker
-                        value={date}
-                        onSelect={handleSelect}
-                        modifiers={modifiers}
-                        disabled={(date) => getAvailability(date) === 0 || isSubmitting || isSubmitted}
-                      />
+                      <div className="mx-auto lg:mx-0 pt-2">
+                        <DatePicker
+                          value={date}
+                          onSelect={handleSelect}
+                          modifiers={modifiers}
+                          disabled={(date) => getAvailability(date) === 0 || isSubmitting || isSubmitted}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </DialogContent>
           </Dialog>
         ) : (

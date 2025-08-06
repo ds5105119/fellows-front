@@ -22,6 +22,7 @@ export default function CreateProject() {
   const [showTermsPrompt, setShowTermsPrompt] = useState(false);
   const [description, setDescription] = useState<string | undefined>();
   const [info, setInfo] = useState<ProjectInfoEstimateResponse | undefined>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("project_info");
@@ -123,19 +124,26 @@ export default function CreateProject() {
     }, 100);
   };
 
-  const handleSubmitWithScroll = () => {
+  const handleSubmitWithScroll = async () => {
     if (!isReachedEnd) {
       scrollToEnd();
       return;
     }
-    handleSubmitClick();
+
+    setIsSubmitting(true);
+
+    try {
+      handleSubmitClick();
+    } catch (error) {
+      console.error("제출 실패:", error);
+      setIsSubmitting(false);
+    }
   };
 
-  if (isLoading) {
+  if (isSubmitting || isLoading) {
     return (
       <div className="fixed w-full h-full top-0 left-0 z-50 bg-white dark:bg-black flex items-center justify-center p-4">
         <div className="text-center space-y-8">
-          {/* Loading */}
           <div className="space-y-2">
             <Loader2 className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
             <p className="text-xs font-medium text-gray-500 dark:text-gray-400">저장 중</p>
@@ -144,14 +152,13 @@ export default function CreateProject() {
       </div>
     );
   }
-
   if (isRecommending) {
     return (
       <div className="flex w-full h-full min-h-screen">
-        <div className="hidden xl:flex h-full flex-col max-w-md shrink-0 scrollbar-hide pl-20 pr-10">
+        <div className="hidden h-full flex-col max-w-md shrink-0 scrollbar-hide pl-20 pr-10">
           <CreateProjectSide />
         </div>
-        <div className="flex flex-col w-full mx-auto xl:mx-0 lg:w-xl h-full scrollbar-hide shrink-0">
+        <div className="flex flex-col w-full mx-auto lg:w-xl h-full scrollbar-hide shrink-0">
           <RecommendationLoading currentStep={currentStep} totalSteps={totalSteps} isRecommanding={isRecommending} hasCompleted={hasCompleted} />
         </div>
       </div>
