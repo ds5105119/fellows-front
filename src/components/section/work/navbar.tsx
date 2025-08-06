@@ -112,6 +112,7 @@ export default function Navbar() {
   const menuItems = [
     { label: "home", href: "/" },
     { label: "saas", href: "/service" },
+    { label: "blog", href: "/blog" },
     { label: "contact", href: "#contact" },
   ];
 
