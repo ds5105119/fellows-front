@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import DecryptedText from "@/components/resource/decryptedtext";
 import FaultyTerminal from "@/components/resource/faultyterminal";
+import { useLenis } from "lenis/react";
 
 export default function WorkMain1() {
+  const lenis = useLenis();
   const [visibility, setVisibility] = useState("visible");
 
   useEffect(() => {
-    document.body.classList.add("overflow-hidden");
+    lenis?.stop();
 
     const timer = setTimeout(() => {
       setVisibility("hiding");
@@ -16,9 +18,8 @@ export default function WorkMain1() {
 
     return () => {
       clearTimeout(timer);
-      document.body.classList.remove("overflow-hidden");
     };
-  }, []);
+  }, [lenis]);
 
   if (visibility === "hidden") {
     return null;
@@ -26,6 +27,7 @@ export default function WorkMain1() {
 
   const handleTransitionEnd = () => {
     if (visibility === "hiding") {
+      lenis?.start();
       setVisibility("hidden");
     }
   };
@@ -39,6 +41,7 @@ export default function WorkMain1() {
         ${visibility === "hiding" ? "-translate-y-full" : "translate-y-0"}
       `}
     >
+      {/* ... 이하 나머지 JSX 코드는 동일합니다 ... */}
       <div className="relative z-10 hidden md:flex flex-col items-center space-y-0">
         <DecryptedText
           speed={60}
@@ -91,9 +94,6 @@ export default function WorkMain1() {
           text="UX, and web design."
         />
       </div>
-
-      {/* --- 배경 터미널 효과 --- */}
-      {/* 이제 이 효과가 배경으로 정상적으로 보이게 됩니다. */}
       <div className="absolute inset-0 brightness-75 md:block hidden">
         <FaultyTerminal
           scale={2}
@@ -107,7 +107,7 @@ export default function WorkMain1() {
           noiseAmp={1}
           chromaticAberration={0}
           dither={0}
-          curvature={0.04}
+          curvature={0.06}
           tint="#A8EF9E"
           mouseReact={true}
           mouseStrength={0.5}

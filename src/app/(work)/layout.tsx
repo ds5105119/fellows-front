@@ -28,8 +28,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={cn(pretendard.className, GeistSans.className, "h-screen overflow-y-auto overflow-x-hidden")}>
+    <html lang="en h-screen overflow-y-auto">
+      <body className={cn(pretendard.className, GeistSans.className, " overflow-x-hidden")}>
+        <></>
         <LenisProvider>
           <div className="relative overscroll-none">
             <Navbar />
