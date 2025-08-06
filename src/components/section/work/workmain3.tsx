@@ -114,11 +114,11 @@ export default function WorkMain3() {
                 </button>
               </div>
 
-              <div className="flex flex-col items-center justify-center space-y-12 md:space-y-16 h-full">
-                <div className="max-w-3xl px-4 text-center text-4xl md:text-7xl font-black leading-[0.9em] tracking-tight">
+              <div className="flex flex-col items-center justify-center space-y-10 md:space-y-16 h-full">
+                <div className="max-w-3xl px-4 text-center text-3xl md:text-7xl font-black leading-[0.9em] tracking-tight">
                   We work creating relevant and global projects for individuals and companies
                 </div>
-                <div className="group relative size-16 aspect-square [perspective:1000px]">
+                <div className="group relative size-12 md:size-16 aspect-square [perspective:1000px]">
                   <div className="relative size-full transition-transform duration-500 group-hover:[transform:rotateY(180deg)] [transform-style:preserve-3d]">
                     {/* 앞면 */}
                     <Image
@@ -138,7 +138,7 @@ export default function WorkMain3() {
                     />
                   </div>
                 </div>{" "}
-                <div className="max-w-7xl px-4 text-center text-base md:text-xl font-bold tracking-tight">
+                <div className="max-w-7xl px-4 text-center text-sm md:text-xl font-bold tracking-tight">
                   Fellows는 복잡함을 단순하게 바꾸기 위해 Fellows SaaS를 출시하였고, 글로벌 파트너사와의 협업을 통해 특별하면서도 편리한 경험으로 완성합니다.
                   국내 대비 저렴하지만 높은 품질의 개발 결과를 제공하는 Fellows는 여러분의 프로젝트를 위한 최선의 파트너입니다.
                 </div>
