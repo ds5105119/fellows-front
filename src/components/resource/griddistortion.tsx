@@ -66,14 +66,12 @@ const GridDistortion: React.FC<GridDistortionProps> = ({ grid = 15, mouse = 0.1,
       uDataTexture: { value: null as THREE.DataTexture | null },
     };
 
-    let plane: THREE.Mesh;
-
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(imageSrc, (texture) => {
       texture.minFilter = THREE.LinearFilter;
       imageAspectRef.current = texture.image.width / texture.image.height;
       uniforms.uTexture.value = texture;
-      handleResize(); // 텍스처 로드 후 리사이즈 호출
+      handleResize(); // Call resize after the texture is loaded
     });
 
     const size = grid;
@@ -95,7 +93,8 @@ const GridDistortion: React.FC<GridDistortionProps> = ({ grid = 15, mouse = 0.1,
     });
 
     const geometry = new THREE.PlaneGeometry(1, 1, size - 1, size - 1);
-    plane = new THREE.Mesh(geometry, material);
+    // The fix is here: 'plane' is now declared with 'const' and initialized immediately.
+    const plane = new THREE.Mesh(geometry, material);
     scene.add(plane);
 
     const handleResize = () => {
@@ -107,7 +106,7 @@ const GridDistortion: React.FC<GridDistortionProps> = ({ grid = 15, mouse = 0.1,
 
       renderer.setSize(width, height);
 
-      // object-fit: cover 효과를 위한 스케일 계산
+      // Calculate scale for 'object-fit: cover' effect
       plane.scale.x = containerAspect;
       plane.scale.y = 1;
 
@@ -185,7 +184,7 @@ const GridDistortion: React.FC<GridDistortionProps> = ({ grid = 15, mouse = 0.1,
       resizeObserver.disconnect();
       container.removeEventListener("mousemove", handleMouseMove);
       container.removeEventListener("mouseleave", handleMouseLeave);
-      if (container.contains(renderer.domElement)) {
+      if (renderer.domElement.parentElement === container) {
         container.removeChild(renderer.domElement);
       }
       renderer.dispose();
