@@ -29,7 +29,7 @@ export default function IssueMain({ session }: { session: Session }) {
   const keyword = useThrottle(keywordText, 500);
 
   // SWR 훅들
-  const IssueSwr = useIssues({ ...filters, keyword, size: 50 });
+  const IssueSwr = useIssues({ ...filters, keyword, size: 50 }, { initialSize: 2 });
   const hasIssueSwr = useIssues({ size: 1 }, { refreshInterval: 0 });
   const projectsOverview = useProjectOverView();
   const overviewProjects = projectsOverview?.data?.items || [];
@@ -122,7 +122,7 @@ export default function IssueMain({ session }: { session: Session }) {
 
         <IssueList issues={issues} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} overviewProjects={overviewProjects} />
 
-        {isLoading && hasIssue && <IssueSkeleton count={IssueSwr.data?.length === 1 ? 3 : 8} />}
+        {isLoading && <IssueSkeleton count={2} />}
 
         <div ref={infinitRef} />
 
