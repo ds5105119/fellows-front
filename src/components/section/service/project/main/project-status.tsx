@@ -121,7 +121,7 @@ export function ProjectStatus({
         </DropdownMenu>
       </div>
 
-      {project.custom_project_method !== "nocode" && (
+      {project.custom_project_method !== "code" && (
         <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
           <h3 className="text-sm font-bold">노코드 플랫폼</h3>
           <DropdownMenu open={canEdit ? openNocode : false} onOpenChange={(val) => canEdit && setOpenNocode(val)}>
