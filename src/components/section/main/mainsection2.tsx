@@ -149,7 +149,8 @@ export default async function MainSection2() {
             </DialogTrigger>
             <DialogContent
               showCloseButton={false}
-              className="drop-shadow-white/10 drop-shadow-2xl p-0 w-[calc(100%-32px)] max-w-[calc(100%-32px)] sm:w-[calc(100%-32px)] min-w-[calc(100%-32px)] lg:min-w-5xl lg:h-fit rounded-3xl overflow-hidden scrollbar-hide focus-visible:ring-0"
+              overlayClassName="backdrop-blur-sm"
+              className="drop-shadow-white/10 drop-shadow-2xl p-0 w-[calc(100%-32px)] max-w-[calc(100%-32px)] sm:w-[calc(100%-32px)] min-w-[calc(100%-32px)] lg:min-w-5xl xl:min-w-6xl lg:h-fit rounded-3xl overflow-hidden scrollbar-hide focus-visible:ring-0"
             >
               <DialogHeader className="sr-only">
                 <DialogTitle className="sr-only">서비스 소개서 창</DialogTitle>
