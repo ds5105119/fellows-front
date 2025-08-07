@@ -149,7 +149,11 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                             "code" === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
                           )}
                           onClick={() => {
-                            field.value !== "code" ? field.onChange("code") : field.onChange(undefined);
+                            if (field.value !== "code") {
+                              field.onChange("code");
+                            } else {
+                              field.onChange(undefined);
+                            }
                             setValue("custom_nocode_platform", undefined);
                           }}
                         >
@@ -178,7 +182,11 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                             "nocode" === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
                           )}
                           onClick={() => {
-                            field.value !== "nocode" ? field.onChange("nocode") : field.onChange(undefined);
+                            if (field.value !== "nocode") {
+                              field.onChange("nocode");
+                            } else {
+                              field.onChange(undefined);
+                            }
                             setValue("custom_nocode_platform", undefined);
                           }}
                         >
@@ -207,7 +215,11 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                             "shop" === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
                           )}
                           onClick={() => {
-                            field.value !== "shop" ? field.onChange("shop") : field.onChange(undefined);
+                            if (field.value !== "shop") {
+                              field.onChange("shop");
+                            } else {
+                              field.onChange(undefined);
+                            }
                             setValue("custom_nocode_platform", undefined);
                           }}
                         >
