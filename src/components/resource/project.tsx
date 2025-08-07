@@ -113,7 +113,28 @@ export const PROJECT_METHOD_MAPPING = {
   },
 } as const;
 
-export const NOCODE_PLATFORM_MAPPING = {};
+export const NOCODE_PLATFORM_MAPPING = {
+  cafe24: {
+    title: "카페 24",
+    description: "쇼핑몰에 최적화된 노코드 플랫폼으로, 빠른 구축이 가능해요.",
+  },
+  imweb: {
+    title: "아임웹",
+    description: "디자인과 개발을 통합한 노코드 플랫폼으로, " + "반응형 웹사이트 제작에 최적화되어 있어요.",
+  },
+  godo: {
+    title: "고도몰",
+    description: "한국 시장에 최적화된 쇼핑몰 노코드 플랫폼으로, " + "다양한 결제 수단과 배송 옵션을 지원해요.",
+  },
+  shopify: {
+    title: "Shopify",
+    description: "쇼핑몰에 최적화된 노코드 플랫폼이에요. " + "글로벌 시장에 적합한 다양한 기능을 제공해요.",
+  },
+  framer: {
+    title: "Framer",
+    description: "디자인 중심의 노코드 플랫폼으로, " + "빠른 프로토타입 제작과 인터랙티브한 UI 구현이 가능해요.",
+  },
+};
 
 export const READYNISS_MAPPING = {
   idea: { icon: "💡", title: "아이디어 구상 단계", description: "아이디어를 구상하고 있습니다." },

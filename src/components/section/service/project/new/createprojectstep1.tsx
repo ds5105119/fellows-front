@@ -1,4 +1,5 @@
 "use client";
+
 import type { z } from "zod";
 import type { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
@@ -6,8 +7,9 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { platformEnum, readinessLevelEnum, type CreateERPNextProject } from "@/@types/service/project";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
-import { PLATFORM_MAPPING, READYNISS_MAPPING, PROJECT_METHOD_MAPPING } from "@/components/resource/project";
+import { PLATFORM_MAPPING, READYNISS_MAPPING, PROJECT_METHOD_MAPPING, NOCODE_PLATFORM_MAPPING } from "@/components/resource/project";
 import { motion, AnimatePresence } from "framer-motion";
+import { useMemo } from "react";
 
 interface CreateProjectFormStep1Props {
   form: UseFormReturn<CreateERPNextProject>;
@@ -21,6 +23,21 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
   const { control, getValues, setValue } = form;
   const platforms = getValues("custom_platforms");
   const readiness = getValues("custom_readiness_level");
+  const projectMethod = getValues("custom_project_method");
+
+  const filteredPlatforms = useMemo(() => {
+    let allowedKeys: string[] = [];
+
+    if (projectMethod === "nocode") {
+      allowedKeys = ["cafe24", "godo", "imweb", "shopify", "framer"];
+    } else if (projectMethod === "shop") {
+      allowedKeys = ["cafe24", "godo", "imweb", "shopify"];
+    }
+
+    return (Object.entries(NOCODE_PLATFORM_MAPPING) as [keyof typeof NOCODE_PLATFORM_MAPPING, { title: string; description: string }][]).filter(([key]) =>
+      allowedKeys.includes(key)
+    );
+  }, [projectMethod]);
 
   return (
     <>
@@ -131,7 +148,10 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                             "flex flex-col space-y-1.5 shadow-none transition-colors duration-200 ease-in-out rounded-md text-start p-4",
                             "code" === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
                           )}
-                          onClick={() => (field.value !== "code" ? field.onChange("code") : field.onChange(undefined))}
+                          onClick={() => {
+                            field.value !== "code" ? field.onChange("code") : field.onChange(undefined);
+                            setValue("custom_nocode_platform", undefined);
+                          }}
                         >
                           <p className="w-full font-bold">{PROJECT_METHOD_MAPPING["code"].title}</p>
                           <div className={cn("px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2 bg-foreground text-background")}>특징</div>
@@ -157,7 +177,10 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                             "flex flex-col space-y-1.5 shadow-none transition-colors duration-200 ease-in-out rounded-md text-start p-4",
                             "nocode" === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
                           )}
-                          onClick={() => (field.value !== "nocode" ? field.onChange("nocode") : field.onChange(undefined))}
+                          onClick={() => {
+                            field.value !== "nocode" ? field.onChange("nocode") : field.onChange(undefined);
+                            setValue("custom_nocode_platform", undefined);
+                          }}
                         >
                           <p className="w-full font-bold">{PROJECT_METHOD_MAPPING["nocode"].title}</p>
                           <div className={cn("px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2 bg-foreground text-background")}>특징</div>
@@ -183,7 +206,10 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                             "flex flex-col space-y-1.5 shadow-none transition-colors duration-200 ease-in-out rounded-md text-start p-4",
                             "shop" === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
                           )}
-                          onClick={() => (field.value !== "shop" ? field.onChange("shop") : field.onChange(undefined))}
+                          onClick={() => {
+                            field.value !== "shop" ? field.onChange("shop") : field.onChange(undefined);
+                            setValue("custom_nocode_platform", undefined);
+                          }}
                         >
                           <p className="w-full font-bold">{PROJECT_METHOD_MAPPING["shop"].title}</p>
                           <div className={cn("px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2 bg-foreground text-background")}>특징</div>
@@ -204,6 +230,45 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                       )}
                     </div>
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {projectMethod !== "code" && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }}
+          >
+            <FormField
+              control={control}
+              name="custom_nocode_platform"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">노코드 플랫폼</FormLabel>
+                  <div className="grid grid-cols-1 gap-3">
+                    {filteredPlatforms.map(([key, value]) => (
+                      <button
+                        className={cn(
+                          "col-span-1 h-11 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-md text-sm",
+                          field.value === key ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
+                        )}
+                        type="button"
+                        key={key}
+                        onClick={() => {
+                          field.onChange(key);
+                        }}
+                      >
+                        {value.title}
+                      </button>
+                    ))}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

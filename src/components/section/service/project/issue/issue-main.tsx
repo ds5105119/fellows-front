@@ -13,20 +13,26 @@ import { IssueSkeleton } from "./issue-skeleton";
 import { toast } from "sonner";
 import useThrottle from "@/lib/useThrottle";
 import { Session } from "next-auth";
+import dayjs from "@/lib/dayjs";
+import { useProjectOverView } from "@/hooks/fetch/project";
 
 export default function IssueMain({ session }: { session: Session }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [filters, setFilters] = useState<IssueFilters>({});
+  const [filters, setFilters] = useState<IssueFilters>({
+    start: dayjs(new Date()).subtract(1, "year").format("YYYY-MM-DD"),
+    end: dayjs(new Date()).format("YYYY-MM-DD"),
+  });
   const [keywordText, setKeywordText] = useState<string>("");
-
   const keyword = useThrottle(keywordText, 500);
 
   // SWR 훅들
   const IssueSwr = useIssues({ ...filters, keyword, size: 50 });
   const hasIssueSwr = useIssues({ size: 1 }, { refreshInterval: 0 });
+  const projectsOverview = useProjectOverView();
+  const overviewProjects = projectsOverview?.data?.items || [];
 
   // 데이터 처리
   const issues = IssueSwr.data?.flatMap((issue) => issue.items) ?? [];
@@ -108,12 +114,13 @@ export default function IssueMain({ session }: { session: Session }) {
         keywordText={keywordText}
         setKeywordText={setKeywordText}
         onCreateClick={handleCreateClick}
+        overviewProjects={overviewProjects}
       />
 
       <div className="bg-white border-b border-gray-200">
         <IssueEmptyState hasIssue={hasIssue} hasIssueLoading={hasIssueLoading} isLoading={isLoading} issuesLength={issues.length} />
 
-        <IssueList issues={issues} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} />
+        <IssueList issues={issues} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} overviewProjects={overviewProjects} />
 
         {isLoading && hasIssue && <IssueSkeleton count={IssueSwr.data?.length === 1 ? 3 : 8} />}
 

@@ -12,9 +12,9 @@ import DatePicker from "../task/datepicker";
 import dayjs from "@/lib/dayjs";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useProjectOverView } from "@/hooks/fetch/project";
 import { Session } from "next-auth";
 import { cn } from "@/lib/utils";
+import { OverviewERPNextProject } from "@/@types/service/project";
 
 interface IssueFilterHeaderProps {
   session: Session;
@@ -23,14 +23,12 @@ interface IssueFilterHeaderProps {
   keywordText: string;
   setKeywordText: (text: string) => void;
   onCreateClick: () => void;
+  overviewProjects: OverviewERPNextProject[];
 }
 
-export function IssueFilterHeader({ session, filters, setFilters, keywordText, setKeywordText, onCreateClick }: IssueFilterHeaderProps) {
+export function IssueFilterHeader({ session, filters, setFilters, keywordText, overviewProjects, setKeywordText, onCreateClick }: IssueFilterHeaderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const projectsOverview = useProjectOverView();
-  const overviewProjects = projectsOverview?.data?.items || [];
 
   // URL 쿼리 파라미터 업데이트
   const updateUrlParams = useCallback(
@@ -114,11 +112,6 @@ export function IssueFilterHeader({ session, filters, setFilters, keywordText, s
     const newFilters = { ...filters };
     delete newFilters[key];
     setFilters(newFilters);
-  };
-
-  const clearAllFilters = () => {
-    setFilters({});
-    setKeywordText("");
   };
 
   const activeFiltersCount =
@@ -208,12 +201,6 @@ export function IssueFilterHeader({ session, filters, setFilters, keywordText, s
             </Button>
           </div>
         </div>
-
-        {activeFiltersCount > 0 && (
-          <Button onClick={clearAllFilters} variant="outline" className="h-8 px-4 bg-white hover:bg-gray-50">
-            필터 초기화 ({activeFiltersCount})
-          </Button>
-        )}
       </div>
 
       <div className="flex flex-col sm:flex-row justify-between gap-3 flex-1">
@@ -246,7 +233,7 @@ export function IssueFilterHeader({ session, filters, setFilters, keywordText, s
           <DatePicker
             value={dayjs(filters.start).toDate()}
             onSelect={(date) => {
-              if (!date) return handleFilterChange("start", undefined);
+              if (!date) return;
               const newStart = dayjs(date);
               const currentEnd = dayjs(filters.end);
               // 시작일이 종료일보다 이후이면, 종료일도 같이 변경하거나 무시
@@ -254,7 +241,7 @@ export function IssueFilterHeader({ session, filters, setFilters, keywordText, s
                 // 종료일도 시작일과 같게 설정
                 handleFilterChange("start", filters.end);
               } else {
-                handleFilterChange("start", currentEnd.format("YYYY-MM-DD"));
+                handleFilterChange("start", newStart.format("YYYY-MM-DD"));
               }
             }}
             text="시작일"
@@ -262,7 +249,7 @@ export function IssueFilterHeader({ session, filters, setFilters, keywordText, s
           <DatePicker
             value={dayjs(filters.end).toDate()}
             onSelect={(date) => {
-              if (!date) return handleFilterChange("end", undefined);
+              if (!date) return;
               const newEnd = dayjs(date);
               const currentStart = dayjs(filters.start);
               // 종료일이 시작일보다 이전이면, 시작일도 같이 변경하거나 무시
@@ -279,7 +266,7 @@ export function IssueFilterHeader({ session, filters, setFilters, keywordText, s
       </div>
 
       {/* 활성 필터 표시 */}
-      {activeFiltersCount > 0 && (
+      {activeFiltersCount > 2 && (
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-medium text-muted-foreground">활성 필터:</span>
 
@@ -324,34 +311,6 @@ export function IssueFilterHeader({ session, filters, setFilters, keywordText, s
               </Button>
             </Badge>
           ))}
-
-          {filters.start && (
-            <Badge variant="secondary" className="flex items-center gap-1 pl-1.5 pr-0.5 rounded-[3px]">
-              <span className="text-xs">시작일: {filters.start}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-4 w-4 p-0 hover:bg-destructive/10 hover:text-destructive-foreground"
-                onClick={() => clearFilter("start")}
-              >
-                <X className="h-2.5 w-2.5" />
-              </Button>
-            </Badge>
-          )}
-
-          {filters.end && (
-            <Badge variant="secondary" className="flex items-center gap-1 pl-1.5 pr-0.5 rounded-[3px]">
-              <span className="text-xs">종료일: {filters.end}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-4 w-4 p-0 hover:bg-destructive/10 hover:text-destructive-foreground"
-                onClick={() => clearFilter("end")}
-              >
-                <X className="h-2.5 w-2.5" />
-              </Button>
-            </Badge>
-          )}
         </div>
       )}
     </div>

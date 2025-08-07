@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Session } from "next-auth";
 import { platformEnum, type UserERPNextProject } from "@/@types/service/project";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -11,7 +11,7 @@ import BreathingSparkles from "@/components/resource/breathingsparkles";
 import ProjectEstimator from "./projectestimator";
 import SelectLogo from "@/components/resource/selectlogo";
 import dayjs from "dayjs";
-import { STATUS_MAPPING, PLATFORM_MAPPING, PROJECT_METHOD_MAPPING } from "@/components/resource/project";
+import { STATUS_MAPPING, PLATFORM_MAPPING, PROJECT_METHOD_MAPPING, NOCODE_PLATFORM_MAPPING } from "@/components/resource/project";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,6 +37,7 @@ export function ProjectStatus({
 
   const [openPlatform, setOpenPlatform] = useState(false);
   const [openMethod, setOpenMethod] = useState(false);
+  const [openNocode, setOpenNocode] = useState(false);
   const [openEndDate, setOpenEndDate] = useState(false);
   const [openSheet, setOpenSheet] = useState(false);
 
@@ -51,6 +52,20 @@ export function ProjectStatus({
       return day === 0 || day === 6;
     },
   ];
+
+  const filteredPlatforms = useMemo(() => {
+    let allowedKeys: string[] = [];
+
+    if (project.custom_project_method === "nocode") {
+      allowedKeys = ["cafe24", "godo", "imweb", "shopify", "framer"];
+    } else if (project.custom_project_method === "shop") {
+      allowedKeys = ["cafe24", "godo", "imweb", "shopify"];
+    }
+
+    return (Object.entries(NOCODE_PLATFORM_MAPPING) as [keyof typeof NOCODE_PLATFORM_MAPPING, { title: string; description: string }][]).filter(([key]) =>
+      allowedKeys.includes(key)
+    );
+  }, [project.custom_project_method]);
 
   const downloadPDF = () => {
     generatePDF(targetRef, {
@@ -75,7 +90,7 @@ export function ProjectStatus({
           <DropdownMenuTrigger asChild>
             <div className="flex space-x-2 w-44 justify-end">
               <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
-                {project.custom_project_method && PROJECT_METHOD_MAPPING[project.custom_project_method].title}
+                {project.custom_project_method ? PROJECT_METHOD_MAPPING[project.custom_project_method].title : "정해지지 않았어요"}
               </div>
             </div>
           </DropdownMenuTrigger>
@@ -94,6 +109,8 @@ export function ProjectStatus({
                   setEditedProject({
                     ...project,
                     custom_project_method: key,
+
+                    custom_nocode_platform: null,
                   });
                 }}
               >
@@ -103,6 +120,43 @@ export function ProjectStatus({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {project.custom_project_method !== "nocode" && (
+        <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
+          <h3 className="text-sm font-bold">노코드 플랫폼</h3>
+          <DropdownMenu open={canEdit ? openNocode : false} onOpenChange={(val) => canEdit && setOpenNocode(val)}>
+            <DropdownMenuTrigger asChild>
+              <div className="flex space-x-2 w-44 justify-end">
+                <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
+                  {project.custom_nocode_platform ? NOCODE_PLATFORM_MAPPING[project.custom_nocode_platform].title : "정해지지 않았어요"}
+                </div>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="drop-shadow-white/10 drop-shadow-2xl p-0 !h-fit !w-fit overflow-y-auto scrollbar-hide focus-visible:ring-0">
+              <DropdownMenuLabel>노코드 플랫폼</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+
+              {filteredPlatforms.map(([key, value]) => (
+                <DropdownMenuCheckboxItem
+                  key={value.title}
+                  checked={key === project.custom_nocode_platform}
+                  onSelect={(e) => {
+                    e.preventDefault();
+                  }}
+                  onCheckedChange={() => {
+                    setEditedProject({
+                      ...project,
+                      custom_nocode_platform: key,
+                    });
+                  }}
+                >
+                  {value.title}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
 
       <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
         <h3 className="text-sm font-bold">플랫폼</h3>
