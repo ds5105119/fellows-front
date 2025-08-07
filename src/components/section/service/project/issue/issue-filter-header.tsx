@@ -114,6 +114,26 @@ export function IssueFilterHeader({ session, filters, setFilters, keywordText, o
     setFilters(newFilters);
   };
 
+  const clearMultiSelectFilter = (key: keyof IssueFilters, value: string) => {
+    const newFilters = { ...filters };
+
+    const currentValue = newFilters[key];
+
+    if (Array.isArray(currentValue)) {
+      const filtered = currentValue.filter((item) => item !== value);
+
+      if (filtered.length > 0) {
+        (newFilters as Record<keyof IssueFilters, unknown>)[key] = filtered;
+      } else {
+        delete newFilters[key];
+      }
+    } else {
+      delete newFilters[key];
+    }
+
+    setFilters(newFilters);
+  };
+
   const activeFiltersCount =
     Object.keys(filters).filter((key) => {
       const value = filters[key as keyof IssueFilters];
@@ -164,7 +184,7 @@ export function IssueFilterHeader({ session, filters, setFilters, keywordText, o
                         .filter((project) => project.custom_project_status !== "draft")
                         .map((p) => (
                           <CommandItem
-                            value={p.project_name}
+                            value={p.project_name + " " + p.custom_project_title}
                             key={p.project_name}
                             onSelect={() => {
                               if ((filters.project_id ?? []).includes(p.project_name)) {
@@ -305,7 +325,21 @@ export function IssueFilterHeader({ session, filters, setFilters, keywordText, o
                 variant="ghost"
                 size="sm"
                 className="h-4 w-4 p-0 hover:bg-destructive/10 hover:text-destructive-foreground"
-                onClick={() => clearFilter("status")}
+                onClick={() => clearMultiSelectFilter("status", status)}
+              >
+                <X className="h-2.5 w-2.5" />
+              </Button>
+            </Badge>
+          ))}
+
+          {filters.project_id?.map((projectId) => (
+            <Badge key={projectId} variant="secondary" className="flex items-center gap-1 pl-1.5 pr-0.5 rounded-[3px]">
+              <span className="text-xs">이름: {overviewProjects.find((project) => project.project_name == projectId)?.custom_project_title}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-4 w-4 p-0 hover:bg-destructive/10 hover:text-destructive-foreground"
+                onClick={() => clearMultiSelectFilter("project_id", projectId)}
               >
                 <X className="h-2.5 w-2.5" />
               </Button>
