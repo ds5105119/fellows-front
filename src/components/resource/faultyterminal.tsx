@@ -78,7 +78,7 @@ export default function FaultyTerminal({
     // dpr 값을 브라우저 환경에서 안전하게 결정
     const finalDpr = dpr ?? Math.min(window.devicePixelRatio, 2);
 
-    const renderer = new Renderer({ dpr: finalDpr, alpha: true });
+    const renderer = new Renderer({ dpr: finalDpr, alpha: true, powerPreference: "high-performance" });
     rendererRef.current = renderer;
     const gl = renderer.gl;
     const geometry = new Triangle(gl);

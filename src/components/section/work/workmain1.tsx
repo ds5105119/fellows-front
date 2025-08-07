@@ -1,13 +1,58 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useLayoutEffect, RefObject, useEffect, useRef } from "react";
 import DecryptedText from "@/components/resource/decryptedtext";
 import FaultyTerminal from "@/components/resource/faultyterminal";
 import { useLenis } from "lenis/react";
 
+interface Size {
+  width: number;
+  height: number;
+}
+
+function useContainerSize(ref: RefObject<HTMLElement | null>): Size {
+  const [size, setSize] = useState<Size>({ width: 0, height: 0 });
+
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        setSize({
+          width: entry.contentRect.width,
+          height: entry.contentRect.height,
+        });
+      }
+    });
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [ref]);
+
+  return size;
+}
+
 export default function WorkMain1() {
   const lenis = useLenis();
   const [visibility, setVisibility] = useState("visible");
+
+  const terminalContainerRef = useRef<HTMLDivElement>(null);
+  const { width, height } = useContainerSize(terminalContainerRef);
+  const aspectRatio = width > 0 && height > 0 ? width / height : 1;
+  const gridMul: [number, number] = [aspectRatio, 1];
+  const curvature = width > height ? 0.06 : 0.04;
+
+  const handleTransitionEnd = () => {
+    if (visibility === "hiding") {
+      lenis?.start();
+      setVisibility("hidden");
+    }
+  };
 
   useEffect(() => {
     lenis?.stop();
@@ -24,13 +69,6 @@ export default function WorkMain1() {
   if (visibility === "hidden") {
     return null;
   }
-
-  const handleTransitionEnd = () => {
-    if (visibility === "hiding") {
-      lenis?.start();
-      setVisibility("hidden");
-    }
-  };
 
   return (
     <div
@@ -94,47 +132,29 @@ export default function WorkMain1() {
           text="UX, and web design."
         />
       </div>
-      <div className="absolute inset-0 brightness-75 md:block hidden">
-        <FaultyTerminal
-          scale={2}
-          gridMul={[2, 1]}
-          digitSize={1.2}
-          timeScale={1}
-          pause={false}
-          scanlineIntensity={1}
-          glitchAmount={1}
-          flickerAmount={1}
-          noiseAmp={1}
-          chromaticAberration={0}
-          dither={0}
-          curvature={0.06}
-          tint="#A8EF9E"
-          mouseReact={true}
-          mouseStrength={0.5}
-          pageLoadAnimation={false}
-          brightness={1}
-        />
-      </div>
-      <div className="absolute inset-0 brightness-75 block md:hidden">
-        <FaultyTerminal
-          scale={2}
-          gridMul={[1, 2]}
-          digitSize={1.2}
-          timeScale={1}
-          pause={false}
-          scanlineIntensity={1}
-          glitchAmount={1}
-          flickerAmount={1}
-          noiseAmp={1}
-          chromaticAberration={0}
-          dither={0}
-          curvature={0.04}
-          tint="#A8EF9E"
-          mouseReact={true}
-          mouseStrength={0.5}
-          pageLoadAnimation={false}
-          brightness={1}
-        />
+      <div ref={terminalContainerRef} className="absolute inset-0 brightness-75">
+        {width > 0 && (
+          <FaultyTerminal
+            key={aspectRatio > 1 ? "desktop" : "mobile"}
+            gridMul={gridMul}
+            curvature={curvature}
+            scale={2}
+            digitSize={1.2}
+            timeScale={1}
+            pause={false}
+            scanlineIntensity={1}
+            glitchAmount={1}
+            flickerAmount={1}
+            noiseAmp={1}
+            chromaticAberration={0}
+            dither={0}
+            tint="#A8EF9E"
+            mouseReact={true}
+            mouseStrength={0.5}
+            pageLoadAnimation={false}
+            brightness={1}
+          />
+        )}
       </div>
     </div>
   );
