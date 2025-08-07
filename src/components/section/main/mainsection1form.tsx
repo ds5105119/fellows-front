@@ -40,6 +40,8 @@ const suggestionButtons = [
   },
 ];
 
+const placeholderTexts = ["3분만에 AI 견적을 받아보세요.", "의뢰하려는 사이트에 대해 설명해주세요."];
+
 function SubmitButton({ isParentLoading }: { isParentLoading: boolean }) {
   const { pending } = useFormStatus();
   const isLoading = pending || isParentLoading;
@@ -62,6 +64,15 @@ export default function MainSection1Form({ session, initialDescription }: { sess
 
   const [state, formAction] = useActionState<EstimateFormState, FormData>(getEstimateInfo, null);
   const isParentLoading = isNavigating || isAutoSubmitting;
+
+  const [placeholderIdx, setPlaceholderIdx] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIdx((prev) => (prev + 1) % placeholderTexts.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSuggestionClick = (text: string) => {
     setDescription(text);
@@ -136,7 +147,7 @@ export default function MainSection1Form({ session, initialDescription }: { sess
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={1}
-          placeholder="의뢰하려는 사이트에 대해 설명해주세요."
+          placeholder={placeholderTexts[placeholderIdx]}
           onWheel={(e) => e.stopPropagation()}
           className="w-full grow self-center md:self-auto p-0 min-h-0 bg-transparent border-none focus-visible:ring-0 outline-none 
                      shadow-none resize-none scrollbar-hide leading-snug text-foreground
