@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { auth, signIn } from "@/auth";
 import { SessionProvider } from "next-auth/react";
-import ProjectTab from "@/components/section/service/project/main/project-tab";
+import ProjectTab from "@/components/section/service/project/issue/issue-navigation";
 import ProjectMainSection from "@/components/section/service/project/main/projectmainsection";
 import { getCurrentUser, updateUser } from "@/hooks/fetch/server/user";
 import { userData } from "@/@types/accounts/userdata";

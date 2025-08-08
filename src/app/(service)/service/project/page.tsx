@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import { auth, signIn } from "@/auth";
 import { SessionProvider } from "next-auth/react";
-import ProjectTab from "@/components/section/service/project/main/project-tab";
 import ProjectMainSection from "@/components/section/service/project/main/projectmainsection";
+import ProjectNavigation from "@/components/section/service/project/main/project-navigation";
 
 export const metadata: Metadata = {
   title: "프로젝트 - Fellows",
@@ -17,7 +17,7 @@ export default async function Page({ params }: { params: Promise<{ project_id: s
   return (
     <SessionProvider session={session}>
       <div className="shrink-0 w-full h-full flex flex-col">
-        <ProjectTab />
+        <ProjectNavigation />
         <ProjectMainSection project_id={project_id} session={session} />
       </div>
     </SessionProvider>
