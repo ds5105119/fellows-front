@@ -8,6 +8,37 @@ import MainQnaSection from "@/components/section/main/mainqnasection";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import MobileCTASection from "@/components/section/main/mobilectasection";
 import InViewBackground from "@/components/resource/inviewbackground";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Fellows",
+  description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
+  openGraph: {
+    title: "Fellows",
+    description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
+    url: "https://fellows.my",
+    siteName: "Fellows",
+    images: [
+      {
+        url: "https://fellows.my/fellows/og.jpg",
+        width: 1203,
+        height: 630,
+        alt: "Fellows: 글로벌 개발 파트너와 함께하는 협업 플랫폼",
+      },
+    ],
+    locale: "ko_KR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Fellows",
+    description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
+    images: {
+      url: "https://fellows.my/fellows/og.jpg",
+      alt: "Fellows: 글로벌 개발 파트너와 함께하는 협업 플랫폼",
+    },
+  },
+};
 
 export default async function Home() {
   return (
