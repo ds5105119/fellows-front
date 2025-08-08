@@ -56,7 +56,7 @@ export default function EmailUpdateRequest() {
 
       if (status === 200) {
         toast.success("이메일이 성공적으로 변경되었습니다!");
-        await fetch("/api/auth/session/update");
+        await fetch("/api/user/update");
         router.push("/service/settings/profile");
         router.refresh();
       } else {
