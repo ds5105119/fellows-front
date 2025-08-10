@@ -1,6 +1,7 @@
 import { ReportResponse, ReportResponseSchema } from "@/@types/service/report";
 import { toast } from "sonner";
-import useSWR, { SWRResponse } from "swr";
+import { SWRResponse } from "swr";
+import useSWRImmutable from "swr/immutable";
 import dayjs from "@/lib/dayjs";
 
 const API_BASE_URL = "/api/service/project";
@@ -19,16 +20,10 @@ const fetcher = async (url: string) => {
 
 export const useDailyReport = (project_id: string, date: Date): SWRResponse<ReportResponse> => {
   const url = `${API_BASE_URL}/${project_id}/report/daily?date=${dayjs(date).format("YYYY-MM-DD")}`;
-  return useSWR(url, async (url: string) => ReportResponseSchema.parse(await fetcher(url)), {
-    refreshInterval: 60000,
-    focusThrottleInterval: 60000,
-  });
+  return useSWRImmutable(url, async (url: string) => ReportResponseSchema.parse(await fetcher(url)));
 };
 
-export const useDailyReportAISummary = (report_id: string): SWRResponse<ReportResponse> => {
+export const useDailyReportAISummary = (report_id?: string): SWRResponse<ReportResponse> => {
   const url = `${API_BASE_URL}/estimate/report/daily/${report_id}`;
-  return useSWR(url, async (url: string) => ReportResponseSchema.parse(await fetcher(url)), {
-    refreshInterval: 60000,
-    focusThrottleInterval: 60000,
-  });
+  return useSWRImmutable(report_id ? url : null, async (url: string) => ReportResponseSchema.parse(await fetcher(url)));
 };

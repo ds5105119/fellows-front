@@ -1,16 +1,17 @@
 "use client";
 
-import { useMemo, useRef } from "react";
-import { useDailyReport } from "@/hooks/fetch/report";
+import { useMemo, useRef, useState } from "react";
+import { useDailyReport, useDailyReportAISummary } from "@/hooks/fetch/report";
 import type { ERPNextTaskForUser, OverviewERPNextProject } from "@/@types/service/project";
 import { cn } from "@/lib/utils";
 import { Clock, ListTodo, CheckCircle2, ArrowLeft, FileText, Copy, Download } from "lucide-react";
-import { ERPNextReport, ReportResponse } from "@/@types/service/report";
+import { ERPNextReport } from "@/@types/service/report";
 import { ERPNextTimeSheetForUser } from "@/@types/service/timesheet";
 import { Button } from "@/components/ui/button";
 import dayjs from "@/lib/dayjs";
 import generatePDF, { Margin } from "react-to-pdf";
 import parse from "html-react-parser";
+import BreathingSparkles from "@/components/resource/breathingsparkles";
 
 export default function ReportSheet({
   project,
@@ -25,16 +26,26 @@ export default function ReportSheet({
 }) {
   // for ref to target element for PDF generation
   const targetRef = useRef<HTMLDivElement>(null);
+  const [reportId, setReportId] = useState<string | undefined>(undefined);
 
   // Use the hook exactly as given
   const report = useDailyReport(project.project_name, date);
-  const data: ReportResponse | undefined = report.data;
-  const isReportLoading = !report.data && report.isLoading;
+  const aiReport = useDailyReportAISummary(reportId);
 
   // Schema change: report is now a single object
-  const reportDoc: ERPNextReport | undefined = data?.report;
-  const tasks: ERPNextTaskForUser[] = data?.tasks ?? [];
-  const timesheets: ERPNextTimeSheetForUser[] = data?.timesheets ?? [];
+  const reportDoc: ERPNextReport | undefined = aiReport.data?.report ?? report.data?.report;
+  const tasks: ERPNextTaskForUser[] = aiReport.data?.tasks ?? report.data?.tasks ?? [];
+  const timesheets: ERPNextTimeSheetForUser[] = aiReport.data?.timesheets ?? report.data?.timesheets ?? [];
+
+  const isReportLoading = (!report.data && report.isLoading) || (!aiReport.data && aiReport.isLoading);
+
+  const fetchAIReport = () => {
+    if (!reportId) {
+      setReportId(reportDoc?.name);
+    } else {
+      aiReport.mutate();
+    }
+  };
 
   const totalHours = useMemo(
     () =>
@@ -272,9 +283,18 @@ export default function ReportSheet({
 
           {/* Final Summary */}
           <section className="px-4 md:px-8 py-6">
-            <div className="mb-2 flex items-center gap-2">
-              <CheckCircle2 className="size-4 text-zinc-500" aria-hidden="true" />
-              <h2 className="text-sm font-semibold tracking-tight">요약</h2>
+            <div className="w-full flex justify-between items-center">
+              <div className="mb-2 flex items-center gap-2">
+                <CheckCircle2 className="size-4 text-zinc-500" aria-hidden="true" />
+                <h2 className="text-sm font-semibold tracking-tight">요약</h2>
+              </div>
+              <Button
+                onClick={() => fetchAIReport()}
+                className="flex items-center space-x-2 text-white text-sm font-medium bg-black hover:bg-zinc-700 disabled:bg-zinc-500 transition-colors rounded-md duration-200 h-8 md:h-9 px-3"
+              >
+                <BreathingSparkles size={18} />
+                <p>AI 요약 생성</p>
+              </Button>
             </div>
 
             {isReportLoading ? (

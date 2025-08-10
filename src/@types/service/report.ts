@@ -12,7 +12,7 @@ export const MonthlyReportRequestSchema = z.object({
 
 export const ERPNextReportSchema = z
   .object({
-    name: z.number(),
+    name: z.string(),
     creation: z.string().transform((v, ctx) => {
       const d = new Date(v.replace(" ", "T"));
       if (isNaN(d.getTime())) {
