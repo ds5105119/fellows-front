@@ -143,14 +143,14 @@ export default function WheelDatePicker({ startDate, minDate, maxDate, precision
   const showDay = precision === "day";
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div className="flex gap-3 flex-row tems-center">
       {/* Year - InertiaWheel */}
       {showYear && (
         <Popover open={open.year} onOpenChange={(v) => setOpen((s) => ({ ...s, year: v }))}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="h-11 w-full justify-between gap-2 rounded-xl border-neutral-200 bg-white/90 px-4 text-base font-medium text-neutral-900 shadow-[0_1px_0_rgba(255,255,255,0.6)] transition-colors hover:bg-white/100 sm:w-auto"
+              className="h-11 w-auto justify-between gap-2 rounded-xl border-neutral-200 bg-white/90 px-4 text-base font-medium text-neutral-900 shadow-[0_1px_0_rgba(255,255,255,0.6)] transition-colors hover:bg-white/100"
               aria-label="년도 선택"
             >
               <span className="flex items-center gap-2">
@@ -176,7 +176,7 @@ export default function WheelDatePicker({ startDate, minDate, maxDate, precision
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="h-11 w-full justify-between gap-2 rounded-xl border-neutral-200 bg-white/90 px-4 text-base font-medium text-neutral-900 shadow-[0_1px_0_rgba(255,255,255,0.6)] transition-colors hover:bg-white/100 sm:w-auto"
+              className="h-11 w-auto justify-between gap-2 rounded-xl border-neutral-200 bg-white/90 px-4 text-base font-medium text-neutral-900 shadow-[0_1px_0_rgba(255,255,255,0.6)] transition-colors hover:bg-white/100"
               aria-label="월 선택"
             >
               <span className="flex items-center gap-2">
@@ -210,7 +210,7 @@ export default function WheelDatePicker({ startDate, minDate, maxDate, precision
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="h-11 w-full justify-between gap-2 rounded-xl border-neutral-200 bg-white/90 px-4 text-base font-medium text-neutral-900 shadow-[0_1px_0_rgba(255,255,255,0.6)] transition-colors hover:bg-white/100 sm:w-auto"
+              className="h-11 w-auto justify-between gap-2 rounded-xl border-neutral-200 bg-white/90 px-4 text-base font-medium text-neutral-900 shadow-[0_1px_0_rgba(255,255,255,0.6)] transition-colors hover:bg-white/100"
               aria-label="일 선택"
             >
               <span className="flex items-center gap-2">

@@ -21,3 +21,8 @@ export const useDailyReport = (project_id: string, date: Date): SWRResponse<Repo
   const url = `${API_BASE_URL}/${project_id}/report/daily?date=${dayjs(date).format("YYYY-MM-DD")}`;
   return useSWR(url, async (url: string) => ReportResponseSchema.parse(await fetcher(url)));
 };
+
+export const useDailyReportAISummary = (report_id: string): SWRResponse<ReportResponse> => {
+  const url = `${API_BASE_URL}/estimate/report/daily/${report_id}`;
+  return useSWR(url, async (url: string) => ReportResponseSchema.parse(await fetcher(url)));
+};
