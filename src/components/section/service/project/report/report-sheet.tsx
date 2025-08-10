@@ -298,7 +298,7 @@ export default function ReportSheet({
 
 function EmptyRow({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-2 text-sm text-zinc-500 px-2 py-4">
+    <div className="flex items-center gap-2 text-sm text-zinc-500 py-4">
       <CheckCircle2 className="size-4 opacity-60" aria-hidden />
       <span>{label}</span>
     </div>
