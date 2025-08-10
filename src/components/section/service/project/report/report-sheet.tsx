@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { useDailyReport } from "@/hooks/fetch/report";
 import type { ERPNextTaskForUser, OverviewERPNextProject } from "@/@types/service/project";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { CalendarDays, Clock, ListTodo, CheckCircle2 } from "lucide-react";
 import { ERPNextReport, ReportResponse } from "@/@types/service/report";
