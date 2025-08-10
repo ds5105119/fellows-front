@@ -10,6 +10,7 @@ import { ERPNextTimeSheetForUser } from "@/@types/service/timesheet";
 import { Button } from "@/components/ui/button";
 import dayjs from "@/lib/dayjs";
 import generatePDF, { Margin } from "react-to-pdf";
+import parse from "html-react-parser";
 
 export default function ReportSheet({
   project,
@@ -162,7 +163,7 @@ export default function ReportSheet({
                   <div key={status} className={cn(i > 0 && "mt-6")}>
                     <div className="mb-2 flex items-center gap-2">
                       <StatusDot status={status} />
-                      <div className="text-xs font-medium text-zinc-600">
+                      <div className="text-sm font-medium text-zinc-600">
                         {status} · {list.length.toLocaleString()}건
                       </div>
                     </div>
@@ -173,14 +174,14 @@ export default function ReportSheet({
                         const progress = typeof t?.progress === "number" ? Math.max(0, Math.min(100, Math.round(t.progress))) : null;
 
                         return (
-                          <li key={`${status}-${idx}`} className="px-3 md:px-4 py-2.5">
+                          <li key={`${status}-${idx}`} className="px-3 md:px-4 py-3">
                             <div className="flex items-start justify-between gap-3">
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-2">
-                                  <div className="truncate text-sm font-medium">{t?.subject ?? "제목 없음"}</div>
+                                  <div className="truncate text-sm font-semibold">{t?.subject ?? "제목 없음"}</div>
                                 </div>
 
-                                <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-zinc-600">
+                                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
                                   {typeof t?.expected_time === "number" && <span>예상: {t.expected_time}h</span>}
                                   {plannedStart && (
                                     <span>
@@ -189,6 +190,8 @@ export default function ReportSheet({
                                     </span>
                                   )}
                                 </div>
+
+                                {t?.description && <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-600">{t.description}</div>}
 
                                 {progress !== null ? (
                                   <div className="mt-2 h-1.5 w-full rounded bg-zinc-200">
@@ -221,7 +224,7 @@ export default function ReportSheet({
             ) : timesheets.length === 0 ? (
               <EmptyRow label="기록된 타임시트가 없어요." />
             ) : (
-              <ol className="relative ml-3 pl-4 border-l border-zinc-200">
+              <ol className="relative pl-4 border-l border-zinc-300">
                 {timesheets
                   .slice()
                   .sort((a, b) => {
@@ -246,13 +249,13 @@ export default function ReportSheet({
                         : "시간 정보 없음";
 
                     return (
-                      <li key={i} className="mb-5">
-                        <div className="absolute -left-[7px] top-1">
+                      <li key={i} className="relative mb-5">
+                        <div className="absolute -left-[22px] top-1">
                           <div className="size-3 rounded-full bg-zinc-300 ring-2 ring-white" />
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex flex-col">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <div className="text-sm font-medium truncate">{ts?.title ?? "제목 없음"}</div>
+                            <div className="text-sm font-medium truncate">{ts.name ?? "제목 없음"}</div>
                             {typeof ts?.status === "string" ? (
                               <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-700">{ts.status}</span>
                             ) : null}
@@ -263,9 +266,9 @@ export default function ReportSheet({
                               <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-700">프로젝트: {ts.parent_project}</span>
                             ) : null}
                           </div>
-                          <div className="mt-0.5 text-xs text-zinc-500">{range}</div>
+                          <div className="mt-0.5 text-xs text-zinc-600">{range}</div>
                           {typeof ts?.total_hours === "number" ? <div className="mt-0.5 text-xs text-zinc-600">{ts.total_hours}h</div> : null}
-                          {typeof ts?.note === "string" && ts.note ? <div className="mt-1 text-xs text-zinc-700 leading-relaxed">{ts.note}</div> : null}
+                          {typeof ts?.note === "string" && ts.note ? <div className="mt-0.5 text-xs text-zinc-600">{parse(ts.note)}</div> : null}
                         </div>
                       </li>
                     );
