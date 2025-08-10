@@ -9,13 +9,13 @@ export default function TaskNavigation({ taskView, setTaskView }: { taskView?: b
   const pathname = usePathname();
 
   const tabs = ["작업 현황", "보고서"] as const;
-  const tabMapping: Record<"작업 현황", "task"> & Record<"보고서", "report"> = { "작업 현황": "task", 보고서: "report" };
+  const tabMapping: Record<"작업 현황", ""> & Record<"보고서", "report"> = { "작업 현황": "", 보고서: "report" };
 
   const handleTabChange = (tab: "작업 현황" | "보고서") => {
-    router.push("/service/project/" + tabMapping[tab]);
+    router.push("/service/project/task/" + tabMapping[tab]);
   };
 
-  const tab = pathname.startsWith("/service/project/report") ? "보고서" : pathname.startsWith("/service/project/task") ? "작업 현황" : "";
+  const tab = pathname.startsWith("/service/project/task/report") ? "보고서" : pathname.startsWith("/service/project/task") ? "작업 현황" : "";
 
   return (
     <div className="sticky w-full top-12 md:top-16 flex items-center justify-between min-h-12 h-12 md:min-h-16 md:h-16 px-6 md:px-6 bg-background z-20 border-b border-b-sidebar-border">

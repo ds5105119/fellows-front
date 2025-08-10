@@ -134,7 +134,10 @@ export default function InertiaWheel({
     const next = clamp(y.get() - e.deltaY, minY, maxY);
     y.set(next);
 
-    if (snapTimer.current) window.clearTimeout(scrollEndTimer.current as any);
+    if (snapTimer.current && scrollEndTimer.current !== null) {
+      clearTimeout(scrollEndTimer.current);
+    }
+
     // debounce snap after momentum-like wheel deltas
     scrollEndTimer.current = window.setTimeout(() => {
       const projectedIdx = toIndex(y.get());

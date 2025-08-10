@@ -3,7 +3,7 @@
 import type { Session } from "next-auth";
 import type { OverviewERPNextProject } from "@/@types/service/project";
 import WheelDatePicker from "@/components/resource/wheeldatepicker/datepicker";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 
 const dailyProjectDateFilter = (project: OverviewERPNextProject, date: Date) => {

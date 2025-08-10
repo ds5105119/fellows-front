@@ -244,7 +244,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
       </div>
 
       <Sheet open={!!project_id} onOpenChange={handleSheetOpenChange}>
-        <SheetContent className="w-full sm:max-w-full md:w-3/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0 overflow-x-hidden focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:outline-none focus:border-none">
+        <SheetContent className="overflow-hidden h-full w-full sm:max-w-full md:w-3/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:outline-none focus:border-none">
           <SheetHeader className="sr-only">
             <SheetTitle>프로젝트 상세</SheetTitle>
           </SheetHeader>
