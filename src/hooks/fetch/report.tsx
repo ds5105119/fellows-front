@@ -19,10 +19,16 @@ const fetcher = async (url: string) => {
 
 export const useDailyReport = (project_id: string, date: Date): SWRResponse<ReportResponse> => {
   const url = `${API_BASE_URL}/${project_id}/report/daily?date=${dayjs(date).format("YYYY-MM-DD")}`;
-  return useSWR(url, async (url: string) => ReportResponseSchema.parse(await fetcher(url)));
+  return useSWR(url, async (url: string) => ReportResponseSchema.parse(await fetcher(url)), {
+    refreshInterval: 60000,
+    focusThrottleInterval: 60000,
+  });
 };
 
 export const useDailyReportAISummary = (report_id: string): SWRResponse<ReportResponse> => {
   const url = `${API_BASE_URL}/estimate/report/daily/${report_id}`;
-  return useSWR(url, async (url: string) => ReportResponseSchema.parse(await fetcher(url)));
+  return useSWR(url, async (url: string) => ReportResponseSchema.parse(await fetcher(url)), {
+    refreshInterval: 60000,
+    focusThrottleInterval: 60000,
+  });
 };

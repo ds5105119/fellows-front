@@ -29,6 +29,7 @@ export default function ReportSheet({
   // Use the hook exactly as given
   const report = useDailyReport(project.project_name, date);
   const data: ReportResponse | undefined = report.data;
+  const isReportLoading = !report.data && report.isLoading;
 
   // Schema change: report is now a single object
   const reportDoc: ERPNextReport | undefined = data?.report;
@@ -145,7 +146,7 @@ export default function ReportSheet({
               <span className="text-sm text-zinc-500">총 {tasks.length.toLocaleString()}건</span>
             </div>
 
-            {report.isLoading ? (
+            {isReportLoading ? (
               <TaskSkeleton />
             ) : tasks.length === 0 ? (
               <EmptyRow label="표시할 작업이 없어요." />
@@ -211,7 +212,7 @@ export default function ReportSheet({
               </span>
             </div>
 
-            {report.isLoading ? (
+            {isReportLoading ? (
               <TimeSkeleton />
             ) : timesheets.length === 0 ? (
               <EmptyRow label="기록된 타임시트가 없어요." />
@@ -276,7 +277,7 @@ export default function ReportSheet({
               <h2 className="text-sm font-semibold tracking-tight">요약</h2>
             </div>
 
-            {report.isLoading ? (
+            {isReportLoading ? (
               <div className="h-4 w-2/3 max-w-[520px] rounded bg-zinc-200 animate-pulse" />
             ) : (
               <p className="text-sm text-zinc-700 leading-relaxed">{reportDoc?.summary ? String(reportDoc.summary) : "요약을 생성해 보세요"}</p>
