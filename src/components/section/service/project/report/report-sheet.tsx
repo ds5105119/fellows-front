@@ -254,7 +254,7 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
             ) : timesheets.length === 0 ? (
               <EmptyRow label="기록된 타임시트가 없어요." />
             ) : (
-              <ol className="relative pl-4 border-l border-zinc-300">
+              <ol className="relative pl-4 ml-2.5 border-l border-zinc-300">
                 {timesheets
                   .slice()
                   .sort((a, b) => {
