@@ -76,14 +76,6 @@ export default function ReportSheet({
     return Array.from(g.entries());
   }, [tasks]);
 
-  // Optional: a compact computed highlight string if summary is absent
-  const computedHighlight = useMemo(() => {
-    const done = tasks.filter((t) => /done|완료/i.test(String(t?.status ?? ""))).length;
-    const inProgress = tasks.filter((t) => /progress|진행/i.test(String(t?.status ?? ""))).length;
-    const pending = tasks.filter((t) => /todo|pending|대기/i.test(String(t?.status ?? ""))).length;
-    return `작업 ${tasks.length}건 (완료 ${done}, 진행 ${inProgress}, 대기 ${pending}), 기록 ${Math.round(totalHours * 10) / 10}h`;
-  }, [tasks, totalHours]);
-
   const downloadPDF = () => {
     generatePDF(targetRef, {
       method: "save",
@@ -287,7 +279,7 @@ export default function ReportSheet({
             {report.isLoading ? (
               <div className="h-4 w-2/3 max-w-[520px] rounded bg-zinc-200 animate-pulse" />
             ) : (
-              <p className="text-sm text-zinc-700 leading-relaxed">{reportDoc?.summary ? String(reportDoc.summary) : computedHighlight}</p>
+              <p className="text-sm text-zinc-700 leading-relaxed">{reportDoc?.summary ? String(reportDoc.summary) : "요약을 생성해 보세요"}</p>
             )}
           </section>
         </div>
