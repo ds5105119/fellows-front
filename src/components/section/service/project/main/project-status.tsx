@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DatePicker from "./datepicker";
-import generatePDF from "react-to-pdf";
+import generatePDF, { Margin } from "react-to-pdf";
 
 export function ProjectStatus({
   project,
@@ -72,6 +72,7 @@ export function ProjectStatus({
       method: "save",
       filename: `${project.custom_project_title} AI 견젹서 - ${dayjs().format("YYYY-MM-DD")}`,
       resolution: 5,
+      page: { margin: Margin.MEDIUM },
     });
   };
 

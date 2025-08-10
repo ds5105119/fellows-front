@@ -42,12 +42,12 @@ export default function ReportMain({ session }: { session: Session }) {
       />
 
       <Sheet open={!!selectedProject && !!selectedDate} onOpenChange={() => setSelectedProject(null)}>
-        <SheetContent className="w-full sm:max-w-full md:w-1/2 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0 overflow-x-hidden focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:outline-none focus:border-none">
+        <SheetContent className="w-full sm:max-w-full md:w-2/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0 overflow-x-hidden focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:outline-none focus:border-none">
           <SheetHeader className="sr-only">
             <SheetTitle>프로젝트 상세</SheetTitle>
           </SheetHeader>
           <SheetDescription className="sr-only" />
-          {selectedProject && <ReportSheet project={selectedProject} date={selectedDate} dailyReport={dailyReport} />}
+          {selectedProject && <ReportSheet project={selectedProject} date={selectedDate} dailyReport={dailyReport} onClose={() => setSelectedProject(null)} />}
         </SheetContent>
       </Sheet>
     </div>
