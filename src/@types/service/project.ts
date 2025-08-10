@@ -108,8 +108,10 @@ export const userERPNextProjectSchema = z.object({
 export type UserERPNextProject = z.infer<typeof userERPNextProjectSchema>;
 
 export const overviewERPNextProjectSchema = z.object({
-  creation: z.coerce.date().optional().nullable(),
+  creation: z.coerce.date(),
   modified: z.coerce.date().optional().nullable(),
+  expected_start_date: z.coerce.date().optional().nullable(),
+  expected_end_date: z.coerce.date().optional().nullable(),
 
   custom_team: ERPNextProjectTeamSchema,
   project_name: z.string(),

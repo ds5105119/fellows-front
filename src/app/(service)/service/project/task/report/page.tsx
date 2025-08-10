@@ -1,6 +1,6 @@
 import { auth, signIn } from "@/auth";
-import ReportSidebar from "@/components/section/service/project/report/report-sidebar";
 import TaskNavigation from "@/components/section/service/project/task/task-navigation";
+import ReportMain from "@/components/section/service/project/report/report-main";
 
 export default async function Page() {
   const session = await auth();
@@ -9,9 +9,7 @@ export default async function Page() {
   return (
     <div className="shrink-0 w-full h-full flex flex-col">
       <TaskNavigation />
-      <div className="w-full h-full flex">
-        <ReportSidebar session={session} />
-      </div>
+      <ReportMain session={session} />
     </div>
   );
 }
