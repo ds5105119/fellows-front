@@ -1,52 +1,46 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useDailyReport, useDailyReportAISummary } from "@/hooks/fetch/report";
 import type { ERPNextTaskForUser, OverviewERPNextProject } from "@/@types/service/project";
+import type { ERPNextReport } from "@/@types/service/report";
+import type { ERPNextTimeSheetForUser } from "@/@types/service/timesheet";
 import { cn } from "@/lib/utils";
-import { Clock, ListTodo, CheckCircle2, ArrowLeft, FileText, Copy, Download } from "lucide-react";
-import { ERPNextReport } from "@/@types/service/report";
-import { ERPNextTimeSheetForUser } from "@/@types/service/timesheet";
+import { ArrowLeft, CheckCircle2, Clock, Copy, Download, FileText, ListTodo } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import dayjs from "@/lib/dayjs";
 import generatePDF, { Margin } from "react-to-pdf";
 import parse from "html-react-parser";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 
-export default function ReportSheet({
-  project,
-  date,
-  dailyReport,
-  onClose,
-}: {
+type Props = {
   project: OverviewERPNextProject;
   date: Date;
   dailyReport: boolean;
   onClose: () => void;
-}) {
-  // for ref to target element for PDF generation
+};
+
+export default function ReportSheet({ project, date, dailyReport, onClose }: Props) {
+  // Refs
   const targetRef = useRef<HTMLDivElement>(null);
+
+  // Local state
   const [reportId, setReportId] = useState<string | undefined>(undefined);
 
-  // Use the hook exactly as given
+  // Data fetching hooks
   const report = useDailyReport(project.project_name, date);
   const aiReport = useDailyReportAISummary(reportId);
 
-  // Schema change: report is now a single object
+  // Data resolution (AI summary, falling back to base report)
   const reportDoc: ERPNextReport | undefined = aiReport.data?.report ?? report.data?.report;
   const tasks: ERPNextTaskForUser[] = aiReport.data?.tasks ?? report.data?.tasks ?? [];
   const timesheets: ERPNextTimeSheetForUser[] = aiReport.data?.timesheets ?? report.data?.timesheets ?? [];
 
-  const isReportLoading = (!report.data && report.isLoading) || (!aiReport.data && aiReport.isLoading);
+  // Loading state
+  const isBaseLoading = report.isLoading && !report.data;
+  const isAiBusy = aiReport.isLoading || aiReport.isValidating;
 
-  const fetchAIReport = () => {
-    if (!reportId) {
-      setReportId(reportDoc?.name);
-    } else {
-      aiReport.mutate();
-    }
-  };
-
+  // Derived values
   const totalHours = useMemo(
     () =>
       timesheets.reduce((acc, t) => {
@@ -76,79 +70,111 @@ export default function ReportSheet({
   );
 
   const title = dailyReport ? "일일 리포트" : "월간 리포트";
+  const aiButtonLabel = reportDoc?.summary ? "요약 다시 생성하기" : "AI 요약 생성";
 
-  // Group tasks by status for structured, readable lists
+  // Group tasks by status
   const groupedTasks = useMemo(() => {
-    const g = new Map<string, ERPNextTaskForUser[]>();
+    const map = new Map<string, ERPNextTaskForUser[]>();
     for (const t of tasks) {
       const k = String(t?.status ?? "기타");
-      if (!g.has(k)) g.set(k, []);
-      g.get(k)!.push(t);
+      if (!map.has(k)) map.set(k, []);
+      map.get(k)!.push(t);
     }
-    return Array.from(g.entries());
+    return Array.from(map.entries());
   }, [tasks]);
 
-  const downloadPDF = () => {
+  // Actions
+  const fetchAIReport = useCallback(() => {
+    if (!reportId) {
+      setReportId(reportDoc?.name);
+    } else {
+      aiReport.mutate(undefined, { revalidate: true });
+    }
+  }, [aiReport, reportDoc?.name, reportId]);
+
+  const downloadPDF = useCallback(() => {
     generatePDF(targetRef, {
       method: "save",
       filename: `${project.custom_project_title} 일일 레포트 - ${dayjs(reportDoc?.end_date).format("YYYY-MM-DD")}`,
       resolution: 5,
       page: { margin: Margin.MEDIUM },
     });
-  };
+  }, [project.custom_project_title, reportDoc?.end_date]);
+
+  const createdAtText = reportDoc?.creation && dayjs(reportDoc.creation).isValid() ? `${dayjs(reportDoc.creation).format("YY.MM.DD HH시 mm분")} 생성` : "";
 
   return (
     <div className="w-full">
-      {/* 네비게이션 */}
-      <div className="sticky top-0 shrink-0 flex items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4 bg-background z-20">
+      {/* Top Navigation */}
+      <div className="sticky top-0 shrink-0 flex items-center justify-between h-16 border-b border-b-sidebar-border px-4 bg-background z-20">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="hover:bg-blue-500/10 border-0 focus-visible:ring-0"
+            aria-label="뒤로 가기"
+            type="button"
+          >
             <ArrowLeft className="!size-5" />
           </Button>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none bg-transparent">
+          <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none bg-transparent" type="button">
             이용 가이드
           </Button>
-          <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none bg-transparent" onClick={downloadPDF}>
-            <Download />
+          <Button
+            variant="outline"
+            size="sm"
+            className="font-semibold rounded-sm border-gray-200 shadow-none bg-transparent"
+            onClick={downloadPDF}
+            type="button"
+          >
+            <Download className="mr-1" />
             PDF
           </Button>
         </div>
       </div>
 
+      {/* Scrollable Content */}
       <div className="block w-full overflow-y-auto scrollbar-hide" ref={targetRef}>
         <div className="flex flex-col h-full w-full">
-          {/* 레포트 헤더 */}
+          {/* Report Header */}
           <div className="pt-12 pb-5 px-4 md:px-8">
             <div className="w-full flex items-center space-x-3">
               <div className="flex items-center justify-center size-8 md:size-9 rounded-sm bg-blue-500/15">
                 <FileText className="!size-5 md:!size-6 text-blue-500" strokeWidth={2.2} />
               </div>
               <span className="text-base font-bold text-blue-500">{title}</span>
-              <span className="text-xs font-normal text-muted-foreground">{dayjs(reportDoc?.creation).format("YY.MM.DD HH시 mm분")} 생성</span>
+              {createdAtText ? <span className="text-xs font-normal text-muted-foreground">{createdAtText}</span> : null}
             </div>
           </div>
-          {/* 레포트 제목 */}
+
+          {/* Report Title Section */}
           <div className="px-4 md:px-8 py-6">
             <div className="w-full flex flex-col space-y-3">
               <h2 className="text-4xl font-bold break-keep">{project.custom_project_title}</h2>
+
               <div className="w-full flex items-center space-x-2 pt-2">
                 <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">계약 번호</div>
                 <div className="ml-1 text-xs font-medium text-muted-foreground truncate overflow-hidden whitespace-nowrap">{project.project_name}</div>
                 <button
                   onClick={() => navigator.clipboard.writeText(project.project_name)}
                   className="size-6 flex items-center justify-center rounded-sm hover:bg-gray-300/40 transition-colors duration-200"
+                  aria-label="계약 번호 복사"
+                  type="button"
                 >
                   <Copy className="text-muted-foreground !size-4" strokeWidth={2.7} />
                 </button>
               </div>
+
               <div className="w-full flex items-center space-x-2">
                 <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">보고 일자</div>
-                <div className="ml-1 text-xs font-medium text-muted-foreground truncate overflow-hidden whitespace-nowrap">{reportDoc?.start_date}</div>
+                <div className="ml-1 text-xs font-medium text-muted-foreground truncate overflow-hidden whitespace-nowrap">{reportDoc?.start_date ?? ""}</div>
               </div>
             </div>
           </div>
+
           {/* Tasks */}
           <section className="px-4 md:px-8 py-6">
             <div className="mb-3 flex items-center gap-2">
@@ -157,7 +183,7 @@ export default function ReportSheet({
               <span className="text-sm text-zinc-500">총 {tasks.length.toLocaleString()}건</span>
             </div>
 
-            {isReportLoading ? (
+            {isBaseLoading ? (
               <TaskSkeleton />
             ) : tasks.length === 0 ? (
               <EmptyRow label="표시할 작업이 없어요." />
@@ -171,10 +197,11 @@ export default function ReportSheet({
                         {status} · {list.length.toLocaleString()}건
                       </div>
                     </div>
+
                     <ul className="divide-y divide-zinc-200 rounded-md border border-zinc-200 bg-white/40">
                       {list.map((t, idx) => {
-                        const plannedStart = t?.exp_start_date !== undefined && t?.exp_start_date !== null ? new Date(t.exp_start_date) : null;
-                        const plannedEnd = t?.exp_end_date !== undefined && t?.exp_end_date !== null ? new Date(t.exp_end_date) : null;
+                        const plannedStart = t?.exp_start_date != null ? new Date(t.exp_start_date) : null;
+                        const plannedEnd = t?.exp_end_date != null ? new Date(t.exp_end_date) : null;
                         const progress = typeof t?.progress === "number" ? Math.max(0, Math.min(100, Math.round(t.progress))) : null;
 
                         return (
@@ -184,19 +211,17 @@ export default function ReportSheet({
                                 <div className="flex items-center gap-2">
                                   <div className="truncate text-sm font-semibold">{t?.subject ?? "제목 없음"}</div>
                                 </div>
-
                                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
                                   {typeof t?.expected_time === "number" && <span>예상: {t.expected_time}h</span>}
                                   {plannedStart && (
                                     <span>
-                                      계획: {dateFormatter.format(plannedStart)}
+                                      {"계획: "}
+                                      {dateFormatter.format(plannedStart)}
                                       {plannedEnd ? ` ~ ${dateFormatter.format(plannedEnd)}` : ""}
                                     </span>
                                   )}
                                 </div>
-
                                 {t?.description && <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-600">{t.description}</div>}
-
                                 {progress !== null ? (
                                   <div className="mt-2 h-1.5 w-full rounded bg-zinc-200">
                                     <div className="h-full rounded bg-zinc-800 transition-[width] duration-300" style={{ width: `${progress}%` }} />
@@ -213,17 +238,18 @@ export default function ReportSheet({
               </div>
             )}
           </section>
+
           {/* Timesheets */}
           <section className="px-4 md:px-8 py-6">
             <div className="mb-3 flex items-center gap-2">
-              <Clock className="size-4 text-zinc-500" aria-hidden="true" />
-              <h2 className="text-sm font-semibold tracking-tight">타임시트</h2>
-              <span className="text-xs text-zinc-500">
+              <Clock className="size-5 text-zinc-500" aria-hidden="true" />
+              <h2 className="text-base font-semibold tracking-tight">타임시트</h2>
+              <span className="text-sm text-zinc-500">
                 총 {timesheets.length.toLocaleString()}건 · {Math.round(totalHours * 10) / 10}h
               </span>
             </div>
 
-            {isReportLoading ? (
+            {isBaseLoading ? (
               <TimeSkeleton />
             ) : timesheets.length === 0 ? (
               <EmptyRow label="기록된 타임시트가 없어요." />
@@ -237,20 +263,13 @@ export default function ReportSheet({
                     return db - da;
                   })
                   .map((ts, i) => {
-                    const started =
-                      ts?.start_date !== undefined && ts?.start_date !== null
-                        ? new Date(ts.start_date)
-                        : ts?.creation !== undefined && ts?.creation !== null
-                        ? new Date(ts.creation)
-                        : null;
-                    const ended = ts?.end_date !== undefined && ts?.end_date !== null ? new Date(ts.end_date) : null;
-
-                    const range =
-                      started && ended
+                    const started = ts?.start_date != null ? new Date(ts.start_date) : ts?.creation != null ? new Date(ts.creation) : null;
+                    const ended = ts?.end_date != null ? new Date(ts.end_date) : null;
+                    const range = started
+                      ? ended
                         ? `${dateFormatter.format(started)} ${timeFormatter.format(started)} ~ ${timeFormatter.format(ended)}`
-                        : started
-                        ? `${dateFormatter.format(started)} ${timeFormatter.format(started)}`
-                        : "시간 정보 없음";
+                        : `${dateFormatter.format(started)} ${timeFormatter.format(started)}`
+                      : "시간 정보 없음";
 
                     return (
                       <li key={i} className="relative mb-5">
@@ -283,31 +302,37 @@ export default function ReportSheet({
 
           {/* Final Summary */}
           <section className="px-4 md:px-8 py-6">
-            <div className="w-full flex justify-between items-center">
-              <div className="mb-2 flex items-center gap-2">
-                <CheckCircle2 className="size-4 text-zinc-500" aria-hidden="true" />
-                <h2 className="text-sm font-semibold tracking-tight">요약</h2>
+            <div className="w-full flex justify-between items-center pb-3">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="size-5 text-zinc-500" aria-hidden="true" />
+                <h2 className="text-base font-semibold tracking-tight">요약</h2>
               </div>
               <Button
-                onClick={() => fetchAIReport()}
+                onClick={fetchAIReport}
                 className="flex items-center space-x-2 text-white text-sm font-medium bg-black hover:bg-zinc-700 disabled:bg-zinc-500 transition-colors rounded-md duration-200 h-8 md:h-9 px-3"
+                disabled={isAiBusy || (!reportDoc?.name && !reportId)}
+                type="button"
               >
                 <BreathingSparkles size={18} />
-                <p>AI 요약 생성</p>
+                <p>{aiButtonLabel}</p>
               </Button>
             </div>
 
-            {isReportLoading ? (
-              <div className="h-4 w-2/3 max-w-[520px] rounded bg-zinc-200 animate-pulse" />
-            ) : (
-              <p className="text-sm text-zinc-700 leading-relaxed">{reportDoc?.summary ? String(reportDoc.summary) : "요약을 생성해 보세요"}</p>
-            )}
+            <div className="rounded-md border border-zinc-200 px-4 py-3 ">
+              {isBaseLoading || isAiBusy ? (
+                <SummarySkeleton />
+              ) : (
+                <p className="text-sm text-zinc-700 leading-relaxed">{reportDoc?.summary ? String(reportDoc.summary) : "요약을 생성해 보세요"}</p>
+              )}
+            </div>
           </section>
         </div>
       </div>
     </div>
   );
 }
+
+/* ---------- Subcomponents (kept in-file for single-file requirement) ---------- */
 
 function EmptyRow({ label }: { label: string }) {
   return (
@@ -346,6 +371,18 @@ function TimeSkeleton() {
   );
 }
 
+function SummarySkeleton() {
+  return (
+    <div className="relative overflow-hidden py-1" role="status" aria-live="polite" aria-label="AI 요약 생성 중">
+      <div className="space-y-2.5">
+        <div className="h-4 w-2/3 rounded-full bg-zinc-200 animate-pulse" />
+        <div className="h-4 w-full rounded-full bg-zinc-200 animate-pulse" />
+        <div className="h-4 w-5/6 rounded-full bg-zinc-200 animate-pulse" />
+      </div>
+    </div>
+  );
+}
+
 // Neutral status dot
 function StatusDot({ status }: { status: string }) {
   const color = /done|complete|완료/i.test(status)
@@ -355,8 +392,9 @@ function StatusDot({ status }: { status: string }) {
     : /pending|todo|대기/i.test(status)
     ? "bg-amber-500"
     : "bg-zinc-400";
+
   return (
-    <span className={cn("inline-flex items-center justify-center", "size-2 rounded-full", color)}>
+    <span className={cn("inline-flex items-center justify-center", "size-2 rounded-full", color)} aria-hidden="true">
       <span className="sr-only">{status}</span>
     </span>
   );
