@@ -28,7 +28,9 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
   const [reportId, setReportId] = useState<string | undefined>(undefined);
 
   // Data fetching hooks
-  const report = dailyReport ? useDailyReport(project.project_name, date) : useMonthlyReport(project.project_name, date);
+  const dailyReportData = useDailyReport(project.project_name, date);
+  const monthlyReportData = useMonthlyReport(project.project_name, date);
+  const report = dailyReport ? dailyReportData : monthlyReportData;
   const aiReport = useReportAISummary(reportId);
 
   console.log(aiReport.data, "AI Report Data");
