@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
-import { useDailyReport, useDailyReportAISummary } from "@/hooks/fetch/report";
+import { useDailyReport, useMonthlyReport, useReportAISummary } from "@/hooks/fetch/report";
 import type { ERPNextTaskForUser, OverviewERPNextProject } from "@/@types/service/project";
 import type { ERPNextReport } from "@/@types/service/report";
 import type { ERPNextTimeSheetForUser } from "@/@types/service/timesheet";
@@ -28,8 +28,10 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
   const [reportId, setReportId] = useState<string | undefined>(undefined);
 
   // Data fetching hooks
-  const report = useDailyReport(project.project_name, date);
-  const aiReport = useDailyReportAISummary(reportId);
+  const report = dailyReport ? useDailyReport(project.project_name, date) : useMonthlyReport(project.project_name, date);
+  const aiReport = useReportAISummary(reportId);
+
+  console.log(aiReport.data, "AI Report Data");
 
   // Data resolution (AI summary, falling back to base report)
   const reportDoc: ERPNextReport | undefined = aiReport.data?.report ?? report.data?.report;
@@ -87,6 +89,7 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
   const fetchAIReport = useCallback(() => {
     if (!reportId) {
       setReportId(reportDoc?.name);
+      aiReport.mutate(undefined, { revalidate: true });
     } else {
       aiReport.mutate(undefined, { revalidate: true });
     }

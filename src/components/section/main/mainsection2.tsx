@@ -2,10 +2,9 @@ import { cn } from "@/lib/utils";
 import { BentoCard, BentoGrid } from "@/components/magicui/bento-grid";
 import { Marquee } from "@/components/magicui/marquee";
 import Image from "next/image";
-import { ArrowDownIcon, ArrowUpRight, BadgeCheckIcon, ChevronRight, CopyPlus, XIcon, ZapIcon } from "lucide-react";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { BadgeCheckIcon, ChevronRight, CopyPlus, ZapIcon } from "lucide-react";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
-import { Button } from "@/components/ui/button";
+import MainSection2Dialog from "./mainsection2dialog";
 
 const date = new Date();
 date.setDate(2);
@@ -140,58 +139,7 @@ export default async function MainSection2() {
             <br />
             귀사를 위한 전문 개발 팀을 합리적인 가격에 만나보세요.
           </h4>
-          <Dialog>
-            <DialogTrigger asChild>
-              <div className="flex items-center md:px-3 md:py-1.5 md:rounded-sm md:hover:bg-muted select-none">
-                <ArrowUpRight className="!size-7 text-blue-500" />
-                <p className="text-lg md:text-xl font-semibold text-blue-500">서비스 소개서</p>
-              </div>
-            </DialogTrigger>
-            <DialogContent
-              showCloseButton={false}
-              overlayClassName="backdrop-blur-sm"
-              className="drop-shadow-white/10 drop-shadow-2xl p-0 w-[calc(100%-32px)] max-w-[calc(100%-32px)] sm:w-[calc(100%-32px)] min-w-[calc(100%-32px)] lg:min-w-5xl xl:min-w-6xl lg:h-fit rounded-3xl overflow-hidden scrollbar-hide focus-visible:ring-0"
-            >
-              <DialogHeader className="sr-only">
-                <DialogTitle className="sr-only">서비스 소개서 창</DialogTitle>
-                <DialogDescription className="sr-only" />
-              </DialogHeader>
-
-              <div className="w-full h-full flex flex-col">
-                <div className="sticky top-0 w-full px-3.5 h-14 border-b border-b-muted bg-white font-bold grid grid-cols-3 items-center">
-                  <div className="h-full flex items-center justify-start">
-                    <DialogClose asChild>
-                      <Button variant="ghost" size="icon" className="focus-visible:ring-0">
-                        <ArrowDownIcon />
-                      </Button>
-                    </DialogClose>
-                  </div>
-
-                  <div className="h-full flex items-center justify-center">
-                    <Button variant="secondary" size="sm" className="focus-visible:ring-0 px-8">
-                      Korean
-                    </Button>
-                  </div>
-
-                  <div className="h-full flex items-center justify-end">
-                    <DialogClose asChild>
-                      <Button variant="ghost" size="icon" className="focus-visible:ring-0">
-                        <XIcon />
-                      </Button>
-                    </DialogClose>
-                  </div>
-                </div>
-
-                <div className="w-full overflow-hidden aspect-[9/14] sm:aspect-[18/9]">
-                  <iframe
-                    src="https://embed.figma.com/slides/zUxexfMaoALzAzayStpXzB/Fellows-Solutions?node-id=1-352&embed-host=share"
-                    className="w-full h-full border-0"
-                    allowFullScreen
-                  />
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <MainSection2Dialog />
         </div>
       </div>
 

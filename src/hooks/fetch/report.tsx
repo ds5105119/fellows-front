@@ -23,7 +23,12 @@ export const useDailyReport = (project_id: string, date: Date): SWRResponse<Repo
   return useSWRImmutable(url, async (url: string) => ReportResponseSchema.parse(await fetcher(url)));
 };
 
-export const useDailyReportAISummary = (report_id?: string): SWRResponse<ReportResponse> => {
-  const url = `${API_BASE_URL}/estimate/report/daily/${report_id}`;
+export const useMonthlyReport = (project_id: string, date: Date): SWRResponse<ReportResponse> => {
+  const url = `${API_BASE_URL}/${project_id}/report/monthly?date=${dayjs(date).format("YYYY-MM-DD")}`;
+  return useSWRImmutable(url, async (url: string) => ReportResponseSchema.parse(await fetcher(url)));
+};
+
+export const useReportAISummary = (report_id?: string): SWRResponse<ReportResponse> => {
+  const url = `${API_BASE_URL}/estimate/report/${report_id}`;
   return useSWRImmutable(report_id ? url : null, async (url: string) => ReportResponseSchema.parse(await fetcher(url)));
 };
