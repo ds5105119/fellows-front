@@ -3,14 +3,13 @@
 import { useEffect, useState, useRef, useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
-
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Loader2Icon } from "lucide-react";
-import { EstimateFormState, getEstimateInfo } from "@/hooks/fetch/server/project";
+import { type EstimateFormState, getEstimateInfo } from "@/hooks/fetch/server/project";
 
 const suggestionButtons = [
   {
@@ -58,13 +57,11 @@ export default function MainSection1Form({ session, initialDescription }: { sess
   const searchParams = useSearchParams();
   const [description, setDescription] = useState(initialDescription);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
   const [isNavigating, setIsNavigating] = useState(false);
   const [isAutoSubmitting, setIsAutoSubmitting] = useState(false);
-
   const [state, formAction] = useActionState<EstimateFormState, FormData>(getEstimateInfo, null);
-  const isParentLoading = isNavigating || isAutoSubmitting;
 
+  const isParentLoading = isNavigating || isAutoSubmitting;
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
 
   useEffect(() => {
@@ -82,16 +79,27 @@ export default function MainSection1Form({ session, initialDescription }: { sess
     if (!session) {
       document.cookie = `pendingDescription=${encodeURIComponent(description)}; path=/; max-age=300; SameSite=Lax`;
       signIn("keycloak", { redirectTo: "/?from=cookie" });
-      return;
     }
-    formAction(formData);
+
+    setIsNavigating(false);
+    setIsAutoSubmitting(false);
+
+    if (session) {
+      formAction(formData);
+    }
   };
 
   useEffect(() => {
     if (state?.success) {
       setIsNavigating(true);
       toast.success("견적 생성에 성공했습니다!");
-      sessionStorage.setItem("project_info", JSON.stringify({ description: state.description, info: state.info }));
+      sessionStorage.setItem(
+        "project_info",
+        JSON.stringify({
+          description: state.description,
+          info: state.info,
+        })
+      );
       router.push(`/service/project/new`);
     } else if (state?.error) {
       setIsNavigating(false);
@@ -104,19 +112,27 @@ export default function MainSection1Form({ session, initialDescription }: { sess
     const fromCookie = searchParams.get("from") === "cookie";
     if (session && initialDescription && fromCookie) {
       setIsAutoSubmitting(true);
+      router.replace("/");
+      router.refresh();
+
       const formData = new FormData();
       formData.append("description", initialDescription);
       formAction(formData);
-      router.replace("/", { scroll: false });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, initialDescription, searchParams, formAction, router]);
 
-  // 🔹 KEY CHANGE: 가장 표준적이고 안정적인 높이 조절 로직으로 변경
+  useEffect(() => {
+    return () => {
+      setIsNavigating(false);
+      setIsAutoSubmitting(false);
+    };
+  }, []);
+
+  // 가장 표준적이고 안정적인 높이 조절 로직으로 변경
   useEffect(() => {
     if (textareaRef.current) {
       const el = textareaRef.current;
-
       if (window.innerWidth >= 768) {
         el.style.height = "100%";
         return;
@@ -124,10 +140,8 @@ export default function MainSection1Form({ session, initialDescription }: { sess
 
       // --- 모바일 뷰 ---
       const MAX_HEIGHT_PX = 144;
-
       // 1. 높이를 'auto'로 초기화하여 textarea가 스스로 줄어들 수 있도록 합니다. (가장 중요!)
       el.style.height = "auto";
-
       // 2. 초기화된 상태에서 계산된 scrollHeight를 기반으로 새로운 높이를 설정합니다.
       el.style.height = `${Math.min(el.scrollHeight, MAX_HEIGHT_PX)}px`;
     }
@@ -149,10 +163,10 @@ export default function MainSection1Form({ session, initialDescription }: { sess
           rows={1}
           placeholder={placeholderTexts[placeholderIdx]}
           onWheel={(e) => e.stopPropagation()}
-          className="w-full grow self-center md:self-auto p-0 min-h-0 bg-transparent border-none focus-visible:ring-0 outline-none 
-                     shadow-none resize-none scrollbar-hide leading-snug text-foreground
+          className="w-full grow self-center md:self-auto p-0 min-h-0 bg-transparent border-none focus-visible:ring-0 outline-none
+                      shadow-none resize-none scrollbar-hide leading-snug text-foreground
                      md:h-full 
-                     overflow-y-auto
+                      overflow-y-auto
                      overscroll-behavior-contain"
           spellCheck="false"
         />
