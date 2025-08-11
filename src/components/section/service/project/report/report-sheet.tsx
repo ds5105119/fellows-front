@@ -28,12 +28,10 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
   const [reportId, setReportId] = useState<string | undefined>(undefined);
 
   // Data fetching hooks
-  const dailyReportData = useDailyReport(project.project_name, date);
-  const monthlyReportData = useMonthlyReport(project.project_name, date);
+  const dailyReportData = useDailyReport(dailyReport ? { project_id: project.project_name, date } : undefined);
+  const monthlyReportData = useMonthlyReport(!dailyReport ? { project_id: project.project_name, date } : undefined);
   const report = dailyReport ? dailyReportData : monthlyReportData;
   const aiReport = useReportAISummary(reportId);
-
-  console.log(aiReport.data, "AI Report Data");
 
   // Data resolution (AI summary, falling back to base report)
   const reportDoc: ERPNextReport | undefined = aiReport.data?.report ?? report.data?.report;
@@ -52,25 +50,6 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
         return acc + h;
       }, 0),
     [timesheets]
-  );
-
-  const dateFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat("ko-KR", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      }),
-    []
-  );
-
-  const timeFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat("ko-KR", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    []
   );
 
   const title = dailyReport ? "일일 리포트" : "월간 리포트";
@@ -221,8 +200,8 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
                                   {plannedStart && (
                                     <span>
                                       {"계획: "}
-                                      {dateFormatter.format(plannedStart)}
-                                      {plannedEnd ? ` ~ ${dateFormatter.format(plannedEnd)}` : ""}
+                                      {plannedStart ? dayjs(plannedStart).format("L") : ""}
+                                      {plannedEnd ? ` ~ ${dayjs(plannedEnd).format("L")}` : ""}
                                     </span>
                                   )}
                                 </div>
@@ -272,8 +251,8 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
                     const ended = ts?.end_date != null ? new Date(ts.end_date) : null;
                     const range = started
                       ? ended
-                        ? `${dateFormatter.format(started)} ${timeFormatter.format(started)} ~ ${timeFormatter.format(ended)}`
-                        : `${dateFormatter.format(started)} ${timeFormatter.format(started)}`
+                        ? `${dayjs(started).format("L")} ~ ${dayjs(ended).format("L")}`
+                        : `${dayjs(started).format("L")}`
                       : "시간 정보 없음";
 
                     return (
