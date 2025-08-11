@@ -11,19 +11,17 @@ import { Button } from "@/components/ui/button";
 
 type Props = {
   session: Session;
-  project: OverviewERPNextProject | null;
-  setProject: (project: OverviewERPNextProject | null) => void;
-  dailyReport: boolean;
-  setDailyReport: (value: boolean) => void;
+  project: string[] | undefined;
+  setProject: (project: string[] | undefined) => void;
   overviewProjects: OverviewERPNextProject[];
 };
 
 /**
- * Responsive ReportSidebar
+ * Responsive IssueSidebar
  * - xl and up: classic left sidebar
  * - lg and below: top bar with [일별 | 월별] and a hamburger. Clicking opens a sliding panel from the right under the bar.
  */
-export default function ReportSidebar({ session, project, setProject, dailyReport, setDailyReport, overviewProjects }: Props) {
+export default function IssueSidebar({ session, project, setProject, overviewProjects }: Props) {
   const [openMobile, setOpenMobile] = useState(false);
 
   // Measure the top bar bottom to anchor the overlay panel directly below it,
@@ -67,29 +65,6 @@ export default function ReportSidebar({ session, project, setProject, dailyRepor
 
   const toggleOpenMobile = () => setOpenMobile((v) => !v);
 
-  const Tab = ({ active, label, onClick }: { active: boolean; label: string; onClick: () => void }) => (
-    <div className="relative">
-      <motion.button
-        onClick={onClick}
-        className={cn(
-          "relative z-10 px-2 py-1 text-xs flex items-center justify-center font-medium rounded-sm transition-colors whitespace-nowrap",
-          active ? "text-white" : "text-black"
-        )}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        {label}
-        {active && (
-          <motion.div
-            layoutId="dailyMonthlyTab"
-            className="absolute inset-0 bg-black rounded-[3px] shadow-sm -z-10"
-            transition={{ type: "spring", duration: 0.5 }}
-          />
-        )}
-      </motion.button>
-    </div>
-  );
-
   const ProjectList = ({ compact = false }: { compact?: boolean }) => (
     <Command className={cn("rounded-sm bg-zinc-50", compact && "border")}>
       <CommandInput placeholder="프로젝트 이름 또는 ID 입력" />
@@ -101,10 +76,18 @@ export default function ReportSidebar({ session, project, setProject, dailyRepor
               key={idx}
               className={cn(
                 "flex items-center space-x-2 cursor-pointer",
-                project?.project_name === val.project_name ? "bg-zinc-200 hover:!bg-zinc-200 data-[selected=true]:bg-zinc-200" : ""
+                project?.includes(val.project_name) ? "bg-zinc-200 hover:!bg-zinc-200 data-[selected=true]:bg-zinc-200" : ""
               )}
               value={val.project_name + " " + val.custom_project_title}
-              onSelect={() => (project === val ? setProject(null) : setProject(val))}
+              onSelect={() =>
+                project?.includes(val.project_name)
+                  ? project.length == 1
+                    ? setProject([])
+                    : setProject(project.filter((p) => p != val.project_name))
+                  : project
+                  ? setProject([...project, val.project_name])
+                  : setProject([val.project_name])
+              }
             >
               <p className="w-3/4 truncate font-semibold">{val.custom_project_title}</p>
               <p className="grow truncate text-xs">{val.project_name}</p>
@@ -118,14 +101,11 @@ export default function ReportSidebar({ session, project, setProject, dailyRepor
   return (
     <>
       {/* Desktop / xl+ left sidebar */}
-      <aside className="hidden xl:block min-w-72 w-72 h-full p-4 border-r">
+      <aside className="hidden xl:flex flex-col shrink-0 min-w-72 w-72 h-full p-4 border-r">
         <div className="sticky top-28 md:top-36 w-full">
           <div className="flex justify-between items-center">
-            <h2 className="text-sm font-semibold">리포트</h2>
-            <motion.div className="bg-zinc-200 p-[3px] rounded-sm inline-flex items-center relative">
-              <Tab active={dailyReport} label="일별" onClick={() => setDailyReport(true)} />
-              <Tab active={!dailyReport} label="월별" onClick={() => setDailyReport(false)} />
-            </motion.div>
+            <h2 className="text-sm font-semibold">이슈</h2>
+            <div />
           </div>
           <div className="flex items-center space-x-1.5 w-full rounded-sm bg-gray-100 px-4 py-2 text-sm mt-4">
             <Info className="size-4" aria-hidden="true" />
@@ -178,10 +158,7 @@ export default function ReportSidebar({ session, project, setProject, dailyRepor
           </Button>
 
           <div className="flex items-center gap-2">
-            <motion.div className="bg-zinc-200 p-[3px] rounded-sm inline-flex items-center relative">
-              <Tab active={dailyReport} label="일별" onClick={() => setDailyReport(true)} />
-              <Tab active={!dailyReport} label="월별" onClick={() => setDailyReport(false)} />
-            </motion.div>
+            <div />
           </div>
         </div>
 
@@ -190,7 +167,7 @@ export default function ReportSidebar({ session, project, setProject, dailyRepor
             <motion.div
               id="report-mobile-panel"
               role="region"
-              aria-label="리포트 필터"
+              aria-label="이슈 필터"
               key="panel"
               initial={{ x: "100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}

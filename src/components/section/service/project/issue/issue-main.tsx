@@ -15,6 +15,7 @@ import useThrottle from "@/lib/useThrottle";
 import { Session } from "next-auth";
 import dayjs from "@/lib/dayjs";
 import { useProjectOverView } from "@/hooks/fetch/project";
+import IssueSidebar from "./issue-sidebar";
 
 export default function IssueMain({ session }: { session: Session }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -106,45 +107,54 @@ export default function IssueMain({ session }: { session: Session }) {
   }, [isReachingEnd, isLoading, isReachedEnd, hasIssue]);
 
   return (
-    <div className="w-full h-full">
-      <IssueFilterHeader
-        session={session}
-        filters={filters}
-        setFilters={setFilters}
-        keywordText={keywordText}
-        setKeywordText={setKeywordText}
-        onCreateClick={handleCreateClick}
-        overviewProjects={overviewProjects}
-      />
-
-      <div className="bg-white border-b border-gray-200">
-        <IssueEmptyState hasIssue={hasIssue} hasIssueLoading={hasIssueLoading} isLoading={isLoading} issuesLength={issues.length} />
-
-        <IssueList issues={issues} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} overviewProjects={overviewProjects} />
-
-        {isLoading && <IssueSkeleton count={2} />}
-
-        <div ref={infinitRef} />
-
-        {issues.length > 0 && <div className="px-4 py-3 border-t border-gray-100 text-sm text-gray-500 bg-gray-50">총 {issues.length}개의 이슈</div>}
+    <div className="w-full h-full flex flex-col xl:flex-row">
+      <div className="h-full">
+        <IssueSidebar
+          session={session}
+          project={filters.project_id}
+          setProject={(p) => setFilters({ ...filters, project_id: p })}
+          overviewProjects={overviewProjects}
+        />
       </div>
+      <div className="w-full h-full">
+        <IssueFilterHeader
+          filters={filters}
+          setFilters={setFilters}
+          keywordText={keywordText}
+          setKeywordText={setKeywordText}
+          onCreateClick={handleCreateClick}
+          overviewProjects={overviewProjects}
+        />
 
-      <IssueForm
-        session={session}
-        isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
-        onSubmit={handleFormSubmit}
-        issue={selectedIssue}
-        isLoading={isSubmitting}
-      />
+        <div className="bg-white border-b border-gray-200">
+          <IssueEmptyState hasIssue={hasIssue} hasIssueLoading={hasIssueLoading} isLoading={isLoading} issuesLength={issues.length} />
 
-      <IssueDeleteDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        onConfirm={handleDeleteConfirm}
-        issue={selectedIssue}
-        isLoading={isSubmitting}
-      />
+          <IssueList issues={issues} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} overviewProjects={overviewProjects} />
+
+          {isLoading && <IssueSkeleton count={2} />}
+
+          <div ref={infinitRef} />
+
+          {issues.length > 0 && <div className="px-4 py-3 border-t border-gray-100 text-sm text-gray-500 bg-gray-50">총 {issues.length}개의 이슈</div>}
+        </div>
+
+        <IssueForm
+          session={session}
+          isOpen={isFormOpen}
+          onClose={() => setIsFormOpen(false)}
+          onSubmit={handleFormSubmit}
+          issue={selectedIssue}
+          isLoading={isSubmitting}
+        />
+
+        <IssueDeleteDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={() => setIsDeleteDialogOpen(false)}
+          onConfirm={handleDeleteConfirm}
+          issue={selectedIssue}
+          isLoading={isSubmitting}
+        />
+      </div>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-export const IssueTypeEnum = z.enum(["Design", "Feature", "ETC"]);
+export const IssueTypeEnum = z.enum(["Design", "Feature", "ETC"], {
+  errorMap: () => ({ message: "이슈 유형을 선택해주세요" }),
+});
 export const TaskStatusEnum = z.enum(["Open", "Working", "Pending Review", "Overdue", "Template", "Completed", "Cancelled"]);
 
 export const IssueSchema = z.object({
@@ -44,10 +46,10 @@ export const IssueListResponseSchema = z.object({
 
 export const CreateIssueSchema = z.object({
   subject: z.string().min(1, "제목을 입력해주세요"),
-  project: z.string(),
+  project: z.string().min(1, "프로젝트를 선택해주세요"),
   priority: z.string().optional(),
-  issue_type: IssueTypeEnum.optional(),
-  description: z.string().optional(),
+  issue_type: IssueTypeEnum,
+  description: z.string().min(1, "설명을 입력해주세요"),
 });
 
 export const UpdateIssueSchema = z.object({

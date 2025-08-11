@@ -40,6 +40,7 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, isLoading
       description: issue?.description || "",
       project: issue?.project || "",
     },
+    mode: "onTouched",
   });
 
   const handleSubmit = async (data: CreateIssueData) => {
@@ -86,7 +87,7 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, isLoading
                   name="issue_type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>타입</FormLabel>
+                      <FormLabel>타입 *</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -133,7 +134,7 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, isLoading
                 name="project"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>프로젝트</FormLabel>
+                    <FormLabel>프로젝트 *</FormLabel>
                     <FormControl>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -185,7 +186,7 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, isLoading
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>설명</FormLabel>
+                    <FormLabel>설명 *</FormLabel>
                     <FormControl>
                       <Textarea placeholder="이슈에 대한 자세한 설명을 입력하세요" className="min-h-[120px]" {...field} />
                     </FormControl>

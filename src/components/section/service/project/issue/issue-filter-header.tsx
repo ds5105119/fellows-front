@@ -3,21 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, X, Check, ChevronDown } from "lucide-react";
+import { Search, Plus, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useCallback } from "react";
 import type { IssueFilters } from "@/hooks/fetch/issue";
 import { MultiSelect } from "./multi-select";
 import DatePicker from "../task/datepicker";
 import dayjs from "@/lib/dayjs";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Session } from "next-auth";
-import { cn } from "@/lib/utils";
 import { OverviewERPNextProject } from "@/@types/service/project";
 
 interface IssueFilterHeaderProps {
-  session: Session;
   filters: IssueFilters;
   setFilters: (filters: IssueFilters) => void;
   keywordText: string;
@@ -26,7 +21,7 @@ interface IssueFilterHeaderProps {
   overviewProjects: OverviewERPNextProject[];
 }
 
-export function IssueFilterHeader({ session, filters, setFilters, keywordText, overviewProjects, setKeywordText, onCreateClick }: IssueFilterHeaderProps) {
+export function IssueFilterHeader({ filters, setFilters, keywordText, overviewProjects, setKeywordText, onCreateClick }: IssueFilterHeaderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -154,55 +149,10 @@ export function IssueFilterHeader({ session, filters, setFilters, keywordText, o
   };
 
   return (
-    <div className="sticky z-30 top-24 md:top-32 bg-background flex flex-col gap-3 w-full py-3 px-6 border-b border-b-sidebar-border">
+    <div className="sticky z-30 top-24 md:top-32 bg-background flex flex-col gap-3 w-full py-3 px-6 xl:px-3 border-b border-b-sidebar-border">
       <div className="flex flex-col lg:flex-row gap-3">
         <div className="flex flex-col-reverse sm:flex-row justify-between gap-3 flex-1">
           <div className="flex flex-col sm:flex-row flex-1 gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="w-full sm:w-64 h-8 justify-between border-0 bg-muted hover:bg-muted focus:bg-muted focus:ring-0 shadow-none"
-                >
-                  프로젝트 검색
-                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-56 sm:w-64 p-0">
-                <Command>
-                  <CommandInput placeholder="프로젝트 검색..." className="h-9" />
-                  <CommandList>
-                    <CommandEmpty>
-                      문의할 수 있는 프로젝트를
-                      <br />
-                      찾을 수 없어요
-                    </CommandEmpty>
-                    <CommandGroup>
-                      {overviewProjects
-                        .filter((project) => project.custom_team.filter((member) => member.member == session.sub).some((member) => member.level < 3))
-                        .filter((project) => project.custom_project_status !== "draft")
-                        .map((p) => (
-                          <CommandItem
-                            value={p.project_name + " " + p.custom_project_title}
-                            key={p.project_name}
-                            onSelect={() => {
-                              if ((filters.project_id ?? []).includes(p.project_name)) {
-                                handleMultiSelectChange("project_id", filters.project_id?.filter((id) => id !== p.project_name) ?? []);
-                              } else {
-                                handleMultiSelectChange("project_id", [...(filters.project_id ?? []), p.project_name]);
-                              }
-                            }}
-                          >
-                            {p.custom_project_title}
-                            <Check className={cn("ml-auto", (filters.project_id ?? []).includes(p.project_name) ? "opacity-100" : "opacity-0")} />
-                          </CommandItem>
-                        ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
             <div className="w-full sm:max-w-96">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
