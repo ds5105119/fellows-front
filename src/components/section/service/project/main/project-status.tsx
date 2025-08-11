@@ -88,9 +88,9 @@ export function ProjectStatus({
       <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
         <h3 className="text-sm font-bold">개발 방식</h3>
         <DropdownMenu open={canEdit ? openMethod : false} onOpenChange={(val) => canEdit && setOpenMethod(val)}>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger>
             <div className="flex space-x-2 w-44 justify-end">
-              <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
+              <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold select-none">
                 {project.custom_project_method ? PROJECT_METHOD_MAPPING[project.custom_project_method].title : "정해지지 않았어요"}
               </div>
             </div>
@@ -122,13 +122,13 @@ export function ProjectStatus({
         </DropdownMenu>
       </div>
 
-      {project.custom_project_method !== "code" && (
+      {project.custom_project_method && project.custom_project_method !== "code" && (
         <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
           <h3 className="text-sm font-bold">노코드 플랫폼</h3>
           <DropdownMenu open={canEdit ? openNocode : false} onOpenChange={(val) => canEdit && setOpenNocode(val)}>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <div className="flex space-x-2 w-44 justify-end">
-                <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
+                <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold select-none">
                   {project.custom_nocode_platform ? NOCODE_PLATFORM_MAPPING[project.custom_nocode_platform].title : "정해지지 않았어요"}
                 </div>
               </div>
@@ -162,8 +162,8 @@ export function ProjectStatus({
       <div className="w-full flex items-center justify-between min-h-13 max-h-13 px-5 md:px-8 border-b-1 border-b-sidebar-border hover:bg-muted active:bg-muted transition-colors duration-200">
         <h3 className="text-sm font-bold">플랫폼</h3>
         <DropdownMenu open={canEdit ? openPlatform : false} onOpenChange={(val) => canEdit && setOpenPlatform(val)}>
-          <DropdownMenuTrigger asChild>
-            <div className="flex space-x-2 w-44 justify-end">
+          <DropdownMenuTrigger>
+            <div className="flex space-x-2 w-44 justify-end select-none">
               {project.custom_platforms?.map((val, i) => (
                 <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
                   {PLATFORM_MAPPING[val.platform]}
