@@ -16,7 +16,7 @@ export default function ReportMain({ session }: { session: Session }) {
 
   const [project, setProject] = useState<OverviewERPNextProject | null>(null);
 
-  const [dailyReport, setDailyReport] = useState(true);
+  const [dailyReport, setDailyReport] = useState(false);
   const [selectedProject, setSelectedProject] = useState<OverviewERPNextProject | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(dayjs(new Date()).subtract(1, "day").toDate());
 

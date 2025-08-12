@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import useThrottle from "@/lib/useThrottle";
 import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
 import ProjectContainer from "./projectcontainer";
@@ -12,16 +11,16 @@ import { Session } from "next-auth";
 import { cn } from "@/lib/utils";
 import { useInView } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Plus, Info, SearchIcon } from "lucide-react";
+import { Info, SearchIcon } from "lucide-react";
 import { ProjectsPaginatedResponse, UserERPNextProject } from "@/@types/service/project";
 import { useProjects } from "@/hooks/fetch/project";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
+import ProjectNewButton from "./project-new-button";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -159,11 +158,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
             </div>
           </div>
           <div className="flex">
-            <Button size="sm" className="bg-blue-500/15 hover:bg-blue-500/25 text-blue-500 transition-colors duration-200 focus-visible:ring-0" asChild>
-              <Link href="./project/new">
-                새로 만들기 <Plus />
-              </Link>
-            </Button>
+            <ProjectNewButton session={session} initialDescription="" />
           </div>
         </div>
       </div>

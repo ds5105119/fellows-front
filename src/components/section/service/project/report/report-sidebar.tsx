@@ -123,8 +123,8 @@ export default function ReportSidebar({ session, project, setProject, dailyRepor
           <div className="flex justify-between items-center">
             <h2 className="text-sm font-semibold">리포트</h2>
             <motion.div className="bg-zinc-200 p-[3px] rounded-sm inline-flex items-center relative">
-              <Tab active={dailyReport} label="일별" onClick={() => setDailyReport(true)} />
               <Tab active={!dailyReport} label="월별" onClick={() => setDailyReport(false)} />
+              <Tab active={dailyReport} label="일별" onClick={() => setDailyReport(true)} />
             </motion.div>
           </div>
           <div className="flex items-center space-x-1.5 w-full rounded-sm bg-gray-100 px-4 py-2 text-sm mt-4">
@@ -179,8 +179,8 @@ export default function ReportSidebar({ session, project, setProject, dailyRepor
 
           <div className="flex items-center gap-2">
             <motion.div className="bg-zinc-200 p-[3px] rounded-sm inline-flex items-center relative">
-              <Tab active={dailyReport} label="일별" onClick={() => setDailyReport(true)} />
               <Tab active={!dailyReport} label="월별" onClick={() => setDailyReport(false)} />
+              <Tab active={dailyReport} label="일별" onClick={() => setDailyReport(true)} />
             </motion.div>
           </div>
         </div>
