@@ -81,9 +81,7 @@ export default function ProjectEstimator({ project }: Props) {
 
       {/* 생각중 상태 */}
       {isThinking && (
-        <TextShimmer className="text-sm text-center relative after:content-['•••'] after:ml-1 after:inline-block after:animate-bounce">
-          견적서를 생성하는 중입니다. 1분 정도 걸릴 수 있으니 견적서가 준비되면 다시 확인해 주세요.
-        </TextShimmer>
+        <TextShimmer className="text-sm relativ">견적서를 생성하는 중입니다. 1분 정도 걸릴 수 있으니 견적서가 준비되면 다시 확인해 주세요 • • •</TextShimmer>
       )}
 
       {/* 견적 내용 표시 */}
