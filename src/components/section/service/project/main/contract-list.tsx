@@ -281,7 +281,7 @@ export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<
                       <td className="border border-gray-200 px-4 py-1.5 bg-gray-50 font-semibold text-center" colSpan={2}>
                         개발 비용
                       </td>
-                      <td className="border border-gray-200 px-4 py-1.5" colSpan={6}>
+                      <td className="border border-gray-200 px-4 py-1.5 " colSpan={6}>
                         {contract?.custom_fee ? `${formatCurrency(contract.custom_fee)} (부가세별도)` : "미정"}
                       </td>
                     </tr>
@@ -295,18 +295,15 @@ export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<
                     </tr>
 
                     {/* 계약 대금 지급방법 헤더 - 4칸 (각각 25%) */}
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={2}>
+                    <tr>
+                      <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold bg-gray-50" colSpan={2}>
                         구분
                       </td>
-                      <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={2}>
-                        금액 (부가세별도)
+                      <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={3}>
+                        개발 계약 선금
                       </td>
-                      <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={2}>
-                        비율
-                      </td>
-                      <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={2}>
-                        지급 조건
+                      <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={3}>
+                        개발 계약 잔금
                       </td>
                     </tr>
                     {(() => {
@@ -314,30 +311,35 @@ export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<
                       return (
                         <>
                           <tr>
-                            <td className="border border-gray-200 px-4 py-1.5 text-center font-medium" colSpan={2}>
-                              개발 계약 선금
+                            <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold bg-gray-50" colSpan={2}>
+                              금액 (부가세별도)
                             </td>
-                            <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={2}>
+                            <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={3}>
                               {formatCurrency(payments.downPaymentAmount)}
                             </td>
-                            <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={2}>
-                              {payments.downPaymentRate}%
-                            </td>
-                            <td className="border border-gray-200 px-4 py-1.5 text-center" colSpan={2}>
-                              {contract.start_date ? dayjs(contract.start_date).format("YYYY년 M월 D일") : "계약 체결일"}
+                            <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={3}>
+                              {formatCurrency(payments.balanceAmount)}
                             </td>
                           </tr>
                           <tr>
-                            <td className="border border-gray-200 px-4 py-1.5 text-center font-medium" colSpan={2}>
-                              개발 계약 잔금
+                            <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold bg-gray-50" colSpan={2}>
+                              비율
                             </td>
-                            <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={2}>
-                              {formatCurrency(payments.balanceAmount)}
+                            <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={3}>
+                              {payments.downPaymentRate}%
                             </td>
-                            <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={2}>
+                            <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold" colSpan={3}>
                               {payments.balanceRate}%
                             </td>
-                            <td className="border border-gray-200 px-4 py-1.5 text-center" colSpan={2}>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-200 px-4 py-1.5 text-center font-semibold bg-gray-50" colSpan={2}>
+                              지급 조건
+                            </td>
+                            <td className="border border-gray-200 px-4 py-1.5 text-center" colSpan={3}>
+                              {contract.start_date ? dayjs(contract.start_date).format("YYYY년 M월 D일") : "계약 체결일"}
+                            </td>
+                            <td className="border border-gray-200 px-4 py-1.5 text-center" colSpan={3}>
                               {contract.end_date ? dayjs(contract.end_date).format("YYYY년 M월 D일") : "프로젝트 완료일"}
                             </td>
                           </tr>
@@ -375,7 +377,7 @@ export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<
                         입금계좌
                       </td>
                       <td className="border border-gray-200 px-4 py-1.5" colSpan={6}>
-                        전자 결제를 사용해주세요.
+                        전자 결제로 별도 안내.
                       </td>
                     </tr>
 

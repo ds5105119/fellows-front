@@ -244,7 +244,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
       </div>
 
       {/* 메인 콘텐츠 */}
-      <div className="grid grid-cols-1 md:grid-cols-5 md:overflow-hidden overflow-x-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-5 md:overflow-hidden overflow-x-hidden h-[calc(100%-48px)]">
         {/* 데스크톱 왼쪽 패널 */}
         <div className="hidden md:block md:col-span-3 h-full overflow-y-auto scrollbar-hide border-r-1 border-b-sidebar-border">
           <div className="flex flex-col h-full w-full">
@@ -280,11 +280,11 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
               )}
             </div>
           </div>
-          <div className="w-full hidden md:block">
+          <div className="w-full h-full hidden md:block overflow-hidden">
             {/* 일반 정보 탭 */}
             <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={setActiveTab2} />
             {/* 탭 콘텐츠 */}
-            <div className="w-full grow overflow-y-auto scrollbar-hide">
+            <div className="w-full h-[calc(100%-41px)] overflow-y-auto">
               {activeTab2 === 0 && <FilesList projectSwr={project} session={session} />}
               {activeTab2 === 1 && <ContractList projectSwr={project} session={session} />}
               {activeTab2 === 2 && <TeamsList projectSwr={project} session={session} />}

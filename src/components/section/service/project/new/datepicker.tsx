@@ -18,7 +18,6 @@ interface DatePickerProps {
 
 export default function DatePicker({ value, onSelect, className }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -36,63 +35,12 @@ export default function DatePicker({ value, onSelect, className }: DatePickerPro
     sunday: (date: Date) => date.getDay() === 0,
   };
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
   const handleSelect = (date: Date | undefined) => {
     onSelect(date);
     if (date) {
       setIsOpen(false);
     }
   };
-
-  const handleNativeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const dateValue = e.target.value;
-    if (dateValue) {
-      const selectedDate = new Date(dateValue);
-      onSelect(selectedDate);
-    } else {
-      onSelect(undefined);
-    }
-  };
-
-  const formatDateForInput = (date: Date | undefined) => {
-    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
-      return "";
-    }
-    return format(date, "yyyy-MM-dd");
-  };
-
-  if (isMobile) {
-    return (
-      <div className={cn("grid gap-2", className)}>
-        <div className="w-full border-0 h-20 flex">
-          <div className={cn("h-full flex-1 flex flex-col justify-center items-start space-y-1 px-6 bg-gray-100", value && "bg-primary")}>
-            <div className={cn("text-sm font-semibold", value ? "text-muted" : "text-muted-foreground")}>날짜 선택</div>
-            <input
-              type="date"
-              value={formatDateForInput(value)}
-              onChange={handleNativeChange}
-              min={format(today, "yyyy-MM-dd")}
-              className="text-base font-medium bg-transparent border-0 outline-none w-full text-background"
-              style={{
-                colorScheme: value ? "dark" : "light",
-                color: value ? "white" : "#737373",
-              }}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className={cn("grid gap-2", className)}>

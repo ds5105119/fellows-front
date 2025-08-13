@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
 import DatePicker from "@/components/section/service/project/new/datepicker";
+import { CreateProjectStep2MaintenanceField } from "./createprojectstep2maintenancefield";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
@@ -99,56 +100,30 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
           </FormItem>
         )}
       />
-      <div className="w-full flex flex-col space-y-1">
-        <FormField
-          control={control}
-          name="expected_end_date"
-          render={({}) => (
-            <FormItem>
-              <FormLabel className="text-sm font-medium">희망 일정 및 유지보수</FormLabel>
-              <FormControl>
-                <div className="rounded-t-2xl overflow-hidden">
-                  <DatePicker
-                    value={getValues("expected_end_date") ? new Date(getValues("expected_end_date")!) : undefined}
-                    onSelect={(date) =>
-                      setValue("expected_end_date", dayjs(date).format("YYYY-MM-DD"), {
-                        shouldValidate: true,
-                        shouldDirty: true,
-                      })
-                    }
-                  />
-                </div>
-              </FormControl>
-              <FormMessage>{errors.expected_start_date?.message || errors.expected_end_date?.message}</FormMessage>
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="custom_maintenance_required"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <button
-                  type="button"
-                  className="h-20 w-full flex flex-row items-center justify-between rounded-b-2xl px-6 bg-gray-100 hover:bg-gray-200 transition-colors"
-                  onClick={() => field.onChange(!field.value)}
-                >
-                  <div className="text-sm font-semibold whitespace-pre-wrap text-left">
-                    <div className="flex flex-col space-y-0.5">
-                      <span>유지보수</span>
-                      <span className="font-normal text-neutral-500">유지보수 비용은 프로젝트의 크기에 따라 달라집니다.</span>
-                    </div>
-                  </div>
-                  <SwitchIndicator checked={field.value || false} />
-                </button>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      <FormField
+        control={control}
+        name="expected_end_date"
+        render={({}) => (
+          <FormItem>
+            <FormLabel className="text-sm font-medium">희망 일정</FormLabel>
+            <FormControl>
+              <div className="rounded-2xl overflow-hidden">
+                <DatePicker
+                  value={getValues("expected_end_date") ? new Date(getValues("expected_end_date")!) : undefined}
+                  onSelect={(date) =>
+                    setValue("expected_end_date", dayjs(date).format("YYYY-MM-DD"), {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    })
+                  }
+                />
+              </div>
+            </FormControl>
+            <FormMessage>{errors.expected_start_date?.message || errors.expected_end_date?.message}</FormMessage>
+          </FormItem>
+        )}
+      />
+      <CreateProjectStep2MaintenanceField form={form} />
     </>
   );
 }

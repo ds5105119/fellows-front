@@ -98,24 +98,6 @@ export default function ProjectNewButton({ session, initialDescription }: { sess
     };
   }, []);
 
-  // 가장 표준적이고 안정적인 높이 조절 로직으로 변경
-  useEffect(() => {
-    if (textareaRef.current) {
-      const el = textareaRef.current;
-      if (window.innerWidth >= 768) {
-        el.style.height = "100%";
-        return;
-      }
-
-      // --- 모바일 뷰 ---
-      const MAX_HEIGHT_PX = 144;
-      // 1. 높이를 'auto'로 초기화하여 textarea가 스스로 줄어들 수 있도록 합니다. (가장 중요!)
-      el.style.height = "auto";
-      // 2. 초기화된 상태에서 계산된 scrollHeight를 기반으로 새로운 높이를 설정합니다.
-      el.style.height = `${Math.min(el.scrollHeight, MAX_HEIGHT_PX)}px`;
-    }
-  }, [description]);
-
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -123,15 +105,15 @@ export default function ProjectNewButton({ session, initialDescription }: { sess
           새로 만들기 <PlusIcon />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]" showCloseButton={false}>
+      <DialogContent className="max-w-[600px]" showCloseButton={false}>
         <DialogHeader className="sr-only">
           <DialogTitle className="sr-only">새 프로젝트 생성</DialogTitle>
         </DialogHeader>
 
-        <form action={handleFormSubmit} className="w-full max-w-4xl mx-auto flex flex-col gap-4">
+        <form action={handleFormSubmit} className="w-full mx-auto flex flex-col gap-4">
           <div
-            className="w-full min-h-10 max-h-36 md:min-h-36 md:max-h-36 px-4 pr-1.5 md:pl-5 md:py-4 md:pr-3
-        flex items-center md:items-stretch justify-center gap-2 
+            className="w-full min-h-36 max-h-36 px-4 pr-1.5 py-3 md:pl-5 md:py-4 md:pr-3
+        flex items-stretch justify-center gap-2 
         relative rounded-[24px] md:rounded-2xl 
         bg-foreground/2 backdrop-blur-xl border border-foreground/10"
           >
@@ -140,14 +122,11 @@ export default function ProjectNewButton({ session, initialDescription }: { sess
               name="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={1}
               placeholder={placeholderTexts[placeholderIdx]}
               onWheel={(e) => e.stopPropagation()}
-              className="w-full grow self-center md:self-auto p-0 min-h-0 bg-transparent border-none focus-visible:ring-0 outline-none
+              className="w-full h-full grow self-auto p-0 min-h-0 bg-transparent border-none focus-visible:ring-0 outline-none
                       shadow-none resize-none scrollbar-hide leading-snug text-foreground
-                     md:h-full 
-                      overflow-y-auto
-                     overscroll-behavior-contain"
+                      overflow-y-auto overscroll-behavior-contain"
               spellCheck="false"
             />
             <div className="flex items-end h-full py-1.5 md:py-0">
