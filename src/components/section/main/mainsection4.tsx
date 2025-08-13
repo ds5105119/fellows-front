@@ -7,7 +7,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 function calculateScale(width: number): number {
   if (width > 1536) return 1;
-  return 0.3 + (width / 1536) * 0.7;
+  return 0.5 + (width / 1536) * 0.5;
 }
 
 const fixedIcons = [

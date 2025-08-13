@@ -69,7 +69,7 @@
     "embla-carousel-autoplay": "^8.5.2",
     "embla-carousel-react": "^8.5.2",
     "fast-average-color": "^9.5.0",
-    "framer-motion": "^12.23.0",
+    "framer-motion": "^12.23.12",
     "geist": "^1.4.2",
     "gsap": "^3.13.0",
     "html-react-parser": "^5.2.5",
