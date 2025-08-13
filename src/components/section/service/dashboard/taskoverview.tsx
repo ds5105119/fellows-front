@@ -71,14 +71,24 @@ export function TaskOverviewChart() {
       }, {} as Record<ERPNextTaskStatus, number>);
     }
 
-    // 실제 task 데이터로 업데이트 (Template 제외)
     for (const task of tasks) {
-      const date = task.exp_start_date ? dayjs(task.exp_start_date).format("YYYY-MM-DD") : null;
+      const taskStartDate = task.exp_start_date ? dayjs(task.exp_start_date) : null;
+      // 종료일이 없으면 시작일과 같은 날로 처리
+      const taskEndDate = task.exp_end_date ? dayjs(task.exp_end_date) : taskStartDate;
       const status = task.status;
 
-      if (!date || !status || !grouped[date] || status === "Template" || status === "Pending Review") continue;
+      if (!taskStartDate || !status || status === "Template" || status === "Pending Review") continue;
 
-      grouped[date][status] = (grouped[date][status] || 0) + 1;
+      // 시작일부터 종료일까지 모든 날짜에 task 추가
+      const actualEndDate = taskEndDate || taskStartDate;
+      for (let date = taskStartDate; date.isBefore(actualEndDate) || date.isSame(actualEndDate); date = date.add(1, "day")) {
+        const dateKey = date.format("YYYY-MM-DD");
+
+        // 차트 범위 내의 날짜만 처리
+        if (grouped[dateKey]) {
+          grouped[dateKey][status] = (grouped[dateKey][status] || 0) + 1;
+        }
+      }
     }
 
     // 배열로 변환하고 날짜순 정렬
@@ -106,7 +116,7 @@ export function TaskOverviewChart() {
         <ToggleGroup
           type="single"
           value={timeRange}
-          onValueChange={setTimeRange}
+          onValueChange={(value) => value && setTimeRange(value)}
           variant="outline"
           className="*:data-[slot=toggle-group-item]:!px-3 !shadow-none !rounded-sm"
         >
