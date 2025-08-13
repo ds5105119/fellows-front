@@ -34,7 +34,7 @@ export function CreateProjectStep2MaintenanceField({ form }: { form: UseFormRetu
       <FormField
         control={control}
         name="custom_maintenance_required"
-        render={({ field }) => (
+        render={({}) => (
           <FormItem>
             <FormLabel className="text-sm font-medium">유지보수 구독</FormLabel>
             <FormControl>
@@ -73,7 +73,7 @@ export function CreateProjectStep2MaintenanceField({ form }: { form: UseFormRetu
     <FormField
       control={control}
       name="custom_maintenance_required"
-      render={({ field }) => (
+      render={({}) => (
         <FormItem>
           <FormLabel className="text-sm font-medium">유지보수 구독</FormLabel>
           <FormControl>

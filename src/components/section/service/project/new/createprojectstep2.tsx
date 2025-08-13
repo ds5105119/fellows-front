@@ -5,7 +5,6 @@ import { FormField, FormItem, FormMessage, FormLabel, FormControl } from "@/comp
 import { categorizedFeatures } from "@/components/resource/project";
 import { FeatureItemWithTooltip } from "@/components/form/featureitemwithtooltip";
 import { CreateERPNextProject } from "@/@types/service/project";
-import { SwitchIndicator } from "@/components/ui/switch-indicator";
 import TagInput from "@/components/form/taginput";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 
