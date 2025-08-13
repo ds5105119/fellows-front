@@ -28,6 +28,8 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
     formState: { errors },
   } = form;
 
+  const project_method = getValues("custom_project_method");
+
   return (
     <>
       <FormField
@@ -36,23 +38,27 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
         render={({ field }) => (
           <FormItem>
             <div className="w-full flex flex-col gap-5">
-              {categorizedFeatures.map((category) => (
-                <div key={category.title} className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <div className="col-span-full text-sm font-medium mb-1">{category.title}</div>
-                  {category.items.map((item) => (
-                    <FeatureItemWithTooltip
-                      key={item.title}
-                      item={item}
-                      isChecked={field.value?.some((f) => f.feature == item.title) || false}
-                      onButtonClick={() => {
-                        const current = field.value || [];
-                        const include = current.some((f) => f.feature == item.title);
-                        field.onChange(include ? current.filter((p) => p.feature !== item.title) : [...current, { doctype: "Features", feature: item.title }]);
-                      }}
-                    />
-                  ))}
-                </div>
-              ))}
+              {categorizedFeatures.map((category) =>
+                project_method !== "code" && category.title === "프리미엄 기능" ? null : (
+                  <div key={category.title} className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="col-span-full text-sm font-medium mb-1">{category.title}</div>
+                    {category.items.map((item) => (
+                      <FeatureItemWithTooltip
+                        key={item.title}
+                        item={item}
+                        isChecked={field.value?.some((f) => f.feature == item.title) || false}
+                        onButtonClick={() => {
+                          const current = field.value || [];
+                          const include = current.some((f) => f.feature == item.title);
+                          field.onChange(
+                            include ? current.filter((p) => p.feature !== item.title) : [...current, { doctype: "Features", feature: item.title }]
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+                )
+              )}
             </div>
             <FormMessage />
           </FormItem>

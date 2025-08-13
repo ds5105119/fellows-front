@@ -1,7 +1,8 @@
 {
-  "name": "allzip",
+  "name": "fellows",
   "version": "0.1.0",
   "private": true,
+  "sideEffects": false,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",

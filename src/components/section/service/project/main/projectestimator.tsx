@@ -8,6 +8,7 @@ import { useEstimateProject } from "@/hooks/fetch/project";
 import { mutate } from "swr";
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { TextShimmer } from "@/components/resource/text-shimmer";
 
 interface Props {
   project: UserERPNextProject;
@@ -80,14 +81,9 @@ export default function ProjectEstimator({ project }: Props) {
 
       {/* 생각중 상태 */}
       {isThinking && (
-        <div className="flex items-center space-x-1.5">
-          <span className="text-sm text-muted-foreground">견적서를 생성하는 중입니다. 1분 정도 걸릴 수 있으니 견적서가 준비되면 다시 확인해 주세요.</span>
-          <div className="flex justify-center space-x-1">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="w-[3px] h-[3px] bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.2}s` }} />
-            ))}
-          </div>
-        </div>
+        <TextShimmer className="text-sm text-center relative after:content-['•••'] after:ml-1 after:inline-block after:animate-bounce">
+          견적서를 생성하는 중입니다. 1분 정도 걸릴 수 있으니 견적서가 준비되면 다시 확인해 주세요.
+        </TextShimmer>
       )}
 
       {/* 견적 내용 표시 */}

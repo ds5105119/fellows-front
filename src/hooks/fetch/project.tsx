@@ -472,6 +472,9 @@ export const useEstimateProject = (projectId: string | null, initialMarkdown: st
         if (response.status === 429) {
           const retryAfter = parseInt(response.headers.get("Retry-After") ?? "0");
           toast.warning(`API 한도 초과. ${retryAfter}초 후에 다시 시도하세요.`);
+        } else if (response.status === 409) {
+          setIsLoading(true);
+          toast.error("이미 견적이 생성 중입니다.");
         } else {
           toast.error(`견적 생성 실패: ${response.statusText}`);
         }
