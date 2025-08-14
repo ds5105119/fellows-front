@@ -3,7 +3,6 @@
 import type React from "react";
 
 import { useEffect, useState, useRef, useActionState } from "react";
-import { useFormStatus } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Session } from "next-auth";
 import { signIn } from "next-auth/react";
