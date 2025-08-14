@@ -4,6 +4,7 @@ import useThrottle from "@/lib/useThrottle";
 import ComboBoxResponsive from "@/components/ui/comboboxresponsive";
 import ProjectContainer from "./projectcontainer";
 import ProjectDetailSheet from "./projectdetailsheet";
+import Link from "next/link";
 import { SWRInfiniteResponse } from "swr/infinite";
 import { useCallback, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -13,16 +14,11 @@ import { useInView } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Info, SearchIcon } from "lucide-react";
+import { Info, PlusIcon, SearchIcon } from "lucide-react";
 import { ProjectsPaginatedResponse, UserERPNextProject } from "@/@types/service/project";
 import { useProjects } from "@/hooks/fetch/project";
-
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import "dayjs/locale/ko";
+import { Button } from "@/components/ui/button";
 import ProjectNewButton from "./project-new-button";
-dayjs.extend(relativeTime);
-dayjs.locale("ko");
 
 // --- 타입 및 상수 정의 ---
 
@@ -30,44 +26,57 @@ type Status = "draft" | "process" | "complete" | "maintenance";
 
 const statuses: Status[] = ["draft", "process", "complete", "maintenance"];
 
-const containerProps = {
+interface ContainerProps {
+  name: string;
+  bg: string;
+  text: string;
+  border: string;
+  className: string;
+}
+
+const containerProps: Record<Status, ContainerProps> = {
   draft: { name: "계획 중", bg: "bg-gray-500/10", text: "text-gray-500", border: "border-gray-300", className: "col-span-1" },
   process: { name: "진행 중", bg: "bg-blue-500/10", text: "text-blue-500", border: "border-blue-300", className: "col-span-1" },
   complete: { name: "완료", bg: "bg-violet-500/10", text: "text-violet-500", border: "border-violet-300", className: "col-span-1" },
   maintenance: { name: "유지보수", bg: "bg-[#fff3ed]", text: "text-amber-500", border: "border-amber-300", className: "col-span-1" },
 };
 
-const orders = [
+interface OrderOption {
+  label: string;
+  value: string;
+}
+
+const orders: OrderOption[] = [
   { label: "최신순", value: "modified.desc" },
   { label: "이름순", value: "custom_project_title" },
   { label: "생성일순", value: "creation.desc" },
 ];
 
-export type SWRMeta = {
+export interface SWRMeta {
   swr: SWRInfiniteResponse<ProjectsPaginatedResponse>;
   data: ProjectsPaginatedResponse;
   isLoading?: boolean;
   isReachedEnd?: boolean;
-};
+}
 
-/**
- * 헬퍼 컴포넌트: 각 상태(status)별 컬럼을 담당합니다.
- */
-const ProjectStatusColumn = ({
-  session,
-  status,
-  keyword,
-  orderBy,
-  setSelectedProject,
-  onProcessCountChange,
-}: {
+interface ProjectStatusColumnProps {
   session: Session;
   status: Status;
   keyword: string;
   orderBy: string;
   setSelectedProject: (project: UserERPNextProject | null) => void;
   onProcessCountChange?: (count: number) => void;
-}) => {
+}
+
+interface ProjectMainSectionProps {
+  session: Session;
+  project_id?: string;
+}
+
+/**
+ * 헬퍼 컴포넌트: 각 상태(status)별 컬럼을 담당합니다.
+ */
+const ProjectStatusColumn = ({ session, status, keyword, orderBy, setSelectedProject, onProcessCountChange }: ProjectStatusColumnProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref);
   const pageSize = 20;
@@ -107,19 +116,16 @@ const ProjectStatusColumn = ({
   );
 };
 
-export default function ProjectMainSection({ session, project_id }: { session: Session; project_id?: string }) {
+export default function ProjectMainSection({ session, project_id }: ProjectMainSectionProps) {
   const [orderBy, setOrderBy] = useState<string>(orders[0].value);
   const [inputText, setInputText] = useState<string>("");
-  const [processCount, setProcessCount] = useState(0);
+  const [processCount, setProcessCount] = useState<number>(0);
   const [tabIndex, setTabIndex] = useState<number>(0);
 
-  // selectedProject state는 더 이상 필요 없습니다.
-  // const [selectedProject, setSelectedProject] = useState<UserERPNextProject | null>(null);
-
   const keyword = useThrottle(inputText, 1000);
-  const router = useRouter(); // Next.js의 useRouter를 사용합니다.
+  const router = useRouter();
 
-  // handleProjectSelect는 이제 URL을 변경하는 역할만 합니다.
+  //  Optimized project selection handler
   const handleProjectSelect = useCallback(
     (project: UserERPNextProject | null) => {
       if (project) {
@@ -129,7 +135,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
     [router]
   );
 
-  // Sheet를 닫을 때는 project 목록 페이지로 URL을 변경합니다.
+  //  Optimized sheet close handler
   const handleSheetOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
@@ -139,6 +145,26 @@ export default function ProjectMainSection({ session, project_id }: { session: S
     [router]
   );
 
+  //  Memoized process count change handler
+  const handleProcessCountChange = useCallback((count: number) => {
+    setProcessCount(count);
+  }, []);
+
+  //  Memoized order change handler
+  const handleOrderChange = useCallback((newOrder: string) => {
+    setOrderBy(newOrder);
+  }, []);
+
+  //  Memoized input change handler
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputText(e.target.value);
+  }, []);
+
+  //  Memoized tab change handler
+  const handleTabChange = useCallback((index: number) => {
+    setTabIndex(index);
+  }, []);
+
   return (
     <div className="flex flex-col w-full h-full space-y-4">
       {/* 상단 탭 */}
@@ -146,18 +172,24 @@ export default function ProjectMainSection({ session, project_id }: { session: S
         <div className="flex w-full justify-between h-12 items-center px-4 md:px-6 border-b-1 border-b-sidebar-border space-x-2">
           <div className="flex items-center grow md:max-w-1/2 space-x-2">
             <div className="hidden lg:block">
-              <ComboBoxResponsive statuses={orders} initial={orderBy} callback={setOrderBy} />
+              <ComboBoxResponsive statuses={orders} initial={orderBy} callback={handleOrderChange} />
             </div>
             <div className="relative w-full max-w-96 h-fit rounded-full bg-muted">
               <SearchIcon className="absolute top-1/2 -translate-y-1/2 left-2.5 size-4 text-muted-foreground" />
               <Input
                 placeholder="검색어를 입력하세요"
                 className="ml-4 h-8 px-4 border-0 shadow-none focus-visible:ring-0 font-medium"
-                onChange={(e) => setInputText(e.target.value)}
+                onChange={handleInputChange}
               />
             </div>
           </div>
-          <div className="flex">
+          <div className="flex items-center space-x-2">
+            <Button size="sm" className="bg-blue-500/15 hover:bg-blue-500/25 text-blue-500 transition-colors duration-200 focus-visible:ring-0" asChild>
+              <Link href="/service/project/new">
+                <PlusIcon />
+                새로 만들기
+              </Link>
+            </Button>
             <ProjectNewButton session={session} initialDescription="" />
           </div>
         </div>
@@ -185,7 +217,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
         {statuses.map((status) => (
           <div key={status} className="w-full space-y-1">
             <div className="w-full flex items-center space-x-2 text-sm font-light rounded-sm py-2 px-2">
-              {containerProps[status].name == "계획 중" ? (
+              {containerProps[status].name === "계획 중" ? (
                 <div className="size-3 rounded-full border-2 border-dashed border-gray-400" />
               ) : (
                 <div className={containerProps[status].text}>●</div>
@@ -201,7 +233,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
               keyword={keyword}
               orderBy={orderBy}
               setSelectedProject={handleProjectSelect}
-              onProcessCountChange={status === "process" ? setProcessCount : undefined}
+              onProcessCountChange={status === "process" ? handleProcessCountChange : undefined}
             />
           </div>
         ))}
@@ -210,7 +242,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
       {/* 모바일 프로젝트 컬럼 그리드 */}
       <div className="flex flex-col w-full lg:hidden px-4 space-y-4">
         <div className="flex h-full space-x-1 overflow-x-auto scrollbar-hide">
-          <ComboBoxResponsive statuses={orders} initial={orderBy} callback={setOrderBy} />
+          <ComboBoxResponsive statuses={orders} initial={orderBy} callback={handleOrderChange} />
 
           {statuses.map((status) => (
             <button
@@ -219,7 +251,7 @@ export default function ProjectMainSection({ session, project_id }: { session: S
                 "shrink-0 flex items-center space-x-2 text-sm font-light rounded-sm py-1.5 px-3",
                 status === statuses[tabIndex] ? `${containerProps[statuses[tabIndex]].text} ${containerProps[statuses[tabIndex]].bg}` : "hover:bg-muted/50"
               )}
-              onClick={() => setTabIndex(statuses.indexOf(status))}
+              onClick={() => handleTabChange(statuses.indexOf(status))}
             >
               <div className="grow">
                 <h2 className="text-base font-bold">{containerProps[status].name}</h2>
@@ -234,10 +266,11 @@ export default function ProjectMainSection({ session, project_id }: { session: S
           keyword={keyword}
           orderBy={orderBy}
           setSelectedProject={handleProjectSelect}
-          onProcessCountChange={statuses[tabIndex] === "process" ? setProcessCount : undefined}
+          onProcessCountChange={statuses[tabIndex] === "process" ? handleProcessCountChange : undefined}
         />
       </div>
 
+      {/*  Sheet opens immediately without waiting for data */}
       <Sheet open={!!project_id} onOpenChange={handleSheetOpenChange}>
         <SheetContent className="overflow-hidden h-full w-full sm:max-w-full md:w-3/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:outline-none focus:border-none">
           <SheetHeader className="sr-only">

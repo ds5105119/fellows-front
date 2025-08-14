@@ -14,8 +14,10 @@ import { CreateProjectTermsSection } from "./createprojecttermssection";
 import { RecommendationLoading } from "./recommandationloading";
 import { Loader2 } from "lucide-react";
 import { ProjectInfoEstimateResponse } from "@/@types/service/project";
+import { useSearchParams } from "next/navigation";
 
 export default function CreateProject() {
+  const searchParams = useSearchParams();
   const targetRef = useRef<HTMLDivElement>(null);
   const [isReachedEnd, setIsReachedEnd] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -25,13 +27,17 @@ export default function CreateProject() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("project_info");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setDescription(parsed.description);
-      setInfo(parsed.info);
+    const fromParam = searchParams.get("from");
+
+    if (fromParam === "session") {
+      const stored = sessionStorage.getItem("project_info");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setDescription(parsed.description);
+        setInfo(parsed.info);
+      }
     }
-  }, []);
+  }, [searchParams]);
 
   const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
     useProjectForm(description, info);

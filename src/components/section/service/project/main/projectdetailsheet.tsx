@@ -3,12 +3,11 @@ import type { Session } from "next-auth";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LinkIcon, Loader2, RefreshCw } from "lucide-react";
+import { ArrowLeft, LinkIcon, Loader2, RefreshCw } from 'lucide-react';
 import Flattabs from "@/components/ui/flattabs";
 import { useProject, updateProject, acceptInviteProjectGroup } from "@/hooks/fetch/project";
 import { updateERPNextProjectSchema, type UserERPNextProject } from "@/@types/service/project";
 import { cn } from "@/lib/utils";
-// 분리된 컴포넌트들 import
 import { CustomerInfo } from "./customer-info";
 import { FilesList } from "./files-list";
 import { TeamsList } from "./teams-list";
@@ -28,7 +27,17 @@ interface ProjectDetailSheetProps {
   session: Session;
 }
 
-function Project404({ onClose, onRetry }: { onClose: () => void; onRetry: () => void }) {
+interface Project404Props {
+  onClose: () => void;
+  onRetry: () => void;
+}
+
+interface TeamMember {
+  member: string;
+  level: number;
+}
+
+function Project404({ onClose, onRetry }: Project404Props) {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 relative overflow-hidden">
       {/* 메인 콘텐츠 */}
@@ -75,32 +84,42 @@ function ProjectLoading() {
 export default function ProjectDetailSheet({ project_id, onClose, session }: ProjectDetailSheetProps) {
   // State 관리
   const project = useProject(project_id);
-  const editable = project.data?.custom_team ? project.data.custom_team.filter((member) => member.member == session.sub)[0].level < 3 : false;
-  const [editedProject, setEditedProject] = useState<UserERPNextProject>();
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [autosave, setAutosave] = useState(editable);
-  const [activeMobileTab, setActiveMobileTab] = useState(0);
-  const [activeTab1, setActiveTab1] = useState(0);
-  const [activeTab2, setActiveTab2] = useState(0);
-  const [level, setLevel] = useState(5);
+  const [editedProject, setEditedProject] = useState<UserERPNextProject | undefined>();
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [autosave, setAutosave] = useState<boolean>(false);
+  const [activeMobileTab, setActiveMobileTab] = useState<number>(0);
+  const [activeTab1, setActiveTab1] = useState<number>(0);
+  const [activeTab2, setActiveTab2] = useState<number>(0);
+  const [level, setLevel] = useState<number>(5);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  //  Calculate editable status more efficiently
+  const editable = useMemo(() => {
+    if (!project.data?.custom_team || !session.sub) return false;
+    const member = project.data.custom_team.find((member: TeamMember) => member.member === session.sub);
+    return member ? member.level < 3 : false;
+  }, [project.data?.custom_team, session.sub]);
+
+  //  Initialize autosave based on editable status
+  useEffect(() => {
+    setAutosave(editable);
+  }, [editable]);
+
   // 탭 구성
-  const mobileTabs = [
+  const mobileTabs = useMemo(() => [
     <div className="flex space-x-1 items-center" key="overview">
       <span>개요</span>
     </div>,
     <div className="flex space-x-1 items-center" key="files">
       <span>파일</span>
     </div>,
-    <div className="flex space-x-1 items-center" key="files">
+    <div className="flex space-x-1 items-center" key="contracts">
       <span>계약서</span>
     </div>,
-
     <div className="flex space-x-1 items-center" key="teams">
       <span>팀원</span>
     </div>,
-  ];
+  ], []);
 
   const tabs1 = useMemo(
     () => [
@@ -120,20 +139,20 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         <div className="size-2.5 rounded-full bg-emerald-500" />
       </div>,
     ],
-    [session?.user, project]
+    [project.data?.customer]
   );
 
-  const tabs2 = [
+  const tabs2 = useMemo(() => [
     <div className="flex space-x-1 items-center" key="files">
       <span>파일</span>
     </div>,
-    <div className="flex space-x-1 items-center" key="files">
+    <div className="flex space-x-1 items-center" key="contracts">
       <span>계약서</span>
     </div>,
     <div className="flex space-x-1 items-center" key="teams">
       <span>팀원</span>
     </div>,
-  ];
+  ], []);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -144,41 +163,54 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     }
   }, [project_id]);
 
-  const handleUpdateProject = async () => {
-    if (editable) {
-      setIsUpdating(true);
+  const handleUpdateProject = useCallback(async () => {
+    if (!editable || !editedProject) return;
+    
+    setIsUpdating(true);
+    try {
       await updateProject(project_id, updateERPNextProjectSchema.parse(editedProject));
       await project.mutate();
+    } catch (error) {
+      toast.error("프로젝트 저장에 실패했습니다.");
+    } finally {
       setIsUpdating(false);
     }
-  };
+  }, [editable, editedProject, project_id, project]);
 
   const handleRetry = useCallback(() => {
     project.mutate();
   }, [project]);
 
   const acceptInvite = useCallback(async () => {
-    console.log(project_id);
-    await acceptInviteProjectGroup(project_id);
-    project.mutate();
-  }, [project]);
+    try {
+      await acceptInviteProjectGroup(project_id);
+      await project.mutate();
+    } catch (error) {
+      toast.error("초대 수락에 실패했습니다.");
+    }
+  }, [project_id, project]);
 
-  // 프로젝트 정보 반영
+  //  Simplified project data sync
   useEffect(() => {
-    setEditedProject(project.data);
+    if (project.data) {
+      setEditedProject(project.data);
+    }
   }, [project.data]);
 
-  // 프로젝트 자동 저장
+  //  Optimized autosave with better dependency management
   useEffect(() => {
-    intervalRef.current = setInterval(async () => {
+    if (!autosave || !editable || !project.data || !editedProject) {
+      return;
+    }
+
+    intervalRef.current = setInterval(() => {
       const original = JSON.stringify(project.data);
       const current = JSON.stringify(editedProject);
-      if (original !== current && !isUpdating && autosave) {
-        try {
-          await handleUpdateProject();
-        } catch {
-          toast.error("프로젝트 저장에 실패했습니다.");
-        }
+      
+      if (original !== current && !isUpdating) {
+        handleUpdateProject().catch(() => {
+          toast.error("자동 저장에 실패했습니다.");
+        });
       }
     }, 60000);
 
@@ -187,14 +219,18 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         clearInterval(intervalRef.current);
       }
     };
-  }, [project.data, editedProject, isUpdating, autosave]);
+  }, [autosave, editable, project.data, editedProject, isUpdating, handleUpdateProject]);
 
+  //  Simplified level calculation
   useEffect(() => {
-    setLevel(project.data?.custom_team.filter((member) => member.member == session.sub)[0].level ?? 5);
-  }, [project.data, session.sub]);
+    if (project.data?.custom_team && session.sub) {
+      const member = project.data.custom_team.find((member: TeamMember) => member.member === session.sub);
+      setLevel(member?.level ?? 5);
+    }
+  }, [project.data?.custom_team, session.sub]);
 
-  // 로딩 상태
-  if (!editedProject || !project.data || project.isLoading) {
+  //  Show loading only for initial load, not for every render
+  if (project.isLoading && !project.data) {
     return <ProjectLoading />;
   }
 
@@ -203,10 +239,17 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     return <Project404 onClose={onClose} onRetry={handleRetry} />;
   }
 
+  //  Show content immediately even if editedProject is not ready
+  const displayProject = editedProject || project.data;
+
+  if (!displayProject) {
+    return <ProjectLoading />;
+  }
+
   return (
     <div className="flex flex-col w-full h-full overflow-y-auto md:overflow-hidden pb-12">
       {/* 초대된 프로젝트의 경우 */}
-      {level == 4 && (
+      {level === 4 && (
         <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black/20 backdrop-blur-xs z-50">
           <div className="flex flex-col items-center justify-center p-6 bg-white rounded-lg">
             <p className="text-sm text-gray-700 mb-2">이 프로젝트는 초대된 프로젝트입니다.</p>
@@ -249,16 +292,16 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         <div className="hidden md:block md:col-span-3 h-full overflow-y-auto scrollbar-hide border-r-1 border-b-sidebar-border">
           <div className="flex flex-col h-full w-full">
             <div className="pt-12 pb-5 px-8">
-              <ProjectHeader project={editedProject} />
+              <ProjectHeader project={displayProject} />
             </div>
             <div className="px-8 py-6">
-              <ProjectBasicInfo project={editedProject} />
+              <ProjectBasicInfo project={displayProject} />
             </div>
-            <ProjectStatus project={editedProject} session={session} setEditedProject={setEditedProject} />
+            <ProjectStatus project={displayProject} session={session} setEditedProject={setEditedProject} />
             <div className="p-8">
-              <ProjectDetails project={editedProject} setEditedProject={setEditedProject} />
+              <ProjectDetails project={displayProject} setEditedProject={setEditedProject} />
             </div>
-            {level < 2 && <ProjectActions project={editedProject} />}
+            {level < 2 && <ProjectActions project={displayProject} />}
             <div className="px-8 pt-1 pb-5">
               <ProjectNotices />
             </div>
@@ -313,16 +356,16 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             {activeMobileTab === 0 && (
               <>
                 <div className="pt-12 pb-5 px-4">
-                  <ProjectHeader project={editedProject} />
+                  <ProjectHeader project={displayProject} />
                 </div>
                 <div className="px-4 py-6">
-                  <ProjectBasicInfo project={editedProject} />
+                  <ProjectBasicInfo project={displayProject} />
                 </div>
-                <ProjectStatus project={editedProject} session={session} setEditedProject={setEditedProject} />
+                <ProjectStatus project={displayProject} session={session} setEditedProject={setEditedProject} />
                 <div className="p-4">
-                  <ProjectDetails project={editedProject} setEditedProject={setEditedProject} />
+                  <ProjectDetails project={displayProject} setEditedProject={setEditedProject} />
                 </div>
-                {level < 2 && <ProjectActions project={editedProject} />}
+                {level < 2 && <ProjectActions project={displayProject} />}
                 <div className="px-4 pt-1 pb-5">
                   <ProjectNotices />
                 </div>
@@ -337,12 +380,12 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
 
       {/* 시트 푸터 */}
       <div className="absolute bottom-0 w-full flex items-center justify-between h-12 border-t-1 border-t-sidebar-border px-4 bg-zinc-50 z-30">
-        {project.data.custom_project_status === "draft" ? (
+        {displayProject.custom_project_status === "draft" ? (
           <div className="flex items-center gap-3">
             <p className="text-xs font-semibold text-muted-foreground">
               {editable
-                ? project.data.modified
-                  ? `${dayjs(project.data.modified).format("YYYY-MM-DD HH:mm:ss")} 수정됨`
+                ? displayProject.modified
+                  ? `${dayjs(displayProject.modified).format("YYYY-MM-DD HH:mm:ss")} 수정됨`
                   : "수정되지 않은 프로젝트"
                 : "읽기 전용 모드(저장되지 않습니다)"}
             </p>
@@ -377,7 +420,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             <p className="text-xs font-semibold text-muted-foreground">진행 중인 프로젝트는 수정할 수 없어요.</p>
           </div>
         )}
-        {project.data.custom_project_status === "draft" ? (
+        {displayProject.custom_project_status === "draft" ? (
           <div className="hidden md:flex items-center gap-2">
             <Button variant="outline" size="sm" className="h-8 text-xs font-semibold rounded-sm border-gray-200 shadow-none bg-transparent">
               이용 약관
