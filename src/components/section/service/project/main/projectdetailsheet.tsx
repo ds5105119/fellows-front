@@ -20,6 +20,7 @@ import { ProjectNotices } from "./project-notices";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { ContractList } from "./contract-list";
+import { ContractSheet } from "./contract-sheet";
 import { usePathname } from "next/navigation";
 import type { UserERPNextContract } from "@/@types/service/contract";
 
@@ -107,7 +108,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     if (contractsIndex !== -1 && pathSegments.length > contractsIndex + 1) {
       return decodeURIComponent(pathSegments[contractsIndex + 1]);
     }
-    return null;
+    return undefined;
   }, [pathname]);
 
   useEffect(() => {
@@ -130,7 +131,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
       setActiveMobileTab(1);
     } else {
       setActiveTab2(0);
-      setActiveMobileTab(1);
+      setActiveMobileTab(0);
     }
   }, [pathname]);
 
@@ -455,9 +456,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
               {activeTab2 === 1 && (
                 <ContractList
                   projectSwr={project}
-                  session={session}
                   selectedContract={selectedContract}
-                  contractSheetOpen={contractSheetOpen}
                   onContractSelect={handleContractSelect}
                   onContractSheetClose={handleContractSheetClose}
                   initialContractName={initialContractName}
@@ -508,9 +507,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             {activeMobileTab === 2 && (
               <ContractList
                 projectSwr={project}
-                session={session}
                 selectedContract={selectedContract}
-                contractSheetOpen={contractSheetOpen}
                 onContractSelect={handleContractSelect}
                 onContractSheetClose={handleContractSheetClose}
                 initialContractName={initialContractName}
@@ -520,6 +517,17 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
           </div>
         </div>
       </div>
+
+      <ContractSheet
+        contract={selectedContract}
+        session={session}
+        openSheet={contractSheetOpen}
+        setOpenSheet={(open: boolean) => {
+          if (!open) {
+            handleContractSheetClose();
+          }
+        }}
+      />
 
       {/* 시트 푸터 */}
       <div className="absolute bottom-0 w-full flex items-center justify-between h-12 border-t-1 border-t-sidebar-border px-4 bg-zinc-50 z-30">

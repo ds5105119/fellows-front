@@ -5,7 +5,7 @@ import type { Session } from "next-auth";
 import { updateContracts } from "@/hooks/fetch/contract";
 import dayjs from "@/lib/dayjs";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import type { UserERPNextContract } from "@/@types/service/contract";
 import parse from "html-react-parser";
@@ -13,6 +13,7 @@ import SelectLogo from "@/components/resource/selectlogo";
 import SignatureCanvas from "react-signature-canvas";
 import Image from "next/image";
 import generatePDF, { Margin } from "react-to-pdf";
+import { cn } from "@/lib/utils";
 
 interface ContractSheetProps {
   contract: UserERPNextContract | undefined;
@@ -26,6 +27,8 @@ export function ContractSheet({ contract, session, openSheet, setOpenSheet }: Co
 
   const [isSigned, setIsSigned] = useState<boolean>(false);
   const [sign, setSign] = useState<string>("");
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [signDialogOpen, setSignDialogOpen] = useState<boolean>(false);
 
   const sigCanvas = useRef<SignatureCanvas | null>(null);
 
@@ -60,6 +63,31 @@ export function ContractSheet({ contract, session, openSheet, setOpenSheet }: Co
     });
   }, [contract?.custom_name, contract?.modified]);
 
+  const handleSignature = async () => {
+    if (isSigned && contract && sigCanvas.current) {
+      setIsSaving(true);
+      try {
+        const signatureData = sigCanvas.current.toDataURL();
+        setSign(signatureData);
+
+        await updateContracts(contract.name, {
+          is_signed: true,
+          custom_customer_sign: signatureData,
+        });
+
+        // Close dialog only after successful save
+        setSignDialogOpen(false);
+        sigCanvas.current.clear();
+        setIsSigned(false);
+      } catch (error) {
+        console.error("Failed to save signature:", error);
+        // Handle error if needed
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  };
+
   useEffect(() => {
     setSign(contract?.custom_customer_sign ?? "");
   }, [contract]);
@@ -87,7 +115,7 @@ export function ContractSheet({ contract, session, openSheet, setOpenSheet }: Co
             </div>
           </div>
 
-          {/* 계약서 내용 */}
+          {/* ... existing code for contract content ... */}
           <div className="p-5 md:p-8 flex flex-col gap-5" ref={targetRef} data-pdf-target>
             <div className="flex flex-col">
               <SelectLogo />
@@ -363,88 +391,96 @@ export function ContractSheet({ contract, session, openSheet, setOpenSheet }: Co
                 </span>
               </div>
             </div>
+          </div>
 
-            <div className="w-fuil flex flex-col items-center space-y-2 mt-8">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <button className="bg-blue-500 hover:bg-blue-400 w-1/2 rounded-sm text-background flex items-center justify-center text-sm py-2 font-medium">
-                    {sign ? "다시 서명하기" : "서명하기"}
-                  </button>
-                </DialogTrigger>
-                <DialogContent showCloseButton={false} className="drop-shadow-white/10 drop-shadow-2xl p-0 overflow-y-auto scrollbar-hide focus-visible:ring-0">
-                  <DialogHeader className="sr-only">
-                    <DialogTitle className="sr-only">기능 선택 창</DialogTitle>
-                    <DialogDescription className="sr-only" />
-                  </DialogHeader>
-                  <div className="flex flex-col w-full">
-                    <div className="border-b px-4 py-2 flex justify-between items-center">
-                      <div className="text-sm font-bold">서명 입력하기</div>
-                      <DialogClose asChild>
-                        <Button variant="ghost" size="icon">
-                          <XIcon />
-                        </Button>
-                      </DialogClose>
-                    </div>
-                    <div className="w-full flex flex-col space-y-3 relative px-6 py-4 md:px-12 md:py-8">
-                      <div className="relative w-full">
-                        <SignatureCanvas
-                          ref={sigCanvas}
-                          canvasProps={{
-                            className: "signature-canvas rounded-sm border-2 border-zinc-300 w-full h-44 md:h-56 border-dashed bg-zinc-200/50",
-                          }}
-                          clearOnResize={false}
-                          velocityFilterWeight={1}
-                          maxWidth={3.5}
-                          onBegin={() => {
-                            setIsSigned(true);
-                          }}
-                        />
-                        {!isSigned && (
-                          <div className="absolute inset-0 -z-10 flex items-center justify-center text-sm text-zinc-500">
-                            <span>서명을 입력하세요.</span>
-                          </div>
+          {contract?.docstatus !== 2 && (contract?.status == "Unsigned" || contract?.status == "Inactive") && (
+            <div className="w-full sticky bottom-0 z-20 px-5 sm:px-8">
+              <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
+
+              <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
+                <Dialog open={signDialogOpen} onOpenChange={setSignDialogOpen}>
+                  <DialogTrigger asChild>
+                    {sign ? (
+                      <Button className={cn("flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold")} type="button" variant="secondary">
+                        다시 서명하기
+                      </Button>
+                    ) : (
+                      <Button className={cn("flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold")} type="button">
+                        서명하기
+                      </Button>
+                    )}
+                  </DialogTrigger>
+                  <DialogContent
+                    showCloseButton={false}
+                    className="drop-shadow-white/10 drop-shadow-2xl p-0 overflow-y-auto scrollbar-hide focus-visible:ring-0"
+                  >
+                    <DialogHeader className="sr-only">
+                      <DialogTitle className="sr-only">기능 선택 창</DialogTitle>
+                      <DialogDescription className="sr-only" />
+                    </DialogHeader>
+                    <div className="flex flex-col w-full">
+                      <div className="border-b px-4 py-2 flex justify-between items-center">
+                        <div className="text-sm font-bold">서명 입력하기</div>
+                        {!isSaving && (
+                          <Button variant="ghost" size="icon" onClick={() => setSignDialogOpen(false)}>
+                            <XIcon />
+                          </Button>
                         )}
                       </div>
-                      <div className="w-full flex justify-end">
-                        <button
-                          className="bg-zinc-100 border-[1.5px] border-zinc-300 hover:bg-zinc-200 rounded-full w-fit text-muted-foreground flex items-center justify-center text-sm py-1 px-3 font-medium"
-                          onClick={() => {
-                            sigCanvas.current?.clear();
-                            setIsSigned(false);
-                          }}
-                        >
-                          전체 지우기
-                        </button>
-                      </div>
-                      <div className="w-full flex justify-center mt-4">
-                        <DialogClose asChild>
+                      <div className="w-full flex flex-col space-y-3 relative px-6 py-4 md:px-12 md:py-8">
+                        <div className="relative w-full">
+                          <SignatureCanvas
+                            ref={sigCanvas}
+                            canvasProps={{
+                              className: "signature-canvas rounded-sm border-2 border-zinc-300 w-full h-44 md:h-56 border-dashed bg-zinc-200/50",
+                            }}
+                            clearOnResize={false}
+                            velocityFilterWeight={1}
+                            maxWidth={3.5}
+                            onBegin={() => {
+                              setIsSigned(true);
+                            }}
+                          />
+                          {!isSigned && (
+                            <div className="absolute inset-0 -z-10 flex items-center justify-center text-sm text-zinc-500">
+                              <span>서명을 입력하세요.</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="w-full flex justify-end">
                           <button
-                            disabled={!isSigned}
-                            className="bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 rounded-sm w-fit text-background flex items-center justify-center text-sm py-2 px-4 font-medium"
-                            onClick={async () => {
-                              if (isSigned && contract) {
-                                setSign(sigCanvas.current?.toDataURL() ?? "");
-                                if (sigCanvas.current?.toDataURL()) {
-                                  await updateContracts(contract.name, {
-                                    is_signed: true,
-                                    custom_customer_sign: sigCanvas.current.toDataURL(),
-                                  });
-                                }
-                                sigCanvas.current?.clear();
-                                setIsSigned(false);
-                              }
+                            className="bg-zinc-100 border-[1.5px] border-zinc-300 hover:bg-zinc-200 rounded-full w-fit text-muted-foreground flex items-center justify-center text-sm py-1 px-3 font-medium disabled:opacity-50"
+                            disabled={isSaving}
+                            onClick={() => {
+                              sigCanvas.current?.clear();
+                              setIsSigned(false);
                             }}
                           >
-                            서명하기
+                            전체 지우기
                           </button>
-                        </DialogClose>
+                        </div>
+                        <div className="w-full flex justify-center mt-4">
+                          <button
+                            disabled={!isSigned || isSaving}
+                            className="bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 rounded-sm w-fit text-background flex items-center justify-center text-sm py-2 px-4 font-medium min-w-[80px]"
+                            onClick={handleSignature}
+                          >
+                            {isSaving ? "저장 중..." : "서명하기"}
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+                  </DialogContent>
+                </Dialog>
+
+                {contract?.status == "Inactive" && (
+                  <Button type="button" className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold">
+                    결제하기
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
         <SheetDescription className="sr-only" />
       </SheetContent>

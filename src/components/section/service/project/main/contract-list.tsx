@@ -3,12 +3,10 @@ import { useCallback, useEffect, useRef } from "react";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Info, Download, FileCheck, Calendar, CreditCard, InfoIcon } from "lucide-react";
-import type { Session } from "next-auth";
 import type { SWRResponse } from "swr";
 import { useContracts } from "@/hooks/fetch/contract";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ContractSheet } from "./contract-sheet";
 import { cn } from "@/lib/utils";
 import dayjs from "@/lib/dayjs";
 import generatePDF, { Margin } from "react-to-pdf";
@@ -16,28 +14,17 @@ import type { UserERPNextContract } from "@/@types/service/contract";
 
 interface ContractListProps {
   projectSwr: SWRResponse<UserERPNextProject>;
-  session: Session;
   selectedContract?: UserERPNextContract;
-  contractSheetOpen: boolean;
   onContractSelect: (contract: UserERPNextContract) => void;
   onContractSheetClose: () => void;
-  initialContractName: string | null;
+  initialContractName?: string;
 }
 
-export function ContractList({
-  projectSwr,
-  session,
-  selectedContract,
-  contractSheetOpen,
-  onContractSelect,
-  onContractSheetClose,
-  initialContractName,
-}: ContractListProps) {
+export function ContractList({ projectSwr, selectedContract, onContractSelect, onContractSheetClose, initialContractName }: ContractListProps) {
   const { data: project } = projectSwr;
   const project_id = project?.project_name ?? "";
   const { data: contractsSwr, isLoading } = useContracts({ project_id });
   const contracts = contractsSwr?.flatMap((page) => page.items) ?? [];
-
   const hasAutoSelected = useRef(false);
 
   useEffect(() => {
@@ -172,7 +159,7 @@ export function ContractList({
                   }}
                   asChild
                 >
-                  <Link href={`/service/project/${project_id}/payment/contract/${contract.name}`}>사인하기</Link>
+                  <Link href={`/service/project/${project_id}/contracts/${contract.name}`}>사인하기</Link>
                 </Button>
               )}
               {contract.status === "Inactive" && contract.docstatus !== 2 && (
@@ -223,8 +210,6 @@ export function ContractList({
           </div>
         </div>
       )}
-
-      <ContractSheet contract={selectedContract} session={session} openSheet={contractSheetOpen} setOpenSheet={handleSetOpenSheet} />
     </div>
   );
 }
