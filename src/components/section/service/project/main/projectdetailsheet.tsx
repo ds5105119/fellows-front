@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { ContractList } from "./contract-list";
 import { usePathname } from "next/navigation";
+import type { UserERPNextContract } from "@/@types/service/contract";
 
 interface ProjectDetailSheetProps {
   project_id: string;
@@ -96,6 +97,19 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const [level, setLevel] = useState<number>(5);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [selectedContract, setSelectedContract] = useState<UserERPNextContract | undefined>(undefined);
+  const [contractSheetOpen, setContractSheetOpen] = useState(false);
+
+  const initialContractName = useMemo(() => {
+    const pathSegments = pathname.split("/");
+    const contractsIndex = pathSegments.indexOf("contracts");
+
+    if (contractsIndex !== -1 && pathSegments.length > contractsIndex + 1) {
+      return decodeURIComponent(pathSegments[contractsIndex + 1]);
+    }
+    return null;
+  }, [pathname]);
+
   useEffect(() => {
     const pathSegments = pathname.split("/");
     const hasContracts = pathSegments.includes("contracts");
@@ -115,7 +129,6 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
       setActiveTab2(0);
       setActiveMobileTab(1);
     } else {
-      // Default to files tab
       setActiveTab2(0);
       setActiveMobileTab(1);
     }
@@ -257,6 +270,49 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     }
   }, [project_id, project]);
 
+  const handleContractSelect = useCallback(
+    (contract: UserERPNextContract) => {
+      setSelectedContract(contract);
+      setContractSheetOpen(true);
+
+      const pathSegments = pathname.split("/");
+      const contractsIndex = pathSegments.indexOf("contracts");
+
+      let newPath: string;
+      if (contractsIndex !== -1) {
+        // 이미 /contracts가 있는 경우
+        if (pathSegments.length > contractsIndex + 1) {
+          // 계약서 이름이 이미 있는 경우, 교체
+          pathSegments[contractsIndex + 1] = encodeURIComponent(contract.name);
+          newPath = pathSegments.join("/");
+        } else {
+          // 계약서 이름이 없는 경우, 추가
+          newPath = `${pathname}/${encodeURIComponent(contract.name)}`;
+        }
+      } else {
+        // /contracts가 없는 경우, 추가
+        newPath = `${pathname}/contracts/${encodeURIComponent(contract.name)}`;
+      }
+
+      window.history.replaceState(null, "", newPath);
+    },
+    [pathname]
+  );
+
+  const handleContractSheetClose = useCallback(() => {
+    setContractSheetOpen(false);
+    setSelectedContract(undefined);
+
+    const pathSegments = pathname.split("/");
+    const contractsIndex = pathSegments.indexOf("contracts");
+
+    if (contractsIndex !== -1 && pathSegments.length > contractsIndex + 1) {
+      // 계약서 이름이 있는 경우, 계약서 이름만 제거
+      const newPath = pathSegments.slice(0, contractsIndex + 1).join("/");
+      window.history.replaceState(null, "", newPath);
+    }
+  }, [pathname]);
+
   //  Simplified project data sync
   useEffect(() => {
     if (project.data) {
@@ -396,7 +452,17 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             {/* 탭 콘텐츠 */}
             <div className="w-full h-[calc(100%-41px)] overflow-y-auto">
               {activeTab2 === 0 && <FilesList projectSwr={project} session={session} />}
-              {activeTab2 === 1 && <ContractList projectSwr={project} session={session} />}
+              {activeTab2 === 1 && (
+                <ContractList
+                  projectSwr={project}
+                  session={session}
+                  selectedContract={selectedContract}
+                  contractSheetOpen={contractSheetOpen}
+                  onContractSelect={handleContractSelect}
+                  onContractSheetClose={handleContractSheetClose}
+                  initialContractName={initialContractName}
+                />
+              )}
               {activeTab2 === 2 && <TeamsList projectSwr={project} session={session} />}
             </div>
           </div>
@@ -439,7 +505,17 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
               </>
             )}
             {activeMobileTab === 1 && <FilesList projectSwr={project} session={session} />}
-            {activeMobileTab === 2 && <ContractList projectSwr={project} session={session} />}
+            {activeMobileTab === 2 && (
+              <ContractList
+                projectSwr={project}
+                session={session}
+                selectedContract={selectedContract}
+                contractSheetOpen={contractSheetOpen}
+                onContractSelect={handleContractSelect}
+                onContractSheetClose={handleContractSheetClose}
+                initialContractName={initialContractName}
+              />
+            )}
             {activeMobileTab === 3 && <TeamsList projectSwr={project} session={session} />}
           </div>
         </div>

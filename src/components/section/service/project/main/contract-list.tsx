@@ -1,6 +1,6 @@
 "use client";
-import { useState, useCallback, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useRef } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Info, Download, FileCheck, Calendar, CreditCard, InfoIcon } from "lucide-react";
@@ -13,75 +13,84 @@ import { ContractSheet } from "./contract-sheet";
 import { cn } from "@/lib/utils";
 import dayjs from "@/lib/dayjs";
 import generatePDF, { Margin } from "react-to-pdf";
-import { UserERPNextContract } from "@/@types/service/contract";
+import type { UserERPNextContract } from "@/@types/service/contract";
 
-export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
+interface ContractListProps {
+  projectSwr: SWRResponse<UserERPNextProject>;
+  session: Session;
+  selectedContract?: UserERPNextContract;
+  contractSheetOpen: boolean;
+  onContractSelect: (contract: UserERPNextContract) => void;
+  onContractSheetClose: () => void;
+  initialContractName: string | null;
+}
+
+export function ContractList({
+  projectSwr,
+  session,
+  selectedContract,
+  contractSheetOpen,
+  onContractSelect,
+  onContractSheetClose,
+  initialContractName,
+}: ContractListProps) {
   const { data: project } = projectSwr;
   const project_id = project?.project_name ?? "";
   const { data: contractsSwr, isLoading } = useContracts({ project_id });
   const contracts = contractsSwr?.flatMap((page) => page.items) ?? [];
-  const [contract, setContract] = useState<UserERPNextContract | undefined>(undefined);
-  const [openSheet, setOpenSheet] = useState(false);
 
+  const router = useRouter();
   const pathname = usePathname();
+  const hasAutoSelected = useRef(false);
 
   useEffect(() => {
-    if (contracts.length > 0) {
-      const pathSegments = pathname.split("/");
-      const contractName = pathSegments[pathSegments.length - 1];
-
-      // URL에 계약서 이름이 있으면 해당 계약서를 찾아서 열기
-      if (contractName && contractName !== "contracts") {
-        const decodedContractName = decodeURIComponent(contractName);
-        const foundContract = contracts.find((c) => c.name === decodedContractName);
-        if (foundContract) {
-          setContract(foundContract);
-          setOpenSheet(true);
-        }
+    if (initialContractName && contracts.length > 0 && !hasAutoSelected.current && !selectedContract) {
+      const foundContract = contracts.find((c) => c.name === initialContractName);
+      if (foundContract) {
+        onContractSelect(foundContract);
+        hasAutoSelected.current = true;
       }
     }
-  }, [contracts, pathname]);
+  }, [initialContractName, contracts, selectedContract, onContractSelect]);
 
   const handleContractClick = useCallback(
-    (selectedContract: UserERPNextContract) => {
-      setContract(selectedContract);
-      setOpenSheet(true);
-
-      const newPath = `${pathname}/${encodeURIComponent(selectedContract.name)}`;
-      window.history.replaceState(null, "", newPath);
+    (contract: UserERPNextContract) => {
+      onContractSelect(contract);
     },
-    [pathname]
+    [onContractSelect]
   );
 
-  const handleSheetClose = useCallback(() => {
-    setOpenSheet(false);
-    setContract(undefined);
-
-    const pathSegments = pathname.split("/");
-    if (pathSegments[pathSegments.length - 1] !== "contracts") {
-      const basePath = pathSegments.slice(0, -1).join("/");
-      window.history.replaceState(null, "", basePath);
-    }
-  }, [pathname]);
-
-  const downloadContractPDF = useCallback((contract: UserERPNextContract) => {
-    // Sheet를 열어서 PDF를 생성하도록 함
-    setContract(contract);
-    setOpenSheet(true);
-
-    // Sheet가 열린 후 잠시 기다렸다가 PDF 다운로드 실행
-    setTimeout(() => {
-      const targetElement = document.querySelector("[data-pdf-target]") as HTMLElement;
-      if (targetElement) {
-        generatePDF(() => targetElement, {
-          method: "save",
-          filename: `${contract.custom_name} - ${dayjs(contract.modified).format("YYYY-MM-DD")}`,
-          resolution: 5,
-          page: { margin: Margin.MEDIUM },
-        });
+  const downloadContractPDF = useCallback(
+    (contract: UserERPNextContract) => {
+      // 선택된 계약서가 아니면 먼저 선택
+      if (!selectedContract || selectedContract.name !== contract.name) {
+        onContractSelect(contract);
       }
-    }, 500);
-  }, []);
+
+      // PDF 다운로드 실행
+      setTimeout(() => {
+        const targetElement = document.querySelector("[data-pdf-target]") as HTMLElement;
+        if (targetElement) {
+          generatePDF(() => targetElement, {
+            method: "save",
+            filename: `${contract.custom_name} - ${dayjs(contract.modified).format("YYYY-MM-DD")}`,
+            resolution: 5,
+            page: { margin: Margin.MEDIUM },
+          });
+        }
+      }, 500);
+    },
+    [selectedContract, onContractSelect]
+  );
+
+  const handleSetOpenSheet = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        onContractSheetClose();
+      }
+    },
+    [onContractSheetClose]
+  );
 
   return (
     <div className="grid grid-cols-1 gap-3 px-4 py-6">
@@ -218,7 +227,7 @@ export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<
         </div>
       )}
 
-      <ContractSheet contract={contract} session={session} openSheet={openSheet} setOpenSheet={handleSheetClose} />
+      <ContractSheet contract={selectedContract} session={session} openSheet={contractSheetOpen} setOpenSheet={handleSetOpenSheet} />
     </div>
   );
 }
