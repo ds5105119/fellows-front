@@ -18,17 +18,6 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const placeholderTexts = ["3분만에 AI 견적을 받아보세요.", "의뢰하려는 사이트에 대해 설명해주세요."];
 
-function SubmitButton({ isParentLoading }: { isParentLoading: boolean }) {
-  const { pending } = useFormStatus();
-  const isLoading = pending || isParentLoading;
-
-  return (
-    <Button size="icon" type="submit" variant="default" className="rounded-full size-8 md:size-9" disabled={isLoading}>
-      {isLoading ? <Loader2Icon className="animate-spin" /> : <ChevronRight />}
-    </Button>
-  );
-}
-
 export default function ProjectNewButton({ session, initialDescription }: { session: Session | null; initialDescription: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();

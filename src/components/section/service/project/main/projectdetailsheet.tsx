@@ -3,7 +3,7 @@ import type { Session } from "next-auth";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LinkIcon, Loader2, RefreshCw } from 'lucide-react';
+import { ArrowLeft, LinkIcon, Loader2, RefreshCw } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
 import { useProject, updateProject, acceptInviteProjectGroup } from "@/hooks/fetch/project";
 import { updateERPNextProjectSchema, type UserERPNextProject } from "@/@types/service/project";
@@ -106,20 +106,23 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   }, [editable]);
 
   // 탭 구성
-  const mobileTabs = useMemo(() => [
-    <div className="flex space-x-1 items-center" key="overview">
-      <span>개요</span>
-    </div>,
-    <div className="flex space-x-1 items-center" key="files">
-      <span>파일</span>
-    </div>,
-    <div className="flex space-x-1 items-center" key="contracts">
-      <span>계약서</span>
-    </div>,
-    <div className="flex space-x-1 items-center" key="teams">
-      <span>팀원</span>
-    </div>,
-  ], []);
+  const mobileTabs = useMemo(
+    () => [
+      <div className="flex space-x-1 items-center" key="overview">
+        <span>개요</span>
+      </div>,
+      <div className="flex space-x-1 items-center" key="files">
+        <span>파일</span>
+      </div>,
+      <div className="flex space-x-1 items-center" key="contracts">
+        <span>계약서</span>
+      </div>,
+      <div className="flex space-x-1 items-center" key="teams">
+        <span>팀원</span>
+      </div>,
+    ],
+    []
+  );
 
   const tabs1 = useMemo(
     () => [
@@ -142,17 +145,20 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     [project.data?.customer]
   );
 
-  const tabs2 = useMemo(() => [
-    <div className="flex space-x-1 items-center" key="files">
-      <span>파일</span>
-    </div>,
-    <div className="flex space-x-1 items-center" key="contracts">
-      <span>계약서</span>
-    </div>,
-    <div className="flex space-x-1 items-center" key="teams">
-      <span>팀원</span>
-    </div>,
-  ], []);
+  const tabs2 = useMemo(
+    () => [
+      <div className="flex space-x-1 items-center" key="files">
+        <span>파일</span>
+      </div>,
+      <div className="flex space-x-1 items-center" key="contracts">
+        <span>계약서</span>
+      </div>,
+      <div className="flex space-x-1 items-center" key="teams">
+        <span>팀원</span>
+      </div>,
+    ],
+    []
+  );
 
   const handleCopy = useCallback(async () => {
     try {
@@ -165,12 +171,12 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
 
   const handleUpdateProject = useCallback(async () => {
     if (!editable || !editedProject) return;
-    
+
     setIsUpdating(true);
     try {
       await updateProject(project_id, updateERPNextProjectSchema.parse(editedProject));
       await project.mutate();
-    } catch (error) {
+    } catch {
       toast.error("프로젝트 저장에 실패했습니다.");
     } finally {
       setIsUpdating(false);
@@ -185,7 +191,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     try {
       await acceptInviteProjectGroup(project_id);
       await project.mutate();
-    } catch (error) {
+    } catch {
       toast.error("초대 수락에 실패했습니다.");
     }
   }, [project_id, project]);
@@ -206,7 +212,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     intervalRef.current = setInterval(() => {
       const original = JSON.stringify(project.data);
       const current = JSON.stringify(editedProject);
-      
+
       if (original !== current && !isUpdating) {
         handleUpdateProject().catch(() => {
           toast.error("자동 저장에 실패했습니다.");
