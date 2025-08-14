@@ -1,6 +1,5 @@
 "use client";
 import { useCallback, useEffect, useRef } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Info, Download, FileCheck, Calendar, CreditCard, InfoIcon } from "lucide-react";
@@ -39,8 +38,6 @@ export function ContractList({
   const { data: contractsSwr, isLoading } = useContracts({ project_id });
   const contracts = contractsSwr?.flatMap((page) => page.items) ?? [];
 
-  const router = useRouter();
-  const pathname = usePathname();
   const hasAutoSelected = useRef(false);
 
   useEffect(() => {
