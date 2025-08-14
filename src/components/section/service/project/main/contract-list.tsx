@@ -67,15 +67,6 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, o
     [selectedContract, onContractSelect]
   );
 
-  const handleSetOpenSheet = useCallback(
-    (open: boolean) => {
-      if (!open) {
-        onContractSheetClose();
-      }
-    },
-    [onContractSheetClose]
-  );
-
   return (
     <div className="grid grid-cols-1 gap-3 px-4 py-6">
       <div className="text-sm font-bold">계약서: {contracts.length}건</div>
