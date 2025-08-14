@@ -1,6 +1,6 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Info, Download, FileCheck, Calendar, CreditCard, InfoIcon } from "lucide-react";
@@ -8,12 +8,12 @@ import type { Session } from "next-auth";
 import type { SWRResponse } from "swr";
 import { useContracts } from "@/hooks/fetch/contract";
 import { Button } from "@/components/ui/button";
-import type { UserERPNextContract } from "@/@types/service/contract";
 import Link from "next/link";
 import { ContractSheet } from "./contract-sheet";
 import { cn } from "@/lib/utils";
 import dayjs from "@/lib/dayjs";
 import generatePDF, { Margin } from "react-to-pdf";
+import { UserERPNextContract } from "@/@types/service/contract";
 
 export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
   const { data: project } = projectSwr;
@@ -23,7 +23,6 @@ export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<
   const [contract, setContract] = useState<UserERPNextContract | undefined>(undefined);
   const [openSheet, setOpenSheet] = useState(false);
 
-  const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -33,7 +32,8 @@ export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<
 
       // URL에 계약서 이름이 있으면 해당 계약서를 찾아서 열기
       if (contractName && contractName !== "contracts") {
-        const foundContract = contracts.find((c) => c.name === contractName);
+        const decodedContractName = decodeURIComponent(contractName);
+        const foundContract = contracts.find((c) => c.name === decodedContractName);
         if (foundContract) {
           setContract(foundContract);
           setOpenSheet(true);
@@ -47,8 +47,7 @@ export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<
       setContract(selectedContract);
       setOpenSheet(true);
 
-      // URL에 계약서 이름 추가 (실제 이동 없이)
-      const newPath = `${pathname}/${selectedContract.name}`;
+      const newPath = `${pathname}/${encodeURIComponent(selectedContract.name)}`;
       window.history.replaceState(null, "", newPath);
     },
     [pathname]
@@ -58,7 +57,6 @@ export function ContractList({ projectSwr, session }: { projectSwr: SWRResponse<
     setOpenSheet(false);
     setContract(undefined);
 
-    // URL에서 계약서 이름 제거
     const pathSegments = pathname.split("/");
     if (pathSegments[pathSegments.length - 1] !== "contracts") {
       const basePath = pathSegments.slice(0, -1).join("/");

@@ -20,7 +20,7 @@ import { ProjectNotices } from "./project-notices";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { ContractList } from "./contract-list";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 interface ProjectDetailSheetProps {
   project_id: string;
@@ -83,7 +83,6 @@ function ProjectLoading() {
 }
 
 export default function ProjectDetailSheet({ project_id, onClose, session }: ProjectDetailSheetProps) {
-  const router = useRouter();
   const pathname = usePathname();
 
   // State 관리
@@ -97,25 +96,16 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const [level, setLevel] = useState<number>(5);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
   useEffect(() => {
     const pathSegments = pathname.split("/");
     const hasContracts = pathSegments.includes("contracts");
     const hasTeams = pathSegments.includes("teams");
     const hasFiles = pathSegments.includes("files");
 
-    if (hasContracts) {
+    const contractsIndex = pathSegments.indexOf("contracts");
+    const isContractDetail = contractsIndex !== -1 && pathSegments.length > contractsIndex + 1;
+
+    if (hasContracts || isContractDetail) {
       setActiveTab2(1);
       setActiveMobileTab(2);
     } else if (hasTeams) {
