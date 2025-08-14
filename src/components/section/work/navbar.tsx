@@ -1,8 +1,8 @@
 "use client";
+
 import { useEffect, useRef, useState, useLayoutEffect } from "react";
-import { motion, useScroll, useTransform, useMotionValue, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValue, AnimatePresence, type Easing } from "framer-motion";
 import { AlignLeft, X } from "lucide-react";
-import { debounce } from "lodash";
 import { useLenis } from "lenis/react";
 
 export default function Navbar() {
@@ -24,10 +24,9 @@ export default function Navbar() {
       document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
       setViewportHeight(window.innerHeight);
     }
-    const debouncedUpdateHeight = debounce(updateHeight, 200);
     updateHeight();
-    window.addEventListener("resize", debouncedUpdateHeight);
-    return () => window.removeEventListener("resize", debouncedUpdateHeight);
+    window.addEventListener("resize", updateHeight);
+    return () => window.removeEventListener("resize", updateHeight);
   }, []);
 
   /** 🔹 스크롤 진행도 계산 */
@@ -51,10 +50,9 @@ export default function Navbar() {
       setMaxFontSizeDesktop(newFontSize);
       logoDesktopRef.current.style.fontSize = "";
     }
-    const debouncedUpdate = debounce(updateDesktopFontSize, 200);
     updateDesktopFontSize();
-    window.addEventListener("resize", debouncedUpdate);
-    return () => window.removeEventListener("resize", debouncedUpdate);
+    window.addEventListener("resize", updateDesktopFontSize);
+    return () => window.removeEventListener("resize", updateDesktopFontSize);
   }, []);
 
   /** 🔹 모바일 로고 최대 폰트 계산 */
@@ -65,7 +63,7 @@ export default function Navbar() {
       logoMobileRef.current.style.fontSize = `${testSize}px`;
       const { width, height } = logoMobileRef.current.getBoundingClientRect();
       const maxAllowedWidth = window.innerWidth * 0.98;
-      const maxAllowedHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--vh")) * 100 * 0.3;
+      const maxAllowedHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--vh")) * 100 * 0.3;
       const widthRatio = maxAllowedWidth / width;
       const heightRatio = maxAllowedHeight / height;
       const scaleRatio = Math.min(widthRatio, heightRatio);
@@ -73,10 +71,9 @@ export default function Navbar() {
       setMaxFontSizeMobile(newFontSize);
       logoMobileRef.current.style.fontSize = "";
     }
-    const debouncedUpdate = debounce(updateMobileFontSize, 200);
     updateMobileFontSize();
-    window.addEventListener("resize", debouncedUpdate);
-    return () => window.removeEventListener("resize", debouncedUpdate);
+    window.addEventListener("resize", updateMobileFontSize);
+    return () => window.removeEventListener("resize", updateMobileFontSize);
   }, []);
 
   /** 🔹 px 단위 height 변환 */
@@ -129,17 +126,15 @@ export default function Navbar() {
     closed: {
       x: "100%",
       transition: {
-        type: "spring" as const,
-        stiffness: 400,
-        damping: 40,
+        duration: 0.3,
+        ease: "easeInOut" as Easing,
       },
     },
     open: {
       x: "0%",
       transition: {
-        type: "spring" as const,
-        stiffness: 400,
-        damping: 40,
+        duration: 0.3,
+        ease: "easeInOut" as Easing,
       },
     },
   };
@@ -153,9 +148,8 @@ export default function Navbar() {
       y: 0,
       opacity: 1,
       transition: {
-        type: "spring" as const,
-        stiffness: 400,
-        damping: 25,
+        duration: 0.2,
+        ease: "easeOut" as Easing,
       },
     },
   };
@@ -238,13 +232,7 @@ export default function Navbar() {
             />
 
             {/* 메뉴 패널 */}
-            <motion.div
-              className="fixed top-0 right-0 w-full h-full bg-white z-[100] md:hidden"
-              variants={menuVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
-            >
+            <motion.div className="fixed top-0 right-0 w-full h-full bg-white z-[100] md:hidden" variants={menuVariants} initial="closed" animate="open">
               <div className="flex flex-col h-full">
                 {/* 헤더 */}
                 <div className="flex justify-between items-center px-4 h-12">

@@ -16,7 +16,12 @@ export default function WorkMain3() {
   const toggleMobileMenu = () => {
     if (!isDetailSectionOpen) {
       if (detailSectionRef.current) {
-        lenis?.scrollTo(detailSectionRef.current);
+        const viewportHeight = window.innerHeight;
+        const elementHeight = detailSectionRef.current.offsetHeight;
+        lenis?.scrollTo(detailSectionRef.current, {
+          offset: -(viewportHeight - elementHeight),
+          duration: 1.4,
+        });
       }
     }
     setIsDetailSectionOpen(!isDetailSectionOpen);

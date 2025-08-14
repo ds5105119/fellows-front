@@ -9,6 +9,7 @@ import GoogleAnalytics from "@/lib/googleanalytics";
 import { GeistSans } from "geist/font/sans";
 import Navbar from "@/components/section/work/navbar";
 import { cn } from "@/lib/utils";
+import Footer from "@/components/section/work/footer";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
@@ -35,6 +36,7 @@ export default async function RootLayout({
           <div className="relative overscroll-none">
             <Navbar />
             <main className="scrollbar-hide break-keep">{children}</main>
+            <Footer />
           </div>
         </LenisProvider>
         <Analytics />
