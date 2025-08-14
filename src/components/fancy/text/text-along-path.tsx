@@ -80,7 +80,6 @@ const AnimatedPathText = ({
   scrollTransformValues = [0, 100],
 }: AnimatedPathTextProps) => {
   const textPathRefs = useRef<SVGTextPathElement[]>([]);
-  const nullRef = useRef<HTMLElement>(null);
 
   const [clientId, setClientId] = useState<string>("");
   const [isMounted, setIsMounted] = useState(false);
@@ -108,7 +107,7 @@ const AnimatedPathText = ({
   useEffect(() => {
     if (!shouldUseScroll) return;
 
-    const handleChange = (e: number) => {
+    const handleChange = () => {
       textPathRefs.current.forEach((textPath) => {
         if (textPath) {
           textPath.setAttribute("startOffset", `${t.get()}%`);
