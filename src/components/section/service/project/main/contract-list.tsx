@@ -16,11 +16,10 @@ interface ContractListProps {
   projectSwr: SWRResponse<UserERPNextProject>;
   selectedContract?: UserERPNextContract;
   onContractSelect: (contract: UserERPNextContract) => void;
-  onContractSheetClose: () => void;
   initialContractName?: string;
 }
 
-export function ContractList({ projectSwr, selectedContract, onContractSelect, onContractSheetClose, initialContractName }: ContractListProps) {
+export function ContractList({ projectSwr, selectedContract, onContractSelect, initialContractName }: ContractListProps) {
   const { data: project } = projectSwr;
   const project_id = project?.project_name ?? "";
   const { data: contractsSwr, isLoading } = useContracts({ project_id });

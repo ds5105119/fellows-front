@@ -458,7 +458,6 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
                   projectSwr={project}
                   selectedContract={selectedContract}
                   onContractSelect={handleContractSelect}
-                  onContractSheetClose={handleContractSheetClose}
                   initialContractName={initialContractName}
                 />
               )}
@@ -509,7 +508,6 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
                 projectSwr={project}
                 selectedContract={selectedContract}
                 onContractSelect={handleContractSelect}
-                onContractSheetClose={handleContractSheetClose}
                 initialContractName={initialContractName}
               />
             )}
