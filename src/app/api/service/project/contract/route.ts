@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     };
 
     handleArrayParam("project_id");
-    handleArrayParam("order_by", "modified");
+    handleArrayParam("order_by", "modified desc");
     handleArrayParam("status");
 
     ["keyword", "start", "end"].forEach((key) => {

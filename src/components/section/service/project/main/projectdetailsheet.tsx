@@ -20,6 +20,7 @@ import { ProjectNotices } from "./project-notices";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { ContractList } from "./contract-list";
+import { useRouter, usePathname } from "next/navigation";
 
 interface ProjectDetailSheetProps {
   project_id: string;
@@ -82,6 +83,9 @@ function ProjectLoading() {
 }
 
 export default function ProjectDetailSheet({ project_id, onClose, session }: ProjectDetailSheetProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+
   // State 관리
   const project = useProject(project_id);
   const [editedProject, setEditedProject] = useState<UserERPNextProject | undefined>();
@@ -92,6 +96,73 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const [activeTab2, setActiveTab2] = useState<number>(0);
   const [level, setLevel] = useState<number>(5);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const pathSegments = pathname.split("/");
+    const hasContracts = pathSegments.includes("contracts");
+    const hasTeams = pathSegments.includes("teams");
+    const hasFiles = pathSegments.includes("files");
+
+    if (hasContracts) {
+      setActiveTab2(1);
+      setActiveMobileTab(2);
+    } else if (hasTeams) {
+      setActiveTab2(2);
+      setActiveMobileTab(3);
+    } else if (hasFiles) {
+      setActiveTab2(0);
+      setActiveMobileTab(1);
+    } else {
+      // Default to files tab
+      setActiveTab2(0);
+      setActiveMobileTab(1);
+    }
+  }, [pathname]);
+
+  const handleMobileTabChange = useCallback(
+    (index: number) => {
+      setActiveMobileTab(index);
+
+      const basePath = pathname.replace(/\/(files|contracts|teams)$/, "");
+      const tabPaths = ["", "/files", "/contracts", "/teams"];
+      const newPath = basePath + tabPaths[index];
+
+      window.history.replaceState(null, "", newPath);
+    },
+    [pathname]
+  );
+
+  const handleDesktopTabChange = useCallback(
+    (index: number) => {
+      setActiveTab2(index);
+
+      const basePath = pathname.replace(/\/(files|contracts|teams)$/, "");
+
+      if (index === 1) {
+        // contracts
+        window.history.replaceState(null, "", basePath + "/contracts");
+      } else if (index === 2) {
+        // teams
+        window.history.replaceState(null, "", basePath + "/teams");
+      } else if (index === 0) {
+        // files - 데스크톱에서는 기본 경로로
+        window.history.replaceState(null, "", basePath);
+      }
+    },
+    [pathname]
+  );
 
   //  Calculate editable status more efficiently
   const editable = useMemo(() => {
@@ -331,7 +402,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
           </div>
           <div className="w-full h-full hidden md:block overflow-hidden">
             {/* 일반 정보 탭 */}
-            <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={setActiveTab2} />
+            <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={handleDesktopTabChange} />
             {/* 탭 콘텐츠 */}
             <div className="w-full h-[calc(100%-41px)] overflow-y-auto">
               {activeTab2 === 0 && <FilesList projectSwr={project} session={session} />}
@@ -356,7 +427,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
           </div>
 
           {/* 모바일 탭 */}
-          <Flattabs tabs={mobileTabs} activeTab={activeMobileTab} handleTabChange={setActiveMobileTab} />
+          <Flattabs tabs={mobileTabs} activeTab={activeMobileTab} handleTabChange={handleMobileTabChange} />
           {/* 모바일 탭 콘텐츠 */}
           <div className="flex flex-col h-full w-full">
             {activeMobileTab === 0 && (
