@@ -10,7 +10,7 @@ interface AnimatedUnderlineTextareaProps extends ComponentProps<"textarea"> {
   maxHeight?: number; // 최대 높이 (px)
 }
 
-const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderlineTextareaProps>(({ className, maxHeight = 384, ...props }, ref) => {
+const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderlineTextareaProps>(({ className, maxHeight = 256, ...props }, ref) => {
   const [focused, setFocused] = useState(false);
   const [isAtMaxHeight, setIsAtMaxHeight] = useState(false);
   const internalRef = useRef<HTMLTextAreaElement>(null);
@@ -21,24 +21,24 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
   const adjustHeight = () => {
     const textarea = internalRef.current;
     if (textarea) {
-      textarea.style.height = "auto";
+      // 먼저 높이를 초기값으로 리셋
+      textarea.style.height = "36px";
+
       const scrollHeight = textarea.scrollHeight;
 
-      // 빈 텍스트일 때는 명시적으로 36px로 설정 (사파리 호환성)
+      // 빈 텍스트일 때는 36px 유지
       if (!textarea.value.trim()) {
-        textarea.style.height = "36px";
         setIsAtMaxHeight(false);
         return;
       }
 
-      // 내용이 있을 때는 scrollHeight 기반으로 계산하되 최소 36px 보장
-      const calculatedHeight = Math.max(scrollHeight, 36);
-
-      if (calculatedHeight > maxHeight) {
+      // scrollHeight가 maxHeight보다 크면 maxHeight로 제한
+      if (scrollHeight > maxHeight) {
         textarea.style.height = `${maxHeight}px`;
         setIsAtMaxHeight(true);
       } else {
-        textarea.style.height = `${calculatedHeight}px`;
+        // scrollHeight를 그대로 사용하되 최소 36px 보장
+        textarea.style.height = `${Math.max(scrollHeight, 36)}px`;
         setIsAtMaxHeight(false);
       }
     }
@@ -47,7 +47,7 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
   // 컴포넌트 마운트 시 및 value prop이 변경될 때 높이 조절
   useEffect(() => {
     adjustHeight();
-  }, [props.value]);
+  }, [props.value, maxHeight]);
 
   return (
     <div className="relative w-full">
@@ -83,8 +83,7 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
         style={{
           maxHeight: `${maxHeight}px`,
           boxSizing: "border-box",
-          minHeight: "36px", // 36px로 변경
-          height: "36px", // 초기 높이 명시적 설정
+          minHeight: "36px",
           fontSize: "16px", // 사파리 호환성을 위한 명시적 font-size
           lineHeight: "1.4", // 명시적 line-height
           ...props.style,
