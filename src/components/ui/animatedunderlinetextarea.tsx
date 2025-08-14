@@ -10,7 +10,7 @@ interface AnimatedUnderlineTextareaProps extends ComponentProps<"textarea"> {
   maxHeight?: number; // 최대 높이 (px)
 }
 
-const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderlineTextareaProps>(({ className, maxHeight = 256, ...props }, ref) => {
+const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderlineTextareaProps>(({ className, maxHeight = 384, ...props }, ref) => {
   const [focused, setFocused] = useState(false);
   const [isAtMaxHeight, setIsAtMaxHeight] = useState(false);
   const internalRef = useRef<HTMLTextAreaElement>(null);
@@ -21,24 +21,28 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
   const adjustHeight = () => {
     const textarea = internalRef.current;
     if (textarea) {
-      // 먼저 높이를 초기값으로 리셋
-      textarea.style.height = "36px";
+      textarea.scrollTop = 0;
+
+      // 높이를 auto로 설정하여 정확한 scrollHeight 측정
+      textarea.style.height = "auto";
 
       const scrollHeight = textarea.scrollHeight;
+      const lineHeight = 22.4; // 16px * 1.4 line-height
+      const padding = 12; // py-1.5 = 6px top + 6px bottom
+      const minHeight = lineHeight + padding; // 한 줄 높이 + 패딩
 
-      // 빈 텍스트일 때는 36px 유지
+      // 빈 텍스트일 때는 최소 높이로 설정
       if (!textarea.value.trim()) {
+        textarea.style.height = `${minHeight}px`;
         setIsAtMaxHeight(false);
         return;
       }
 
-      // scrollHeight가 maxHeight보다 크면 maxHeight로 제한
       if (scrollHeight > maxHeight) {
         textarea.style.height = `${maxHeight}px`;
         setIsAtMaxHeight(true);
       } else {
-        // scrollHeight를 그대로 사용하되 최소 36px 보장
-        textarea.style.height = `${Math.max(scrollHeight, 36)}px`;
+        textarea.style.height = `${Math.max(scrollHeight, minHeight)}px`;
         setIsAtMaxHeight(false);
       }
     }
@@ -83,7 +87,6 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
         style={{
           maxHeight: `${maxHeight}px`,
           boxSizing: "border-box",
-          minHeight: "36px",
           fontSize: "16px", // 사파리 호환성을 위한 명시적 font-size
           lineHeight: "1.4", // 명시적 line-height
           ...props.style,
