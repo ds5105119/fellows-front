@@ -21,21 +21,24 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
   const adjustHeight = () => {
     const textarea = internalRef.current;
     if (textarea) {
-      // 높이를 'auto'로 초기화하여 scrollHeight가 현재 내용에 맞게 정확히 계산되도록 함
       textarea.style.height = "auto";
       const scrollHeight = textarea.scrollHeight;
 
-      // 사파리에서 한 줄 텍스트에 맞는 정확한 초기 높이 계산
-      // line-height: 1.4 + padding: 6px top/bottom = 약 32px
-      const singleLineHeight = Math.max(scrollHeight, 36);
+      // 빈 텍스트일 때는 명시적으로 36px로 설정 (사파리 호환성)
+      if (!textarea.value.trim()) {
+        textarea.style.height = "36px";
+        setIsAtMaxHeight(false);
+        return;
+      }
 
-      if (scrollHeight > maxHeight) {
-        // 최대 높이를 초과하면 높이를 고정하고 스크롤을 활성화
+      // 내용이 있을 때는 scrollHeight 기반으로 계산하되 최소 36px 보장
+      const calculatedHeight = Math.max(scrollHeight, 36);
+
+      if (calculatedHeight > maxHeight) {
         textarea.style.height = `${maxHeight}px`;
         setIsAtMaxHeight(true);
       } else {
-        // 한 줄 텍스트에 맞는 최소 높이 보장
-        textarea.style.height = `${singleLineHeight}px`;
+        textarea.style.height = `${calculatedHeight}px`;
         setIsAtMaxHeight(false);
       }
     }
@@ -73,14 +76,17 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
         className={cn(
           "!max-w-full font-medium border-0 border-b-2 rounded-none shadow-none px-0 focus-visible:ring-0",
           "resize-none whitespace-pre-line break-all transition-all duration-200 ease-in-out",
-          "leading-[1.4] py-1.5", // line-height를 1.4로 고정, padding을 6px로 줄임
+          "text-base leading-[1.4] py-1.5", // font-size 명시적 지정
           isAtMaxHeight ? "overflow-y-auto" : "overflow-hidden",
           className
         )}
         style={{
           maxHeight: `${maxHeight}px`,
           boxSizing: "border-box",
-          minHeight: "32px", // 한 줄 텍스트에 맞는 최소 높이
+          minHeight: "36px", // 36px로 변경
+          height: "36px", // 초기 높이 명시적 설정
+          fontSize: "16px", // 사파리 호환성을 위한 명시적 font-size
+          lineHeight: "1.4", // 명시적 line-height
           ...props.style,
         }}
       />
