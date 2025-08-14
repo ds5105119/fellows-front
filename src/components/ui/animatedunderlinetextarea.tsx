@@ -27,7 +27,7 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
 
       // 사파리에서 한 줄 텍스트에 맞는 정확한 초기 높이 계산
       // line-height: 1.4 + padding: 6px top/bottom = 약 32px
-      const singleLineHeight = Math.max(scrollHeight, 32);
+      const singleLineHeight = Math.max(scrollHeight, 36);
 
       if (scrollHeight > maxHeight) {
         // 최대 높이를 초과하면 높이를 고정하고 스크롤을 활성화
