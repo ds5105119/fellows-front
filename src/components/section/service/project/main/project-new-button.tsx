@@ -112,7 +112,7 @@ export default function ProjectNewButton({ session, initialDescription }: { sess
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button size="sm" className="bg-black hover:bg-black/65 text-white transition-colors duration-200 focus-visible:ring-0">
+        <Button size="sm" className="bg-black hover:bg-black/65 text-white transition-colors duration-200 focus-visible:ring-0 hidden md:inline-flex">
           <BreathingSparkles /> AI로 만들기
         </Button>
       </DialogTrigger>
