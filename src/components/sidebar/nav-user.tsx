@@ -22,7 +22,6 @@ import {
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { BellIcon, CreditCardIcon, LogOutIcon, MoreVerticalIcon, UserCircleIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SmoothCursor } from "@/components/ui/smooth-cursor";
 
 interface NavUserProps {
   session: Session | null;
@@ -134,16 +133,6 @@ export function NavUser({ session }: NavUserProps) {
           </div>
         </DialogContent>
       </Dialog>
-      {isProfileOpen && (
-        <SmoothCursor
-          springConfig={{
-            damping: 100,
-            stiffness: 1000,
-            mass: 1.0,
-            restDelta: 0.001,
-          }}
-        />
-      )}
     </>
   );
 }

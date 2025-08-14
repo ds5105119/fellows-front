@@ -18,30 +18,28 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
   // 외부 ref와 내부 ref를 연결
   useImperativeHandle(ref, () => internalRef.current!, []);
 
-  // --- 여기부터 수정된 부분 ---
-
-  // 높이 자동 조절 함수
   const adjustHeight = () => {
     const textarea = internalRef.current;
     if (textarea) {
       // 높이를 'auto'로 초기화하여 scrollHeight가 현재 내용에 맞게 정확히 계산되도록 함
       textarea.style.height = "auto";
       const scrollHeight = textarea.scrollHeight;
-      const initialHeight = 40; // TailwindCSS h-10 (40px)과 일치
+
+      // 사파리에서 한 줄 텍스트에 맞는 정확한 초기 높이 계산
+      // line-height: 1.4 + padding: 6px top/bottom = 약 32px
+      const singleLineHeight = Math.max(scrollHeight, 32);
 
       if (scrollHeight > maxHeight) {
         // 최대 높이를 초과하면 높이를 고정하고 스크롤을 활성화
         textarea.style.height = `${maxHeight}px`;
         setIsAtMaxHeight(true);
       } else {
-        // scrollHeight가 초기 높이보다 작아도 최소 높이(h-10)를 유지
-        textarea.style.height = `${Math.max(scrollHeight, initialHeight)}px`;
+        // 한 줄 텍스트에 맞는 최소 높이 보장
+        textarea.style.height = `${singleLineHeight}px`;
         setIsAtMaxHeight(false);
       }
     }
   };
-
-  // --- 여기까지 수정된 부분 ---
 
   // 컴포넌트 마운트 시 및 value prop이 변경될 때 높이 조절
   useEffect(() => {
@@ -73,15 +71,16 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
         }}
         wrap="soft"
         className={cn(
-          "!max-w-full font-medium border-0 border-b-2 rounded-none shadow-none px-0 h-10 min-h-10 focus-visible:ring-0",
+          "!max-w-full font-medium border-0 border-b-2 rounded-none shadow-none px-0 focus-visible:ring-0",
           "resize-none whitespace-pre-line break-all transition-all duration-200 ease-in-out",
-          "leading-normal py-2",
+          "leading-[1.4] py-1.5", // line-height를 1.4로 고정, padding을 6px로 줄임
           isAtMaxHeight ? "overflow-y-auto" : "overflow-hidden",
           className
         )}
         style={{
           maxHeight: `${maxHeight}px`,
           boxSizing: "border-box",
+          minHeight: "32px", // 한 줄 텍스트에 맞는 최소 높이
           ...props.style,
         }}
       />
