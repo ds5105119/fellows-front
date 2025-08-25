@@ -8,7 +8,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { MeshGradientComponent } from "@/components/resource/meshgradient";
 import Image from "next/image";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
-import { AlertTriangle, CheckCircle2, SettingsIcon, TrendingUp, Crown, Shield, Edit3, UserPlus } from "lucide-react";
+import { Crown, Shield, Edit3, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { AnimatePresence, motion, useAnimation, useInView } from "framer-motion";
@@ -20,7 +20,7 @@ const features = [
         <p className="text-foreground text-base font-bold">차트와 대시보드</p>
         <p className="text-foreground leading-normal">
           프로젝트 진행 상황을
-          <br />한 곳에서 관리하세요
+          <br />한 곳에서 확인할 수 있습니다
         </p>
       </>
     ),
@@ -37,29 +37,11 @@ const features = [
   {
     header: (
       <>
-        <p className="text-background text-base font-bold">팀원 관리</p>
-        <p className="text-background leading-normal">
-          팀원과 함께 이 모든 것을
-          <br />
-          체계적으로 관리하세요
-        </p>
-      </>
-    ),
-    background: (
-      <div className="absolute inset-0">
-        <MeshGradientComponent className="opacity-100" colors={["#be73ff", "rgb(255, 90, 214)", "#ff2323", "#ff9849"]} />
-      </div>
-    ),
-    children: <TeamMembersSection />,
-  },
-  {
-    header: (
-      <>
         <p className="text-foreground text-base font-bold">실시간 태스크 관리</p>
         <p className="text-foreground leading-normal">
           진행 중인 작업 현황을
           <br />
-          실시간으로 확인하세요
+          실시간으로 전달해드려요
         </p>
       </>
     ),
@@ -103,96 +85,42 @@ const features = [
   {
     header: (
       <>
-        <p className="text-background text-base font-bold">한 곳에서 소통하기</p>
+        <p className="text-background text-base font-bold">AI 보고서 작성</p>
         <p className="text-background leading-normal">
-          새로운 이슈를 생성하고
+          담당 매니저 + AI 레포트까지
           <br />
-          작업 현황만 파악하면 됩니다
+          간단하게 작업 현황을 파악하세요
         </p>
       </>
     ),
     background: "bg-gradient-to-t from-emerald-500/80 via-emerald-500/70 to-teal-500/80",
     children: (
       <div className="absolute inset-0">
-        {/* 이슈 통계 */}
-        <div className="absolute top-36 xl:top-40 left-4 right-4">
-          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 border border-white/30">
-            <div className="grid grid-cols-3 gap-3 text-center">
-              <div>
-                <div className="text-white text-lg font-bold">3</div>
-                <div className="text-white/80 text-xs">긴급</div>
-              </div>
-              <div>
-                <div className="text-white text-lg font-bold">7</div>
-                <div className="text-white/80 text-xs">진행중</div>
-              </div>
-              <div>
-                <div className="text-white text-lg font-bold">12</div>
-                <div className="text-white/80 text-xs">해결됨</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 이슈 카드들 */}
-        <div className="absolute bottom-4 left-4 right-4 space-y-3">
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <AlertTriangle className="w-4 h-4 text-red-600" />
-                <span className="text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded-full">긴급</span>
-              </div>
-              <span className="text-xs text-gray-500">#ISS-001</span>
-            </div>
-            <p className="text-sm font-medium text-gray-800 mb-2">로그인 시스템 오류 발생</p>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">김</span>
-                </div>
-                <span className="text-xs text-gray-600">김개발 담당</span>
-              </div>
-              <span className="text-xs text-gray-500">2시간 전</span>
-            </div>
-          </div>
-
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <SettingsIcon className="w-4 h-4 text-yellow-600" />
-                <span className="text-xs font-semibold text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full">보통</span>
-              </div>
-              <span className="text-xs text-gray-500">#ISS-002</span>
-            </div>
-            <p className="text-sm font-medium text-gray-800 mb-2">UI 개선 요청사항</p>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">이</span>
-                </div>
-                <span className="text-xs text-gray-600">이디자인 담당</span>
-              </div>
-              <span className="text-xs text-gray-500">1일 전</span>
-            </div>
-          </div>
-
-          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">해결됨</span>
-              </div>
-              <span className="text-xs text-gray-500">#ISS-003</span>
-            </div>
-            <p className="text-sm font-medium text-gray-800 mb-2">데이터베이스 최적화 완료</p>
-            <div className="flex items-center space-x-2">
-              <TrendingUp className="w-3 h-3 text-green-600" />
-              <span className="text-xs text-green-600">성능 30% 향상</span>
-            </div>
-          </div>
+        <div className="w-full absolute top-36 xl:top-40 left-6 xl:left-8">
+          <AspectRatio ratio={575 / 870} className="w-full">
+            <Image src="/service-report.png" alt="대시보드 케러셀 이미지" className="rounded-md object-cover border border-zinc-300" fill />
+          </AspectRatio>
         </div>
       </div>
     ),
+  },
+  {
+    header: (
+      <>
+        <p className="text-background text-base font-bold">커다란 프로젝트라면</p>
+        <p className="text-background leading-normal">
+          팀원과 함께
+          <br />
+          체계적으로 관리하세요
+        </p>
+      </>
+    ),
+    background: (
+      <div className="absolute inset-0">
+        <MeshGradientComponent className="opacity-100" colors={["#be73ff", "rgb(255, 90, 214)", "#ff2323", "#ff9849"]} />
+      </div>
+    ),
+    children: <TeamMembersSection />,
   },
 ];
 
@@ -582,12 +510,12 @@ export default function MainSection3() {
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-2">
       <div className="col-span-full flex flex-col space-y-4 md:space-y-6 px-8 lg:px-16 xl:px-36 w-full pb-12 lg:pb-16">
-        <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">SaaS를 통한 실시간 외주 상태 관리</h1>
+        <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">Fellows SaaS를 사용하면 외주가 쉬워집니다.</h1>
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
           <h4 className="text-base md:text-lg font-semibold text-foreground">
-            진행 상황, 대시보드, 웹훅 연동, Open API
+            무료로 제공되는 Fellows SaaS를 사용하여
             <br />
-            Fellows에서 전부 무료로 이용하고 추적하세요.
+            정확하게 일이 이루어지고 있는지 파악해보세요.
           </h4>
         </div>
       </div>

@@ -45,7 +45,7 @@ const BentoCard = ({ name, className, background, description, href, cta, ...pro
   return (
     <div
       className={cn(
-        "relative group col-span-3 rounded-2xl lg:rounded-3xl hover:drop-shadow-2xl drop-shadow-black/10 transition-shadow transform-gpu duration-300",
+        "relative group col-span-3 rounded-2xl lg:rounded-3xl transition-shadow transform-gpu duration-300 bg-white overflow-hidden hover:shadow-[0_0_70px_-10px_rgba(0,0,0,0.15)]",
         className
       )}
       ref={targetRef}
@@ -94,7 +94,7 @@ const BentoCard = ({ name, className, background, description, href, cta, ...pro
           <div className="max-w-lg text-base md:text-lg font-semibold text-foreground whitespace-pre-wrap block">{description}</div>
           <h3 className="text-xl lg:text-[26px] font-extrabold text-foreground whitespace-pre-wrap dark:text-neutral-300">{name}</h3>
         </div>
-        <div>{background}</div>
+        <div className="-z-10">{background}</div>
         <div
           className={cn(
             "pointer-events-none absolute bottom-0 hidden lg:flex w-full translate-y-10 transform-gpu flex-row items-center p-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"

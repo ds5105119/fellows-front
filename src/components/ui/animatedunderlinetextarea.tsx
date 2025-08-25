@@ -80,14 +80,13 @@ const AnimatedUnderlineTextarea = forwardRef<HTMLTextAreaElement, AnimatedUnderl
         className={cn(
           "!max-w-full font-medium border-0 border-b-2 rounded-none shadow-none px-0 focus-visible:ring-0",
           "resize-none whitespace-pre-line break-all transition-all duration-200 ease-in-out",
-          "text-base leading-[1.4] py-1.5", // font-size 명시적 지정
+          "leading-[1.4] py-1.5", // font-size 명시적 지정
           isAtMaxHeight ? "overflow-y-auto" : "overflow-hidden",
           className
         )}
         style={{
           maxHeight: `${maxHeight}px`,
           boxSizing: "border-box",
-          fontSize: "16px", // 사파리 호환성을 위한 명시적 font-size
           lineHeight: "1.4", // 명시적 line-height
           ...props.style,
         }}

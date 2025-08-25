@@ -2,7 +2,6 @@ import { auth } from "@/auth";
 import { cookies } from "next/headers";
 import { ChevronDown } from "lucide-react";
 import MainSection1Form from "./mainsection1form";
-import MainSection1Design from "./mainsection1design";
 
 export default async function MainSection1() {
   const session = await auth();
@@ -22,7 +21,7 @@ export default async function MainSection1() {
 
             <div className="w-full flex flex-col items-center justify-center text-foreground text-center pt-1 md:pt-4.5">
               <div className="w-full flex flex-col md:flex-row items-center justify-center gap-0.5 md:gap-1">
-                <h3 className="text-sm xl:text-lg font-semibold tracking-normal text-muted-foreground w-fit">글로벌 외주 인력을 통해</h3>
+                <h3 className="text-sm xl:text-lg font-semibold tracking-normal text-muted-foreground w-fit">글로벌 전문 외주 인력을 통해</h3>
                 <h3 className="text-sm xl:text-lg font-semibold tracking-normal text-muted-foreground w-fit">최소 30%의 비용을 절감해보세요.</h3>
               </div>
               <h3 className="text-sm xl:text-lg font-semibold tracking-normal text-muted-foreground hidden md:block w-full">

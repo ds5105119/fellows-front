@@ -33,7 +33,7 @@ const files = [
 ];
 const features = [
   {
-    name: "높은 수준의 결과물을\n합리적인 가격에",
+    name: "더 적은 예산으로 만드는\n높은 수준의 결과물",
     description: (
       <div className="flex items-center space-x-2">
         <BadgeCheckIcon className="size-4 md:size-5 text-emerald-500" strokeWidth={3} />
@@ -43,7 +43,7 @@ const features = [
     ),
     href: "#primary",
     cta: "더 알아보기",
-    className: "col-span-3 md:col-span-1 ![box-shadow:0_12px_24px_rgba(0,0,0,.0)] bg-emerald-50 transition-colors duration-300 ease-in-out",
+    className: "col-span-3 md:col-span-1 bg-emerald-50 transition-colors duration-300 ease-in-out",
     background: (
       <Marquee pauseOnHover className="absolute -bottom-24 md:-bottom-12 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]">
         {files.map((f, idx) => (

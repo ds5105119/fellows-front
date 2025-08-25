@@ -67,7 +67,7 @@ export default function MainSection1Form({ session, initialDescription }: { sess
   useEffect(() => {
     const interval = setInterval(() => {
       setPlaceholderIdx((prev) => (prev + 1) % placeholderTexts.length);
-    }, 5000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -92,7 +92,6 @@ export default function MainSection1Form({ session, initialDescription }: { sess
   useEffect(() => {
     if (state?.success) {
       setIsNavigating(true);
-      toast.success("견적 생성에 성공했습니다!");
       sessionStorage.setItem(
         "project_info",
         JSON.stringify({
@@ -100,7 +99,7 @@ export default function MainSection1Form({ session, initialDescription }: { sess
           info: state.info,
         })
       );
-      router.push(`/service/project/new`);
+      router.push(`/service/project/new?from=session`);
     } else if (state?.error) {
       setIsNavigating(false);
       setIsAutoSubmitting(false);
