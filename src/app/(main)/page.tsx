@@ -11,13 +11,13 @@ import InViewBackground from "@/components/resource/inviewbackground";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Fellows",
+  title: "Fellows | 펠로우즈",
   description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
   openGraph: {
-    title: "Fellows",
+    title: "Fellows | 펠로우즈",
     description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
     url: "https://www.fellows.my",
-    siteName: "Fellows",
+    siteName: "Fellows | 펠로우즈",
     images: [
       {
         url: "https://www.fellows.my/fellows/og.jpg",
@@ -31,11 +31,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fellows",
+    title: "Fellows | 펠로우즈",
     description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
     images: {
       url: "https://www.fellows.my/fellows/og.jpg",
-      alt: "Fellows: 글로벌 개발 파트너와 함께하는 협업 플랫폼",
+      alt: "글로벌 개발 파트너와 함께하는 협업 플랫폼",
     },
   },
 };

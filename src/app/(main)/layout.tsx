@@ -61,7 +61,7 @@ export default async function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Fellows",
+    name: "Fellows | 펠로우즈",
     url: "https://www.fellows.my",
     logo: "https://www.fellows.my/fellows/og.jpg",
     sameAs: ["https://fellows.my"],
