@@ -69,7 +69,7 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="ko_KR" className="scroll-smooth">
       <Analytics />
       <SpeedInsights />
       <GoogleAnalytics />
