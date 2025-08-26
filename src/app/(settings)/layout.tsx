@@ -37,6 +37,10 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Analytics />
+      <SpeedInsights />
+      <GoogleAnalytics />
+
       <body className={`${pretendard.variable} ${satoshi.variable} h-dvh`}>
         <SidebarProvider
           style={
@@ -56,9 +60,6 @@ export default async function RootLayout({
               </div>
             </div>
           </SidebarInset>
-          <Analytics />
-          <SpeedInsights />
-          <GoogleAnalytics />
         </SidebarProvider>
 
         <Toaster

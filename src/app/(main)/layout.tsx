@@ -35,6 +35,10 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <Analytics />
+      <SpeedInsights />
+      <GoogleAnalytics />
+
       <body className={`${pretendard.className} ${satoshi.className} h-screen overflow-y-auto selection:bg-blue-400 selection:text-white`}>
         <LenisProvider>
           <div className="relative overscroll-none">
@@ -43,9 +47,6 @@ export default async function RootLayout({
             <Footer />
           </div>
         </LenisProvider>
-        <Analytics />
-        <SpeedInsights />
-        <GoogleAnalytics />
       </body>
     </html>
   );

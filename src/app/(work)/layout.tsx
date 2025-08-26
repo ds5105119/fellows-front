@@ -30,8 +30,11 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en h-screen overflow-y-auto">
+      <Analytics />
+      <SpeedInsights />
+      <GoogleAnalytics />
+
       <body className={cn(pretendard.className, GeistSans.className, " overflow-x-hidden")}>
-        <></>
         <LenisProvider>
           <div className="relative overscroll-none">
             <Navbar />
@@ -39,9 +42,6 @@ export default async function RootLayout({
             <Footer />
           </div>
         </LenisProvider>
-        <Analytics />
-        <SpeedInsights />
-        <GoogleAnalytics />
       </body>
     </html>
   );

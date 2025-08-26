@@ -36,6 +36,10 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Analytics />
+      <SpeedInsights />
+      <GoogleAnalytics />
+
       <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-y-auto`}>
         <ClientLocaleInit />
         <div className="relative overscroll-none">
@@ -44,9 +48,6 @@ export default async function RootLayout({
           <Footer />
         </div>
         <Toaster />
-        <Analytics />
-        <SpeedInsights />
-        <GoogleAnalytics />
       </body>
     </html>
   );
