@@ -73,14 +73,15 @@ export default async function RootLayout({
       <Analytics />
       <SpeedInsights />
       <GoogleAnalytics />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-        }}
-      />
 
       <body className={`${pretendard.className} ${satoshi.className} h-screen overflow-y-auto selection:bg-blue-400 selection:text-white`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
+
         <LenisProvider>
           <div className="relative overscroll-none">
             <MainHeader />
