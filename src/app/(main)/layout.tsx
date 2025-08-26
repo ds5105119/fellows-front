@@ -25,7 +25,32 @@ const satoshi = localFont({
 
 export const metadata: Metadata = {
   title: "Fellows",
-  description: "이메일로 회원가입하고 맞춤형 복지 정책 정보를 받아보세요.",
+  description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
+  openGraph: {
+    title: "Fellows",
+    description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
+    url: "https://www.fellows.my",
+    siteName: "Fellows",
+    images: [
+      {
+        url: "https://www.fellows.my/fellows/og.jpg",
+        width: 1203,
+        height: 630,
+        alt: "Fellows: 글로벌 개발 파트너와 함께하는 협업 플랫폼",
+      },
+    ],
+    locale: "ko_KR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Fellows",
+    description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
+    images: {
+      url: "https://www.fellows.my/fellows/og.jpg",
+      alt: "Fellows: 글로벌 개발 파트너와 함께하는 협업 플랫폼",
+    },
+  },
 };
 
 export default async function RootLayout({
@@ -33,11 +58,27 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Fellows",
+    url: "https://www.fellows.my",
+    logo: "https://www.fellows.my/fellows/og.jpg",
+    sameAs: ["https://fellows.my"],
+    description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
+  };
+
   return (
     <html lang="en" className="scroll-smooth">
       <Analytics />
       <SpeedInsights />
       <GoogleAnalytics />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
 
       <body className={`${pretendard.className} ${satoshi.className} h-screen overflow-y-auto selection:bg-blue-400 selection:text-white`}>
         <LenisProvider>

@@ -41,25 +41,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Fellows",
-    url: "https://www.fellows.my",
-    logo: "https://www.fellows.my/fellows/og.jpg",
-    sameAs: ["https://fellows.my"],
-    description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
-  };
-
   return (
     <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-        }}
-      />
-
       <div className="col-span-full h-svh min-h-svh max-h-svh relative">
         <MainSection1 />
       </div>
