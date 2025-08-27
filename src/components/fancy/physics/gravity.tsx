@@ -100,11 +100,11 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
   ) => {
     const canvas = useRef<HTMLDivElement>(null);
     const engine = useRef(Engine.create());
-    const render = useRef<Render>();
-    const runner = useRef<Runner>();
+    const render = useRef<Render | null>(null);
+    const runner = useRef<Runner | null>(null);
     const bodiesMap = useRef(new Map<string, PhysicsBody>());
-    const frameId = useRef<number>();
-    const mouseConstraint = useRef<Matter.MouseConstraint>();
+    const frameId = useRef<number>(0);
+    const mouseConstraint = useRef<Matter.MouseConstraint | null>(null);
     const mouseDown = useRef(false);
     const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
@@ -155,9 +155,11 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
             },
           });
         } else {
+          const { chamfer, ...rest } = props.matterBodyOptions || {};
           body = Bodies.rectangle(x, y, width, height, {
-            ...props.matterBodyOptions,
-            angle: angle,
+            ...rest,
+            ...(chamfer ? { chamfer } : {}),
+            angle,
             render: {
               fillStyle: debug ? "#888888" : "#00000000",
               strokeStyle: debug ? "#333333" : "#00000000",
