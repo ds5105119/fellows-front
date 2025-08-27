@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ElementType, useMemo, useRef } from "react";
+import React, { ReactElement, ReactNode, ElementType, useMemo, useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -9,7 +9,8 @@ const extractTextFromChildren = (children: React.ReactNode): string => {
   if (typeof children === "string") return children;
 
   if (React.isValidElement(children)) {
-    const childText = children.props.children;
+    const childElement = children as ReactElement<{ children?: ReactNode }>;
+    const childText = childElement.props.children;
     if (typeof childText === "string") return childText;
     if (React.isValidElement(childText)) {
       return extractTextFromChildren(childText);
@@ -89,7 +90,6 @@ const ScrollAndSwapText = ({
     target: ref,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     offset: offset as any, // framer motion doesnt export the type, so we have to cast it, sorry :/
-    layoutEffect: false,
   });
 
   // Apply spring physics to smooth the scroll-based animation
