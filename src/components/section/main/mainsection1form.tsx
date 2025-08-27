@@ -149,11 +149,12 @@ export default function MainSection1Form({ session, initialDescription }: { sess
   return (
     <form action={handleFormSubmit} className="w-full max-w-4xl mx-auto mt-3 md:mt-6 flex flex-col gap-4">
       <div
-        className="w-full min-h-10 max-h-36 md:min-h-36 md:max-h-36 px-4 pr-1.5 md:pl-5 md:py-4 md:pr-3
-        flex items-center md:items-stretch justify-center gap-2 
-        relative rounded-[24px] md:rounded-2xl 
-        bg-foreground/2 backdrop-blur-xl border border-foreground/10 shadow-2xl shadow-foreground/10"
+        className="w-full min-h-10 max-h-36 md:min-h-36 md:max-h-64 
+             relative rounded-[24px] md:rounded-2xl 
+             bg-foreground/2 backdrop-blur-xl border border-foreground/10 shadow-2xl shadow-foreground/10
+             flex items-start"
       >
+        {/* 스크롤 가능한 부분 */}
         <Textarea
           ref={textareaRef}
           name="description"
@@ -162,14 +163,16 @@ export default function MainSection1Form({ session, initialDescription }: { sess
           rows={1}
           placeholder={placeholderTexts[placeholderIdx]}
           onWheel={(e) => e.stopPropagation()}
-          className="w-full grow self-center md:self-auto p-0 min-h-0 bg-transparent border-none focus-visible:ring-0 outline-none
-                      shadow-none resize-none scrollbar-hide leading-snug text-foreground
-                     md:h-full 
-                      overflow-y-auto
-                     overscroll-behavior-contain"
+          className="w-full grow p-4 pr-12 md:pr-14 
+               bg-transparent border-none focus-visible:ring-0 outline-none
+               shadow-none resize-none scrollbar-hide leading-snug text-foreground
+               overscroll-behavior-contain
+               overflow-y-auto"
           spellCheck="false"
         />
-        <div className="flex items-end h-full py-1.5 md:py-0">
+
+        {/* 버튼은 absolute로 고정 */}
+        <div className="absolute right-2 bottom-2 md:right-3 md:bottom-3">
           <SubmitButton isParentLoading={isParentLoading} />
         </div>
       </div>

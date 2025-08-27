@@ -47,9 +47,11 @@ export const DesktopCTAButton = () => {
                 className="h-16" // increased height from h-16 to h-20 for more space per menu item
               >
                 <Link
-                  href="/service/dashboard"
-                  className="px-6 py-3 h-full text-white hover:bg-white/10 transition-all duration-200 text-center font-medium border-b border-zinc-600/30 last:border-b-0 hover:text-zinc-100 flex items-center justify-center" // increased padding from py-4 to py-6
-                  onClick={() => setIsMenuOpen(false)}
+                  href="#contact"
+                  className="px-6 py-3 w-full h-full text-white hover:bg-white/10 transition-all duration-200 text-center font-medium border-b border-zinc-600/30 last:border-b-0 hover:text-zinc-100 flex items-center justify-center" // increased padding from py-4 to py-6
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                  }}
                 >
                   문의하기
                 </Link>

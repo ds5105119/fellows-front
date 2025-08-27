@@ -3,12 +3,12 @@ import MainSection2 from "@/components/section/main/mainsection2";
 import MainSection3 from "@/components/section/main/mainsection3";
 import MainSection4 from "@/components/section/main/mainsection4";
 import MainSection7 from "@/components/section/main/mainsection7";
-import MainCTASection from "@/components/section/main/mainctasection";
 import MainQnaSection from "@/components/section/main/mainqnasection";
 import { BlurFade } from "@/components/magicui/blur-fade";
 import MobileCTASection from "@/components/section/main/mobilectasection";
 import InViewBackground from "@/components/resource/inviewbackground";
 import { Metadata } from "next";
+import MainContactSection from "@/components/section/main/maincontactsection";
 
 export const metadata: Metadata = {
   title: "Fellows | 펠로우즈",
@@ -71,11 +71,11 @@ export default async function Page() {
       </BlurFade>
 
       <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
-        <MainCTASection />
+        <MainQnaSection />
       </BlurFade>
 
       <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
-        <MainQnaSection />
+        <MainContactSection />
       </BlurFade>
     </div>
   );
