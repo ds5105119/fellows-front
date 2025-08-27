@@ -5,7 +5,6 @@ import { calculatePosition } from "@/utils/calculate-position";
 import { parsePathToVertices } from "@/utils/svg-path-to-vertices";
 import { debounce } from "lodash";
 import Matter, { Bodies, Common, Engine, Events, Mouse, MouseConstraint, Query, Render, Runner, World } from "matter-js";
-import * as decomp from "poly-decomp";
 
 import { cn } from "@/lib/utils";
 
@@ -202,7 +201,8 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
       const height = canvas.current.offsetHeight;
       const width = canvas.current.offsetWidth;
 
-      Common.setDecomp(decomp);
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      Common.setDecomp(require("poly-decomp"));
 
       engine.current.gravity.x = gravity.x;
       engine.current.gravity.y = gravity.y;
