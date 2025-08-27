@@ -5,7 +5,7 @@ import { DesktopCTAButton, MobileCTAButton } from "./mainsection1ctabutton";
 
 export default async function MainSection1() {
   return (
-    <div className="relative grid grid-cols-1 lg:grid-cols-12 mt-40">
+    <div className="relative grid grid-cols-1 lg:grid-cols-12 mt-16">
       <div className="col-span-full">
         <div className="relative w-full hidden md:block">
           {/* Base image */}

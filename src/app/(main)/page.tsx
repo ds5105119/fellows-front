@@ -43,7 +43,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
-      <div className="col-span-full px-4 lg:px-16 h-svh min-h-svh max-h-svh relative">
+      <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 w-full relative">
         <MainSection1 />
       </div>
 
