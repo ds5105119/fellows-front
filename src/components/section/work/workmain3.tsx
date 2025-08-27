@@ -6,6 +6,7 @@ import { useLenis } from "lenis/react";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
+import Workmain3Text from "./workmain3text";
 
 export default function WorkMain3() {
   const lenis = useLenis();
@@ -53,31 +54,7 @@ export default function WorkMain3() {
   return (
     <div className="relativew-full h-full">
       <div className="relative w-full h-[calc(100%-80px)] px-4 overflow-hidden">
-        <div className="absolute bottom-4 right-4 w-full -z-10">
-          <div className="w-full pl-8 text-4xl md:text-7xl leading-tight tracking-wide font-extrabold text-right flex flex-col space-x-0 select-none">
-            <div className="flex justify-end flex-wrap gap-x-[1.5vw] items-center">
-              <span>Fellows는</span>
-              <span className="relative inline-block h-[1em] aspect-[5/2] rounded-[50px] overflow-hidden align-middle">
-                <Image alt="랜덤 이미지" src="https://picsum.photos/600/400?random=2" fill className="object-cover" priority />
-              </span>
-              <span>디자인과 기술을</span>
-            </div>
-            섬세하게 어루만져 경험을 빚어내고,
-            <div className="flex justify-end flex-wrap gap-x-[1.5vw] items-center">
-              <span>브랜드와 고객의</span>
-              <span className="relative inline-block h-[1em] aspect-[5/2] rounded-[50px] overflow-hidden align-middle">
-                <Image alt="랜덤 이미지" src="https://picsum.photos/600/400?random=3" fill className="object-cover" priority />
-              </span>
-              <span>연결을</span>
-            </div>
-            <div className="flex justify-end flex-wrap gap-x-[1vw] items-center">
-              <span>더 깊고</span>
-              <span className="text-[#f25840]">❉</span>
-              <span>자연스럽게 만듭니다.</span>
-            </div>
-          </div>
-        </div>
-
+        <Workmain3Text />
         <ImageTrail
           key="imagetrail"
           items={[
@@ -142,7 +119,7 @@ export default function WorkMain3() {
                       priority
                     />
                   </div>
-                </div>{" "}
+                </div>
                 <div className="max-w-7xl px-4 text-center text-sm md:text-xl font-bold tracking-tight">
                   Fellows는 복잡함을 단순하게 바꾸기 위해 Fellows SaaS를 출시하였고, 글로벌 파트너사와의 협업을 통해 특별하면서도 편리한 경험으로 완성합니다.
                   국내 대비 저렴하지만 높은 품질의 개발 결과를 제공하는 Fellows는 여러분의 프로젝트를 위한 최선의 파트너입니다.

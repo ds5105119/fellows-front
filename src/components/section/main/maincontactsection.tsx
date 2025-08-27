@@ -7,6 +7,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import UnderlineToBackground from "@/components/fancy/text/underline-to-background";
+import { Button } from "@/components/ui/button";
+import { RefreshCwIcon } from "lucide-react";
 
 const socialLinks = [
   {
@@ -46,7 +48,6 @@ const socialLinks = [
       </>
     ),
   },
-  { name: "AI와 견적 작성해보기", x: "30%", y: "30%" },
   { name: "FELLOWS BLOG", x: "75%", y: "10%", angle: -4, href: "/blog" },
   { name: "FELLOWS WORKS", x: "40%", y: "20%", angle: 10, href: "/works" },
   { name: "FELLOWS SaaS", x: "20%", y: "40%", href: "/service/dashboard" },
@@ -123,6 +124,14 @@ const PhysicsGravitySection = memo(function PhysicsGravitySection({ onMenuSelect
 
 export default function MainContactSection() {
   const [selectedMenu, setSelectedMenu] = useState<string>("CONTACT");
+  const [key, setKey] = useState<number>(0);
+  const [spinning, setSpinning] = useState(false);
+
+  const handleClick = () => {
+    setSpinning(true);
+    setKey((prev) => prev + 1);
+    setTimeout(() => setSpinning(false), 500);
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
@@ -142,7 +151,12 @@ export default function MainContactSection() {
         <div className="w-full h-full flex-1 bg-zinc-100 rounded-4xl flex">{socialLinks.filter((l) => l.name == selectedMenu)[0]?.children}</div>
       </div>
       <div className="relative col-span-1 bg-zinc-100 rounded-4xl aspect-square overflow-hidden">
-        <PhysicsGravitySection onMenuSelect={setSelectedMenu} />
+        <PhysicsGravitySection key={key} onMenuSelect={setSelectedMenu} />
+        <div className="absolute right-5 top-5">
+          <Button variant="ghost" size="icon" className="focus-visible:ring-0 rounded-full bg-zinc-800 hover:bg-zinc-700" onClick={handleClick}>
+            <RefreshCwIcon className={cn("size-5 text-zinc-50", spinning ? "animate-spin" : "")} strokeWidth={3} />
+          </Button>
+        </div>
       </div>
     </div>
   );
