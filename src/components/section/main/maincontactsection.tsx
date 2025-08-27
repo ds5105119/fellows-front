@@ -15,11 +15,17 @@ const socialLinks = [
     y: "10%",
     children: (
       <>
-        <div className="w-1/3 p-8 md:p-14 text-xl font-medium text-[#0015ff] leading-loose">CONTACT</div>
-        <div className="w-2/3 p-8 md:p-14 text-xl font-medium text-[#0015ff] leading-loose">
+        <div className="w-1/3 p-8 md:p-14 text-base md:text-xl font-medium text-[#0015ff] leading-loose">CONTACT</div>
+        <div className="w-2/3 p-8 md:p-14 text-base md:text-xl font-medium text-[#0015ff] leading-loose">
           <Link href="mailto:sales@iihus.com">
             <UnderlineToBackground targetTextColor="#f0f0f0" className="cursor-pointer">
               SALES@IIHUS.COM
+            </UnderlineToBackground>
+          </Link>
+          <br />
+          <Link href="mailto:support@iihus.com">
+            <UnderlineToBackground targetTextColor="#f0f0f0" className="cursor-pointer">
+              SUPPORT@IIHUS.COM
             </UnderlineToBackground>
           </Link>
           <br />
