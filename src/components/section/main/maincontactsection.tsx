@@ -19,12 +19,12 @@ export default async function MainContactSection() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
       <div className="col-span-1 flex flex-col gap-4 md:gap-6 aspect-square">
         <div className="w-full h-fit flex">
-          <div className="w-1/3 rounded-4xl p-14 bg-[#45f3a2]">
+          <div className="w-1/3 rounded-4xl p-7 md:p-14 bg-[#45f3a2]">
             <AspectRatio ratio={1 / 1}>
               <Image alt="펠로우즈 이미지 로고" src="/fellows/logo-img.svg" fill className="obejct-cover" />
             </AspectRatio>
           </div>
-          <div className="w-2/3 rounded-4xl p-14 bg-[#45f3a2]">
+          <div className="w-2/3 rounded-4xl p-7 md:p-14 bg-[#45f3a2]">
             <AspectRatio ratio={3 / 1}>
               <Image alt="펠로우즈 글자 로고" src="/fellows/logo-text.svg" fill className="obejct-cover" />
             </AspectRatio>
@@ -32,7 +32,7 @@ export default async function MainContactSection() {
         </div>
         <div className="w-full h-full flex-1 bg-zinc-100 rounded-4xl"></div>
       </div>
-      <div className="relative col-span-1 bg-zinc-100 rounded-4xl aspect-square">
+      <div className="relative col-span-1 bg-zinc-100 rounded-4xl aspect-square overflow-hidden">
         <Gravity gravity={{ x: 0, y: 1 }} className="w-full h-full">
           {socialLinks.map((link) => (
             <MatterBody
@@ -85,7 +85,7 @@ export default async function MainContactSection() {
                 bodyType="circle"
               >
                 <div
-                  className={`aspect-square w-24 h-24 sm:w-36 sm:h-36 md:w-48 md:h-48 bg-[#0015ff] text-white rounded-full flex items-center justify-center text-xl sm:text-2xl md:text-3xl font-extrabold`}
+                  className={`aspect-square w-14 h-14 sm:w-36 sm:h-36 md:w-48 md:h-48 bg-[#0015ff] text-white rounded-full flex items-center justify-center text-xl sm:text-2xl md:text-3xl font-extrabold`}
                 >
                   →
                 </div>

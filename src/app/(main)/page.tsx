@@ -74,7 +74,7 @@ export default async function Page() {
         <MainQnaSection />
       </BlurFade>
 
-      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="contact">
         <MainContactSection />
       </BlurFade>
     </div>

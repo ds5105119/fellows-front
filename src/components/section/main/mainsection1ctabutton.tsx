@@ -43,7 +43,7 @@ export const DesktopCTAButton = () => {
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0 * 0.08, duration: 0.25, ease: "easeOut" }}
+                transition={{ delay: 1 * 0.08, duration: 0.25, ease: "easeOut" }}
                 className="h-16" // increased height from h-16 to h-20 for more space per menu item
               >
                 <Link
@@ -67,11 +67,6 @@ export const DesktopCTAButton = () => {
 export const MobileCTAButton = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const menuItems = [
-    { label: "Fellows SaaS", href: "/service/dashboard" },
-    { label: "문의하기", href: "/contact" },
-  ];
-
   return (
     <div className="col-span-full w-full flex z-20 md:hidden pt-4 relative">
       <Button
@@ -92,23 +87,25 @@ export const MobileCTAButton = () => {
             className="absolute top-full left-0 right-0 bg-white rounded-2xl border overflow-hidden"
           >
             <div className="flex">
-              {menuItems.map((item, index) => (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.2 }}
-                  className="flex-1"
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 * 0.1, duration: 0.2 }} className="flex-1">
+                <Link
+                  href="/service/dashboard"
+                  className="block px-4 py-4 text-gray-800 hover:bg-gray-50 transition-colors text-center font-medium border-r last:border-r-0 border-gray-200"
+                  onClick={() => setIsMenuOpen(false)}
                 >
-                  <Link
-                    href={item.href}
-                    className="block px-4 py-4 text-gray-800 hover:bg-gray-50 transition-colors text-center font-medium border-r last:border-r-0 border-gray-200"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                </motion.div>
-              ))}
+                  Fellows SaaS
+                </Link>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 * 0.1, duration: 0.2 }} className="flex-1">
+                <Link
+                  href="#contact"
+                  className="block px-4 py-4 text-gray-800 hover:bg-gray-50 transition-colors text-center font-medium border-r last:border-r-0 border-gray-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  문의하기
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
         )}
