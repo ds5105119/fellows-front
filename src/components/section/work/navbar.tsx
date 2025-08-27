@@ -118,7 +118,7 @@ export default function Navbar() {
     { label: "home", href: "/" },
     { label: "saas", href: "/service" },
     { label: "blog", href: "/blog" },
-    { label: "contact", href: "#contact" },
+    { label: "contact", href: "/#contact" },
   ];
 
   // 메뉴 애니메이션 variants

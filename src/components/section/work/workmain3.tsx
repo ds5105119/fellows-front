@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import Workmain3Text from "./workmain3text";
+import LetterSwapPingPong from "@/components/fancy/text/letter-swap-pingpong-anim";
 
 export default function WorkMain3() {
   const lenis = useLenis();
@@ -52,8 +53,8 @@ export default function WorkMain3() {
   };
 
   return (
-    <div className="relativew-full h-full">
-      <div className="relative w-full h-[calc(100%-80px)] px-4 overflow-hidden">
+    <div className="relative w-full h-full">
+      <div className="relative w-full px-4 overflow-hidden">
         <Workmain3Text />
         <ImageTrail
           key="imagetrail"
@@ -70,15 +71,16 @@ export default function WorkMain3() {
           variant={1}
         />
       </div>
-      <div className="relative w-full h-20">
-        <div
-          ref={detailSectionRef}
-          onClick={toggleMobileMenu}
-          className="w-full h-20 border-y flex items-center justify-center font-black tracking-tight hover:text-[#f25840]"
-        >
-          Learn more about our company
-        </div>
 
+      <div
+        ref={detailSectionRef}
+        onClick={toggleMobileMenu}
+        className="text-2xl md:text-6xl flex font-normal tracking-tight hover:text-[#f25840] place-self-start md:place-self-center px-4 mt-12 md:mt-36 pb-4 md:pb-8"
+      >
+        <LetterSwapPingPong label="↳ More about our company" staggerFrom="first" className="mono pb-2 border-b-4 border-black" />
+      </div>
+
+      <div className="relative w-full">
         <AnimatePresence>
           {isDetailSectionOpen && (
             <motion.div

@@ -47,7 +47,7 @@ function AnimatedLine({ children, delay = 0 }: { children: React.ReactNode; dela
   return (
     <motion.div
       ref={ref}
-      className="flex items-center justify-end flex-wrap"
+      className="flex items-center justify-start md:justify-end flex-wrap"
       variants={lineVariants}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
@@ -144,11 +144,11 @@ export default function Workmain3Text() {
   }, []);
 
   return (
-    <div className="absolute bottom-4 right-4 w-3/4 -z-10">
+    <div className="place-self-start md:place-self-end mt-24 md:mt-40 w-4/5 md:w-3/4 -z-10">
       {/* 숨겨진 참조용 컨테이너 */}
       <div
         ref={containerRef}
-        className="w-full pl-8 text-3xl md:text-7xl leading-tight tracking-wide font-extrabold text-right items-center justify-end flex flex-wrap space-x-0 select-none opacity-0 absolute pointer-events-none"
+        className="w-full text-3xl md:text-7xl leading-tight tracking-wide font-extrabold text-left md:text-right items-center justify-start md:justify-end flex flex-wrap space-x-0 select-none opacity-0 absolute pointer-events-none"
         aria-hidden="true"
       >
         {textElements.map((element, index) => (
@@ -158,7 +158,7 @@ export default function Workmain3Text() {
         ))}
       </div>
 
-      <div className="w-full pl-8 text-3xl md:text-7xl leading-tight tracking-wide font-extrabold text-right select-none">
+      <div className="w-full text-3xl md:text-7xl leading-tight tracking-wide font-extrabold text-left md:text-right select-none">
         {textLines.map((line, lineIndex) => (
           <AnimatedLine key={lineIndex} delay={lineIndex * 0.2}>
             {line.elements}

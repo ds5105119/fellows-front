@@ -109,7 +109,7 @@ export default function MainSection4() {
               <p className="text-xl md:text-2xl font-extrabold tracking-normal text-black leading-normal">
                 결국 필요한 개발자,
                 <br />
-                해외 개발자를 통해 40% 낮은 가격
+                해외 개발자를 통해 30% 낮은 가격으로
               </p>
             </div>
           </div>
