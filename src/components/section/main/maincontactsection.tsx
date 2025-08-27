@@ -137,20 +137,20 @@ export default function MainContactSection() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
       <div className="col-span-1 flex flex-col gap-4 md:gap-6 aspect-square">
         <div className="w-full h-fit flex">
-          <div className="w-1/3 rounded-4xl p-7 md:p-14 bg-[#45f3a2]">
+          <div className="w-2/7 rounded-3xl md:rounded-4xl p-8 md:p-14 bg-[#45f3a2] flex items-center justify-center">
             <AspectRatio ratio={1 / 1}>
               <Image alt="펠로우즈 이미지 로고" src="/fellows/logo-img.svg" fill className="obejct-cover" />
             </AspectRatio>
           </div>
-          <div className="w-2/3 rounded-4xl p-7 md:p-14 bg-[#45f3a2]">
-            <AspectRatio ratio={3 / 1}>
+          <div className="w-5/7 rounded-3xl md:rounded-4xl p-8 md:p-14 bg-[#45f3a2] flex items-center justify-center">
+            <AspectRatio ratio={139 / 31}>
               <Image alt="펠로우즈 글자 로고" src="/fellows/logo-text.svg" fill className="obejct-cover" />
             </AspectRatio>
           </div>
         </div>
-        <div className="w-full h-full flex-1 bg-zinc-100 rounded-4xl flex">{socialLinks.filter((l) => l.name == selectedMenu)[0]?.children}</div>
+        <div className="w-full h-full flex-1 bg-zinc-100 rounded-3xl md:rounded-4xl flex">{socialLinks.filter((l) => l.name == selectedMenu)[0]?.children}</div>
       </div>
-      <div className="relative col-span-1 bg-zinc-100 rounded-4xl aspect-square overflow-hidden">
+      <div className="relative col-span-1 bg-zinc-100 rounded-3xl md:rounded-4xl aspect-square overflow-hidden">
         <PhysicsGravitySection key={key} onMenuSelect={setSelectedMenu} />
         <div className="absolute right-5 top-5">
           <Button variant="ghost" size="icon" className="focus-visible:ring-0 rounded-full bg-zinc-800 hover:bg-zinc-700" onClick={handleClick}>
