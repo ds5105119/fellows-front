@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useState } from "react";
+import { memo, useState, useRef, useEffect } from "react";
 import Gravity, { MatterBody } from "@/components/fancy/physics/gravity";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import UnderlineToBackground from "@/components/fancy/text/underline-to-background";
 import { Button } from "@/components/ui/button";
 import { RefreshCwIcon } from "lucide-react";
+import { useInView } from "framer-motion";
 
 const socialLinks = [
   {
@@ -123,6 +124,9 @@ const PhysicsGravitySection = memo(function PhysicsGravitySection({ onMenuSelect
 });
 
 export default function MainContactSection() {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const inView = useInView(containerRef, { once: true });
+
   const [selectedMenu, setSelectedMenu] = useState<string>("CONTACT");
   const [key, setKey] = useState<number>(0);
   const [spinning, setSpinning] = useState(false);
@@ -132,6 +136,14 @@ export default function MainContactSection() {
     setKey((prev) => prev + 1);
     setTimeout(() => setSpinning(false), 500);
   };
+
+  useEffect(() => {
+    if (inView) {
+      setKey((prev) => prev + 1);
+    }
+
+    console.log(inView);
+  }, [inView]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
@@ -150,7 +162,7 @@ export default function MainContactSection() {
         </div>
         <div className="w-full h-full flex-1 bg-zinc-100 rounded-3xl md:rounded-4xl flex">{socialLinks.filter((l) => l.name == selectedMenu)[0]?.children}</div>
       </div>
-      <div className="relative col-span-1 bg-zinc-100 rounded-3xl md:rounded-4xl aspect-square overflow-hidden">
+      <div ref={containerRef} className="relative col-span-1 bg-zinc-100 rounded-3xl md:rounded-4xl aspect-square overflow-hidden">
         <PhysicsGravitySection key={key} onMenuSelect={setSelectedMenu} />
         <div className="absolute right-5 top-5">
           <Button variant="ghost" size="icon" className="focus-visible:ring-0 rounded-full bg-zinc-800 hover:bg-zinc-700" onClick={handleClick}>
