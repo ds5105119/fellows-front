@@ -1,40 +1,97 @@
-import { auth } from "@/auth";
-import { cookies } from "next/headers";
-import { ChevronDown } from "lucide-react";
-import MainSection1Form from "./mainsection1form";
+import Image from "next/image";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
+import { ChevronRight } from "lucide-react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export default async function MainSection1() {
-  const session = await auth();
-  const cookieStore = await cookies();
-
-  const pendingDescription = cookieStore.get("pendingDescription")?.value || "";
-
   return (
-    <div className="relative w-full h-full px-4">
-      <div className="flex flex-col gap-8 items-center justify-center w-full h-full">
-        <div className="flex w-full flex-col z-20 items-center justify-center rounded-2xl">
-          <div className="w-full pt-6 md:pt-2 flex flex-col gap-2 md:gap-3 items-center justify-center">
-            <div className="w-full flex flex-col md:flex-row gap-1 md:gap-2.5 items-center justify-center text-foreground text-center">
-              <h1 className="text-2xl xl:text-5xl font-bold tracking-normal">Web, App 개발</h1>
-              <h1 className="text-2xl xl:text-5xl font-bold tracking-normal">Fellows℠에 문의하세요</h1>
-            </div>
+    <div className="relative grid grid-cols-1 lg:grid-cols-12 mt-40">
+      <div className="col-span-full">
+        <div className="relative w-full hidden md:block">
+          {/* Base image */}
+          <AspectRatio ratio={3146 / 1332}>
+            <Image src="/hero-desktop-2.jpg" fill alt="Image" className="rounded-md object-cover" priority />
+          </AspectRatio>
 
-            <div className="w-full flex flex-col items-center justify-center text-foreground text-center pt-1 md:pt-4.5">
-              <div className="w-full flex flex-col md:flex-row items-center justify-center gap-0.5 md:gap-1">
-                <h3 className="text-sm xl:text-lg font-semibold tracking-normal text-muted-foreground w-fit">글로벌 전문 외주 인력을 통해</h3>
-                <h3 className="text-sm xl:text-lg font-semibold tracking-normal text-muted-foreground w-fit">최소 30%의 비용을 절감해보세요.</h3>
+          {/* Filter image layered above */}
+          <div className="absolute inset-0 z-10 pointer-events-none">
+            <AspectRatio ratio={3146 / 1332} className="hidden md:block">
+              <img src="/hero-desktop-filter.svg" alt="Filter" className="object-cover w-full h-full" />
+            </AspectRatio>
+          </div>
+
+          {/* CTA */}
+          <div className="absolute inset-0 flex z-20 items-center justify-center">
+            <div className="w-[87%] h-[80%] flex flex-col gap-3 text-end items-end justify-end">
+              <h2 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">Web, App 개발</h2>
+              <h2 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">
+                <span className="font-black">Fellows℠</span>에서 시작하세요
+              </h2>
+
+              <h4 className="scroll-m-20 text-lg font-semibold leading-normal text-muted ml-1 md:mt-1.5">
+                어차피 써야하는 개발비라면 스마트하게 AI견적부터 테스크 추적까지,
+                <br />
+                최소 30% 더 적은 비용으로 외주를 진행하세요.<span className="text-[#e64646] font-black">*</span>
+              </h4>
+
+              <div className="space-x-4 mt-3 flex">
+                <Button size="lg" className="px-16 h-16 text-lg rounded-xl bg-black hover:bg-zinc-800/80" asChild>
+                  <Link href="/service/dashboard">시작하기</Link>
+                </Button>
+                <Button size="lg" variant="secondary" className="px-16 h-16 text-lg rounded-xl">
+                  가격 및 플랜
+                </Button>
               </div>
-              <h3 className="text-sm xl:text-lg font-semibold tracking-normal text-muted-foreground hidden md:block w-full">
-                개발 비용은 더 낮아지고 높은 퀄리티는 유지할 수 있어요.
-              </h3>
             </div>
-            <MainSection1Form session={session} initialDescription={decodeURIComponent(pendingDescription)} />
           </div>
         </div>
 
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 p-2" style={{ animation: "bounce 2s infinite" }}>
-          <ChevronDown className="text-foreground" />
+        <div className="relative w-full block md:hidden">
+          {/* Base image */}
+          <AspectRatio ratio={987 / 1040}>
+            <Image src="/hero-desktop-2.jpg" fill alt="Image" className="rounded-md object-cover" priority />
+            <div className="absolute inset-0 flex z-10 items-center justify-center">
+              <div className="w-[85%] h-[100%] flex flex-col gap-3 text-end items-end justify-end">
+                <div className="flex flex-col w-full mb-7">
+                  <h1 className="text-3xl font-extrabold tracking-normal text-background hidden">Web, App 개발</h1>
+                  <h1 className="text-3xl font-extrabold tracking-normal text-background">
+                    <span className="font-black">Fellows℠</span>에서 앞서나가세요
+                  </h1>
+
+                  <h4 className="scroll-m-20 text-sm font-semibold leading-tight text-muted ml-1 mt-2">
+                    제작부터 관리까지 최대 40% 더 적은 비용으로
+                    <br />
+                    주목받는 페이지를 만들어보세요.<span className="text-[#e64646] font-black">*</span>
+                  </h4>
+                </div>
+              </div>
+            </div>
+          </AspectRatio>
+          {/* Filter image layered above */}
+          <div className="absolute -inset-[1px] z-20 pointer-events-none">
+            <AspectRatio ratio={987 / 1040} className="block md:hidden">
+              <img src="/hero-mobile-filter.svg" alt="Filter" className="object-cover w-full h-full" />
+            </AspectRatio>
+          </div>
         </div>
+      </div>
+
+      <div className="col-span-full flex flex-col space-y-2 pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
+        <div>
+          <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
+        </div>
+        <div>
+          <span className="text-[#e64646] font-black">**</span> 서비스는 9월 22일부터 정식 제공됩니다
+        </div>
+      </div>
+
+      <div className="col-span-full w-full flex z-20 md:hidden pt-4">
+        <Button size="lg" className="w-full px-16 h-[3.5rem] text-lg font-semibold rounded-2xl bg-black active:bg-black" asChild>
+          <Link href="/service/dashboard">시작하기</Link>
+        </Button>
       </div>
     </div>
   );
