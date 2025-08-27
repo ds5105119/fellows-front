@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { DesktopCTAButton, MobileCTAButton } from "./mainsection1ctabutton";
 
 export default async function MainSection1() {
   return (
@@ -35,9 +35,7 @@ export default async function MainSection1() {
               </h4>
 
               <div className="space-x-4 mt-3 flex">
-                <Button size="lg" className="px-16 h-16 text-lg rounded-xl bg-black hover:bg-zinc-800/80" asChild>
-                  <Link href="/service/dashboard">시작하기</Link>
-                </Button>
+                <DesktopCTAButton />
                 <Button size="lg" variant="secondary" className="px-16 h-16 text-lg rounded-xl">
                   가격 및 플랜
                 </Button>
@@ -59,9 +57,9 @@ export default async function MainSection1() {
                   </h1>
 
                   <h4 className="scroll-m-20 text-sm font-semibold leading-tight text-muted ml-1 mt-2">
-                    제작부터 관리까지 최대 40% 더 적은 비용으로
+                    어차피 써야하는 개발비라면 스마트하게 AI견적부터 테스크 추적까지,
                     <br />
-                    주목받는 페이지를 만들어보세요.<span className="text-[#e64646] font-black">*</span>
+                    최소 30% 더 적은 비용으로 외주를 진행하세요.<span className="text-[#e64646] font-black">*</span>
                   </h4>
                 </div>
               </div>
@@ -86,9 +84,7 @@ export default async function MainSection1() {
       </div>
 
       <div className="col-span-full w-full flex z-20 md:hidden pt-4">
-        <Button size="lg" className="w-full px-16 h-[3.5rem] text-lg font-semibold rounded-2xl bg-black active:bg-black" asChild>
-          <Link href="/service/dashboard">시작하기</Link>
-        </Button>
+        <MobileCTAButton />
       </div>
     </div>
   );
