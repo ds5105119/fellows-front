@@ -14,6 +14,13 @@ interface TextLine {
 function AnimatedLine({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { margin: "-20% 0px -20% 0px" });
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    if (isInView && !hasAnimated) {
+      setHasAnimated(true);
+    }
+  }, [isInView, hasAnimated]);
 
   const lineVariants = {
     hidden: {
@@ -31,17 +38,6 @@ function AnimatedLine({ children, delay = 0 }: { children: React.ReactNode; dela
         delay: delay,
       },
     },
-    exit: {
-      y: -50,
-      opacity: 0,
-      transition: {
-        type: "spring" as const,
-        stiffness: 100,
-        damping: 12,
-        duration: 0.6,
-        delay: delay,
-      },
-    },
   };
 
   return (
@@ -50,8 +46,7 @@ function AnimatedLine({ children, delay = 0 }: { children: React.ReactNode; dela
       className="flex items-center justify-start md:justify-end flex-wrap"
       variants={lineVariants}
       initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      exit="exit"
+      animate={hasAnimated ? "visible" : "hidden"}
     >
       {children}
     </motion.div>
@@ -98,14 +93,11 @@ export default function Workmain3Text() {
       const relativeY = rect.top - containerRect.top;
 
       if (currentLine.elements.length === 0) {
-        // 첫 번째 요소
         currentLine.y = relativeY;
         currentLine.elements.push(textElements[index]);
-      } else if (Math.abs(relativeY - currentLine.y) < 10) {
-        // 같은 줄 (10px 오차 허용)
+      } else if (Math.abs(relativeY - currentLine.y) < 40) {
         currentLine.elements.push(textElements[index]);
       } else {
-        // 새로운 줄
         lines.push({ ...currentLine });
         currentLine = {
           elements: [textElements[index]],
@@ -114,21 +106,28 @@ export default function Workmain3Text() {
       }
     });
 
-    // 마지막 줄 추가
     if (currentLine.elements.length > 0) {
       lines.push(currentLine);
     }
 
-    setTextLines(lines);
+    const totalElementsInLines = lines.reduce((sum, line) => sum + line.elements.length, 0);
+
+    if (totalElementsInLines < textElements.length || lines.length === 0) {
+      const fallbackLines = textElements.map((element) => ({
+        elements: [element],
+        y: 0,
+      }));
+      setTextLines(fallbackLines);
+    } else {
+      setTextLines(lines);
+    }
   };
 
   useEffect(() => {
-    // 초기 계산
     const timer = setTimeout(() => {
       calculateLines();
     }, 100);
 
-    // 리사이즈 이벤트 리스너
     const handleResize = () => {
       setTimeout(() => {
         calculateLines();
@@ -144,11 +143,10 @@ export default function Workmain3Text() {
   }, []);
 
   return (
-    <div className="place-self-start md:place-self-end mt-24 md:mt-40 w-4/5 md:w-3/4 -z-10">
-      {/* 숨겨진 참조용 컨테이너 */}
+    <div className="place-self-start md:place-self-end mt-24 md:mt-40 w-full md:w-3/4 -z-10 px-2 md:px-0">
       <div
         ref={containerRef}
-        className="w-full text-3xl md:text-7xl leading-tight tracking-wide font-extrabold text-left md:text-right items-center justify-start md:justify-end flex flex-wrap space-x-0 select-none opacity-0 absolute pointer-events-none"
+        className="w-full text-2xl md:text-7xl leading-tight tracking-wide font-extrabold text-left md:text-right items-center justify-start md:justify-end flex flex-wrap opacity-0 pointer-events-none absolute inset-0"
         aria-hidden="true"
       >
         {textElements.map((element, index) => (
@@ -157,8 +155,7 @@ export default function Workmain3Text() {
           </div>
         ))}
       </div>
-
-      <div className="w-full text-3xl md:text-7xl leading-tight tracking-wide font-extrabold text-left md:text-right select-none">
+      <div className="relative w-full text-2xl md:text-7xl leading-tight tracking-wide font-extrabold text-left md:text-right select-none">
         {textLines.map((line, lineIndex) => (
           <AnimatedLine key={lineIndex} delay={lineIndex * 0.2}>
             {line.elements}
