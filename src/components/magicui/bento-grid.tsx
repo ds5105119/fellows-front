@@ -4,7 +4,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import { useRef, useState } from "react";
-import { Cursor } from "@/components/resource/cursor";
+import { Cursor } from "@/components/ui/cursor";
 import { AnimatePresence, motion } from "motion/react";
 import { PlusIcon } from "lucide-react";
 

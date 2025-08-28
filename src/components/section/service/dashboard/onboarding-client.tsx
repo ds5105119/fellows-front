@@ -110,7 +110,7 @@ export function OnboardingClient({ userData, hasProject, hasInquery, project, up
                     <div className="text-base font-bold">프로젝트 생성하기</div>
                     <div className="text-sm font-medium text-muted-foreground">우선 Fellows와 작업하고 싶은 웹 및 앱 프로제트를 등록해 주세요.</div>
                     <Button size="sm" className="w-fit mt-3" asChild>
-                      <Link href="/service/project/new">
+                      <Link href="/service/project">
                         생성하기 <ArrowUpRight />
                       </Link>
                     </Button>

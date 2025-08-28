@@ -120,19 +120,31 @@ export const NOCODE_PLATFORM_MAPPING = {
   },
   imweb: {
     title: "아임웹",
-    description: "디자인과 개발을 통합한 노코드 플랫폼으로, " + "반응형 웹사이트 제작에 최적화되어 있어요.",
+    description: "디자인과 개발을 통합한 노코드 플랫폼으로, 반응형 웹사이트 제작에 최적화되어 있어요.",
   },
   godo: {
     title: "고도몰",
-    description: "한국 시장에 최적화된 쇼핑몰 노코드 플랫폼으로, " + "다양한 결제 수단과 배송 옵션을 지원해요.",
+    description: "한국 시장에 최적화된 쇼핑몰 노코드 플랫폼으로, 다양한 결제 수단과 배송 옵션을 지원해요.",
   },
   shopify: {
     title: "Shopify",
-    description: "쇼핑몰에 최적화된 노코드 플랫폼이에요. " + "글로벌 시장에 적합한 다양한 기능을 제공해요.",
+    description: "쇼핑몰에 최적화된 노코드 플랫폼이에요. 글로벌 시장에 적합한 다양한 기능을 제공해요.",
   },
   framer: {
     title: "Framer",
-    description: "디자인 중심의 노코드 플랫폼으로, " + "빠른 프로토타입 제작과 인터랙티브한 UI 구현이 가능해요.",
+    description: "디자인 중심의 노코드 플랫폼으로, 빠른 프로토타입 제작과 인터랙티브한 UI 구현이 가능해요.",
+  },
+  webflow: {
+    title: "Webflow",
+    description: "디자인 자유도가 높은 노코드 플랫폼으로, 픽셀 단위 커스터마이징과 반응형 웹 제작에 강점이 있어요.",
+  },
+  wordpress: {
+    title: "WordPress",
+    description: "세계적으로 가장 널리 사용되는 CMS 기반 노코드 플랫폼으로, 다양한 플러그인과 테마로 확장성이 뛰어나요.",
+  },
+  bubble: {
+    title: "Bubble",
+    description: "웹 애플리케이션 제작에 특화된 노코드 플랫폼으로, 데이터베이스 연동과 복잡한 로직 구현도 가능해요.",
   },
 };
 

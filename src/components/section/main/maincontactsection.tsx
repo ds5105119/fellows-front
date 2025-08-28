@@ -10,7 +10,7 @@ import UnderlineToBackground from "@/components/fancy/text/underline-to-backgrou
 import { Button } from "@/components/ui/button";
 import { RefreshCwIcon } from "lucide-react";
 import { useInView } from "framer-motion";
-import { Cursor } from "@/components/resource/cursor";
+import { Cursor } from "@/components/ui/cursor";
 
 const socialLinks = [
   {

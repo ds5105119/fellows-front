@@ -20,16 +20,16 @@ const getEnumValues = <T extends z.ZodEnum<[string, ...string[]]>>(enumType: T):
 };
 
 export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1Props) {
-  const { control, getValues, setValue } = form;
+  const { control, getValues, setValue, watch } = form;
   const platforms = getValues("custom_platforms");
   const readiness = getValues("custom_readiness_level");
-  const projectMethod = getValues("custom_project_method");
+  const projectMethod = watch("custom_project_method");
 
   const filteredPlatforms = useMemo(() => {
     let allowedKeys: string[] = [];
 
     if (projectMethod === "nocode") {
-      allowedKeys = ["cafe24", "godo", "imweb", "shopify", "framer"];
+      allowedKeys = ["wordpress", "webflow", "imweb", "framer", "bubble"];
     } else if (projectMethod === "shop") {
       allowedKeys = ["cafe24", "godo", "imweb", "shopify"];
     }
@@ -170,7 +170,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                             가격
                           </div>
                           <p className="w-full text-sm font-medium">
-                            {readiness == "idea" ? "2000만 원~" : readiness == "requirements" ? "1800만 원~" : "1000만 원~"}
+                            {readiness == "idea" ? "1000만 원~" : readiness == "requirements" ? "800만 원~" : "500만 원~"}
                           </p>
                         </button>
                       )}
@@ -203,7 +203,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                             가격
                           </div>
                           <p className="w-full text-sm font-medium">
-                            {readiness == "idea" ? "1100만 원~" : readiness == "requirements" ? "300만 원~" : "100만 원~"}
+                            {readiness == "idea" ? "300만 원~" : readiness == "requirements" ? "200만 원~" : "100만 원~"}
                           </p>
                         </button>
                       )}
@@ -236,7 +236,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                             가격
                           </div>
                           <p className="w-full text-sm font-medium">
-                            {readiness == "idea" ? "1300만 원~" : readiness == "requirements" ? "500만 원~" : "300만 원~"}
+                            {readiness == "idea" ? "300만 원~" : readiness == "requirements" ? "200만 원~" : "100만 원~"}
                           </p>
                         </button>
                       )}
@@ -250,7 +250,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {projectMethod !== "code" && (
+        {projectMethod !== "code" && projectMethod && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}

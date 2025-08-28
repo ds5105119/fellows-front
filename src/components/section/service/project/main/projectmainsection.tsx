@@ -18,7 +18,7 @@ import { Info, PlusIcon, SearchIcon } from "lucide-react";
 import { ProjectsPaginatedResponse, UserERPNextProject } from "@/@types/service/project";
 import { useProjects } from "@/hooks/fetch/project";
 import { Button } from "@/components/ui/button";
-import ProjectNewButton from "./project-new-button";
+import { MorphingPopoverTextarea } from "./project-new-button2";
 
 // --- 타입 및 상수 정의 ---
 
@@ -190,7 +190,7 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
                 새로 만들기
               </Link>
             </Button>
-            <ProjectNewButton session={session} initialDescription="" />
+            <MorphingPopoverTextarea session={session} />
           </div>
         </div>
       </div>
