@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useActionState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import VariableFontHoverByLetter from "@/components/fancy/text/variable-font-hover-by-letter";
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
-import { type EstimateFormState, getEstimateInfo, getEstimateInfoAction } from "@/hooks/fetch/server/project";
+import { getEstimateInfo } from "@/hooks/fetch/server/project";
 import { ArrowRight, Loader2 } from "lucide-react";
 import type { Session } from "next-auth";
 import { signIn } from "next-auth/react";
@@ -16,7 +16,6 @@ const INQUIRY_COOKIE_KEY = "pending_inquiry_data";
 export default function MainInquerySection({ session }: { session: Session | null }) {
   const router = useRouter();
 
-  const [state, formAction] = useActionState<EstimateFormState, FormData>(getEstimateInfoAction, null);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const formRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -62,23 +61,12 @@ export default function MainInquerySection({ session }: { session: Session | nul
     run();
   }, [session, searchParams]);
 
-  useEffect(() => {
-    if (state?.success) {
-      sessionStorage.setItem(
-        "project_info",
-        JSON.stringify({
-          description: state.description,
-          info: state.info,
-        })
-      );
-      router.push(`/service/project/new?from=session`);
-    }
-  }, [state]);
-
   const handleFormSubmit = async (formData: FormData) => {
+    const description = formData.get("description");
+
     if (!session) {
       const inquiryData = {
-        description: formData.get("description"),
+        description,
         timestamp: Date.now(),
       };
 
@@ -91,7 +79,27 @@ export default function MainInquerySection({ session }: { session: Session | nul
       return;
     }
 
-    formAction(formData);
+    if (description) {
+      try {
+        setSubmitting(true);
+
+        const state = await getEstimateInfo(description.toString());
+
+        if (state?.success) {
+          sessionStorage.setItem(
+            "project_info",
+            JSON.stringify({
+              description: state.description,
+              info: state.info,
+            })
+          );
+          router.push(`/service/project/new?from=session`);
+        }
+      } catch (err) {
+        setSubmitting(false);
+        console.error("Failed to parse saved inquiry data:", err);
+      }
+    }
   };
 
   if (submitting) {
