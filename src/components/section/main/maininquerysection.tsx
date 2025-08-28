@@ -24,10 +24,11 @@ export default function MainInquerySection({ session }: { session: Session | nul
     const run = async () => {
       const shouldAutoSubmit = searchParams.get("auto_submit") === "true";
       if (shouldAutoSubmit && session) {
+        setSubmitting(true);
         const savedData = getCookie(INQUIRY_COOKIE_KEY);
+
         if (savedData) {
           try {
-            setSubmitting(true);
             const parsedData = JSON.parse(savedData);
 
             deleteCookie(INQUIRY_COOKIE_KEY);
