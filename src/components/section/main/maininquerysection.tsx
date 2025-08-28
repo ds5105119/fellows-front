@@ -115,7 +115,7 @@ export default function MainInquerySection({ session }: { session: Session | nul
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full px-4">
       <div className="w-full pb-8 md:pb-10">
         <div className="flex flex-col space-y-4 md:space-y-6">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">Tell us about your project ✽</h1>
