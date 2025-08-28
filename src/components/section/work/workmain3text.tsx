@@ -129,7 +129,7 @@ export default function Workmain3Text() {
   }, []);
 
   return (
-    <div className="place-self-start md:place-self-end mt-24 md:mt-40 w-full md:w-3/4 -z-10 px-4 md:px-0">
+    <div className="place-self-start md:place-self-end mt-24 md:mt-40 w-full md:w-3/4 -z-10">
       <div
         ref={measureRef}
         className="absolute opacity-0 pointer-events-none text-2xl md:text-7xl leading-tight tracking-wide font-extrabold text-left md:text-right"
