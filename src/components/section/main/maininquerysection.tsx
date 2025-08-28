@@ -17,7 +17,6 @@ export default function MainInquerySection({ session }: { session: Session | nul
   const router = useRouter();
 
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const formRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const searchParams = useSearchParams();
 
@@ -82,7 +81,6 @@ export default function MainInquerySection({ session }: { session: Session | nul
     if (description) {
       try {
         setSubmitting(true);
-
         const state = await getEstimateInfo(description.toString());
 
         if (state?.success) {
@@ -126,7 +124,7 @@ export default function MainInquerySection({ session }: { session: Session | nul
           </div>
         </div>
       </div>
-      <form ref={formRef} className="flex flex-col gap-6" action={handleFormSubmit}>
+      <div className="flex flex-col gap-6">
         <AnimatedUnderlineTextarea
           ref={textareaRef}
           name="description"
@@ -134,8 +132,11 @@ export default function MainInquerySection({ session }: { session: Session | nul
           placeholder="자유롭게 메시지를 작성해주세요."
         />
         <button
-          type="submit"
-          onClick={() => setSubmitting(true)}
+          onClick={() => {
+            const fd = new FormData();
+            fd.append("description", textareaRef.current?.value ?? "");
+            handleFormSubmit(fd);
+          }}
           className="w-fit flex items-center justify-center gap-1.5 text-2xl font-light rounded-full bg-white"
         >
           <ArrowRight strokeWidth={1} size={32} />
@@ -146,7 +147,7 @@ export default function MainInquerySection({ session }: { session: Session | nul
             toFontVariationSettings="'wght' 900, 'slnt' -10"
           />
         </button>
-      </form>
+      </div>
     </div>
   );
 }
