@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import TextHighlighter from "@/components/fancy/text/text-highlighter";
+import { Cursor } from "@/components/ui/cursor";
 
 function calculateScale(width: number): number {
   if (width > 1536) return 1;
@@ -25,9 +26,7 @@ const fixedIcons = [
 const comparisonData = [
   { fellows: ["자체 SaaS에서 프로젝트 관리,", "이슈 관리, 전자 계약 체결"], other: "인보이스, Notion" },
   { fellows: ["해외 파트너사를 통해", "국내 대비 40% 비용 절감"], other: "-" },
-  { fellows: ["기획부터 견적까지", "투명한 프로세스"], other: "-" },
   { fellows: ["반복되는 미팅, 견적요청 없이", "몇 번이고 편하게 견적 수정"], other: "-" },
-  { fellows: ["MSA 환경에서 실행되는", "긴밀한 자사 홈페이지"], other: ["노코드, 바이브 코딩으로", "만들어진 홈페이지"] },
 ] as const;
 
 export default function MainSection4() {
@@ -63,9 +62,45 @@ export default function MainSection4() {
 
       {/* Left Section */}
       <div
-        className="relative col-span-1 md:pr-4 aspect-[7/9] md:aspect-[8/9] mb-10 md:mb-0"
+        className="relative col-span-1 md:mr-4 aspect-[7/9] md:aspect-[8/9] mb-10 md:mb-0 cursor-none"
         onClick={() => (showDetail == 1 ? setShowDetail(0) : setShowDetail(1))}
       >
+        <Cursor
+          attachToParent
+          variants={{
+            initial: { scale: 0.3, opacity: 0 },
+            animate: { scale: 1, opacity: 1 },
+            exit: { scale: 0.3, opacity: 0 },
+          }}
+          springConfig={{
+            bounce: 0.001,
+          }}
+          transition={{
+            ease: "easeInOut",
+            duration: 0.15,
+          }}
+        >
+          <motion.div
+            animate={{
+              width: showDetail != 1 ? 80 : 16,
+              height: showDetail != 1 ? 80 : 16,
+            }}
+            className="flex items-center justify-center rounded-[40px] bg-gray-500/40 backdrop-blur-md dark:bg-gray-300/40"
+          >
+            <AnimatePresence>
+              {showDetail != 1 ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.6 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.6 }}
+                  className="inline-flex w-full items-center justify-center"
+                >
+                  <div className="inline-flex items-center text-sm text-white dark:text-black">More</div>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </motion.div>
+        </Cursor>
         <AnimatePresence>
           {showDetail == 1 && (
             <motion.div
@@ -75,10 +110,10 @@ export default function MainSection4() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="max-w-md mx-auto px-4 p-0 text-white">
-                <h1 className="text-4xl font-medium mb-12 font-calendas tracking-tight">Fellows Teams</h1>
+              <div className="max-w-md mx-auto px-8 p-0 text-white">
+                <h1 className="text-2xl md:text-4xl font-medium mb-6 md:mb-12 font-calendas tracking-tight">Fellows Teams</h1>
 
-                <div className="text leading-normal space-y-4">
+                <div className="text text-xs md:text-sm lg:text-base leading-normal space-y-4">
                   <p>
                     개발은 코드와 노코드 모두를 지원하며, 말레이시아, 인도네시아 등 다국적 개발 파트너사와 협력하여 진행됩니다. 국내 SI 대비
                     <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
@@ -88,7 +123,7 @@ export default function MainSection4() {
                     관리할 수 있습니다.
                   </p>
 
-                  <p>
+                  <p className="hidden xl:inline-block">
                     반복되는 미팅이나 견적 요청 없이, 고객은 원하는 만큼 편하게 프로젝트를 조정할 수 있으며, AI가 제공하는 예상 견적과 기능 추천으로 의사결정이
                     훨씬 쉬워집니다. 이렇게 우리는 스타트업이 보다 빠르고 효율적으로 개발을 진행할 수 있도록 돕습니다.
                   </p>
@@ -102,10 +137,10 @@ export default function MainSection4() {
                   </p>
 
                   <p>
-                    글로벌 전문가와 고급 디자인 역량, AI 기반 프로젝트 분석과 추천, 자체 SaaS를 통한 투명한 관리까지 갖춘 우리의 서비스는 단순 개발 대행을 넘어,
-                    고객이 생각하는 아이디어를 현실로 구현하는 과정 전체를 체계적으로 지원합니다.
+                    글로벌 전문가와 고급 디자인 역량, AI 기반 프로젝트 분석과 추천, 자체 SaaS를 통한 투명한 관리까지 갖춘 Fellows 단순 개발 대행을 넘어, 고객이
+                    생각하는 아이디어를 현실로 구현하는 과정 전체를 체계적으로 지원합니다. 코드와 노코드 개발을 아우르는 글로벌 전문가 풀로,&nbsp;
                     <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                      코드와 노코드 개발을 아우르는 글로벌 전문가 풀로, 비용과 시간 모두를 절감하며 최고의 결과를 제공합니다.
+                      비용과 시간 모두를 절감하며 최고의 결과를 제공합니다.
                     </TextHighlighter>
                   </p>
                 </div>
@@ -158,8 +193,94 @@ export default function MainSection4() {
       </div>
 
       {/* Right Section (Refactored) */}
-      <div className="col-span-1 md:pl-4 aspect-[7/9] md:aspect-[8/9] mb-10 md:mb-0">
-        <div className="w-full h-full rounded-3xl flex flex-col overflow-hidden relative bg-white">
+      <div
+        className="relative col-span-1 md:ml-4 aspect-[7/9] md:aspect-[8/9] mb-10 md:mb-0"
+        onClick={() => (showDetail == 2 ? setShowDetail(0) : setShowDetail(2))}
+      >
+        <Cursor
+          attachToParent
+          variants={{
+            initial: { scale: 0.3, opacity: 0 },
+            animate: { scale: 1, opacity: 1 },
+            exit: { scale: 0.3, opacity: 0 },
+          }}
+          springConfig={{
+            bounce: 0.001,
+          }}
+          transition={{
+            ease: "easeInOut",
+            duration: 0.15,
+          }}
+        >
+          <motion.div
+            animate={{
+              width: showDetail != 2 ? 80 : 16,
+              height: showDetail != 2 ? 80 : 16,
+            }}
+            className="flex items-center justify-center rounded-[40px] bg-gray-500/40 backdrop-blur-md dark:bg-gray-300/40"
+          >
+            <AnimatePresence>
+              {showDetail != 2 ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.6 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.6 }}
+                  className="inline-flex w-full items-center justify-center"
+                >
+                  <div className="inline-flex items-center text-sm text-white dark:text-black">More</div>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </motion.div>
+        </Cursor>
+        <AnimatePresence>
+          {showDetail == 2 && (
+            <motion.div
+              className="absolute top-0 left-0 w-full h-full rounded-3xl flex flex-col items-center justify-center overflow-hidden bg-zinc-800 z-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="max-w-md mx-auto px-8 p-0 text-white">
+                <h1 className="text-2xl md:text-4xl font-medium mb-6 md:mb-12 font-calendas tracking-tight">Fellows Teams</h1>
+
+                <div className="text text-xs md:text-sm lg:text-base leading-normal space-y-4">
+                  <p>
+                    개발은 코드와 노코드 모두를 지원하며, 말레이시아, 인도네시아 등 다국적 개발 파트너사와 협력하여 진행됩니다. 국내 SI 대비
+                    <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
+                      25~30% 비용 절감
+                    </TextHighlighter>
+                    이 가능하며, 프로젝트 관리, 견적, 전자 계약, 테스크 관리, 인보이스까지 자체 SaaS 플랫폼을 통해 모든 과정을 한 곳에서 투명하게 확인하고
+                    관리할 수 있습니다.
+                  </p>
+
+                  <p className="hidden xl:inline-block">
+                    반복되는 미팅이나 견적 요청 없이, 고객은 원하는 만큼 편하게 프로젝트를 조정할 수 있으며, AI가 제공하는 예상 견적과 기능 추천으로 의사결정이
+                    훨씬 쉬워집니다. 이렇게 우리는 스타트업이 보다 빠르고 효율적으로 개발을 진행할 수 있도록 돕습니다.
+                  </p>
+
+                  <p className="whitespace-break-spaces">
+                    디자인이 필요할 경우, 국내 최고 수준의 디자인 하우스와 협업하여
+                    <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
+                      세심하고 완벽한 UI/UX 경험
+                    </TextHighlighter>
+                    를 제공합니다. 디자인은 높은 수준의 마감과 다양한 인터랙션을 구현합니다.
+                  </p>
+
+                  <p>
+                    글로벌 전문가와 고급 디자인 역량, AI 기반 프로젝트 분석과 추천, 자체 SaaS를 통한 투명한 관리까지 갖춘 Fellows 단순 개발 대행을 넘어, 고객이
+                    생각하는 아이디어를 현실로 구현하는 과정 전체를 체계적으로 지원합니다. 코드와 노코드 개발을 아우르는 글로벌 전문가 풀로,&nbsp;
+                    <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
+                      비용과 시간 모두를 절감하며 최고의 결과를 제공합니다.
+                    </TextHighlighter>
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="w-full h-full rounded-3xl flex flex-col overflow-hidden relative bg-white -z-10">
           <div className="pt-6 px-6 md:pt-10 md:px-10 flex flex-col space-y-1.5 z-50 w-full shrink-0">
             <div className="flex flex-col space-y-2">
               <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/Cost</p>

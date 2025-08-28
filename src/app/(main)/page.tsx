@@ -58,7 +58,7 @@ export default async function Page() {
       </BlurFade>
 
       <div className="col-span-full relative" id="primary">
-        <BlurFade className="col-span-full py-0 pt-16 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+        <BlurFade className="col-span-full py-10 pt-16 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
           <MainSection4 />
         </BlurFade>
         <InViewBackground className="bg-zinc-100" />
@@ -67,10 +67,6 @@ export default async function Page() {
       <BlurFade className="col-span-full py-10 lg:py-24" id="secondary">
         <MainSection3 />
       </BlurFade>
-
-      <div className="col-span-full">
-        <MobileCTASection />
-      </div>
 
       <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="quaternary">
         <MainSection7 />
