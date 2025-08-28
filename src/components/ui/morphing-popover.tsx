@@ -89,6 +89,7 @@ function MorphingPopoverTrigger({ children, className, asChild = false, ...props
   }
 
   if (asChild && isValidElement(children)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const MotionComponent = motion.create(children.type as React.ForwardRefExoticComponent<any>);
     const childProps = children.props as Record<string, unknown>;
 
