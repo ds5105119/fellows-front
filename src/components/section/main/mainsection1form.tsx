@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Loader2Icon } from "lucide-react";
-import { type EstimateFormState, getEstimateInfo } from "@/hooks/fetch/server/project";
+import { type EstimateFormState, getEstimateInfoAction } from "@/hooks/fetch/server/project";
 
 const suggestionButtons = [
   {
@@ -59,7 +59,7 @@ export default function MainSection1Form({ session, initialDescription }: { sess
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [isAutoSubmitting, setIsAutoSubmitting] = useState(false);
-  const [state, formAction] = useActionState<EstimateFormState, FormData>(getEstimateInfo, null);
+  const [state, formAction] = useActionState<EstimateFormState, FormData>(getEstimateInfoAction, null);
 
   const isParentLoading = isNavigating || isAutoSubmitting;
   const [placeholderIdx, setPlaceholderIdx] = useState(0);

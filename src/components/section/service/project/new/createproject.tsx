@@ -158,6 +158,7 @@ export default function CreateProject() {
       </div>
     );
   }
+
   if (isRecommending) {
     return (
       <div className="flex w-full h-full min-h-screen">

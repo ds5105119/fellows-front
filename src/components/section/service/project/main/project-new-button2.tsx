@@ -5,7 +5,7 @@ import { useActionState, useEffect, useId, useState } from "react";
 import { ArrowLeftIcon } from "lucide-react";
 import { GlowEffect } from "@/components/ui/glow-effect";
 import { Session } from "next-auth";
-import { type EstimateFormState, getEstimateInfo } from "@/hooks/fetch/server/project";
+import { type EstimateFormState, getEstimateInfoAction } from "@/hooks/fetch/server/project";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -15,7 +15,7 @@ export function MorphingPopoverTextarea({ session }: { session: Session | null }
   const [note, setNote] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [state, formAction] = useActionState<EstimateFormState, FormData>(getEstimateInfo, null);
+  const [state, formAction] = useActionState<EstimateFormState, FormData>(getEstimateInfoAction, null);
 
   const closeMenu = () => {
     setIsOpen(false);

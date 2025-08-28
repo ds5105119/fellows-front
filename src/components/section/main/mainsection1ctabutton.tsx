@@ -47,7 +47,7 @@ export const DesktopCTAButton = () => {
                 className="h-16" // increased height from h-16 to h-20 for more space per menu item
               >
                 <Link
-                  href="#contact"
+                  href="#inquery"
                   className="px-6 py-3 w-full h-full text-white hover:bg-white/10 transition-all duration-200 text-center font-medium border-b border-zinc-600/30 last:border-b-0 hover:text-zinc-100 flex items-center justify-center" // increased padding from py-4 to py-6
                   onClick={() => {
                     setIsMenuOpen(false);
@@ -99,7 +99,7 @@ export const MobileCTAButton = () => {
 
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 * 0.1, duration: 0.2 }} className="flex-1">
                 <Link
-                  href="#contact"
+                  href="#inquery"
                   className="block px-4 py-4 text-gray-800 hover:bg-gray-50 transition-colors text-center font-medium border-r last:border-r-0 border-gray-200"
                   onClick={() => setIsMenuOpen(false)}
                 >

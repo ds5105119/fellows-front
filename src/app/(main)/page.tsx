@@ -1,14 +1,18 @@
+import { Metadata } from "next";
+import { auth } from "@/auth";
+
+import { BlurFade } from "@/components/magicui/blur-fade";
+import InViewBackground from "@/components/resource/inviewbackground";
+
 import MainSection1 from "@/components/section/main/mainsection1";
 import MainSection2 from "@/components/section/main/mainsection2";
 import MainSection3 from "@/components/section/main/mainsection3";
 import MainSection4 from "@/components/section/main/mainsection4";
 import MainSection7 from "@/components/section/main/mainsection7";
 import MainQnaSection from "@/components/section/main/mainqnasection";
-import { BlurFade } from "@/components/magicui/blur-fade";
 import MobileCTASection from "@/components/section/main/mobilectasection";
-import InViewBackground from "@/components/resource/inviewbackground";
-import { Metadata } from "next";
 import MainContactSection from "@/components/section/main/maincontactsection";
+import MainInquerySection from "@/components/section/main/maininquerysection";
 
 export const metadata: Metadata = {
   title: "Fellows | 펠로우즈",
@@ -41,6 +45,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  const session = await auth();
+
   return (
     <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
       <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 w-full relative">
@@ -70,12 +76,16 @@ export default async function Page() {
         <MainSection7 />
       </BlurFade>
 
-      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="qna">
         <MainQnaSection />
       </BlurFade>
 
       <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="contact">
         <MainContactSection />
+      </BlurFade>
+
+      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="inquery">
+        <MainInquerySection session={session} />
       </BlurFade>
     </div>
   );
