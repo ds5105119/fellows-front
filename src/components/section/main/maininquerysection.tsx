@@ -122,7 +122,7 @@ export default function MainInquerySection({ session }: { session: Session | nul
         <AnimatedUnderlineTextarea
           ref={textareaRef}
           name="description"
-          className="!text-2xl min-h-[6em] md:min-h-[8em]"
+          className="!text-base md:!text-2xl min-h-[6em] md:min-h-[8em]"
           placeholder="자유롭게 메시지를 작성해주세요."
         />
         <button
