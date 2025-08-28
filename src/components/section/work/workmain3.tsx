@@ -53,25 +53,24 @@ export default function WorkMain3() {
   };
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full">
+      <ImageTrail
+        key="imagetrail"
+        items={[
+          "https://picsum.photos/id/287/300/300",
+          "https://picsum.photos/id/1001/300/300",
+          "https://picsum.photos/id/1025/300/300",
+          "https://picsum.photos/id/1026/300/300",
+          "https://picsum.photos/id/1027/300/300",
+          "https://picsum.photos/id/1028/300/300",
+          "https://picsum.photos/id/1029/300/300",
+          "https://picsum.photos/id/1030/300/300",
+        ]}
+        variant={1}
+      />
       <div className="relative w-full px-4 overflow-hidden">
         <Workmain3Text />
-        <ImageTrail
-          key="imagetrail"
-          items={[
-            "https://picsum.photos/id/287/300/300",
-            "https://picsum.photos/id/1001/300/300",
-            "https://picsum.photos/id/1025/300/300",
-            "https://picsum.photos/id/1026/300/300",
-            "https://picsum.photos/id/1027/300/300",
-            "https://picsum.photos/id/1028/300/300",
-            "https://picsum.photos/id/1029/300/300",
-            "https://picsum.photos/id/1030/300/300",
-          ]}
-          variant={1}
-        />
       </div>
-
       <div
         ref={detailSectionRef}
         onClick={toggleMobileMenu}
@@ -79,7 +78,6 @@ export default function WorkMain3() {
       >
         <LetterSwapPingPong label="↳ More about our company" staggerFrom="first" className="mono pb-2 border-b-4 border-black" />
       </div>
-
       <div className="relative w-full">
         <AnimatePresence>
           {isDetailSectionOpen && (

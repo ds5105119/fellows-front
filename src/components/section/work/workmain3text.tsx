@@ -1,19 +1,13 @@
 "use client";
 
 import type React from "react";
-
 import { motion, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-interface TextLine {
-  elements: React.ReactNode[];
-  y: number;
-}
-
 function AnimatedLine({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { margin: "-80px 0px 0px 0px" });
+  const isInView = useInView(ref, { margin: "-20% 0px -20% 0px" });
   const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
@@ -54,9 +48,6 @@ function AnimatedLine({ children, delay = 0 }: { children: React.ReactNode; dela
 }
 
 export default function Workmain3Text() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [textLines, setTextLines] = useState<TextLine[]>([]);
-
   const textElements = [
     <span key="1">Fellows는</span>,
     <span key="2" className="relative inline-block h-[1em] aspect-[5/2] rounded-[50px] overflow-hidden align-middle mx-[1.5vw]">
@@ -76,62 +67,57 @@ export default function Workmain3Text() {
     <span key="10">자연스럽게 만듭니다.</span>,
   ];
 
-  const calculateLines = () => {
-    if (!containerRef.current) return;
-
-    const container = containerRef.current;
-    const children = Array.from(container.children) as HTMLElement[];
-
-    if (children.length === 0) return;
-
-    const lines: TextLine[] = [];
-    let currentLine: { elements: React.ReactNode[]; y: number } = { elements: [], y: 0 };
-
-    children.forEach((child, index) => {
-      const rect = child.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-      const relativeY = rect.top - containerRect.top;
-
-      if (currentLine.elements.length === 0) {
-        currentLine.y = relativeY;
-        currentLine.elements.push(textElements[index]);
-      } else if (Math.abs(relativeY - currentLine.y) < 40) {
-        currentLine.elements.push(textElements[index]);
-      } else {
-        lines.push({ ...currentLine });
-        currentLine = {
-          elements: [textElements[index]],
-          y: relativeY,
-        };
-      }
-    });
-
-    if (currentLine.elements.length > 0) {
-      lines.push(currentLine);
-    }
-
-    const totalElementsInLines = lines.reduce((sum, line) => sum + line.elements.length, 0);
-
-    if (totalElementsInLines < textElements.length || lines.length === 0) {
-      const fallbackLines = textElements.map((element) => ({
-        elements: [element],
-        y: 0,
-      }));
-      setTextLines(fallbackLines);
-    } else {
-      setTextLines(lines);
-    }
-  };
+  const [lines, setLines] = useState<React.ReactNode[][]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      calculateLines();
-    }, 100);
+    const calculateLines = () => {
+      if (!measureRef.current) return;
 
+      const spans = Array.from(measureRef.current.children) as HTMLElement[];
+      const lineGroups: React.ReactNode[][] = [];
+      let currentLine: React.ReactNode[] = [];
+      let currentTop = -1;
+
+      spans.forEach((span, index) => {
+        const rect = span.getBoundingClientRect();
+        const spanTop = Math.round(rect.top);
+
+        if (currentTop === -1) {
+          currentTop = spanTop;
+        }
+
+        if (Math.abs(spanTop - currentTop) > 5) {
+          // New line detected
+          if (currentLine.length > 0) {
+            lineGroups.push([...currentLine]);
+          }
+          currentLine = [textElements[index]];
+          currentTop = spanTop;
+        } else {
+          // Same line
+          currentLine.push(textElements[index]);
+        }
+      });
+
+      if (currentLine.length > 0) {
+        lineGroups.push(currentLine);
+      }
+
+      if (lineGroups.length === 0) {
+        lineGroups.push([...textElements]);
+      }
+
+      setLines(lineGroups);
+    };
+
+    // Initial calculation with delay to ensure rendering is complete
+    const timer = setTimeout(calculateLines, 200);
+
+    // Recalculate on window resize
     const handleResize = () => {
-      setTimeout(() => {
-        calculateLines();
-      }, 100);
+      setTimeout(calculateLines, 200);
     };
 
     window.addEventListener("resize", handleResize);
@@ -143,22 +129,31 @@ export default function Workmain3Text() {
   }, []);
 
   return (
-    <div className="place-self-start md:place-self-end mt-24 md:mt-40 w-full md:w-3/4 -z-10">
+    <div className="place-self-start md:place-self-end mt-24 md:mt-40 w-full md:w-3/4 -z-10 px-4 md:px-0">
       <div
-        ref={containerRef}
-        className="w-full text-2xl md:text-7xl leading-tight tracking-wide font-extrabold text-left md:text-right items-center justify-start md:justify-end flex flex-wrap opacity-0 pointer-events-none absolute inset-0"
-        aria-hidden="true"
+        ref={measureRef}
+        className="absolute opacity-0 pointer-events-none text-2xl md:text-7xl leading-tight tracking-wide font-extrabold text-left md:text-right"
+        style={{
+          top: "-9999px",
+          width: "100%",
+          maxWidth: "100%",
+        }}
       >
         {textElements.map((element, index) => (
-          <div key={index} className="inline-block">
+          <span key={index} className="mr-2">
             {element}
-          </div>
+          </span>
         ))}
       </div>
-      <div className="relative w-full text-2xl md:text-7xl leading-tight tracking-wide font-extrabold text-left md:text-right select-none">
-        {textLines.map((line, lineIndex) => (
-          <AnimatedLine key={lineIndex} delay={lineIndex * 0.2}>
-            {line.elements}
+
+      <div ref={containerRef} className="relative w-full text-2xl md:text-7xl leading-tight tracking-wide font-extrabold text-left md:text-right select-none">
+        {lines.map((line, lineIndex) => (
+          <AnimatedLine key={lineIndex} delay={lineIndex * 0.3}>
+            {line.map((element, elementIndex) => (
+              <span key={`${lineIndex}-${elementIndex}`} className="mr-2">
+                {element}
+              </span>
+            ))}
           </AnimatedLine>
         ))}
       </div>
