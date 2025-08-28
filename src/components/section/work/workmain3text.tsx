@@ -13,7 +13,7 @@ interface TextLine {
 
 function AnimatedLine({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { margin: "-20% 0px -20% 0px" });
+  const isInView = useInView(ref, { margin: "-80px 0px 0px 0px" });
   const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
