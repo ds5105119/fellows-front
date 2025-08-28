@@ -719,7 +719,7 @@ export default function MainSection3() {
                 <DialogDescription className="text-base text-muted-foreground">{featureDetails[selectedFeature].description}</DialogDescription>
               </DialogHeader>
               <div className="h-full w-full">
-                <div className="sticky top-0 w-full px-5 py-5 font-bold grid grid-cols-2 items-center z-30">
+                <div className="sticky top-0 w-full px-5 py-5 font-bold grid grid-cols-2 items-center z-50">
                   <div className="h-full flex items-center justify-start"></div>
                   <div className="h-full flex items-center justify-end">
                     <DialogClose asChild>
@@ -730,7 +730,7 @@ export default function MainSection3() {
                   </div>
                 </div>
 
-                <div className="h-full px-4 md:px-18">
+                <div className="h-full px-4 md:px-18 z-0">
                   <div className="flex flex-col space-y-3 text-2xl xl:text-5xl font-extrabold w-3/4">
                     <p className="text-foreground text-base font-bold break-keep">{featureDetails[selectedFeature].title}</p>
                     <p className="text-foreground leading-tight break-keep">{featureDetails[selectedFeature].description}</p>
