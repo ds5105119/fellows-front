@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import TextHighlighter from "@/components/fancy/text/text-highlighter";
 
 function calculateScale(width: number): number {
   if (width > 1536) return 1;
@@ -31,6 +32,12 @@ const comparisonData = [
 
 export default function MainSection4() {
   const [scale, setScale] = useState(1.0);
+  const [showDetail, setShowDetail] = useState(0);
+
+  const transition = { type: "spring", duration: 1, delay: 0.4, bounce: 0 } as const;
+  const highlightClass = "rounded-[0.3em] px-px";
+  const highlightColor = "#F2AD91";
+  const inViewOptions = { once: true, initial: true, amount: 0.1 };
 
   useEffect(() => {
     const handleResize = () => {
@@ -49,14 +56,64 @@ export default function MainSection4() {
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
           <h4 className="text-base md:text-lg font-semibold text-foreground">
             글로벌 개발 파트너사, 디자인 하우스 등<br />
-            50명 이상의 전문가들과 협력하고 있습니다.
+            100명 이상의 전문가들과 협력하고 있습니다.
           </h4>
         </div>
       </div>
 
       {/* Left Section */}
-      <div className="col-span-1 md:pr-4 aspect-[7/9] md:aspect-[8/9] mb-10 md:mb-0">
-        <div className="w-full h-full rounded-3xl flex flex-col items-center justify-center overflow-hidden relative bg-white">
+      <div
+        className="relative col-span-1 md:pr-4 aspect-[7/9] md:aspect-[8/9] mb-10 md:mb-0"
+        onClick={() => (showDetail == 1 ? setShowDetail(0) : setShowDetail(1))}
+      >
+        <AnimatePresence>
+          {showDetail == 1 && (
+            <motion.div
+              className="absolute top-0 left-0 w-full h-full rounded-3xl flex flex-col items-center justify-center overflow-hidden bg-zinc-800 z-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="max-w-md mx-auto px-4 p-0 text-white">
+                <h1 className="text-4xl font-medium mb-12 font-calendas tracking-tight">Fellows Teams</h1>
+
+                <div className="text leading-normal space-y-4">
+                  <p>
+                    개발은 코드와 노코드 모두를 지원하며, 말레이시아, 인도네시아 등 다국적 개발 파트너사와 협력하여 진행됩니다. 국내 SI 대비
+                    <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
+                      25~30% 비용 절감
+                    </TextHighlighter>
+                    이 가능하며, 프로젝트 관리, 견적, 전자 계약, 테스크 관리, 인보이스까지 자체 SaaS 플랫폼을 통해 모든 과정을 한 곳에서 투명하게 확인하고
+                    관리할 수 있습니다.
+                  </p>
+
+                  <p>
+                    반복되는 미팅이나 견적 요청 없이, 고객은 원하는 만큼 편하게 프로젝트를 조정할 수 있으며, AI가 제공하는 예상 견적과 기능 추천으로 의사결정이
+                    훨씬 쉬워집니다. 이렇게 우리는 스타트업이 보다 빠르고 효율적으로 개발을 진행할 수 있도록 돕습니다.
+                  </p>
+
+                  <p className="whitespace-break-spaces">
+                    디자인이 필요할 경우, 국내 최고 수준의 디자인 하우스와 협업하여
+                    <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
+                      세심하고 완벽한 UI/UX 경험
+                    </TextHighlighter>
+                    를 제공합니다. 디자인은 높은 수준의 마감과 다양한 인터랙션을 구현합니다.
+                  </p>
+
+                  <p>
+                    글로벌 전문가와 고급 디자인 역량, AI 기반 프로젝트 분석과 추천, 자체 SaaS를 통한 투명한 관리까지 갖춘 우리의 서비스는 단순 개발 대행을 넘어,
+                    고객이 생각하는 아이디어를 현실로 구현하는 과정 전체를 체계적으로 지원합니다.
+                    <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
+                      코드와 노코드 개발을 아우르는 글로벌 전문가 풀로, 비용과 시간 모두를 절감하며 최고의 결과를 제공합니다.
+                    </TextHighlighter>
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="w-full h-full rounded-3xl flex flex-col items-center justify-center overflow-hidden relative bg-white -z-10">
           <div className="pt-6 px-6 md:pt-10 md:px-10 flex flex-col space-y-1.5 z-50 w-full">
             <div className="flex flex-col space-y-2">
               <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/Team</p>

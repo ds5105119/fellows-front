@@ -9,7 +9,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { MeshGradientComponent } from "@/components/resource/meshgradient";
 import Image from "next/image";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
-import { Crown, Shield, Edit3, UserPlus, XIcon } from "lucide-react";
+import { Crown, Shield, Edit3, UserPlus, XIcon, PlusIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { AnimatePresence, motion, useAnimation, useInView } from "framer-motion";
@@ -442,13 +442,13 @@ const Cell = ({
   children?: ReactNode;
   background?: ReactNode | string;
   onClick?: (index: number) => void;
-  index?: number;
+  index: number;
 }) => {
   return (
     <CarouselItem className="basis-[96%] md:basis-[54%] lg:basis-[32%] xl:basis-[27%]">
       <div
         className={cn(
-          "aspect-[9/16] relative w-full rounded-3xl overflow-hidden select-none",
+          "aspect-[9/16] relative w-full rounded-3xl overflow-hidden select-none border border-zinc-100",
           typeof background === "string" && background,
           typeof background === "undefined" && "bg-muted"
         )}
@@ -460,6 +460,11 @@ const Cell = ({
         </div>
         {children}
         {typeof background !== "string" && typeof background !== "undefined" && background}
+        {featureDetails[index].children && (
+          <Button variant="ghost" size="icon" className="absolute bottom-5 right-5 focus-visible:ring-0 rounded-full bg-zinc-800 hover:bg-zinc-700">
+            <PlusIcon className="size-5 text-zinc-50" strokeWidth={3} />
+          </Button>
+        )}
       </div>
     </CarouselItem>
   );
@@ -486,9 +491,11 @@ export default function MainSection3() {
   const threshold = 30;
 
   const handleFeatureClick = (index: number) => {
-    setSelectedFeature(index);
-    setIsDialogOpen(true);
-    lenis?.stop();
+    if (featureDetails[index].children) {
+      setSelectedFeature(index);
+      setIsDialogOpen(true);
+      lenis?.stop();
+    }
   };
 
   // 공통 시작 핸들러
