@@ -10,7 +10,6 @@ import MainSection3 from "@/components/section/main/mainsection3";
 import MainSection4 from "@/components/section/main/mainsection4";
 import MainSection7 from "@/components/section/main/mainsection7";
 import MainQnaSection from "@/components/section/main/mainqnasection";
-import MobileCTASection from "@/components/section/main/mobilectasection";
 import MainContactSection from "@/components/section/main/maincontactsection";
 import MainInquerySection from "@/components/section/main/maininquerysection";
 
