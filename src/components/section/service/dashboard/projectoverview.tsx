@@ -31,7 +31,6 @@ const chartConfig = {
 
 export function ProjectOverviewChart() {
   const overviewProjects = useProjectOverView();
-
   const totalProject = overviewProjects.data?.items?.length ?? 0;
 
   const chartData = [

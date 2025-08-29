@@ -89,7 +89,10 @@ export const useProject = (projectId: string | null): SWRResponse<UserERPNextPro
 
 export const useProjectOverView = (): SWRResponse<OverviewProjectsPaginatedResponse> => {
   const url = `${API_BASE_URL}/overview`;
-  return useSWR(url, async (url: string) => overviewProjectsPaginatedResponseSchema.parse(await fetcher(url)));
+  return useSWR(url, async (url: string) => overviewProjectsPaginatedResponseSchema.parse(await fetcher(url)), {
+    refreshInterval: 60000,
+    focusThrottleInterval: 60000,
+  });
 };
 
 export const projectsGetKeyFactory = (params: {

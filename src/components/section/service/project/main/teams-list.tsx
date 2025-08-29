@@ -157,6 +157,7 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
           const role = getRoleDetails(teamMember.level);
           const userName = session.sub == teamMember.member ? session.user?.name + "(나)" : user.name?.[0] || "Unknown User";
           const userPicture = user.picture?.[0];
+          const isAdmin = teamMember.level == 0;
 
           return canEdit ? (
             <div
@@ -186,13 +187,17 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
                       <DropdownMenuRadioItem value="2">읽기 및 쓰기</DropdownMenuRadioItem>
                       <DropdownMenuRadioItem value="3">읽기</DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="flex items-center space-x-2 font-medium " asChild>
-                      <button onClick={() => handleDelete(teamMember.member)} className="w-full">
-                        <Trash2 className="size-4 !text-red-600" />
-                        <span className="!text-red-600">삭제</span>
-                      </button>
-                    </DropdownMenuItem>
+                    {!isAdmin && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="flex items-center space-x-2 font-medium " asChild>
+                          <button onClick={() => handleDelete(teamMember.member)} className="w-full">
+                            <Trash2 className="size-4 !text-red-600" />
+                            <span className="!text-red-600">삭제</span>
+                          </button>
+                        </DropdownMenuItem>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

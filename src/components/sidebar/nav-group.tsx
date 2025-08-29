@@ -204,7 +204,7 @@ export function NavGroup({ name, items, ...props }: NavGroupProps) {
                     )}
                     asChild
                   >
-                    <Link href={item.url} onClick={() => handleItemClick(item.url)}>
+                    <div>
                       {item.icon && (
                         <DynamicFcIcon
                           name={item.icon}
@@ -213,7 +213,7 @@ export function NavGroup({ name, items, ...props }: NavGroupProps) {
                       )}
                       <span className="font-medium text-sm">{item.title}</span>
                       <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                    </Link>
+                    </div>
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="group-data-[collapsible=icon]:mt-0 mt-1">
