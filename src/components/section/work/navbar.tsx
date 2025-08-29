@@ -36,7 +36,7 @@ export default function Navbar() {
       const testSize = 1000;
       logoDesktopRef.current.style.fontSize = `${testSize}px`;
       const width = logoDesktopRef.current.getBoundingClientRect().width;
-      const newFontSize = (window.innerWidth / width) * testSize;
+      const newFontSize = ((window.innerWidth - 16) / width) * testSize;
       setMaxFontSizeDesktop(newFontSize);
       logoDesktopRef.current.style.fontSize = "";
     }
@@ -94,6 +94,7 @@ export default function Navbar() {
   const logoFontSizePercent = useTransform(logoFontSize, (v) => `${v}%`);
   const logoTranslateY = useTransform(scrollY, [0, desktopShrinkDistance], ["0px", "-18px"]);
   const logoLetterSpacing = useTransform(scrollY, [0, desktopShrinkDistance], ["-0.3rem", "0rem"]);
+  const logoPadding = useTransform(logoFontSize, [100, (48 / maxFontSizeDesktop) * 100], [16, (16 * maxFontSizeDesktop) / 48]);
 
   const mobileLogoFontSize = useTransform(scrollY, [0, mobileShrinkDistance], [100, (24 / maxFontSizeMobile) * 100]);
   const mobileLogoFontSizePercent = useTransform(mobileLogoFontSize, (v) => `${v}%`);
@@ -187,7 +188,7 @@ export default function Navbar() {
       <motion.header className="fixed w-full z-50 hidden md:flex mix-blend-difference" ref={targetRef} style={{ height: headerHeightPx }}>
         <motion.h1
           ref={logoDesktopRef}
-          className="absolute font-black whitespace-nowrap mx-4 hidden md:block select-none"
+          className="absolute font-black whitespace-nowrap hidden md:block select-none"
           style={{
             bottom: 0,
             translateY: logoTranslateY,
@@ -197,6 +198,7 @@ export default function Navbar() {
             color: "white",
             scale: logoFontSizePercent,
             transformOrigin: "bottom left",
+            marginLeft: 16,
           }}
         >
           Fellows
