@@ -1,6 +1,5 @@
 "use client";
 
-import ImageTrail from "@/components/resource/imagetrail";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLenis } from "lenis/react";
 import { X } from "lucide-react";
@@ -54,20 +53,6 @@ export default function WorkMain3() {
 
   return (
     <div className="relative w-full">
-      <ImageTrail
-        key="imagetrail"
-        items={[
-          "https://picsum.photos/id/287/300/300",
-          "https://picsum.photos/id/1001/300/300",
-          "https://picsum.photos/id/1025/300/300",
-          "https://picsum.photos/id/1026/300/300",
-          "https://picsum.photos/id/1027/300/300",
-          "https://picsum.photos/id/1028/300/300",
-          "https://picsum.photos/id/1029/300/300",
-          "https://picsum.photos/id/1030/300/300",
-        ]}
-        variant={1}
-      />
       <div className="relative w-full px-4 overflow-hidden">
         <Workmain3Text />
       </div>

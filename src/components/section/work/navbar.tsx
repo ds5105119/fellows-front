@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useLayoutEffect } from "react";
-import { motion, useScroll, useTransform, useMotionValue, AnimatePresence, type Easing } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, type Easing } from "framer-motion";
 import { AlignLeft, X } from "lucide-react";
 import { useLenis } from "lenis/react";
 import LetterSwapForward from "@/components/fancy/text/letter-swap-forward-anim";
@@ -13,7 +13,6 @@ export default function Navbar() {
   const logoDesktopRef = useRef<HTMLHeadingElement | null>(null);
   const logoMobileRef = useRef<HTMLHeadingElement | null>(null);
   const { scrollY } = useScroll();
-  const scrollProgress = useMotionValue(0);
   const [viewportHeight, setViewportHeight] = useState<number>(0);
   const [maxFontSizeDesktop, setMaxFontSizeDesktop] = useState(0);
   const [maxFontSizeMobile, setMaxFontSizeMobile] = useState(0);
@@ -29,16 +28,6 @@ export default function Navbar() {
     window.addEventListener("resize", updateHeight);
     return () => window.removeEventListener("resize", updateHeight);
   }, []);
-
-  /** 🔹 스크롤 진행도 계산 */
-  useEffect(() => {
-    return scrollY.on("change", (y) => {
-      if (viewportHeight > 0) {
-        const progress = Math.min(y / viewportHeight, 1);
-        scrollProgress.set(progress);
-      }
-    });
-  }, [scrollY, viewportHeight, scrollProgress]);
 
   /** 🔹 데스크탑 로고 최대 폰트 계산 */
   useLayoutEffect(() => {
@@ -78,26 +67,45 @@ export default function Navbar() {
   }, []);
 
   /** 🔹 px 단위 height 변환 */
-  const headerHeight = useTransform(scrollProgress, [0, 1], [viewportHeight * 0.96, 80]);
+  const fullHeight = viewportHeight * 0.96;
+
+  const desktopMinHeight = 80;
+  const desktopShrinkDistance = fullHeight - desktopMinHeight; // 줄어드는 거리(px)
+  const headerHeight = useTransform(
+    scrollY,
+    [0, desktopShrinkDistance], // ΔH px
+    [fullHeight, desktopMinHeight], // ΔH px
+    { clamp: true }
+  );
   const headerHeightPx = useTransform(headerHeight, (v) => `${v}px`);
-  const mobileHeaderHeight = useTransform(scrollProgress, [0, 1], [viewportHeight * 0.96, 48]);
+
+  const mobileMinHeight = 48;
+  const mobileShrinkDistance = fullHeight - mobileMinHeight;
+  const mobileHeaderHeight = useTransform(
+    scrollY,
+    [0, mobileShrinkDistance], // ΔH px
+    [fullHeight, mobileMinHeight], // ΔH px
+    { clamp: true }
+  );
   const mobileHeaderHeightPx = useTransform(mobileHeaderHeight, (v) => `${v}px`);
 
   /** 🔹 폰트/위치 애니메이션 */
-  const logoFontSize = useTransform(scrollProgress, [0, 1], [maxFontSizeDesktop, 48]);
-  const logoFontSizePx = useTransform(logoFontSize, (v) => `${v}px`);
-  const mobileLogoFontSize = useTransform(scrollProgress, [0, 1], [maxFontSizeMobile, 24]);
-  const mobileLogoFontSizePx = useTransform(mobileLogoFontSize, (v) => `${v}px`);
-  const logoLetterSpacing = useTransform(scrollProgress, [0, 1], ["-0.3rem", "0rem"]);
+  const logoFontSize = useTransform(scrollY, [0, desktopShrinkDistance], [100, (48 / maxFontSizeDesktop) * 100]);
+  const logoFontSizePercent = useTransform(logoFontSize, (v) => `${v}%`);
+  const logoTranslateY = useTransform(scrollY, [0, desktopShrinkDistance], ["0px", "-18px"]);
+  const logoLetterSpacing = useTransform(scrollY, [0, desktopShrinkDistance], ["-0.3rem", "0rem"]);
+
+  const mobileLogoFontSize = useTransform(scrollY, [0, mobileShrinkDistance], [100, (24 / maxFontSizeMobile) * 100]);
+  const mobileLogoFontSizePercent = useTransform(mobileLogoFontSize, (v) => `${v}%`);
+  const mobileLogoTranslateY = useTransform(scrollY, [0, mobileShrinkDistance], ["0px", "-12px"]);
+  const mobileLogoLetterSpacing = useTransform(scrollY, [0, mobileShrinkDistance], ["-0.3rem", "0rem"]);
 
   /** 🔹 처음엔 아래쪽 → 줄어들면 세로 중앙 정렬 */
-  const logoBottom = useTransform(scrollProgress, [0, 1], ["0", "0"]);
-  const logoTranslateY = useTransform(scrollProgress, [0, 1], ["0px", "-16px"]);
-  const mobileLogoTranslateY = useTransform(scrollProgress, [0, 1], ["0%", "-50%"]);
-  const navLeft = useTransform(scrollProgress, [0, 1], ["1%", "50%"]);
-  const navTranslateX = useTransform(scrollProgress, [0, 1], ["0%", "-50%"]);
-  const mobileNavLeft = useTransform(scrollProgress, [0, 1], ["0%", "100%"]);
-  const mobileNavTranslateX = useTransform(scrollProgress, [0, 1], ["0%", "-100%"]);
+  const navLeft = useTransform(scrollY, [0, desktopShrinkDistance], ["1%", "50%"]);
+  const navTranslateX = useTransform(scrollY, [0, desktopShrinkDistance], ["0%", "-50%"]);
+
+  const mobileNavLeft = useTransform(scrollY, [0, mobileShrinkDistance], ["0%", "100%"]);
+  const mobileNavTranslateX = useTransform(scrollY, [0, mobileShrinkDistance], ["0%", "-100%"]);
 
   // 모바일 메뉴 열기/닫기 함수
   const toggleMobileMenu = () => {
@@ -139,6 +147,13 @@ export default function Navbar() {
         ease: "easeInOut" as Easing,
       },
     },
+    exit: {
+      x: "100%",
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut" as Easing,
+      },
+    },
   };
 
   const menuItemVariants = {
@@ -169,24 +184,30 @@ export default function Navbar() {
   return (
     <>
       {/* 데스크탑 */}
-      <motion.header className="fixed w-full z-50 bg-white hidden md:flex" ref={targetRef} style={{ height: headerHeightPx }}>
+      <motion.header className="fixed w-full z-50 hidden md:flex mix-blend-difference" ref={targetRef} style={{ height: headerHeightPx }}>
         <motion.h1
           ref={logoDesktopRef}
-          className="absolute font-black text-gray-900 whitespace-nowrap px-4 hidden md:block select-none"
+          className="absolute font-black whitespace-nowrap mx-4 hidden md:block select-none"
           style={{
-            bottom: logoBottom,
+            bottom: 0,
             translateY: logoTranslateY,
-            fontSize: logoFontSizePx,
+            fontSize: maxFontSizeDesktop,
             lineHeight: "1",
             letterSpacing: logoLetterSpacing,
+            color: "white",
+            scale: logoFontSizePercent,
+            transformOrigin: "bottom left",
           }}
         >
           Fellows
         </motion.h1>
-        <motion.div className="absolute h-fit w-fit px-4 hidden md:flex mt-5.5" style={{ left: navLeft, translateX: navTranslateX }}>
-          <nav className="flex items-center justify-start space-x-6 text-gray-700">
+        <motion.div
+          className="absolute h-fit w-fit px-4 hidden md:flex mt-5.5 mix-blend-difference opacity-70"
+          style={{ left: navLeft, translateX: navTranslateX }}
+        >
+          <nav className="flex items-center justify-start space-x-6">
             {menuItems.map((item, index) => (
-              <a key={index} href={item.href} className="hover:text-gray-900 text-sm md:text-2xl font-semibold select-none">
+              <a key={index} href={item.href} className="text-white text-sm md:text-2xl font-semibold select-none">
                 <LetterSwapForward label={item.label} reverse={true} />
               </a>
             ))}
@@ -195,22 +216,28 @@ export default function Navbar() {
       </motion.header>
 
       {/* 모바일 */}
-      <motion.header className="fixed w-full z-[100] bg-white block md:hidden" ref={mobileTargetRef} style={{ height: mobileHeaderHeightPx }}>
+      <motion.header className="fixed w-full z-[100] block md:hidden mix-blend-difference" ref={mobileTargetRef} style={{ height: mobileHeaderHeightPx }}>
         <div className="relative h-full w-full">
           <motion.h1
             ref={logoMobileRef}
-            className="absolute font-black text-gray-900 whitespace-nowrap px-4 block md:hidden"
+            className="absolute font-black whitespace-nowrap mx-4 block md:hidden"
             style={{
-              bottom: logoBottom,
+              bottom: 0,
               translateY: mobileLogoTranslateY,
-              fontSize: mobileLogoFontSizePx,
+              fontSize: maxFontSizeMobile,
               lineHeight: "1",
-              letterSpacing: logoLetterSpacing,
+              letterSpacing: mobileLogoLetterSpacing,
+              color: "white",
+              scale: mobileLogoFontSizePercent,
+              transformOrigin: "bottom left",
             }}
           >
             Fellows
           </motion.h1>
-          <motion.div className="absolute h-fit w-fit px-4 flex md:hidden mt-1" style={{ left: mobileNavLeft, translateX: mobileNavTranslateX }}>
+          <motion.div
+            className="absolute h-fit w-fit px-4 flex md:hidden mt-1 opacity-70"
+            style={{ left: mobileNavLeft, translateX: mobileNavTranslateX, color: "white" }}
+          >
             <button onClick={toggleMobileMenu} className="p-2">
               <AlignLeft size={24} />
             </button>
@@ -232,7 +259,13 @@ export default function Navbar() {
             />
 
             {/* 메뉴 패널 */}
-            <motion.div className="fixed top-0 right-0 w-full h-full bg-white z-[100] md:hidden" variants={menuVariants} initial="closed" animate="open">
+            <motion.div
+              className="fixed top-0 right-0 w-full h-full bg-white z-[100] md:hidden"
+              variants={menuVariants}
+              initial="closed"
+              animate="open"
+              exit="exit"
+            >
               <div className="flex flex-col h-full">
                 {/* 헤더 */}
                 <div className="flex justify-between items-center px-4 h-12">
