@@ -81,7 +81,7 @@ export function ProjectAINewButton({ session }: { session: Session | null }) {
               <textarea
                 placeholder="만들고 싶은 앱/웹의 구체적인 설명 혹은 요구사항을 적어주세요."
                 name="description"
-                className="w-full h-full resize-none rounded-sm border bg-transparent px-2.5 py-2 text-sm outline-hidden text-base"
+                className="w-full h-full resize-none rounded-sm border bg-transparent px-2.5 py-2 outline-hidden text-base"
                 autoFocus
                 onChange={(e) => setNote(e.target.value)}
               />
