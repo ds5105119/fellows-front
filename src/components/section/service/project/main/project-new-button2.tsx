@@ -9,7 +9,7 @@ import { type EstimateFormState, getEstimateInfoAction } from "@/hooks/fetch/ser
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export function MorphingPopoverTextarea({ session }: { session: Session | null }) {
+export function ProjectAINewButton({ session }: { session: Session | null }) {
   const router = useRouter();
   const uniqueId = useId();
   const [note, setNote] = useState("");

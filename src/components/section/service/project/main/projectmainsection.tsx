@@ -13,12 +13,13 @@ import { cn } from "@/lib/utils";
 import { useInView } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Info, PlusIcon, SearchIcon } from "lucide-react";
+import { Info, MessageCircleQuestion, PlusIcon, SearchIcon, XIcon } from "lucide-react";
 import { ProjectsPaginatedResponse, UserERPNextProject } from "@/@types/service/project";
 import { useProjects } from "@/hooks/fetch/project";
 import { Button } from "@/components/ui/button";
-import { MorphingPopoverTextarea } from "./project-new-button2";
+import { ProjectAINewButton } from "./project-new-button2";
 
 // --- 타입 및 상수 정의 ---
 
@@ -121,6 +122,7 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
   const [inputText, setInputText] = useState<string>("");
   const [processCount, setProcessCount] = useState<number>(0);
   const [tabIndex, setTabIndex] = useState<number>(0);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const keyword = useThrottle(inputText, 1000);
   const router = useRouter();
@@ -184,13 +186,17 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
             </div>
           </div>
           <div className="flex items-center space-x-2">
+            <Button size="sm" variant="ghost" className="focus-visible:ring-0 text-blue-500 hover:text-blue-600" onClick={() => setIsDialogOpen(true)}>
+              <MessageCircleQuestion />
+              <p className="hidden md:inline-block">이용 가이드</p>
+            </Button>
             <Button size="sm" className="bg-blue-500/15 hover:bg-blue-500/25 text-blue-500 transition-colors duration-200 focus-visible:ring-0" asChild>
               <Link href="/service/project/new">
                 <PlusIcon />
-                새로 만들기
+                <p className="hidden md:inline-block">새로&nbsp;</p>만들기
               </Link>
             </Button>
-            <MorphingPopoverTextarea session={session} />
+            <ProjectAINewButton session={session} />
           </div>
         </div>
       </div>
@@ -280,6 +286,46 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
           <SheetDescription className="sr-only" />
         </SheetContent>
       </Sheet>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent
+          data-lenis-prevent
+          className="bg-white !w-full md:!w-[calc(100%-2rem)] !max-w-7xl !top-full !translate-y-[-100%] md:!top-1/2 md:!translate-y-[-50%] h-[calc(100%-2.5rem)] md:h-fit !rounded-b-none !rounded-t-2xl md:!rounded-2xl !overflow-y-auto !border-0 !shadow-3xl p-0"
+          overlayClassName="backdrop-blur-sm"
+          showCloseButton={false}
+        >
+          <DialogHeader className="sr-only">
+            <DialogTitle className="text-xl font-bold">Fellows SaaS 프로젝트 만들기 가이드</DialogTitle>
+            <DialogDescription className="text-base text-muted-foreground" />
+          </DialogHeader>
+          <div className="h-full w-full">
+            <div className="sticky top-0 w-full px-5 py-5 font-bold grid grid-cols-2 items-center z-50">
+              <div className="h-full flex items-center justify-start"></div>
+              <div className="h-full flex items-center justify-end">
+                <DialogClose asChild>
+                  <Button variant="ghost" size="icon" className="focus-visible:ring-0 rounded-full bg-zinc-800 hover:bg-zinc-700">
+                    <XIcon className="size-5 text-zinc-50" strokeWidth={3} />
+                  </Button>
+                </DialogClose>
+              </div>
+            </div>
+
+            <div className="px-4 md:px-18 z-0 pb-15">
+              <div style={{ position: "relative", paddingBottom: "calc(52.32142857142858% + 41px)", height: 0, width: "100%" }}>
+                <iframe
+                  src="https://demo.arcade.software/lazPqTmlpQIQM06aFweN?embed&embed_mobile=inline&embed_desktop=inline&show_copy_link=true"
+                  title="새 프로젝트 생성하기"
+                  frameBorder="0"
+                  loading="lazy"
+                  allowFullScreen
+                  allow="clipboard-write"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", colorScheme: "light" }}
+                />
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
