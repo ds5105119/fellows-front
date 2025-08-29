@@ -1,18 +1,23 @@
+# *
 User-agent: *
 Allow: /
 Disallow: /api
-Disallow: /_next
-Disallow: /static
-# Crawl-delay 보통 불필요, 유지해도 무방
-# Crawl-delay: 10
+Crawl-delay: 10
 
-# 특정 봇 차단
+# AhrefsBot
 User-agent: AhrefsBot
 Disallow: /
+
+# MJ12bot
 User-agent: MJ12bot
 Disallow: /
+
+# Google-Translate
 User-agent: Google-Translate
 Disallow: /
 
-# Sitemap (반드시 HTTPS)
-Sitemap: https://fellows.my/sitemap.xml
+# Host
+Host: https://www.fellows.my
+
+# Sitemaps
+Sitemap: https://www.fellows.my/sitemap.xml
