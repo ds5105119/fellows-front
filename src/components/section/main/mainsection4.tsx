@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -33,6 +33,10 @@ export default function MainSection4() {
   const [scale, setScale] = useState(1.0);
   const [showDetail, setShowDetail] = useState(0);
 
+  // Added refs for the two clickable containers
+  const leftContainerRef = useRef<HTMLDivElement>(null);
+  const rightContainerRef = useRef<HTMLDivElement>(null);
+
   const transition = { type: "spring", duration: 1, delay: 0.4, bounce: 0 } as const;
   const highlightClass = "rounded-[0.3em] px-px";
   const highlightColor = "#F2AD91";
@@ -46,6 +50,26 @@ export default function MainSection4() {
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Added useEffect for handling outside clicks
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      // Check if click is outside both containers
+      if (leftContainerRef.current && rightContainerRef.current && !leftContainerRef.current.contains(target) && !rightContainerRef.current.contains(target)) {
+        setShowDetail(0);
+      }
+    };
+
+    // Add event listener to document
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup event listener
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
@@ -62,6 +86,7 @@ export default function MainSection4() {
 
       {/* Left Section */}
       <div
+        ref={leftContainerRef}
         className="relative col-span-1 md:mr-4 aspect-[7/9] md:aspect-[8/9] mb-10 md:mb-0 cursor-none"
         onClick={() => (showDetail == 1 ? setShowDetail(0) : setShowDetail(1))}
       >
@@ -95,7 +120,7 @@ export default function MainSection4() {
                   exit={{ opacity: 0, scale: 0.6 }}
                   className="inline-flex w-full items-center justify-center"
                 >
-                  <div className="inline-flex items-center text-sm text-white dark:text-black">More</div>
+                  <div className="inline-flex items-center text-sm text-white dark:text-black">Click</div>
                 </motion.div>
               ) : null}
             </AnimatePresence>
@@ -115,7 +140,7 @@ export default function MainSection4() {
 
                 <div className="text text-xs md:text-sm lg:text-base leading-normal space-y-4">
                   <p>
-                    개발은 코드와 노코드 모두를 지원하며, 말레이시아, 인도네시아 등 다국적 개발 파트너사와 협력하여 진행됩니다. 국내 SI 대비
+                    개발은 코드와 노코드 모두를 지원하며, 다국적 개발 파트너사와 협력하여 진행됩니다. 국내 SI 대비
                     <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
                       25~30% 비용 절감
                     </TextHighlighter>
@@ -176,7 +201,7 @@ export default function MainSection4() {
                 whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
               >
                 <Image
-                  src={icon.src}
+                  src={icon.src || "/placeholder.svg"}
                   alt={icon.alt}
                   width={icon.size}
                   height={icon.size}
@@ -194,7 +219,8 @@ export default function MainSection4() {
 
       {/* Right Section (Refactored) */}
       <div
-        className="relative col-span-1 md:ml-4 aspect-[7/9] md:aspect-[8/9] mb-10 md:mb-0"
+        ref={rightContainerRef}
+        className="relative col-span-1 md:ml-4 aspect-[7/9] md:aspect-[8/9] mb-10 md:mb-0 cursor-none"
         onClick={() => (showDetail == 2 ? setShowDetail(0) : setShowDetail(2))}
       >
         <Cursor
@@ -227,7 +253,7 @@ export default function MainSection4() {
                   exit={{ opacity: 0, scale: 0.6 }}
                   className="inline-flex w-full items-center justify-center"
                 >
-                  <div className="inline-flex items-center text-sm text-white dark:text-black">More</div>
+                  <div className="inline-flex items-center text-sm text-white dark:text-black">Click</div>
                 </motion.div>
               ) : null}
             </AnimatePresence>

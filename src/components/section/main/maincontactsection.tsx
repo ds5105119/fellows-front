@@ -175,7 +175,7 @@ export default function MainContactSection() {
         </div>
         <div className="w-full h-full flex-1 bg-zinc-100 rounded-3xl md:rounded-4xl flex">{socialLinks.filter((l) => l.name == selectedMenu)[0]?.children}</div>
       </div>
-      <div ref={containerRef} className="relative col-span-1 bg-zinc-100 rounded-3xl md:rounded-4xl flex-1 overflow-hidden">
+      <div ref={containerRef} className="relative col-span-1 bg-zinc-100 rounded-3xl md:rounded-4xl aspect-square overflow-hidden">
         <PhysicsGravitySection key={key} onMenuSelect={setSelectedMenu} />
         <div className="absolute right-5 top-5">
           <Button variant="ghost" size="icon" className="focus-visible:ring-0 rounded-full bg-zinc-800 hover:bg-zinc-700" onClick={handleClick}>
