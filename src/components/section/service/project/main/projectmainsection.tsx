@@ -193,7 +193,7 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
             <Button size="sm" className="bg-blue-500/15 hover:bg-blue-500/25 text-blue-500 transition-colors duration-200 focus-visible:ring-0" asChild>
               <Link href="/service/project/new">
                 <PlusIcon />
-                <p className="hidden md:inline-block">새로&nbsp;</p>만들기
+                <p className="hidden md:inline-block">새로 만들기</p>
               </Link>
             </Button>
             <ProjectAINewButton session={session} />

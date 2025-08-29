@@ -1,4 +1,6 @@
 "use client";
+
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { MorphingPopover, MorphingPopoverTrigger, MorphingPopoverContent } from "@/components/ui/morphing-popover";
 import { motion } from "motion/react";
 import { useActionState, useEffect, useId, useState } from "react";
@@ -8,6 +10,9 @@ import { Session } from "next-auth";
 import { type EstimateFormState, getEstimateInfoAction } from "@/hooks/fetch/server/project";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import BreathingSparkles from "@/components/resource/breathingsparkles";
+import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export function ProjectAINewButton({ session }: { session: Session | null }) {
   const router = useRouter();
@@ -16,6 +21,7 @@ export function ProjectAINewButton({ session }: { session: Session | null }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [state, formAction] = useActionState<EstimateFormState, FormData>(getEstimateInfoAction, null);
+  const { isMobile } = useSidebar();
 
   const closeMenu = () => {
     setIsOpen(false);
@@ -42,6 +48,66 @@ export function ProjectAINewButton({ session }: { session: Session | null }) {
     }
   }, [state, router]);
 
+  if (isMobile)
+    return (
+      <Drawer>
+        <DrawerTrigger asChild>
+          <Button className="h-8 items-center rounded-md gap-1.5 px-2.5 has-[>svg]:px-2.5 bg-black text-white hover:bg-black/65 transition-colors duration-200 focus-visible:ring-0">
+            <BreathingSparkles size={16} />
+          </Button>
+        </DrawerTrigger>
+        <DrawerContent>
+          <motion.div
+            className="pointer-events-none absolute inset-0 -z-50"
+            animate={{
+              opacity: isVisible ? 1 : 0,
+            }}
+            transition={{
+              duration: 0.2,
+              ease: "easeOut",
+            }}
+          >
+            <div className="pointer-events-none absolute inset-0 bg-white z-10 rounded-t-lg" />
+            <GlowEffect colors={["#0894FF", "#C959DD", "#FF2E54", "#FF9004"]} mode="colorShift" blur="medium" duration={4} className="rounded-t-lg" />
+          </motion.div>
+
+          <DrawerHeader>
+            <DrawerTitle>프로젝트 만들기</DrawerTitle>
+            <DrawerDescription>내용을 분석해 프로젝트의 개발 방향을 추천해드리겠습니다.</DrawerDescription>
+          </DrawerHeader>
+
+          <form action={handleFormSubmit} className="flex h-full flex-col">
+            <div className="px-4 h-44 pb-1">
+              <textarea
+                placeholder="만들고 싶은 앱/웹의 구체적인 설명 혹은 요구사항을 적어주세요."
+                name="description"
+                className="w-full h-full resize-none rounded-sm border bg-transparent px-2.5 py-2 text-sm outline-hidden text-base"
+                autoFocus
+                onChange={(e) => setNote(e.target.value)}
+              />
+            </div>
+
+            <DrawerFooter className="w-full flex flex-row justify-between gap-0 space-x-4 pb-4 pt-3">
+              <Button
+                type="submit"
+                className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold"
+                onClick={() => {
+                  setIsVisible(true);
+                }}
+              >
+                다음
+              </Button>
+              <DrawerClose asChild>
+                <Button type="button" className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold" variant="secondary">
+                  취소
+                </Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </form>
+        </DrawerContent>
+      </Drawer>
+    );
+
   return (
     <MorphingPopover
       transition={{ type: "spring", bounce: 0.05, duration: 0.3 }}
@@ -53,7 +119,7 @@ export function ProjectAINewButton({ session }: { session: Session | null }) {
         exit: { opacity: 0, scale: 0.8 },
       }}
     >
-      <MorphingPopoverTrigger className="h-8 items-center rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 bg-black text-white hover:bg-black/65 transition-colors duration-200 focus-visible:ring-0 hidden md:inline-flex">
+      <MorphingPopoverTrigger className="flex h-8 items-center rounded-md gap-1.5 px-2.5 has-[>svg]:px-2.5 bg-black text-white hover:bg-black/65 transition-colors duration-200 focus-visible:ring-0">
         <motion.span layoutId={`popover-label-${uniqueId}`} className="text-sm">
           AI로 만들기
         </motion.span>
@@ -74,6 +140,7 @@ export function ProjectAINewButton({ session }: { session: Session | null }) {
         >
           <GlowEffect colors={["#0894FF", "#C959DD", "#FF2E54", "#FF9004"]} mode="colorShift" blur="medium" duration={4} />
         </motion.div>
+
         <div className="relative h-[200px] w-[364px]">
           <form action={handleFormSubmit} className="flex h-full flex-col">
             <motion.span
