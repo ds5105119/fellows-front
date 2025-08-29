@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { motion, useScroll, useTransform, useMotionValue, AnimatePresence, type Easing } from "framer-motion";
 import { AlignLeft, X } from "lucide-react";
 import { useLenis } from "lenis/react";
+import LetterSwapForward from "@/components/fancy/text/letter-swap-forward-anim";
 
 export default function Navbar() {
   const lenis = useLenis();
@@ -90,8 +91,9 @@ export default function Navbar() {
   const logoLetterSpacing = useTransform(scrollProgress, [0, 1], ["-0.3rem", "0rem"]);
 
   /** 🔹 처음엔 아래쪽 → 줄어들면 세로 중앙 정렬 */
-  const logoTop = useTransform(scrollProgress, [0, 1], ["100%", "50%"]);
-  const logoTranslateY = useTransform(scrollProgress, [0, 1], ["-90%", "-50%"]);
+  const logoBottom = useTransform(scrollProgress, [0, 1], ["0", "0"]);
+  const logoTranslateY = useTransform(scrollProgress, [0, 1], ["0px", "-16px"]);
+  const mobileLogoTranslateY = useTransform(scrollProgress, [0, 1], ["0%", "-50%"]);
   const navLeft = useTransform(scrollProgress, [0, 1], ["1%", "50%"]);
   const navTranslateX = useTransform(scrollProgress, [0, 1], ["0%", "-50%"]);
   const mobileNavLeft = useTransform(scrollProgress, [0, 1], ["0%", "100%"]);
@@ -168,30 +170,28 @@ export default function Navbar() {
     <>
       {/* 데스크탑 */}
       <motion.header className="fixed w-full z-50 bg-white hidden md:flex" ref={targetRef} style={{ height: headerHeightPx }}>
-        <div className="relative h-full w-full">
-          <motion.h1
-            ref={logoDesktopRef}
-            className="absolute font-black text-gray-900 whitespace-nowrap px-4 hidden md:block select-none"
-            style={{
-              top: logoTop,
-              translateY: logoTranslateY,
-              fontSize: logoFontSizePx,
-              lineHeight: "1",
-              letterSpacing: logoLetterSpacing,
-            }}
-          >
-            Fellows
-          </motion.h1>
-          <motion.div className="absolute h-fit w-fit px-4 hidden md:flex mt-5.5" style={{ left: navLeft, translateX: navTranslateX }}>
-            <nav className="flex items-center justify-start space-x-6 text-gray-700">
-              {menuItems.map((item, index) => (
-                <a key={index} href={item.href} className="hover:text-gray-900 text-sm md:text-2xl font-semibold select-none">
-                  {item.label}
-                </a>
-              ))}
-            </nav>
-          </motion.div>
-        </div>
+        <motion.h1
+          ref={logoDesktopRef}
+          className="absolute font-black text-gray-900 whitespace-nowrap px-4 hidden md:block select-none"
+          style={{
+            bottom: logoBottom,
+            translateY: logoTranslateY,
+            fontSize: logoFontSizePx,
+            lineHeight: "1",
+            letterSpacing: logoLetterSpacing,
+          }}
+        >
+          Fellows
+        </motion.h1>
+        <motion.div className="absolute h-fit w-fit px-4 hidden md:flex mt-5.5" style={{ left: navLeft, translateX: navTranslateX }}>
+          <nav className="flex items-center justify-start space-x-6 text-gray-700">
+            {menuItems.map((item, index) => (
+              <a key={index} href={item.href} className="hover:text-gray-900 text-sm md:text-2xl font-semibold select-none">
+                <LetterSwapForward label={item.label} reverse={true} />
+              </a>
+            ))}
+          </nav>
+        </motion.div>
       </motion.header>
 
       {/* 모바일 */}
@@ -201,8 +201,8 @@ export default function Navbar() {
             ref={logoMobileRef}
             className="absolute font-black text-gray-900 whitespace-nowrap px-4 block md:hidden"
             style={{
-              top: logoTop,
-              translateY: logoTranslateY,
+              bottom: logoBottom,
+              translateY: mobileLogoTranslateY,
               fontSize: mobileLogoFontSizePx,
               lineHeight: "1",
               letterSpacing: logoLetterSpacing,
