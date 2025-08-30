@@ -1,8 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef } from "react";
 import type { UserERPNextProject } from "@/@types/service/project";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Info, Download, FileCheck, Calendar, CreditCard, InfoIcon } from "lucide-react";
+import { Info, Download, FileCheck, Loader2 } from "lucide-react";
 import type { SWRResponse } from "swr";
 import { useContracts } from "@/hooks/fetch/contract";
 import { Button } from "@/components/ui/button";
@@ -66,6 +65,8 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
     [selectedContract, onContractSelect]
   );
 
+  console.log(contracts);
+
   return (
     <div className="grid grid-cols-1 gap-3 px-4 py-6">
       <div className="text-sm font-bold">계약서: {contracts.length}건</div>
@@ -75,26 +76,13 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
       </div>
 
       {isLoading && (
-        <div className="space-y-3">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="p-4 rounded-lg border bg-white">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center space-x-3">
-                  <Skeleton className="h-10 w-10 rounded-lg" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-[180px]" />
-                    <Skeleton className="h-3 w-[120px]" />
-                  </div>
-                </div>
-                <Skeleton className="h-6 w-16 rounded-full" />
-              </div>
-              <div className="flex space-x-2">
-                <Skeleton className="h-7 w-20" />
-                <Skeleton className="h-7 w-16" />
-                <Skeleton className="h-7 w-16" />
-              </div>
+        <div className="flex items-center justify-center py-8">
+          <div className="text-center space-y-8">
+            <div className="space-y-2">
+              <Loader2 className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">계약서를 불러오는 중</p>
             </div>
-          ))}
+          </div>
         </div>
       )}
 
@@ -102,48 +90,38 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
         {contracts.map((contract) => (
           <div
             key={contract.name}
-            className={cn(
-              "group p-4 rounded-xs border border-l-4 bg-white hover:shadow-sm transition-all duration-200 cursor-pointer",
-              contract.status === "Unsigned"
-                ? "hover:border-gray-300"
-                : contract.status === "Inactive" && contract.docstatus !== 2
-                ? "border-amber-200 hover:border-amber-300"
-                : contract.docstatus === 2
-                ? "border-red-200 hover:border-red-300"
-                : "border-blue-200 hover:blue-300"
-            )}
+            className={cn("group p-4 rounded-md border border-sidebar-border hover:shadow-sm transition-all duration-200 cursor-pointer")}
             onClick={() => handleContractClick(contract)}
           >
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col space-y-3">
-                <h3 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{contract.custom_name || "계약서"}</h3>
-                <div className="flex flex-col space-y-1.5">
-                  <div className="flex items-center space-x-1 text-xs text-gray-500">
-                    <InfoIcon className="w-3 h-3" />
-                    <span>{!contract.custom_subscribe ? `회차 정산형` : `정기 결제형`}</span>
-                  </div>
-                  <div className="flex items-center space-x-1 text-xs text-gray-500">
-                    <CreditCard className="w-3 h-3" />
-                    <span>
-                      {!contract.custom_subscribe ? `${contract.custom_fee?.toLocaleString()} 원` : `${contract.custom_maintenance?.toLocaleString()}원 / 월`}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-1 text-xs text-gray-500">
-                    <Calendar className="w-3 h-3" />
-                    <span>
-                      {dayjs(contract.start_date).format("YYYY.MM.DD")} {contract.end_date && dayjs(contract.end_date).format("~ YYYY.MM.DD")}
-                    </span>
-                  </div>
-                </div>
+            <div className="flex flex-col">
+              <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                {contract.status === "Unsigned"
+                  ? "사인 전"
+                  : contract.status === "Inactive" && contract.docstatus !== 2
+                  ? "결제 전"
+                  : contract.docstatus === 2
+                  ? "계약 취소"
+                  : "결제 완료"}
+              </h3>
+              <h3 className="text-sm font-medium text-gray-900 transition-colors pt-2 pb-1">
+                {contract.custom_name || "계약서"} - {!contract.custom_subscribe ? `회차 정산형` : `정기 결제형`}
+              </h3>
+            </div>
+
+            <div className="flex space-x-1.5 pb-3">
+              <div className="flex font-bold items-center space-x-1 text-sm">
+                {!contract.custom_subscribe ? `${contract.custom_fee?.toLocaleString()} 원` : `${contract.custom_maintenance?.toLocaleString()}원 / 월`}
+              </div>
+              <div className="flex items-center space-x-1 text-xs text-gray-500">
+                {dayjs(contract.start_date).format("YYYY.MM.DD")} {contract.end_date && dayjs(contract.end_date).format("~ YYYY.MM.DD")}
               </div>
             </div>
 
-            <div className="flex items-center space-x-2 mt-4">
+            <div className="flex items-center space-x-2 pt-1">
               {contract.status === "Unsigned" && contract.docstatus !== 2 && (
                 <Button
-                  variant="outline"
                   size="sm"
-                  className="text-xs font-medium h-7 px-3 shadow-none bg-transparent"
+                  className="text-sm font-bold h-8 px-3 shadow-none bg-blue-400 w-2/3"
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
@@ -154,9 +132,8 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
               )}
               {contract.status === "Inactive" && contract.docstatus !== 2 && (
                 <Button
-                  variant="outline"
                   size="sm"
-                  className="text-xs font-medium h-7 px-3 shadow-none bg-transparent"
+                  className="text-sm font-bold h-8 px-3 shadow-none bg-emerald-400 hover:bg-emerald-500 w-2/3"
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
@@ -168,7 +145,7 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
               <Button
                 variant="outline"
                 size="sm"
-                className="text-xs font-medium h-7 px-3 shadow-none bg-transparent"
+                className="text-sm font-bold h-8 px-3 shadow-none bg-transparent grow"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -183,7 +160,7 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
         ))}
       </section>
 
-      {contracts.length === 0 && (
+      {contracts.length === 0 && !isLoading && (
         <div className="flex flex-col w-full">
           <div className="h-44 flex flex-col justify-center space-y-4 items-center w-full rounded-lg bg-gradient-to-b from-blue-50 via-indigo-50 to-blue-50 px-8 mb-1 text-sm select-none">
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-sm">
@@ -191,7 +168,6 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
             </div>
             <div className="text-center space-y-1">
               <p className="text-sm font-medium text-gray-700">아직 계약서가 없습니다</p>
-              <p className="text-xs text-gray-500">프로젝트 계약이 시작되면 여기에 표시됩니다</p>
             </div>
           </div>
           <div className="flex flex-col space-y-2 pt-4 pb-2 text-center">

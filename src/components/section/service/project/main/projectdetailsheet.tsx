@@ -23,6 +23,7 @@ import { ContractList } from "./contract-list";
 import { ContractSheet } from "./contract-sheet";
 import { usePathname } from "next/navigation";
 import type { UserERPNextContract } from "@/@types/service/contract";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 interface ProjectDetailSheetProps {
   project_id: string;
@@ -516,16 +517,31 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         </div>
       </div>
 
-      <ContractSheet
-        contract={selectedContract}
-        session={session}
-        openSheet={contractSheetOpen}
-        setOpenSheet={(open: boolean) => {
+      <Sheet
+        open={contractSheetOpen}
+        onOpenChange={(open: boolean) => {
           if (!open) {
             handleContractSheetClose();
           }
         }}
-      />
+      >
+        <SheetTrigger className="sr-only" />
+        <SheetContent side="left" className="w-full h-full sm:max-w-full md:w-[45%] md:min-w-[728px] [&>button:first-of-type]:hidden gap-0">
+          <SheetHeader className="sr-only">
+            <SheetTitle>계약서</SheetTitle>
+          </SheetHeader>
+          <ContractSheet
+            contract={selectedContract}
+            session={session}
+            setOpenSheet={(open: boolean) => {
+              if (!open) {
+                handleContractSheetClose();
+              }
+            }}
+          />
+          <SheetDescription className="sr-only" />
+        </SheetContent>
+      </Sheet>
 
       {/* 시트 푸터 */}
       <div className="absolute bottom-0 w-full flex items-center justify-between h-12 border-t-1 border-t-sidebar-border px-4 bg-zinc-50 z-30">
