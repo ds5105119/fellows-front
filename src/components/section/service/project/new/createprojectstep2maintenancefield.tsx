@@ -10,7 +10,7 @@ import { UseFormReturn } from "react-hook-form";
 import { CreateERPNextProject } from "@/@types/service/project";
 import { SwitchIndicator } from "@/components/ui/switch-indicator";
 import dayjs from "@/lib/dayjs";
-import { CheckIcon, InfoIcon } from "lucide-react";
+import { InfoIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function CreateProjectStep2MaintenanceField({ form }: { form: UseFormReturn<CreateERPNextProject> }) {

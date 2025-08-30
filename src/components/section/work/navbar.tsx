@@ -94,7 +94,6 @@ export default function Navbar() {
   const logoFontSizePercent = useTransform(logoFontSize, (v) => `${v}%`);
   const logoTranslateY = useTransform(scrollY, [0, desktopShrinkDistance], ["0px", "-18px"]);
   const logoLetterSpacing = useTransform(scrollY, [0, desktopShrinkDistance], ["-0.3rem", "0rem"]);
-  const logoPadding = useTransform(logoFontSize, [100, (48 / maxFontSizeDesktop) * 100], [16, (16 * maxFontSizeDesktop) / 48]);
 
   const mobileLogoFontSize = useTransform(scrollY, [0, mobileShrinkDistance], [100, (24 / maxFontSizeMobile) * 100]);
   const mobileLogoFontSizePercent = useTransform(mobileLogoFontSize, (v) => `${v}%`);
