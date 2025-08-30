@@ -54,7 +54,7 @@ const ProjectDropdownMenu = ({
       <DropdownMenuTrigger asChild>
         <div
           className={cn(
-            "rounded-sm z-20 h-6 w-6 flex items-center justify-center pointer-events-auto hover:bg-neutral-200",
+            "rounded-sm h-6 w-6 flex items-center justify-center pointer-events-auto hover:bg-neutral-200",
             openMenu === project.project_name && "bg-neutral-100 hover:bg-neutral-200"
           )}
           onClick={(e) => {
