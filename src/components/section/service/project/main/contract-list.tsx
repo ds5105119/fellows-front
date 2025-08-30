@@ -97,7 +97,7 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
               <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
                 {contract.status === "Unsigned"
                   ? "사인 전"
-                  : contract.status === "Inactive" && contract.docstatus !== 2
+                  : contract.status === "Active" && contract.docstatus == 1
                   ? "결제 전"
                   : contract.docstatus === 2
                   ? "계약 취소"
@@ -130,7 +130,7 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
                   <Link href={`/service/project/${project_id}/contracts/${contract.name}`}>사인하기</Link>
                 </Button>
               )}
-              {contract.status === "Inactive" && contract.docstatus !== 2 && (
+              {contract.status === "Active" && contract.docstatus == 1 && (
                 <Button
                   size="sm"
                   className="text-sm font-bold h-8 px-3 shadow-none bg-emerald-400 hover:bg-emerald-500 w-2/3"
