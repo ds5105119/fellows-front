@@ -18,7 +18,7 @@ export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProjec
   const fetchStartTime = useRef<number | null>(null);
 
   const watchedFields = useWatch({
-    name: ["custom_project_title", "custom_project_summary", "custom_readiness_level", "custom_platforms"],
+    name: ["custom_project_title", "custom_project_summary", "custom_readiness_level", "custom_platforms", "custom_project_method", "custom_nocode_platform"],
     control: form.control,
   });
 
@@ -27,6 +27,8 @@ export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProjec
     project_summary: watchedFields[1] || "",
     readiness_level: watchedFields[2] || "idea",
     platforms: watchedFields[3]?.map((p) => p.platform) || [],
+    project_method: watchedFields[4] || "",
+    nocode_platform: watchedFields[5] || "",
   });
 
   const handleRecommendAgain = async () => {

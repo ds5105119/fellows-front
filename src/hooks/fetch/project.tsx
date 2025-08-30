@@ -351,17 +351,23 @@ export const getEstimateFeatures = async ({
   project_summary,
   readiness_level,
   platforms,
+  project_method,
+  nocode_platform,
 }: {
   project_name: string;
   project_summary: string;
   readiness_level: string;
   platforms: string[];
+  project_method: string;
+  nocode_platform?: string;
 }) => {
   const params = new URLSearchParams();
   params.append("project_name", project_name);
   params.append("project_summary", project_summary);
   params.append("readiness_level", readiness_level);
   platforms.forEach((platform) => params.append("platforms", platform));
+  params.append("project_method", project_method);
+  if (nocode_platform) params.append("nocode_platform", nocode_platform);
 
   const url = `/api/service/project/estimate/feature?${params.toString()}`;
 
@@ -377,7 +383,6 @@ export const getEstimateFeatures = async ({
   if (response.ok) {
     const initalProject = await response.json();
     const projectEstimateFeature = projectFeatureEstimateResponseSchema.parse(initalProject);
-    toast.success(`${ratelimit}회 남았어요.`);
     return { projectEstimateFeature, ratelimit, retryAfter };
   } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
     toast.error("API 호출에 실패했습니다.");
@@ -395,11 +400,15 @@ export const useGetEstimateFeatures = ({
   project_summary,
   readiness_level,
   platforms,
+  project_method,
+  nocode_platform,
 }: {
   project_name: string;
   project_summary: string;
   readiness_level: string;
   platforms: string[];
+  project_method: string;
+  nocode_platform?: string;
 }) => {
   const [data, setData] = useState<ProjectFeatureEstimateResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -409,7 +418,7 @@ export const useGetEstimateFeatures = ({
   const [retryAfter, setRetryAfter] = useState(0);
 
   const fetchData = useCallback(async () => {
-    if (!project_name || !project_summary || !readiness_level || platforms.length === 0) {
+    if (!project_name || !project_summary || !readiness_level || platforms.length === 0 || !project_method) {
       setData(null);
       setLoading(false);
       setError(null);
@@ -423,7 +432,7 @@ export const useGetEstimateFeatures = ({
     setData(null);
 
     try {
-      const result = await getEstimateFeatures({ project_name, project_summary, readiness_level, platforms });
+      const result = await getEstimateFeatures({ project_name, project_summary, readiness_level, platforms, project_method, nocode_platform });
       setData(result.projectEstimateFeature);
       setRatelimit(result.ratelimit);
       setRetryAfter(result.retryAfter);

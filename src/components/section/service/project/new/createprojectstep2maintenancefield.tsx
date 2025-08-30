@@ -55,8 +55,8 @@ export function CreateProjectStep2MaintenanceField({ form }: { form: UseFormRetu
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader className="sr-only">
-                    <DialogTitle>Edit profile</DialogTitle>
-                    <DialogDescription>Make changes to your profile here. Click save when you&apos;re done.</DialogDescription>
+                    <DialogTitle />
+                    <DialogDescription />
                   </DialogHeader>
                   <MaintenanceForm form={form} onSubscribe={handleSubscribe} onCancel={handleCancel} />
                 </DialogContent>
@@ -94,8 +94,8 @@ export function CreateProjectStep2MaintenanceField({ form }: { form: UseFormRetu
               </DrawerTrigger>
               <DrawerContent>
                 <DrawerHeader className="sr-only">
-                  <DrawerTitle>Edit profile</DrawerTitle>
-                  <DrawerDescription>Make changes to your profile here. Click save when you&apos;re done.</DrawerDescription>
+                  <DrawerTitle />
+                  <DrawerDescription />
                 </DrawerHeader>
                 <MaintenanceForm form={form} onSubscribe={handleSubscribe} onCancel={handleCancel} />
               </DrawerContent>
@@ -112,12 +112,12 @@ function MaintenanceForm({ form, onSubscribe, onCancel }: { form: UseFormReturn<
   const expected_end_date = form.getValues("expected_end_date");
 
   return (
-    <div className={cn("grid items-start gap-6 p-4 md:p-0")}>
-      <div className="grid gap-2">
+    <div className={cn("grid items-start gap-2 p-4 md:p-0")}>
+      <div className="grid gap-2 pb-6">
         <div className="text-2xl font-bold">유지보수 구독권</div>
         <div className="flex space-x-1">
           <InfoIcon className="shrink-0 size-3.5 text-muted-foreground mt-[1px]" />
-          <p className="text-xs text-muted-foreground">첫 한 달간은 무료 유지보수 혜택이 제공됩니다.</p>
+          <p className="text-xs text-muted-foreground">첫 한 달간은 기본 유지보수 혜택이 제공됩니다.</p>
         </div>
       </div>
       <div className="grid gap-4 rounded-2xl border p-4">
@@ -125,33 +125,57 @@ function MaintenanceForm({ form, onSubscribe, onCancel }: { form: UseFormReturn<
           <div className="text-sm">첫 결제 예정일</div>
           <div className="text-sm font-semibold">{expected_end_date ? dayjs(expected_end_date).add(1, "month").format("LL") : "프로젝트 종료일 한달 뒤"}</div>
         </div>
+
         <hr />
-        {/* 서비스 특징 */}
-        <div className="space-y-3">
+
+        <div className="space-y-1.5 pb-2">
+          <div className="flex items-center space-x-2 text-base font-semibold pb-1">
+            <span>이용 조건</span>
+          </div>
+
           <div className="flex items-center space-x-2 text-sm">
-            <CheckIcon className="w-4 h-4 text-green-500" />
-            <span>24시간 글로벌 기술 지원</span>
+            <span>Fellows에서 개발 이후 유지보수가 필요한 경우</span>
           </div>
           <div className="flex items-center space-x-2 text-sm">
-            <CheckIcon className="w-4 h-4 text-green-500" />
-            <span>다국어 지원 (한국어, 영어, 중국어)</span>
+            <span>주말, 공휴일 제외 영업일</span>
+          </div>
+        </div>
+
+        <div className="space-y-1.5 pb-2">
+          <div className="flex items-center space-x-2 text-base font-semibold pb-1">
+            <span>제공 서비스</span>
+          </div>
+
+          <div className="flex items-center space-x-2 text-sm">
+            <span>Fellows SaaS를 통한 WBS를 통한 개발 상황 추적</span>
           </div>
           <div className="flex items-center space-x-2 text-sm">
-            <CheckIcon className="w-4 h-4 text-green-500" />
-            <span>검증된 해외 개발자 팀</span>
+            <span>Fellows SaaS를 통한 일별, 월별 보고서 생성 가능</span>
           </div>
           <div className="flex items-center space-x-2 text-sm">
-            <CheckIcon className="w-4 h-4 text-green-500" />
-            <span>첫 달 무료 체험</span>
+            <span>Fellows SaaS를 통한 프로젝트 문의 가능</span>
+          </div>
+          <div className="flex items-center space-x-2 text-sm">
+            <span>다국어 지원 (한국어, 영어)</span>
+          </div>
+          <div className="flex items-center space-x-2 text-sm">
+            <span>24시간 이내 SW 1차 장애 대응 진행</span>
+          </div>
+          <div className="flex items-center space-x-2 text-sm">
+            <span>서버 운영 및 관리</span>
+          </div>
+          <div className="flex items-center space-x-2 text-sm">
+            <span>월 30시간 개발 크레딧 제공(익월까지 유효)</span>
           </div>
         </div>
       </div>
-      <div className="flex space-x-3">
-        <Button variant="outline" onClick={onCancel} className="flex-1 bg-white hover:bg-gray-50">
-          구독하지 않기
-        </Button>
-        <Button onClick={onSubscribe} className="flex-1 bg-blue-600 hover:bg-blue-700">
+
+      <div className="w-full flex flex-row justify-between gap-0 space-x-4 pt-3">
+        <Button onClick={onSubscribe} className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold">
           구독하기
+        </Button>
+        <Button onClick={onCancel} className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold" variant="secondary">
+          구독하지 않기
         </Button>
       </div>
     </div>
