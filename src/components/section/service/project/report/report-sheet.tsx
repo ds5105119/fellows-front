@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
-import { useDailyReport, useMonthlyReport, useReportAISummary } from "@/hooks/fetch/report";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDailyReport, useMonthlyReport, useReportAISummary, useReportAISummaryStatus } from "@/hooks/fetch/report";
 import type { ERPNextTaskForUser, OverviewERPNextProject } from "@/@types/service/project";
 import type { ERPNextReport } from "@/@types/service/report";
 import type { ERPNextTimeSheetForUser } from "@/@types/service/timesheet";
@@ -25,7 +25,7 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
   const targetRef = useRef<HTMLDivElement>(null);
 
   // Local state
-  const [reportId, setReportId] = useState<string | undefined>(undefined);
+  const [reportId, setReportId] = useState<string | undefined>();
 
   // Data fetching hooks
   const dailyReportData = useDailyReport(dailyReport ? { project_id: project.project_name, date } : undefined);
@@ -39,8 +39,9 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
   const timesheets: ERPNextTimeSheetForUser[] = aiReport.data?.timesheets ?? report.data?.timesheets ?? [];
 
   // Loading state
+  const aiReportStatus = useReportAISummaryStatus(report.data?.report.name);
   const isBaseLoading = report.isLoading && !report.data;
-  const isAiBusy = aiReport.isLoading || aiReport.isValidating;
+  const isAiBusy = aiReportStatus.data;
 
   // Derived values
   const totalHours = useMemo(
@@ -54,6 +55,7 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
 
   const title = dailyReport ? "일일 리포트" : "월간 리포트";
   const aiButtonLabel = reportDoc?.summary ? "요약 다시 생성하기" : "AI 요약 생성";
+  const createdAtText = reportDoc?.creation && dayjs(reportDoc.creation).isValid() ? `${dayjs(reportDoc.creation).format("YY.MM.DD HH시 mm분")} 생성` : "";
 
   // Group tasks by status
   const groupedTasks = useMemo(() => {
@@ -74,6 +76,9 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
     } else {
       aiReport.mutate(undefined, { revalidate: true });
     }
+    setTimeout(() => {
+      aiReportStatus.mutate(undefined, { revalidate: true });
+    }, 200);
   }, [aiReport, reportDoc?.name, reportId]);
 
   const downloadPDF = useCallback(() => {
@@ -85,7 +90,9 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
     });
   }, [project.custom_project_title, reportDoc?.end_date]);
 
-  const createdAtText = reportDoc?.creation && dayjs(reportDoc.creation).isValid() ? `${dayjs(reportDoc.creation).format("YY.MM.DD HH시 mm분")} 생성` : "";
+  useEffect(() => {
+    aiReportStatus.mutate(undefined, { revalidate: true });
+  }, [aiReport.isLoading]);
 
   return (
     <div className="w-full">
@@ -306,7 +313,9 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
               {isBaseLoading || isAiBusy ? (
                 <SummarySkeleton />
               ) : (
-                <p className="text-sm text-zinc-700 leading-relaxed">{reportDoc?.summary ? String(reportDoc.summary) : "요약을 생성해 보세요"}</p>
+                <p className="text-sm text-zinc-700 leading-relaxed whitespace-pre-wrap">
+                  {reportDoc?.summary ? String(reportDoc.summary) : "요약을 생성해 보세요"}
+                </p>
               )}
             </div>
           </section>

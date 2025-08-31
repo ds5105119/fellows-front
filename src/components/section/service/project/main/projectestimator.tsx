@@ -22,7 +22,7 @@ export default function ProjectEstimator({ project }: Props) {
   const prevStatusRef = useRef<boolean | undefined>(undefined);
 
   const { markdown, isLoading, startEstimate } = useEstimateProject(project.project_name, "");
-  const status = useEstimateProjectStatus({ projectId: project.project_name });
+  const status = useEstimateProjectStatus(project.project_name);
 
   useEffect(() => {
     const currentStatus = status.data;

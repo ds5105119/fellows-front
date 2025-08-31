@@ -459,9 +459,9 @@ export const useGetEstimateFeatures = ({
 };
 
 // --- Project Estimate (Streaming) ---
-export const useEstimateProjectStatus = (data: { projectId: string | null }, options: SWRConfiguration<boolean> = {}): SWRResponse<boolean> => {
-  const url = `${API_BASE_URL}/${data?.projectId}/estimate/status`;
-  return useSWR(data ? url : null, async (url: string) => await fetcher(url), options);
+export const useEstimateProjectStatus = (projectId: string | null, options: SWRConfiguration<boolean> = {}): SWRResponse<boolean> => {
+  const url = `${API_BASE_URL}/${projectId}/estimate/status`;
+  return useSWR(projectId ? url : null, async (url: string) => await fetcher(url), options);
 };
 
 export const useEstimateProject = (projectId: string | null, initialMarkdown: string = "") => {
