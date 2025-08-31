@@ -1,6 +1,6 @@
 "use client";
 
-import useSWR, { SWRResponse } from "swr";
+import useSWR, { SWRConfiguration, SWRResponse } from "swr";
 import useSWRInfinite, { SWRInfiniteConfiguration, SWRInfiniteKeyLoader } from "swr/infinite";
 import { fetchEventSource, EventSourceMessage } from "@microsoft/fetch-event-source";
 import { useCallback, useState, useEffect } from "react";
@@ -459,6 +459,11 @@ export const useGetEstimateFeatures = ({
 };
 
 // --- Project Estimate (Streaming) ---
+export const useEstimateProjectStatus = (data: { projectId: string | null }, options: SWRConfiguration<boolean> = {}): SWRResponse<boolean> => {
+  const url = `${API_BASE_URL}/${data?.projectId}/estimate/status`;
+  return useSWR(data ? url : null, async (url: string) => await fetcher(url), options);
+};
+
 export const useEstimateProject = (projectId: string | null, initialMarkdown: string = "") => {
   const [markdown, setMarkdown] = useState<string>(initialMarkdown);
   const [isLoading, setIsLoading] = useState<boolean>(false);

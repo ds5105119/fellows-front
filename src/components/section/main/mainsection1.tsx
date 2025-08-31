@@ -23,7 +23,7 @@ export default async function MainSection1() {
           {/* CTA */}
           <div className="absolute inset-0 flex z-20 items-center justify-center">
             <div className="w-[87%] h-[80%] flex flex-col gap-3 text-end items-end justify-end">
-              <h2 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">Web, App 개발</h2>
+              <h2 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">외주 개발</h2>
               <h2 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">
                 <span className="font-black">Fellows℠</span>에서 시작하세요
               </h2>
