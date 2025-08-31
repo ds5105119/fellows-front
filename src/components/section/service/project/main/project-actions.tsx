@@ -27,6 +27,7 @@ export function ProjectActions({ project }: ProjectActionsProps) {
   const swr = useQuoteSlots();
   const availabilityData = swr.data || [];
   const availabilityMap = new Map(availabilityData.map((item) => [item.date, item.remaining]));
+  const unAvailable = availabilityData.filter((data) => data.remaining !== 0).length == 0;
 
   const getAvailability = (date: Date) => {
     const dateString = dayjs(date).format("YYYY-MM-DD");
@@ -128,8 +129,12 @@ export function ProjectActions({ project }: ProjectActionsProps) {
         {project.custom_project_status === "draft" ? (
           <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
             <DialogTrigger asChild>
-              <Button size="lg" className="w-full px-16 h-[3.5rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500">
-                견적 의뢰하기
+              <Button
+                size="lg"
+                className="w-full px-16 h-[3.5rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500"
+                disabled={unAvailable}
+              >
+                {unAvailable ? "지금은 의뢰할 수 있는 날짜가 없어요" : "견적 의뢰하기"}
               </Button>
             </DialogTrigger>
             <DialogContent
@@ -192,7 +197,7 @@ export function ProjectActions({ project }: ProjectActionsProps) {
                     <Button
                       variant="default"
                       onClick={handleSubmitProject}
-                      disabled={isSubmitting || isSubmitted}
+                      disabled={isSubmitting || isSubmitted || unAvailable}
                       className="relative overflow-hidden transition-all duration-200 ease-out"
                     >
                       {isSubmitting ? (
