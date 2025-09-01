@@ -14,7 +14,9 @@ export default function ContractHeader() {
                 { label: "월별", value: "month" },
               ]}
               initial={"week"}
-              callback={(value: string) => {}}
+              callback={(value: string) => {
+                console.log(value);
+              }}
             />
           </div>
           <div className="relative w-full max-w-96 h-fit rounded-full bg-muted">
