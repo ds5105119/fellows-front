@@ -3,7 +3,7 @@ import type { Session } from "next-auth";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LinkIcon, Loader2, RefreshCw } from "lucide-react";
+import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
 import { useProject, updateProject, acceptInviteProjectGroup } from "@/hooks/fetch/project";
 import { updateERPNextProjectSchema, type UserERPNextProject } from "@/@types/service/project";
@@ -18,12 +18,12 @@ import { ProjectDetails } from "./project-details";
 import { ProjectActions } from "./project-actions";
 import { ProjectNotices } from "./project-notices";
 import dayjs from "dayjs";
-import Link from "next/link";
 import { ContractList } from "./contract-list";
 import { ContractSheet } from "./contract-sheet";
 import { usePathname } from "next/navigation";
 import type { UserERPNextContract } from "@/@types/service/contract";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import ProjectDetailSheetHeader from "./projectdetailsheet-header";
 
 interface ProjectDetailSheetProps {
   project_id: string;
@@ -236,15 +236,6 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     []
   );
 
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(project_id);
-      toast.success("프로젝트 번호가 복사되었습니다.");
-    } catch {
-      toast.error("프로젝트 번호 복사에 실패했습니다.");
-    }
-  }, [project_id]);
-
   const handleUpdateProject = useCallback(async () => {
     if (!editable || !editedProject) return;
 
@@ -353,6 +344,13 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
       setLevel(member?.level ?? 5);
     }
   }, [project.data?.custom_team, session.sub]);
+  
+  //  Show content immediately even if editedProject is not ready
+  const displayProject = editedProject || project.data;
+
+  if (!displayProject) {
+    return <ProjectLoading />;
+  }
 
   //  Show loading only for initial load, not for every render
   if (project.isLoading && !project.data) {
@@ -362,13 +360,6 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   // 에러 상태 (404)
   if (project.error) {
     return <Project404 onClose={onClose} onRetry={handleRetry} />;
-  }
-
-  //  Show content immediately even if editedProject is not ready
-  const displayProject = editedProject || project.data;
-
-  if (!displayProject) {
-    return <ProjectLoading />;
   }
 
   return (
@@ -392,24 +383,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
       )}
 
       {/* 헤더 */}
-      <div className="sticky top-0 shrink-0 flex items-center justify-between h-16 border-b-1 border-b-sidebar-border px-4 bg-background z-20">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
-            <ArrowLeft className="!size-5" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={handleCopy} className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
-            <LinkIcon className="!size-5" />
-          </Button>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none bg-transparent">
-            이용 가이드
-          </Button>
-          <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none bg-transparent" asChild>
-            <Link href={`/service/project/task?project_id=${project_id}`}>작업 현황</Link>
-          </Button>
-        </div>
-      </div>
+      <ProjectDetailSheetHeader onClose={onClose} project={project} />
 
       {/* 메인 콘텐츠 */}
       <div className="grid grid-cols-1 md:grid-cols-5 md:overflow-hidden overflow-x-hidden h-[calc(100%-48px)]">
