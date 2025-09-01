@@ -16,6 +16,10 @@ interface ContractListProps {
 
 export function ContractList({ contractsSwr, selectedContract, onContractSelect }: ContractListProps) {
   const contracts = contractsSwr.data?.flatMap((page) => page.items) ?? [];
+  const isReachedEnd = contractsSwr.data && contractsSwr.data.length > 0 && contractsSwr.data[contractsSwr.data.length - 1].items.length === 0;
+  const isLoading =
+    !isReachedEnd &&
+    (contractsSwr.isLoading || (contractsSwr.data && contractsSwr.size > 0 && typeof contractsSwr.data[contractsSwr.size - 1] === "undefined"));
 
   const handleContractClick = useCallback(
     (contract: UserERPNextContract) => {
@@ -136,7 +140,7 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
         </table>
       </div>
 
-      {contracts.length === 0 && (
+      {contracts.length === 0 && !isLoading && (
         <div className="flex flex-col w-full">
           <div className="h-44 flex flex-col justify-center space-y-4 items-center w-full rounded-lg bg-gradient-to-b from-blue-50 via-indigo-50 to-blue-50 px-8 mb-1 text-sm select-none">
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-sm">
