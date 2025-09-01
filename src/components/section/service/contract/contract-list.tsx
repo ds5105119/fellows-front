@@ -1,39 +1,22 @@
 "use client";
-import { useCallback, useEffect, useRef } from "react";
-import type { UserERPNextProject } from "@/@types/service/project";
+import { useCallback } from "react";
 import { Info, Download, FileCheck, Loader2 } from "lucide-react";
-import type { SWRResponse } from "swr";
-import { useContracts } from "@/hooks/fetch/contract";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import dayjs from "@/lib/dayjs";
 import generatePDF, { Margin } from "react-to-pdf";
 import type { UserERPNextContract } from "@/@types/service/contract";
+import { SWRInfiniteResponse } from "swr/infinite";
 
 interface ContractListProps {
-  projectSwr: SWRResponse<UserERPNextProject>;
+  contractsSwr: SWRInfiniteResponse<{ items: UserERPNextContract[] }>;
   selectedContract?: UserERPNextContract;
   onContractSelect: (contract: UserERPNextContract) => void;
-  initialContractName?: string;
 }
 
-export function ContractList({ projectSwr, selectedContract, onContractSelect, initialContractName }: ContractListProps) {
-  const { data: project } = projectSwr;
-  const project_id = project?.project_name ?? "";
-  const { data: contractsSwr, isLoading } = useContracts({ project_id });
-  const contracts = contractsSwr?.flatMap((page) => page.items) ?? [];
-  const hasAutoSelected = useRef(false);
-
-  useEffect(() => {
-    if (initialContractName && contracts.length > 0 && !hasAutoSelected.current && !selectedContract) {
-      const foundContract = contracts.find((c) => c.name === initialContractName);
-      if (foundContract) {
-        onContractSelect(foundContract);
-        hasAutoSelected.current = true;
-      }
-    }
-  }, [initialContractName, contracts, selectedContract, onContractSelect]);
+export function ContractList({ contractsSwr, selectedContract, onContractSelect }: ContractListProps) {
+  const contracts = contractsSwr.data?.flatMap((page) => page.items) ?? [];
 
   const handleContractClick = useCallback(
     (contract: UserERPNextContract) => {
@@ -44,7 +27,6 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
 
   const downloadContractPDF = useCallback(
     (contract: UserERPNextContract) => {
-      // 선택된 계약서가 아니면 먼저 선택
       if (!selectedContract || selectedContract.name !== contract.name) {
         onContractSelect(contract);
       }
@@ -65,8 +47,6 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
     [selectedContract, onContractSelect]
   );
 
-  console.log(contracts);
-
   return (
     <div className="grid grid-cols-1 gap-3 px-4 py-6">
       <div className="text-sm font-bold">계약서: {contracts.length}건</div>
@@ -75,16 +55,60 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
         <p>프로젝트 계약서를 한 곳에서 관리할 수 있어요.</p>
       </div>
 
-      {isLoading && (
-        <div className="flex items-center justify-center py-8">
-          <div className="text-center space-y-8">
-            <div className="space-y-2">
-              <Loader2 className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">계약서를 불러오는 중</p>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="hidden lg:block overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="sticky top-0 z-10 bg-blue-200/60 backdrop-blur supports-[backdrop-filter]:bg-blue-200/60">
+            <tr className="border-b border-black/5 text-xs font-semibold tracking-wide text-blue-600 uppercase">
+              <th scope="col" className="px-5 py-3 text-left">
+                프로젝트
+              </th>
+              <th scope="col" className="px-5 py-3 text-left">
+                상태
+              </th>
+              <th scope="col" className="px-5 py-3 text-left">
+                시작일
+              </th>
+              <th scope="col" className="px-5 py-3 text-left">
+                마감일
+              </th>
+              <th scope="col" className="px-5 py-3 text-left">
+                생성일
+              </th>
+              <th scope="col" className="px-5 py-3 text-left">
+                수정일
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-black/5">
+            {contracts.map((contract) => (
+              <tr
+                key={contract.name}
+                className="hover:bg-gray-100/80 transition-colors even:bg-gray-100/40 cursor-pointer"
+                onClick={() => handleContractClick(contract)}
+              >
+                <td className="px-5 py-3 text-gray-900 font-medium">{contract.custom_name || "계약서"}</td>
+                <td className="px-5 py-3 text-gray-700">{!contract.custom_subscribe ? `회차 정산형` : `정기 결제형`}</td>
+                <td className="px-5 py-3 text-gray-700">
+                  {!contract.custom_subscribe ? `${contract.custom_fee?.toLocaleString()} 원` : `${contract.custom_maintenance?.toLocaleString()}원 / 월`}
+                </td>
+                <td className="px-5 py-3 text-gray-700">
+                  {dayjs(contract.start_date).format("YYYY.MM.DD")} {contract.end_date && dayjs(contract.end_date).format("~ YYYY.MM.DD")}
+                </td>
+                <td className="px-5 py-3 text-gray-700">
+                  {contract.status === "Unsigned"
+                    ? "사인 전"
+                    : contract.status === "Active" && contract.docstatus == 1
+                    ? "결제 전"
+                    : contract.docstatus === 2
+                    ? "계약 취소"
+                    : "결제 완료"}
+                </td>
+                <td className="px-5 py-3 text-gray-700">{"Sex"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <section className="space-y-3">
         {contracts.map((contract) => (
@@ -127,7 +151,7 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
                   }}
                   asChild
                 >
-                  <Link href={`/service/project/${project_id}/contracts/${contract.name}`}>사인하기</Link>
+                  <Link href={`/service/project/${contract.document_name}/contracts/${contract.name}`}>사인하기</Link>
                 </Button>
               )}
               {contract.status === "Active" && contract.docstatus == 1 && (
@@ -139,7 +163,7 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
                   }}
                   asChild
                 >
-                  <Link href={`/service/project/${project_id}/payment/contract/${contract.name}`}>결제하기</Link>
+                  <Link href={`/service/project/${contract.document_name}/payment/contract/${contract.name}`}>결제하기</Link>
                 </Button>
               )}
               <Button
@@ -160,7 +184,18 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
         ))}
       </section>
 
-      {contracts.length === 0 && !isLoading && (
+      {contractsSwr.isLoading && (
+        <div className="flex items-center justify-center py-8">
+          <div className="text-center space-y-8">
+            <div className="space-y-2">
+              <Loader2 className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">계약서를 불러오는 중</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {contracts.length === 0 && !contractsSwr.isLoading && (
         <div className="flex flex-col w-full">
           <div className="h-44 flex flex-col justify-center space-y-4 items-center w-full rounded-lg bg-gradient-to-b from-blue-50 via-indigo-50 to-blue-50 px-8 mb-1 text-sm select-none">
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-sm">

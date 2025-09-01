@@ -206,7 +206,7 @@ export function FilterHeader({
                 { label: "주별", value: "week" },
                 { label: "월별", value: "month" },
               ]}
-              initial={"month"}
+              initial={"week"}
               callback={(value: string) => setTimeUnit(value as TimeUnit)}
             />
           )}

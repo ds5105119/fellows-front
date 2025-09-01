@@ -1,6 +1,6 @@
 import { auth, signIn } from "@/auth";
-import TaskNavigation from "@/components/section/service/project/task/task-navigation";
-import ReportMain from "@/components/section/service/project/report/report-main";
+import TaskNavigation from "@/components/section/service/task/task-navigation";
+import ReportMain from "@/components/section/service/report/report-main";
 
 export default async function Page() {
   const session = await auth();

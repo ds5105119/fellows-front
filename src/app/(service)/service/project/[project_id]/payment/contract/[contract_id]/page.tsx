@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { auth, signIn } from "@/auth";
 import { SessionProvider } from "next-auth/react";
-import PaymentMain from "@/components/section/service/project/payment/payment-main";
+import PaymentMain from "@/components/section/service/payment/payment-main";
 
 export const metadata: Metadata = {
   title: "프로젝트 - Fellows",

@@ -332,7 +332,7 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
         </div>
       </div>
 
-      {contract?.docstatus !== 2 && (contract?.status == "Unsigned" || contract?.status == "Inactive") && (
+      {contract?.docstatus !== 2 && (contract?.status == "Unsigned" || contract?.status == "Active") && (
         <div className="w-full sticky bottom-0 z-20 px-5 sm:px-8">
           <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
 
@@ -409,7 +409,7 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
               </DialogContent>
             </Dialog>
 
-            {contract?.status == "Inactive" && (
+            {contract?.status == "Active" && (
               <Button type="button" className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold">
                 결제하기
               </Button>

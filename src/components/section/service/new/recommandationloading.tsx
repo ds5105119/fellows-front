@@ -1,4 +1,4 @@
-import AIRecommendSkeleton from "@/components/section/service/project/new/airecommendskeleton";
+import AIRecommendSkeleton from "@/components/section/service/new/airecommendskeleton";
 
 interface RecommendationLoadingProps {
   currentStep: number;

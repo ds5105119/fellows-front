@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { GanttChart } from "@/components/section/service/project/task/gantt-chart";
-import { TreeTable } from "@/components/section/service/project/task/tree-table";
-import TaskNavigation from "@/components/section/service/project/task/task-navigation";
+import { GanttChart } from "@/components/section/service/task/gantt-chart";
+import { TreeTable } from "@/components/section/service/task/tree-table";
+import TaskNavigation from "@/components/section/service/task/task-navigation";
 
 export default function Page() {
   const [taskView, setTaskView] = useState(false);

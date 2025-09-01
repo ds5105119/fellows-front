@@ -1,8 +1,8 @@
 import { auth, signIn } from "@/auth";
-import { ProjectOverviewChart } from "@/components/section/service/dashboard/projectoverview";
-import { TaskOverviewChart } from "@/components/section/service/dashboard/taskoverview";
-import FAQ from "@/components/section/service/dashboard/faq";
-import Onboarding from "@/components/section/service/dashboard/onboarding";
+import { ProjectOverviewChart } from "@/components/section/dashboard/projectoverview";
+import { TaskOverviewChart } from "@/components/section/dashboard/taskoverview";
+import FAQ from "@/components/section/dashboard/faq";
+import Onboarding from "@/components/section/dashboard/onboarding";
 
 export default async function Page() {
   const session = await auth();

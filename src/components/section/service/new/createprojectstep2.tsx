@@ -11,7 +11,7 @@ import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
-import DatePicker from "@/components/section/service/project/new/datepicker";
+import DatePicker from "@/components/section/service/new/datepicker";
 import { CreateProjectStep2MaintenanceField } from "./createprojectstep2maintenancefield";
 dayjs.extend(relativeTime);
 dayjs.locale("ko");

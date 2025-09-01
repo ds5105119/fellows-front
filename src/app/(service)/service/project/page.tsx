@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import { auth, signIn } from "@/auth";
 import { SessionProvider } from "next-auth/react";
-import ProjectMainSection from "@/components/section/service/project/main/projectmainsection";
-import ProjectNavigation from "@/components/section/service/project/main/project-navigation";
+import ProjectMainSection from "@/components/section/service/project/projectmainsection";
+import ProjectNavigation from "@/components/section/service/project/project-navigation";
 
 export const metadata: Metadata = {
   title: "프로젝트 - Fellows",

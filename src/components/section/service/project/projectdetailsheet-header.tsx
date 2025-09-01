@@ -208,7 +208,7 @@ export default function ProjectDetailSheetHeader({ onClose, project }: { onClose
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "요구사항_정의서.docx";
+    a.download = `${project.data?.custom_project_title}_요구사항_정의서.docx`;
     a.click();
     URL.revokeObjectURL(url);
   };

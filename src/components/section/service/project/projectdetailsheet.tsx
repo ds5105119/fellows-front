@@ -19,7 +19,7 @@ import { ProjectActions } from "./project-actions";
 import { ProjectNotices } from "./project-notices";
 import dayjs from "dayjs";
 import { ContractList } from "./contract-list";
-import { ContractSheet } from "./contract-sheet";
+import { ContractSheet } from "../contract/contract-sheet";
 import { usePathname } from "next/navigation";
 import type { UserERPNextContract } from "@/@types/service/contract";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -344,7 +344,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
       setLevel(member?.level ?? 5);
     }
   }, [project.data?.custom_team, session.sub]);
-  
+
   //  Show content immediately even if editedProject is not ready
   const displayProject = editedProject || project.data;
 

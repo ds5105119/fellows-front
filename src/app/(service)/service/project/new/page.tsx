@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { auth } from "@/auth";
-import CreateProject from "@/components/section/service/project/new/createproject";
+import CreateProject from "@/components/section/service/new/createproject";
 
 export const metadata: Metadata = {
   title: "프로젝트 만들기",

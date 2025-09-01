@@ -1,7 +1,7 @@
 "use client";
 
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
-import DragScrollContainer from "../../../ui/dragscrollcontainer";
+import DragScrollContainer from "../../ui/dragscrollcontainer";
 import Link from "next/link";
 import useThrottle from "@/lib/useThrottle";
 import ComboBoxResponsive from "@/components/ui/comboboxresponsive";

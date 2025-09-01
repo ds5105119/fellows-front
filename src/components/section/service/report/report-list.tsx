@@ -90,24 +90,24 @@ export default function ReportList({
           {/* Desktop table - hidden on small screens */}
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="sticky top-0 z-10 bg-blue-300/60 backdrop-blur supports-[backdrop-filter]:bg-blue-300/60">
-                <tr className="border-b border-black/5">
-                  <th scope="col" className="px-5 py-3 text-left text-[11px] font-semibold tracking-wide text-gray-600 uppercase">
+              <thead className="sticky top-0 z-10 bg-blue-200/60 backdrop-blur supports-[backdrop-filter]:bg-blue-200/60">
+                <tr className="border-b border-black/5 text-xs font-semibold tracking-wide text-blue-600 uppercase">
+                  <th scope="col" className="px-5 py-3 text-left">
                     프로젝트
                   </th>
-                  <th scope="col" className="px-5 py-3 text-left text-[11px] font-semibold tracking-wide text-gray-600 uppercase">
+                  <th scope="col" className="px-5 py-3 text-left">
                     상태
                   </th>
-                  <th scope="col" className="px-5 py-3 text-left text-[11px] font-semibold tracking-wide text-gray-600 uppercase">
+                  <th scope="col" className="px-5 py-3 text-left">
                     시작일
                   </th>
-                  <th scope="col" className="px-5 py-3 text-left text-[11px] font-semibold tracking-wide text-gray-600 uppercase">
+                  <th scope="col" className="px-5 py-3 text-left">
                     마감일
                   </th>
-                  <th scope="col" className="px-5 py-3 text-left text-[11px] font-semibold tracking-wide text-gray-600 uppercase">
+                  <th scope="col" className="px-5 py-3 text-left">
                     생성일
                   </th>
-                  <th scope="col" className="px-5 py-3 text-left text-[11px] font-semibold tracking-wide text-gray-600 uppercase">
+                  <th scope="col" className="px-5 py-3 text-left">
                     수정일
                   </th>
                 </tr>
