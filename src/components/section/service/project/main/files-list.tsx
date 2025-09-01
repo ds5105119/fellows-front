@@ -8,7 +8,7 @@ import { UploadProgressIndicator } from "@/components/ui/uploadprogressindicator
 import { getSSECPresignedPutUrl, removeFile, SSECFileDownloadButton, uploadFileToSSECPresignedUrl } from "@/hooks/fetch/presigned";
 import { ERPNextFile, erpNextFileSchema, UserERPNextProject } from "@/@types/service/project";
 import { toast } from "sonner";
-import { createFile, deleteFile, useFiles } from "@/hooks/fetch/project";
+import { createFile, useFiles } from "@/hooks/fetch/project";
 import { SWRResponse } from "swr";
 import { Session } from "next-auth";
 
@@ -120,7 +120,6 @@ export function FilesList({ projectSwr, session }: { projectSwr: SWRResponse<Use
       if (!sse_key) return;
       try {
         await removeFile(key, sse_key);
-        await deleteFile({ projectId: project?.project_name || "", key });
 
         files.mutate(
           (currentPages) => {
@@ -155,7 +154,7 @@ export function FilesList({ projectSwr, session }: { projectSwr: SWRResponse<Use
 
   return (
     <div className="grid grid-cols-1 gap-3 px-4 py-6">
-      <div className="text-sm font-bold">파일: {allFiles.length}/50</div>
+      <div className="text-sm font-bold">파일: {allFiles.length}/20</div>
       <div className="flex items-center space-x-1.5 w-full rounded-sm bg-gray-100 px-4 py-2 mb-1 text-sm">
         <Info className="!size-4" />
         <p>파일 첨부는 최대 30MB까지 가능해요.</p>
@@ -230,7 +229,8 @@ export function FilesList({ projectSwr, session }: { projectSwr: SWRResponse<Use
 
       {level < 3 ? (
         <button
-          className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-blue-200 hover:bg-blue-300 text-blue-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer"
+          disabled={allFiles.length >= 20}
+          className="flex items-center justify-center space-x-1.5 mt-1 w-full rounded-sm bg-blue-200 hover:bg-blue-300 text-blue-500 disabled:bg-zinc-200 disabled:text-zinc-500 font-bold px-4 py-3 mb-1 text-sm transition-colors duration-200 cursor-pointer"
           onClick={() => fileInputRef.current?.click()}
         >
           <Plus className="!size-5" strokeWidth={2} />

@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X } from "lucide-react";
 
@@ -9,54 +9,39 @@ interface UploadProgressIndicatorProps {
   progress: number;
   onRemove?: () => void;
   size?: number;
-  checkDisplayDuration?: number;
 }
 
-export function UploadProgressIndicator({ progress, onRemove, size = 36, checkDisplayDuration = 1500 }: UploadProgressIndicatorProps) {
-  const [displayState, setDisplayState] = useState<"progress" | "check" | "remove">(progress >= 99 ? "remove" : "progress");
+export function UploadProgressIndicator({ progress, onRemove, size = 36 }: UploadProgressIndicatorProps) {
+  const [hovered, setHovered] = useState(false);
+
   const isComplete = progress >= 99;
 
   const radius = size / 2 - 2;
   const circumference = 2 * Math.PI * radius;
-
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
-  useEffect(() => {
-    if (isComplete) {
-      setDisplayState("check");
-
-      const timer = setTimeout(() => {
-        setDisplayState("remove");
-      }, checkDisplayDuration);
-
-      return () => clearTimeout(timer);
-    } else if (!isComplete) {
-      setDisplayState("progress");
-    }
-  }, [isComplete, checkDisplayDuration]);
-
-  const onClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
-
-    if (displayState === "remove") {
+    if (isComplete && hovered) {
       onRemove?.();
     }
-
-    return;
   };
 
   return (
     <motion.div
       className="relative inline-flex items-center justify-center"
       style={{ width: size, height: size }}
-      onClick={(e) => onClick(e)}
-      whileHover={displayState === "remove" ? { scale: 1.1 } : undefined}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={handleClick}
+      whileHover={isComplete ? { scale: 1.1 } : undefined}
       transition={{ scale: { type: "spring", stiffness: 400, damping: 17 } }}
     >
       {/* Progress Circle */}
       <AnimatePresence>
-        {displayState === "progress" && (
+        {!isComplete && (
           <motion.svg
+            key="progress-circle"
             width={size}
             height={size}
             viewBox={`0 0 ${size} ${size}`}
@@ -90,51 +75,35 @@ export function UploadProgressIndicator({ progress, onRemove, size = 36, checkDi
         )}
       </AnimatePresence>
 
-      {/* Completion Check Icon */}
+      {/* Check or Remove */}
       <AnimatePresence>
-        {displayState === "check" && (
+        {isComplete && !hovered && (
           <motion.div
+            key="check-icon"
             className="text-green-500 absolute inset-0 flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              transition: {
-                type: "spring",
-                stiffness: 500,
-                damping: 25,
-              },
-            }}
-            exit={{
-              opacity: 0,
-              scale: 0.8,
-              transition: { duration: 0.3 },
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+            transition={{
+              type: "spring",
+              stiffness: 500,
+              damping: 25,
             }}
           >
             <Check size={size * 0.6} strokeWidth={2.5} />
           </motion.div>
         )}
-      </AnimatePresence>
-
-      {/* Remove X Icon */}
-      <AnimatePresence>
-        {displayState === "remove" && (
+        {isComplete && hovered && (
           <motion.div
-            className="absolute inset-0 flex items-center justify-center cursor-pointer transition-colors duration-200 text-red-500"
+            key="x-icon"
+            className="absolute inset-0 flex items-center justify-center cursor-pointer text-red-500"
             initial={{ opacity: 0, scale: 0.8 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              transition: {
-                type: "spring",
-                stiffness: 500,
-                damping: 25,
-              },
-            }}
-            exit={{
-              opacity: 0,
-              scale: 0.8,
-              transition: { duration: 0.15 },
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
+            transition={{
+              type: "spring",
+              stiffness: 500,
+              damping: 25,
             }}
           >
             <X size={size * 0.6} strokeWidth={2.5} />
@@ -142,9 +111,15 @@ export function UploadProgressIndicator({ progress, onRemove, size = 36, checkDi
         )}
       </AnimatePresence>
 
-      {/* Progress Text (optional) */}
-      {displayState === "progress" && (
-        <motion.div className="absolute text-xs font-medium text-gray-700" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+      {/* Progress Text */}
+      {!isComplete && (
+        <motion.div
+          key="progress-text"
+          className="absolute text-xs font-medium text-gray-700"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           {Math.round(progress)}
         </motion.div>
       )}
