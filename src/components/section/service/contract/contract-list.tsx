@@ -1,8 +1,7 @@
 "use client";
 import { useCallback } from "react";
-import { Info, Download, FileCheck, Loader2 } from "lucide-react";
+import { Download, FileCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import dayjs from "@/lib/dayjs";
 import generatePDF, { Margin } from "react-to-pdf";
@@ -48,34 +47,33 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
   );
 
   return (
-    <div className="grid grid-cols-1 gap-3 px-4 py-6">
+    <div className="grid grid-cols-1 gap-3">
       <div className="text-sm font-bold">계약서: {contracts.length}건</div>
-      <div className="flex items-center space-x-1.5 w-full rounded-sm bg-gray-100 px-4 py-2 mb-1 text-sm">
-        <Info className="!size-4" />
-        <p>프로젝트 계약서를 한 곳에서 관리할 수 있어요.</p>
-      </div>
 
       <div className="hidden lg:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="sticky top-0 z-10 bg-blue-200/60 backdrop-blur supports-[backdrop-filter]:bg-blue-200/60">
             <tr className="border-b border-black/5 text-xs font-semibold tracking-wide text-blue-600 uppercase">
               <th scope="col" className="px-5 py-3 text-left">
-                프로젝트
+                이름
               </th>
               <th scope="col" className="px-5 py-3 text-left">
-                상태
+                계약 상태
               </th>
               <th scope="col" className="px-5 py-3 text-left">
-                시작일
+                결제 방식
               </th>
               <th scope="col" className="px-5 py-3 text-left">
-                마감일
+                합계
               </th>
               <th scope="col" className="px-5 py-3 text-left">
-                생성일
+                일정
               </th>
               <th scope="col" className="px-5 py-3 text-left">
                 수정일
+              </th>
+              <th scope="col" className="px-5 py-3 text-left">
+                PDF
               </th>
             </tr>
           </thead>
@@ -87,6 +85,28 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
                 onClick={() => handleContractClick(contract)}
               >
                 <td className="px-5 py-3 text-gray-900 font-medium">{contract.custom_name || "계약서"}</td>
+                <td className="px-5 text-gray-700 text-xs font-medium">
+                  <div
+                    className={cn(
+                      "flex items-center justify-center px-1.5 py-0.5 rounded-sm border h-fit w-fit",
+                      contract.status === "Unsigned"
+                        ? "bg-zinc-50 border-zinc-300 text-zinc-500"
+                        : contract.status === "Active" && contract.docstatus == 1
+                        ? "bg-emerald-50 border-emerald-300 text-emerald-500"
+                        : contract.docstatus === 2
+                        ? "bg-red-50 border-red-300 text-red-500"
+                        : "bg-blue-50 border-blue-300 text-blue-500"
+                    )}
+                  >
+                    {contract.status === "Unsigned"
+                      ? "사인 전"
+                      : contract.status === "Active" && contract.docstatus == 1
+                      ? "결제 전"
+                      : contract.docstatus === 2
+                      ? "계약 취소"
+                      : "결제 완료"}
+                  </div>
+                </td>
                 <td className="px-5 py-3 text-gray-700">{!contract.custom_subscribe ? `회차 정산형` : `정기 결제형`}</td>
                 <td className="px-5 py-3 text-gray-700">
                   {!contract.custom_subscribe ? `${contract.custom_fee?.toLocaleString()} 원` : `${contract.custom_maintenance?.toLocaleString()}원 / 월`}
@@ -94,95 +114,27 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
                 <td className="px-5 py-3 text-gray-700">
                   {dayjs(contract.start_date).format("YYYY.MM.DD")} {contract.end_date && dayjs(contract.end_date).format("~ YYYY.MM.DD")}
                 </td>
+                <td className="px-5 py-3 text-gray-700">{dayjs(contract.modified).format("YYYY.MM.DD")}</td>
                 <td className="px-5 py-3 text-gray-700">
-                  {contract.status === "Unsigned"
-                    ? "사인 전"
-                    : contract.status === "Active" && contract.docstatus == 1
-                    ? "결제 전"
-                    : contract.docstatus === 2
-                    ? "계약 취소"
-                    : "결제 완료"}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs font-bold h-6 px-2 shadow-none bg-transparent grow hover:bg-white cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      downloadContractPDF(contract);
+                    }}
+                  >
+                    <Download className="size-3" />
+                    PDF
+                  </Button>
                 </td>
-                <td className="px-5 py-3 text-gray-700">{"Sex"}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      <section className="space-y-3">
-        {contracts.map((contract) => (
-          <div
-            key={contract.name}
-            className={cn("group p-4 rounded-md border border-sidebar-border hover:shadow-sm transition-all duration-200 cursor-pointer")}
-            onClick={() => handleContractClick(contract)}
-          >
-            <div className="flex flex-col">
-              <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                {contract.status === "Unsigned"
-                  ? "사인 전"
-                  : contract.status === "Active" && contract.docstatus == 1
-                  ? "결제 전"
-                  : contract.docstatus === 2
-                  ? "계약 취소"
-                  : "결제 완료"}
-              </h3>
-              <h3 className="text-sm font-medium text-gray-900 transition-colors pt-2 pb-1">
-                {contract.custom_name || "계약서"} - {!contract.custom_subscribe ? `회차 정산형` : `정기 결제형`}
-              </h3>
-            </div>
-
-            <div className="flex space-x-1.5 pb-3">
-              <div className="flex font-bold items-center space-x-1 text-sm">
-                {!contract.custom_subscribe ? `${contract.custom_fee?.toLocaleString()} 원` : `${contract.custom_maintenance?.toLocaleString()}원 / 월`}
-              </div>
-              <div className="flex items-center space-x-1 text-xs text-gray-500">
-                {dayjs(contract.start_date).format("YYYY.MM.DD")} {contract.end_date && dayjs(contract.end_date).format("~ YYYY.MM.DD")}
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2 pt-1">
-              {contract.status === "Unsigned" && contract.docstatus !== 2 && (
-                <Button
-                  size="sm"
-                  className="text-sm font-bold h-8 px-3 shadow-none bg-blue-400 w-2/3"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  asChild
-                >
-                  <Link href={`/service/project/${contract.document_name}/contracts/${contract.name}`}>사인하기</Link>
-                </Button>
-              )}
-              {contract.status === "Active" && contract.docstatus == 1 && (
-                <Button
-                  size="sm"
-                  className="text-sm font-bold h-8 px-3 shadow-none bg-emerald-400 hover:bg-emerald-500 w-2/3"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  asChild
-                >
-                  <Link href={`/service/project/${contract.document_name}/payment/contract/${contract.name}`}>결제하기</Link>
-                </Button>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-sm font-bold h-8 px-3 shadow-none bg-transparent grow"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  downloadContractPDF(contract);
-                }}
-              >
-                <Download className="w-3 h-3 mr-1" />
-                PDF
-              </Button>
-            </div>
-          </div>
-        ))}
-      </section>
 
       {contractsSwr.isLoading && (
         <div className="flex items-center justify-center py-8">

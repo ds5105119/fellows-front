@@ -7,6 +7,7 @@ import { UserERPNextContract } from "@/@types/service/contract";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ContractSheet } from "./contract-sheet";
+import ContractHeader from "./contract-header";
 
 export default function ContractMain({ session }: { session: Session }) {
   const contractsSwr = useContracts({});
@@ -26,8 +27,11 @@ export default function ContractMain({ session }: { session: Session }) {
   };
 
   return (
-    <div>
-      <ContractList contractsSwr={contractsSwr} selectedContract={selectedContract} onContractSelect={onContractSelect} />
+    <div className="w-full h-full">
+      <ContractHeader />
+      <div className="w-full px-6 py-4">
+        <ContractList contractsSwr={contractsSwr} selectedContract={selectedContract} onContractSelect={onContractSelect} />
+      </div>
       <Sheet open={contractSheetOpen} onOpenChange={handleContractSheetClose}>
         <SheetTrigger className="sr-only" />
         <SheetContent side="right" className="w-full h-full sm:max-w-full md:w-[45%] md:min-w-[728px] [&>button:first-of-type]:hidden gap-0">
