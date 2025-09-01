@@ -34,7 +34,6 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
         onContractSelect(contract);
       }
 
-      // PDF 다운로드 실행
       setTimeout(() => {
         const targetElement = document.querySelector("[data-pdf-target]") as HTMLElement;
         if (targetElement) {
