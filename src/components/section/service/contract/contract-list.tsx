@@ -136,18 +136,7 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
         </table>
       </div>
 
-      {contractsSwr.isLoading && (
-        <div className="flex items-center justify-center py-8">
-          <div className="text-center space-y-8">
-            <div className="space-y-2">
-              <Loader2 className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">계약서를 불러오는 중</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {contracts.length === 0 && !contractsSwr.isLoading && (
+      {contracts.length === 0 && (
         <div className="flex flex-col w-full">
           <div className="h-44 flex flex-col justify-center space-y-4 items-center w-full rounded-lg bg-gradient-to-b from-blue-50 via-indigo-50 to-blue-50 px-8 mb-1 text-sm select-none">
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-sm">
