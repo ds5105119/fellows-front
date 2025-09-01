@@ -5,7 +5,7 @@ import { ArrowLeft, LinkIcon } from "lucide-react";
 import Link from "next/link";
 import { useCallback } from "react";
 import { toast } from "sonner";
-import { Document, Packer, Paragraph, Table, TableCell, TableRow, TextRun, WidthType, PageOrientation } from "docx";
+import { AlignmentType, VerticalAlign, Document, Packer, Paragraph, Table, TableCell, TableRow, TextRun, WidthType, PageOrientation } from "docx";
 import { SWRResponse } from "swr";
 import { UserERPNextProject } from "@/@types/service/project";
 
@@ -20,7 +20,7 @@ export default function ProjectDetailSheetHeader({ onClose, project }: { onClose
   }, [project.data]);
 
   const handleDownload = async () => {
-    // 1. 동적 데이터 1~10개 생성
+    // 1. 동적 데이터: project.data?.custom_features 사용
     const rows = (project.data?.custom_features ?? []).map((feature, i) => ({
       구분: `구분${i + 1}`,
       메뉴: `메뉴${i + 1}`,
@@ -30,26 +30,31 @@ export default function ProjectDetailSheetHeader({ onClose, project }: { onClose
       우선순위: `${i + 1}`,
     }));
 
-    // 2. 컬럼 폭 설정 (A4 여백 제외 최대치)
+    // 2. 컬럼 폭 설정
     const columnWidth = [1000, 1000, 1700, 3500, 2000, 800];
 
-    // 3. TableRow 생성
+    // 3. TableRow 생성 (헤더 가운데, 특정 컬럼 가운데/나머지 왼쪽)
+    const headers = ["구분", "메뉴", "필요 기능", "기능 설명", "참고", "순위"];
     const tableRows = [
-      // Header
+      // Header row
       new TableRow({
-        children: ["구분", "메뉴", "필요 기능", "기능 설명", "참고", "순위"].map(
+        children: headers.map(
           (text, i) =>
             new TableCell({
               width: { size: columnWidth[i], type: WidthType.DXA },
+              margins: { top: 100, bottom: 100, left: 100, right: 100 },
+              verticalAlign: VerticalAlign.CENTER,
               children: [
                 new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  spacing: { before: 0, after: 0 },
                   children: [new TextRun({ text, bold: true, size: 16 })], // 8pt
                 }),
               ],
             })
         ),
       }),
-      // 데이터
+      // Data rows
       ...rows.map(
         (row) =>
           new TableRow({
@@ -57,8 +62,12 @@ export default function ProjectDetailSheetHeader({ onClose, project }: { onClose
               (text, i) =>
                 new TableCell({
                   width: { size: columnWidth[i], type: WidthType.DXA },
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  verticalAlign: VerticalAlign.CENTER,
                   children: [
                     new Paragraph({
+                      alignment: i === 0 || i === 1 || i === 5 ? AlignmentType.CENTER : AlignmentType.LEFT,
+                      spacing: { before: 0, after: 0 },
                       children: [new TextRun({ text: String(text), size: 16 })], // 8pt
                     }),
                   ],
@@ -74,7 +83,7 @@ export default function ProjectDetailSheetHeader({ onClose, project }: { onClose
         {
           properties: {
             page: {
-              margin: { top: 720, right: 720, bottom: 720, left: 720 }, // 0.5인치 여백
+              margin: { top: 720, right: 720, bottom: 720, left: 720 }, // 0.5인치
               size: {
                 orientation: PageOrientation.PORTRAIT,
               },
