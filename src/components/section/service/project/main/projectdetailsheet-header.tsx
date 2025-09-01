@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LinkIcon, Info } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   AlignmentType,
@@ -25,9 +25,14 @@ import {
 } from "docx";
 import { SWRResponse } from "swr";
 import { UserERPNextProject } from "@/@types/service/project";
+import { createPortal } from "react-dom";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export default function ProjectDetailSheetHeader({ onClose, project }: { onClose: () => void; project: SWRResponse<UserERPNextProject> }) {
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [boxPosition, setBoxPosition] = useState({ top: 0, left: 0 });
+  const downloadBtnRef = useRef<HTMLButtonElement>(null);
+  const { isMobile } = useSidebar();
 
   // --- 쿠키 유틸 ---
   const getCookie = (name: string) => {
@@ -48,10 +53,33 @@ export default function ProjectDetailSheetHeader({ onClose, project }: { onClose
     }
   }, []);
 
+  // --- 온보딩 관련 ---
   const handleDismissOnboarding = () => {
-    setCookie("requirement_doc_onboarded", "true", 30);
+    setCookie("requirement_doc_onboarded", "true", 9999);
     setShowOnboarding(false);
   };
+
+  const updateBoxPosition = () => {
+    if (downloadBtnRef.current) {
+      const rect = downloadBtnRef.current.getBoundingClientRect();
+      const boxWidth = 320;
+      const top = rect.bottom + window.scrollY + 8; // 버튼 바로 아래
+      const left = rect.left + window.scrollX + rect.width / 2 - boxWidth / 2;
+      setBoxPosition({ top, left });
+    }
+  };
+
+  useEffect(() => {
+    if (showOnboarding) {
+      updateBoxPosition();
+      window.addEventListener("resize", updateBoxPosition);
+      window.addEventListener("scroll", updateBoxPosition);
+      return () => {
+        window.removeEventListener("resize", updateBoxPosition);
+        window.removeEventListener("scroll", updateBoxPosition);
+      };
+    }
+  }, [showOnboarding]);
 
   // --- 프로젝트 번호 복사 ---
   const handleCopy = useCallback(async () => {
@@ -63,7 +91,7 @@ export default function ProjectDetailSheetHeader({ onClose, project }: { onClose
     }
   }, [project.data]);
 
-  // --- 이미지 fetch ---
+  // --- 요구사항 정의서 다운로드 ---
   const fetchImage = async (url: string) => {
     const res = await fetch(url);
     const blob = await res.blob();
@@ -71,7 +99,6 @@ export default function ProjectDetailSheetHeader({ onClose, project }: { onClose
     return new Uint8Array(arrayBuffer);
   };
 
-  // --- 요구사항 정의서 다운로드 ---
   const handleDownload = async () => {
     const buffer = await fetchImage("/fellows/logo.png");
 
@@ -204,37 +231,47 @@ export default function ProjectDetailSheetHeader({ onClose, project }: { onClose
             size="sm"
             className="font-semibold rounded-sm border-gray-200 shadow-none bg-transparent hidden md:flex"
             onClick={handleDownload}
+            ref={downloadBtnRef}
           >
             요구사항 정의서
           </Button>
-          {showOnboarding && (
-            <div className="absolute left-1/2 -translate-x-1/2 mt-3 w-80 p-4 rounded-md bg-zinc-100 shadow-xl text-sm z-50">
-              {/* 꼬리 */}
-              <div
-                className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 
-                    border-l-8 border-r-8 border-b-8
-                    border-transparent border-b-zinc-100"
-              ></div>
 
-              <div className="flex gap-2 items-start">
-                <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium">요구사항 정의서 안내</p>
-                  <p className="text-gray-600 mt-1">
-                    해당 버튼을 통해 요구사항 정의서를 다운 받을 수 있어요.
-                    <br />
-                    요구사항 정의서를 작성하고 업로드해주시면 더욱 빠른 개발이 가능해요.
-                  </p>
+          {/* 온보딩 포탈 */}
+          {!isMobile &&
+            showOnboarding &&
+            createPortal(
+              <div className="fixed inset-0 z-50 bg-black/15 pointer-events-none">
+                <div
+                  className="absolute p-4 rounded-md bg-white shadow-xl text-sm pointer-events-auto"
+                  style={{ top: boxPosition.top, left: boxPosition.left, width: 320 }}
+                >
+                  {/* 꼬리 */}
+                  <div
+                    className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0
+                               border-l-8 border-r-8 border-b-8
+                               border-transparent border-b-white"
+                  ></div>
 
-                  <div className="flex justify-end">
-                    <Button onClick={handleDismissOnboarding} size="sm">
-                      확인
-                    </Button>
+                  <div className="flex gap-2 items-start">
+                    <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">요구사항 정의서 안내</p>
+                      <p className="text-gray-600 mt-1">
+                        해당 버튼을 통해 요구사항 정의서를 다운 받을 수 있어요.
+                        <br />
+                        요구사항 정의서를 작성하고 업로드해주시면 더욱 빠른 개발이 가능해요.
+                      </p>
+                      <div className="flex justify-end">
+                        <Button onClick={handleDismissOnboarding} size="sm">
+                          확인
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
+              </div>,
+              document.body
+            )}
         </div>
 
         <Button variant="outline" size="sm" className="font-semibold rounded-sm border-gray-200 shadow-none bg-transparent">
