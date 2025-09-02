@@ -38,7 +38,7 @@ export default function MainInquerySection({ session: sessionProp }: { session: 
     const inflight = sessionStorage.getItem(AUTO_SUBMIT_INFLIGHT_KEY);
     if (inflight === "1") return;
 
-    // ✅ 옵티미스틱하게 바로 로딩 UI 보여줌
+    // ✅ 조건 확인 후 바로 로딩 UI 켜줌 (옵티미스틱)
     setSubmitting(true);
 
     const savedData = getCookie(INQUIRY_COOKIE_KEY);
@@ -48,7 +48,7 @@ export default function MainInquerySection({ session: sessionProp }: { session: 
       return;
     }
 
-    const parsed = safeJSONParse(savedData);
+    const parsed = safeJSONParse<{ description: string; timestamp: number }>(savedData);
     if (!parsed?.description) {
       deleteCookie(INQUIRY_COOKIE_KEY);
       setSubmitting(false);
@@ -77,7 +77,7 @@ export default function MainInquerySection({ session: sessionProp }: { session: 
           return;
         }
 
-        // 실패 시 다시 false
+        // 실패 응답
         setSubmitting(false);
       } catch (err) {
         console.error("Auto submit failed:", err);
@@ -202,9 +202,9 @@ function removeAutoSubmitParam() {
   }
 }
 
-function safeJSONParse(value: string): any | null {
+function safeJSONParse<T>(value: string): T | null {
   try {
-    return JSON.parse(value);
+    return JSON.parse(value) as T;
   } catch {
     return null;
   }
