@@ -21,19 +21,11 @@ export default function InqueryPage() {
     }
 
     if (descParam.length > 10000) {
-      console.warn("description too long");
       router.replace("/");
       return;
     }
 
     const description = descParam;
-
-    try {
-      window.history.replaceState({}, "", window.location.pathname);
-    } catch (e) {
-      console.warn("history.replaceState failed", e);
-    }
-
     autoSubmittedRef.current = true;
 
     (async () => {
