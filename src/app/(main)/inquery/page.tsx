@@ -3,75 +3,50 @@
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-
 import { getEstimateInfo } from "@/hooks/fetch/server/project";
-
-const INQUIRY_COOKIE_KEY = "pending_inquiry_data";
 
 export default function InqueryPage() {
   const router = useRouter();
-
   const autoSubmittedRef = useRef(false);
-
-  function getPendingData(): string | null {
-    try {
-      const fromLS = localStorage.getItem(INQUIRY_COOKIE_KEY);
-      if (fromLS) {
-        localStorage.removeItem(INQUIRY_COOKIE_KEY);
-        return fromLS;
-      }
-    } catch (e) {
-      console.warn("localStorage access failed", e);
-    }
-
-    // 기존 방식: cookie 확인
-    const nameEQ = encodeURIComponent(INQUIRY_COOKIE_KEY) + "=";
-    const ca = document.cookie ? document.cookie.split(";") : [];
-    for (let c of ca) {
-      c = c.trim();
-      if (c.startsWith(nameEQ)) return decodeURIComponent(c.substring(nameEQ.length));
-    }
-    return null;
-  }
 
   useEffect(() => {
     if (autoSubmittedRef.current) return;
 
-    const savedData = getPendingData();
-    if (!savedData) {
+    const params = new URLSearchParams(window.location.search);
+    const descParam = params.get("description");
+
+    if (!descParam) {
       router.replace("/");
       return;
     }
 
-    const parsed = safeJSONParse<{ description: string; timestamp: number }>(savedData);
-    if (!parsed?.description) {
-      deleteCookie(INQUIRY_COOKIE_KEY);
+    if (descParam.length > 10000) {
+      console.warn("description too long");
       router.replace("/");
       return;
+    }
+
+    const description = descParam;
+
+    try {
+      window.history.replaceState({}, "", window.location.pathname);
+    } catch (e) {
+      console.warn("history.replaceState failed", e);
     }
 
     autoSubmittedRef.current = true;
 
     (async () => {
       try {
-        const state = await withTimeout(getEstimateInfo(parsed.description), 45000);
-
+        const state = await withTimeout(getEstimateInfo(description), 45000);
         if (state?.success) {
-          sessionStorage.setItem(
-            "project_info",
-            JSON.stringify({
-              description: state.description,
-              info: state.info,
-            })
-          );
-          deleteCookie(INQUIRY_COOKIE_KEY);
+          sessionStorage.setItem("project_info", JSON.stringify({ description: state.description, info: state.info }));
           router.push(`/service/project/new?from=session`);
           return;
+        } else {
+          router.replace("/");
         }
-
-        console.log("씨발");
       } catch (err) {
-        console.log(err);
         router.replace("/");
       }
     })();
@@ -103,16 +78,4 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
         reject(err);
       });
   });
-}
-
-function safeJSONParse<T>(value: string): T | null {
-  try {
-    return JSON.parse(value) as T;
-  } catch {
-    return null;
-  }
-}
-
-function deleteCookie(name: string) {
-  document.cookie = `${encodeURIComponent(name)}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;`;
 }

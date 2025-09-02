@@ -10,8 +10,6 @@ import VariableFontHoverByLetter from "@/components/fancy/text/variable-font-hov
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
 import { getEstimateInfo } from "@/hooks/fetch/server/project";
 
-const INQUIRY_COOKIE_KEY = "pending_inquiry_data";
-
 export default function MainInquerySection() {
   const router = useRouter();
 
@@ -27,16 +25,8 @@ export default function MainInquerySection() {
     if (!description) return;
 
     if (!isAuthed) {
-      const payload = JSON.stringify({ description, timestamp: Date.now() });
-
-      setCookie(INQUIRY_COOKIE_KEY, payload, 7);
-      try {
-        localStorage.setItem(INQUIRY_COOKIE_KEY, payload);
-      } catch (e) {
-        console.warn("localStorage unavailable:", e);
-      }
-
-      signIn("keycloak", { redirectTo: "/inquery" });
+      const encoded = encodeURIComponent(description);
+      signIn("keycloak", { callbackUrl: `/inquery?description=${encoded}` });
       return;
     }
 
@@ -52,7 +42,6 @@ export default function MainInquerySection() {
             info: state.info,
           })
         );
-        deleteCookie(INQUIRY_COOKIE_KEY);
         router.push(`/service/project/new?from=session`);
       } else {
         setSubmitting(false);
@@ -130,15 +119,4 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
         reject(err);
       });
   });
-}
-
-function setCookie(name: string, value: string, days: number) {
-  const expires = new Date();
-  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-  // 값은 인코딩해서 저장(특수문자 안전)
-  document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
-}
-
-function deleteCookie(name: string) {
-  document.cookie = `${encodeURIComponent(name)}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;`;
 }
