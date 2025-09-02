@@ -75,11 +75,11 @@ export default async function Page() {
         <MainQnaSection />
       </BlurFade>
 
-      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="contact">
+      <BlurFade className="col-span-full pt-10 lg:pt-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="contact">
         <MainContactSection />
       </BlurFade>
 
-      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="inquery">
+      <BlurFade className="col-span-full pt-20 pb-10 lg:pt-26 lg:pb-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="inquery">
         <MainInquerySection session={session} />
       </BlurFade>
     </div>
