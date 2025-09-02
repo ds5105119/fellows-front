@@ -16,6 +16,7 @@ import MainInquerySection from "@/components/section/main/maininquerysection";
 export const metadata: Metadata = {
   title: "Fellows | 펠로우즈",
   description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
+  keywords: ["웹 제작", "앱 제작", "외주 개발", "shopify", "쇼피파이", "framer", "프레이머", "리액트", "아임웹", "개발 대행", "개발사"],
   openGraph: {
     title: "Fellows | 펠로우즈",
     description: "Fellows를 통해 저렴한 가격으로 웹과 앱을 제작하세요.",
