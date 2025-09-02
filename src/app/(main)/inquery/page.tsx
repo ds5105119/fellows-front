@@ -48,7 +48,7 @@ export default function InqueryPage() {
           return;
         }
         router.replace("/");
-      } catch (err) {
+      } catch {
         router.replace("/");
       }
     })();

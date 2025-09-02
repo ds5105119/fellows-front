@@ -2,10 +2,12 @@
 
 import { Copy } from "lucide-react";
 import type { UserERPNextProject } from "@/@types/service/project";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 export function ProjectBasicInfo({ project }: { project: UserERPNextProject; setEditedProject: (project: UserERPNextProject) => void }) {
+  const [titleEdit, setTitleEdit] = useState<boolean>(false);
+
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
@@ -18,9 +20,15 @@ export function ProjectBasicInfo({ project }: { project: UserERPNextProject; set
 
   return (
     <div className="w-full flex flex-col space-y-5">
-      <h2 className="text-4xl font-bold break-keep">
-        {project.custom_emoji} {project.custom_project_title}
-      </h2>
+      <div onClick={() => setTitleEdit((prev) => !prev)}>
+        {titleEdit ? (
+          <textarea className="text-3xl font-bold break-keep rounded-md border bg-zinc-50" />
+        ) : (
+          <h2 className="text-4xl font-bold break-keep">
+            {project.custom_emoji} {project.custom_project_title}
+          </h2>
+        )}
+      </div>
       <div className="w-full flex items-center space-x-2">
         <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">계약 번호</div>
         <div className="ml-1 flex-1 text-xs font-medium text-muted-foreground truncate overflow-hidden whitespace-nowrap">{project.project_name}</div>
