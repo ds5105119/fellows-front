@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useLayoutEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -34,8 +34,10 @@ export default function MainSection4() {
   const [showDetail, setShowDetail] = useState(0);
 
   // Added refs for the two clickable containers
-  const leftContainerRef = useRef<HTMLDivElement>(null);
-  const rightContainerRef = useRef<HTMLDivElement>(null);
+  const leftContainerRef = useRef<HTMLDivElement | null>(null);
+  const leftCardRef = useRef<HTMLDivElement | null>(null);
+  const rightContainerRef = useRef<HTMLDivElement | null>(null);
+  const rightCardRef = useRef<HTMLDivElement | null>(null);
 
   const transition = { type: "spring", duration: 1, delay: 0.4, bounce: 0 } as const;
   const highlightClass = "rounded-[0.3em] px-px";
@@ -69,6 +71,47 @@ export default function MainSection4() {
     // Cleanup event listener
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!rightCardRef.current || !leftCardRef.current || !leftContainerRef.current) return;
+
+    let raf = 0;
+    const applyHeight = (h: number) => {
+      leftCardRef.current!.style.boxSizing = "border-box";
+      leftCardRef.current!.style.height = `${h}px`;
+      leftCardRef.current!.style.minHeight = `${h}px`;
+      leftContainerRef.current!.style.height = `${h}px`;
+      leftContainerRef.current!.style.minHeight = `${h}px`;
+      leftCardRef.current!.style.transition = "height 160ms ease";
+    };
+
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const h = Math.round(entry.contentRect.height);
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => applyHeight(h));
+      }
+    });
+
+    const initialH = Math.round(rightCardRef.current.getBoundingClientRect().height || 0);
+    if (initialH) applyHeight(initialH);
+
+    ro.observe(rightCardRef.current);
+
+    const onWin = () => {
+      if (!rightCardRef.current) return;
+      const h = Math.round(rightCardRef.current.getBoundingClientRect().height || 0);
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => applyHeight(h));
+    };
+    window.addEventListener("resize", onWin);
+
+    return () => {
+      ro.disconnect();
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onWin);
     };
   }, []);
 
@@ -175,7 +218,7 @@ export default function MainSection4() {
               </motion.div>
             )}
           </AnimatePresence>
-          <div className="w-full h-full rounded-3xl flex flex-col items-center justify-center overflow-hidden relative bg-white -z-10">
+          <div ref={leftCardRef} className="w-full h-full rounded-3xl flex flex-col items-center justify-center overflow-hidden relative bg-white -z-10">
             <div className="pt-6 px-6 md:pt-10 md:px-10 flex flex-col space-y-1.5 z-50 w-full">
               <div className="flex flex-col space-y-2">
                 <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/Team</p>
@@ -226,7 +269,7 @@ export default function MainSection4() {
         className="relative col-span-1 md:ml-4 mb-10 md:mb-0 cursor-none"
         onClick={() => (showDetail == 2 ? setShowDetail(0) : setShowDetail(2))}
       >
-        <div className="w-full h-fit">
+        <div className="w-full h-full">
           <Cursor
             attachToParent
             variants={{
@@ -311,7 +354,7 @@ export default function MainSection4() {
               </motion.div>
             )}
           </AnimatePresence>
-          <div className="w-full h-full px-6 md:px-10 py-6 md:py-10 rounded-3xl flex flex-col overflow-hidden relative bg-white -z-10">
+          <div ref={rightCardRef} className="w-full h-fit px-6 md:px-10 py-6 md:py-10 rounded-3xl flex flex-col overflow-hidden relative bg-white -z-10">
             <div className="flex flex-col space-y-1.5 z-50 w-full shrink-0">
               <div className="flex flex-col space-y-2">
                 <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/Cost</p>
@@ -324,7 +367,7 @@ export default function MainSection4() {
             </div>
 
             <div className="pt-3 md:pt-5 grow w-full relative flex items-center justify-center">
-              <div className="w-full h-full">
+              <div className="w-full h-fit">
                 <AspectRatio ratio={698 / 645}>
                   <Image src="/main-section-4-2-1.png" alt="메인 섹션 4 이미지" fill className="object-contain" />
                 </AspectRatio>
