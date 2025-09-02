@@ -40,7 +40,7 @@ function InqueryContent() {
                 info: state.info,
               })
             );
-          } catch (storageError) {
+          } catch {
             router.replace("/");
             return;
           }
@@ -50,7 +50,7 @@ function InqueryContent() {
         } else {
           router.replace("/");
         }
-      } catch (error) {
+      } catch {
         router.replace("/");
       }
     })();
