@@ -4,8 +4,9 @@ import { Copy } from "lucide-react";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
-export function ProjectBasicInfo({ project }: { project: UserERPNextProject; setEditedProject: (project: UserERPNextProject) => void }) {
+export function ProjectBasicInfo({ project, setEditedProject }: { project: UserERPNextProject; setEditedProject: (project: UserERPNextProject) => void }) {
   const [titleEdit, setTitleEdit] = useState<boolean>(false);
 
   const handleCopy = useCallback(async () => {
@@ -20,11 +21,22 @@ export function ProjectBasicInfo({ project }: { project: UserERPNextProject; set
 
   return (
     <div className="w-full flex flex-col space-y-5">
-      <div onClick={() => setTitleEdit((prev) => !prev)}>
+      <div className="w-full">
         {titleEdit ? (
-          <textarea className="text-3xl font-bold break-keep rounded-md border bg-zinc-50" />
+          <div className="w-full flex flex-col space-y-2">
+            <textarea
+              name="project name"
+              rows={1}
+              className="w-full text-3xl font-bold break-keep rounded-md border bg-zinc-50 resize-none h-fit p-3 focus:outline-0"
+              value={project.custom_project_title ?? ""}
+              onChange={(e) => setEditedProject({ ...project, custom_project_title: e.target.value })}
+            />
+            <Button size="sm" onClick={() => setTitleEdit(false)} className="w-fit self-end">
+              완료
+            </Button>
+          </div>
         ) : (
-          <h2 className="text-4xl font-bold break-keep">
+          <h2 className="text-4xl font-bold break-keep" onClick={() => setTitleEdit(true)}>
             {project.custom_emoji} {project.custom_project_title}
           </h2>
         )}
