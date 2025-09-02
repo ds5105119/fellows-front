@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { signIn, useSession } from "next-auth/react";
-import type { Session } from "next-auth";
 import { ArrowRight, Loader2 } from "lucide-react";
 
 import VariableFontHoverByLetter from "@/components/fancy/text/variable-font-hover-by-letter";
@@ -12,15 +11,14 @@ import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea
 import { getEstimateInfo } from "@/hooks/fetch/server/project";
 
 const INQUIRY_COOKIE_KEY = "pending_inquiry_data";
-const AUTO_SUBMIT_INFLIGHT_KEY = "auto_submit_inflight"; // 중복 방지(세션 스토리지)
+const AUTO_SUBMIT_INFLIGHT_KEY = "auto_submit_inflight";
 
-export default function MainInquerySection({ session: sessionProp }: { session: Session | null }) {
+export default function MainInquerySection() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // 서버에서 내려준 session이 없더라도, 클라이언트 훅으로 인증 상태 보완
   const { data: sessionHook, status } = useSession();
-  const session = sessionProp ?? sessionHook ?? null;
+  const session = sessionHook ?? null;
   const isAuthed = !!session || status === "authenticated";
 
   const [submitting, setSubmitting] = useState(false);
@@ -28,7 +26,7 @@ export default function MainInquerySection({ session: sessionProp }: { session: 
 
   const shouldAutoSubmit = useMemo(() => searchParams.get("auto_submit") === "true", [searchParams]);
 
-  const autoSubmittedRef = useRef(false); // 진짜 단 한 번만 실행
+  const autoSubmittedRef = useRef(false);
 
   useEffect(() => {
     if (!shouldAutoSubmit) return;
@@ -38,7 +36,6 @@ export default function MainInquerySection({ session: sessionProp }: { session: 
     const inflight = sessionStorage.getItem(AUTO_SUBMIT_INFLIGHT_KEY);
     if (inflight === "1") return;
 
-    // ✅ 조건 확인 후 바로 로딩 UI 켜줌 (옵티미스틱)
     setSubmitting(true);
 
     const savedData = getCookie(INQUIRY_COOKIE_KEY);
@@ -77,7 +74,6 @@ export default function MainInquerySection({ session: sessionProp }: { session: 
           return;
         }
 
-        // 실패 응답
         setSubmitting(false);
       } catch (err) {
         console.error("Auto submit failed:", err);
@@ -98,7 +94,6 @@ export default function MainInquerySection({ session: sessionProp }: { session: 
       return;
     }
 
-    // 로그인된 상태에서의 수동 제출
     try {
       setSubmitting(true);
       const state = await withTimeout(getEstimateInfo(description), 45000);

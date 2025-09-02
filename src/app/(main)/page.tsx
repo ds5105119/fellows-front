@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { auth } from "@/auth";
+import { SessionProvider } from "next-auth/react";
 
 import { BlurFade } from "@/components/magicui/blur-fade";
 import InViewBackground from "@/components/resource/inviewbackground";
@@ -48,40 +49,35 @@ export default async function Page() {
 
   return (
     <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
-      <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 w-full relative">
-        <MainSection1 />
-      </div>
-
-      <BlurFade className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
-        <MainSection2 />
-      </BlurFade>
-
-      <div className="col-span-full relative" id="primary">
-        <BlurFade className="col-span-full py-10 pt-16 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
-          <MainSection4 />
+      <SessionProvider>
+        <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 w-full relative">
+          <MainSection1 />
+        </div>
+        <BlurFade className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+          <MainSection2 />
         </BlurFade>
-        <InViewBackground className="bg-zinc-100" />
-      </div>
-
-      <BlurFade className="col-span-full py-10 lg:py-24" id="secondary">
-        <MainSection3 />
-      </BlurFade>
-
-      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="quaternary">
-        <MainSection7 />
-      </BlurFade>
-
-      <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="qna">
-        <MainQnaSection />
-      </BlurFade>
-
-      <BlurFade className="col-span-full pt-10 lg:pt-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="contact">
-        <MainContactSection />
-      </BlurFade>
-
-      <BlurFade className="col-span-full pt-20 pb-10 lg:pt-26 lg:pb-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="inquery">
-        <MainInquerySection session={session} />
-      </BlurFade>
+        <div className="col-span-full relative" id="primary">
+          <BlurFade className="col-span-full py-10 pt-16 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+            <MainSection4 />
+          </BlurFade>
+          <InViewBackground className="bg-zinc-100" />
+        </div>
+        <BlurFade className="col-span-full py-10 lg:py-24" id="secondary">
+          <MainSection3 />
+        </BlurFade>
+        <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="quaternary">
+          <MainSection7 />
+        </BlurFade>
+        <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="qna">
+          <MainQnaSection />
+        </BlurFade>
+        <BlurFade className="col-span-full pt-10 lg:pt-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="contact">
+          <MainContactSection />
+        </BlurFade>
+        <BlurFade className="col-span-full pt-20 pb-10 lg:pt-26 lg:pb-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="inquery">
+          <MainInquerySection />
+        </BlurFade>
+      </SessionProvider>
     </div>
   );
 }
