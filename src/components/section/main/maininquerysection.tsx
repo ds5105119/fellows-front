@@ -1,88 +1,52 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
+import { signIn } from "next-auth/react";
+import type { Session } from "next-auth";
+import { ArrowRight, Loader2 } from "lucide-react";
+
 import VariableFontHoverByLetter from "@/components/fancy/text/variable-font-hover-by-letter";
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
 import { getEstimateInfo } from "@/hooks/fetch/server/project";
-import { ArrowRight, Loader2 } from "lucide-react";
-import type { Session } from "next-auth";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { createPortal } from "react-dom";
 
 const INQUIRY_COOKIE_KEY = "pending_inquiry_data";
 
-export default function MainInquerySection({ session }: { session: Session | null }) {
+export default function MainInquirySection({ session }: { session: Session | null }) {
   const router = useRouter();
-
-  const [submitting, setSubmitting] = useState<boolean>(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const searchParams = useSearchParams();
 
+  const [submitting, setSubmitting] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const didRun = useRef(false);
+
+  // 로그인 후 자동 제출 처리
   useEffect(() => {
-    const run = async () => {
-      const shouldAutoSubmit = searchParams.get("auto_submit") === "true";
-      if (shouldAutoSubmit && session) {
-        setSubmitting(true);
-        const savedData = getCookie(INQUIRY_COOKIE_KEY);
+    const shouldAutoSubmit = searchParams.get("auto_submit") === "true";
 
-        if (savedData) {
-          try {
-            const parsedData = JSON.parse(savedData);
+    if (!shouldAutoSubmit || !session || didRun.current) return;
+    didRun.current = true;
 
-            deleteCookie(INQUIRY_COOKIE_KEY);
+    (async () => {
+      setSubmitting(true);
+      const savedData = getCookie(INQUIRY_COOKIE_KEY);
 
-            const newUrl = new URL(window.location.href);
-            newUrl.searchParams.delete("auto_submit");
-            window.history.replaceState({}, "", newUrl.toString());
-
-            const state = await getEstimateInfo(parsedData.description);
-
-            if (state?.success) {
-              sessionStorage.setItem(
-                "project_info",
-                JSON.stringify({
-                  description: state.description,
-                  info: state.info,
-                })
-              );
-              router.push(`/service/project/new?from=session`);
-            }
-          } catch (err) {
-            setSubmitting(false);
-            console.error("Failed to parse saved inquiry data:", err);
-            deleteCookie(INQUIRY_COOKIE_KEY);
-          }
-        }
+      if (!savedData) {
+        setSubmitting(false);
+        return;
       }
-    };
 
-    run();
-  }, [session, searchParams]);
-
-  const handleFormSubmit = async (formData: FormData) => {
-    const description = formData.get("description");
-
-    if (!session) {
-      const inquiryData = {
-        description,
-        timestamp: Date.now(),
-      };
-
-      setCookie(INQUIRY_COOKIE_KEY, JSON.stringify(inquiryData), 7);
-
-      signIn("keycloak", {
-        redirectTo: "/?auto_submit=true#inquery",
-      });
-
-      return;
-    }
-
-    if (description) {
       try {
-        setSubmitting(true);
-        const state = await getEstimateInfo(description.toString());
+        const parsedData = JSON.parse(savedData);
+        deleteCookie(INQUIRY_COOKIE_KEY);
+
+        // URL에서 auto_submit 파라미터 제거
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("auto_submit");
+        window.history.replaceState({}, "", newUrl.toString());
+
+        const state = await getEstimateInfo(parsedData.description);
 
         if (state?.success) {
           sessionStorage.setItem(
@@ -93,11 +57,51 @@ export default function MainInquerySection({ session }: { session: Session | nul
             })
           );
           router.push(`/service/project/new?from=session`);
+        } else {
+          setSubmitting(false);
         }
       } catch (err) {
-        setSubmitting(false);
         console.error("Failed to parse saved inquiry data:", err);
+        deleteCookie(INQUIRY_COOKIE_KEY);
+        setSubmitting(false);
       }
+    })();
+  }, [session, searchParams, router]);
+
+  const handleFormSubmit = async (formData: FormData) => {
+    const description = formData.get("description")?.toString().trim();
+    if (!description) return;
+
+    if (!session) {
+      // 로그인 전이라면 쿠키에 저장
+      const inquiryData = { description, timestamp: Date.now() };
+      setCookie(INQUIRY_COOKIE_KEY, JSON.stringify(inquiryData), 7);
+
+      signIn("keycloak", {
+        redirectTo: "/?auto_submit=true#inquery",
+      });
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const state = await getEstimateInfo(description);
+
+      if (state?.success) {
+        sessionStorage.setItem(
+          "project_info",
+          JSON.stringify({
+            description: state.description,
+            info: state.info,
+          })
+        );
+        router.push(`/service/project/new?from=session`);
+      } else {
+        setSubmitting(false);
+      }
+    } catch (err) {
+      console.error("Failed to handle inquiry:", err);
+      setSubmitting(false);
     }
   };
 
@@ -120,9 +124,7 @@ export default function MainInquerySection({ session }: { session: Session | nul
       <div className="w-full pb-8 md:pb-10">
         <div className="flex flex-col space-y-4 md:space-y-6">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">Tell us about your project ✽</h1>
-          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
-            <h4 className="text-base md:text-lg font-semibold text-foreground">우리가 잘 해낼 수 있는 프로젝트인지 검토 후 3일이내 연락 드리겠습니다.</h4>
-          </div>
+          <h4 className="text-base md:text-lg font-semibold text-foreground">우리가 잘 해낼 수 있는 프로젝트인지 검토 후 3일 이내 연락 드리겠습니다.</h4>
         </div>
       </div>
       <div className="flex flex-col gap-6">
@@ -153,23 +155,21 @@ export default function MainInquerySection({ session }: { session: Session | nul
   );
 }
 
+// Cookie Utils
 function setCookie(name: string, value: string, days: number) {
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
   document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
 }
-
 function getCookie(name: string): string | null {
   const nameEQ = name + "=";
   const ca = document.cookie.split(";");
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === " ") c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+  for (let c of ca) {
+    c = c.trim();
+    if (c.startsWith(nameEQ)) return c.substring(nameEQ.length);
   }
   return null;
 }
-
 function deleteCookie(name: string) {
   document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
 }
