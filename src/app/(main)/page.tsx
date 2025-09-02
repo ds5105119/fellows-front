@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { auth } from "@/auth";
 import { SessionProvider } from "next-auth/react";
 
 import { BlurFade } from "@/components/magicui/blur-fade";
@@ -45,8 +44,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const session = await auth();
-
   return (
     <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
       <SessionProvider>
