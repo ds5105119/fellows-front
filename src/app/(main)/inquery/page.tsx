@@ -47,8 +47,10 @@ export default function InqueryPage() {
           router.push(`/service/project/new?from=session`);
           return;
         }
-        router.replace("/");
-      } catch {
+
+        console.log("씨발");
+      } catch (err) {
+        console.log(err);
         router.replace("/");
       }
     })();
