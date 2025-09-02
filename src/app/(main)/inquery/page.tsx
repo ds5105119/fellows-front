@@ -30,7 +30,7 @@ export default function InqueryPage() {
 
     (async () => {
       try {
-        const state = await withTimeout(getEstimateInfo(description), 45000);
+        const state = await getEstimateInfo(description);
         if (state?.success) {
           sessionStorage.setItem("project_info", JSON.stringify({ description: state.description, info: state.info }));
           router.push(`/service/project/new?from=session`);
@@ -54,20 +54,4 @@ export default function InqueryPage() {
       </div>
     </div>
   );
-}
-
-/* -------------------- utils -------------------- */
-function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error("Request timed out")), ms);
-    promise
-      .then((res) => {
-        clearTimeout(timer);
-        resolve(res);
-      })
-      .catch((err) => {
-        clearTimeout(timer);
-        reject(err);
-      });
-  });
 }
