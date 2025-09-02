@@ -13,10 +13,31 @@ export default function InqueryPage() {
 
   const autoSubmittedRef = useRef(false);
 
+  function getPendingData(): string | null {
+    try {
+      const fromLS = localStorage.getItem(INQUIRY_COOKIE_KEY);
+      if (fromLS) {
+        localStorage.removeItem(INQUIRY_COOKIE_KEY);
+        return fromLS;
+      }
+    } catch (e) {
+      console.warn("localStorage access failed", e);
+    }
+
+    // 기존 방식: cookie 확인
+    const nameEQ = encodeURIComponent(INQUIRY_COOKIE_KEY) + "=";
+    const ca = document.cookie ? document.cookie.split(";") : [];
+    for (let c of ca) {
+      c = c.trim();
+      if (c.startsWith(nameEQ)) return decodeURIComponent(c.substring(nameEQ.length));
+    }
+    return null;
+  }
+
   useEffect(() => {
     if (autoSubmittedRef.current) return;
 
-    const savedData = getCookie(INQUIRY_COOKIE_KEY);
+    const savedData = getPendingData();
     if (!savedData) {
       router.replace("/");
       return;
@@ -90,16 +111,6 @@ function safeJSONParse<T>(value: string): T | null {
   } catch {
     return null;
   }
-}
-
-function getCookie(name: string): string | null {
-  const nameEQ = encodeURIComponent(name) + "=";
-  const ca = document.cookie.split(";");
-  for (let c of ca) {
-    c = c.trim();
-    if (c.startsWith(nameEQ)) return decodeURIComponent(c.substring(nameEQ.length));
-  }
-  return null;
 }
 
 function deleteCookie(name: string) {

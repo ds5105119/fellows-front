@@ -27,7 +27,15 @@ export default function MainInquerySection() {
     if (!description) return;
 
     if (!isAuthed) {
-      setCookie(INQUIRY_COOKIE_KEY, JSON.stringify({ description, timestamp: Date.now() }), 7);
+      const payload = JSON.stringify({ description, timestamp: Date.now() });
+
+      setCookie(INQUIRY_COOKIE_KEY, payload, 7);
+      try {
+        localStorage.setItem(INQUIRY_COOKIE_KEY, payload);
+      } catch (e) {
+        console.warn("localStorage unavailable:", e);
+      }
+
       signIn("keycloak", { redirectTo: "/inquery" });
       return;
     }
