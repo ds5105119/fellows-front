@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import type { Session } from "next-auth";
 import { ArrowRight, Loader2 } from "lucide-react";
 
@@ -12,41 +12,56 @@ import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea
 import { getEstimateInfo } from "@/hooks/fetch/server/project";
 
 const INQUIRY_COOKIE_KEY = "pending_inquiry_data";
+const AUTO_SUBMIT_INFLIGHT_KEY = "auto_submit_inflight"; // 중복 방지(세션 스토리지)
 
-export default function MainInquirySection({ session }: { session: Session | null }) {
+export default function MainInquerySection({ session: sessionProp }: { session: Session | null }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // 서버에서 내려준 session이 없더라도, 클라이언트 훅으로 인증 상태 보완
+  const { data: sessionHook, status } = useSession();
+  const session = sessionProp ?? sessionHook ?? null;
+  const isAuthed = !!session || status === "authenticated";
+
   const [submitting, setSubmitting] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const didRun = useRef(false);
 
-  // 로그인 후 자동 제출 처리
+  const shouldAutoSubmit = useMemo(() => searchParams.get("auto_submit") === "true", [searchParams]);
+
+  const autoSubmittedRef = useRef(false); // 진짜 단 한 번만 실행
+
   useEffect(() => {
-    const shouldAutoSubmit = searchParams.get("auto_submit") === "true";
+    if (!shouldAutoSubmit) return;
+    if (!isAuthed) return;
+    if (autoSubmittedRef.current) return;
 
-    if (!shouldAutoSubmit || !session || didRun.current) return;
-    didRun.current = true;
+    const inflight = sessionStorage.getItem(AUTO_SUBMIT_INFLIGHT_KEY);
+    if (inflight === "1") return;
+
+    // ✅ 옵티미스틱하게 바로 로딩 UI 보여줌
+    setSubmitting(true);
+
+    const savedData = getCookie(INQUIRY_COOKIE_KEY);
+    if (!savedData) {
+      setSubmitting(false);
+      removeAutoSubmitParam();
+      return;
+    }
+
+    const parsed = safeJSONParse(savedData);
+    if (!parsed?.description) {
+      deleteCookie(INQUIRY_COOKIE_KEY);
+      setSubmitting(false);
+      removeAutoSubmitParam();
+      return;
+    }
+
+    autoSubmittedRef.current = true;
+    sessionStorage.setItem(AUTO_SUBMIT_INFLIGHT_KEY, "1");
 
     (async () => {
-      setSubmitting(true);
-      const savedData = getCookie(INQUIRY_COOKIE_KEY);
-
-      if (!savedData) {
-        setSubmitting(false);
-        return;
-      }
-
       try {
-        const parsedData = JSON.parse(savedData);
-        deleteCookie(INQUIRY_COOKIE_KEY);
-
-        // URL에서 auto_submit 파라미터 제거
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.delete("auto_submit");
-        window.history.replaceState({}, "", newUrl.toString());
-
-        const state = await getEstimateInfo(parsedData.description);
+        const state = await withTimeout(getEstimateInfo(parsed.description), 45000);
 
         if (state?.success) {
           sessionStorage.setItem(
@@ -56,36 +71,37 @@ export default function MainInquirySection({ session }: { session: Session | nul
               info: state.info,
             })
           );
+          deleteCookie(INQUIRY_COOKIE_KEY);
+          removeAutoSubmitParam();
           router.push(`/service/project/new?from=session`);
-        } else {
-          setSubmitting(false);
+          return;
         }
-      } catch (err) {
-        console.error("Failed to parse saved inquiry data:", err);
-        deleteCookie(INQUIRY_COOKIE_KEY);
+
+        // 실패 시 다시 false
         setSubmitting(false);
+      } catch (err) {
+        console.error("Auto submit failed:", err);
+        setSubmitting(false);
+      } finally {
+        sessionStorage.removeItem(AUTO_SUBMIT_INFLIGHT_KEY);
       }
     })();
-  }, [session, searchParams, router]);
+  }, [shouldAutoSubmit, isAuthed, router]);
 
   const handleFormSubmit = async (formData: FormData) => {
     const description = formData.get("description")?.toString().trim();
     if (!description) return;
 
-    if (!session) {
-      // 로그인 전이라면 쿠키에 저장
-      const inquiryData = { description, timestamp: Date.now() };
-      setCookie(INQUIRY_COOKIE_KEY, JSON.stringify(inquiryData), 7);
-
-      signIn("keycloak", {
-        redirectTo: "/?auto_submit=true#inquery",
-      });
+    if (!isAuthed) {
+      setCookie(INQUIRY_COOKIE_KEY, JSON.stringify({ description, timestamp: Date.now() }), 7);
+      signIn("keycloak", { redirectTo: "/?auto_submit=true#inquery" });
       return;
     }
 
+    // 로그인된 상태에서의 수동 제출
     try {
       setSubmitting(true);
-      const state = await getEstimateInfo(description);
+      const state = await withTimeout(getEstimateInfo(description), 45000);
 
       if (state?.success) {
         sessionStorage.setItem(
@@ -95,12 +111,15 @@ export default function MainInquirySection({ session }: { session: Session | nul
             info: state.info,
           })
         );
+        // 성공 시 쿠키가 남아있다면 정리
+        deleteCookie(INQUIRY_COOKIE_KEY);
+        removeAutoSubmitParam();
         router.push(`/service/project/new?from=session`);
       } else {
         setSubmitting(false);
       }
     } catch (err) {
-      console.error("Failed to handle inquiry:", err);
+      console.error("Manual submit failed:", err);
       setSubmitting(false);
     }
   };
@@ -124,7 +143,9 @@ export default function MainInquirySection({ session }: { session: Session | nul
       <div className="w-full pb-8 md:pb-10">
         <div className="flex flex-col space-y-4 md:space-y-6">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">Tell us about your project ✽</h1>
-          <h4 className="text-base md:text-lg font-semibold text-foreground">우리가 잘 해낼 수 있는 프로젝트인지 검토 후 3일 이내 연락 드리겠습니다.</h4>
+          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
+            <h4 className="text-base md:text-lg font-semibold text-foreground">우리가 잘 해낼 수 있는 프로젝트인지 검토 후 3일이내 연락 드리겠습니다.</h4>
+          </div>
         </div>
       </div>
       <div className="flex flex-col gap-6">
@@ -155,21 +176,57 @@ export default function MainInquirySection({ session }: { session: Session | nul
   );
 }
 
-// Cookie Utils
+/* -------------------- utils -------------------- */
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("Request timed out")), ms);
+    promise
+      .then((res) => {
+        clearTimeout(timer);
+        resolve(res);
+      })
+      .catch((err) => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
+}
+
+function removeAutoSubmitParam() {
+  if (typeof window === "undefined") return;
+  const url = new URL(window.location.href);
+  if (url.searchParams.has("auto_submit")) {
+    url.searchParams.delete("auto_submit");
+    window.history.replaceState({}, "", url.toString());
+  }
+}
+
+function safeJSONParse(value: string): any | null {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
 function setCookie(name: string, value: string, days: number) {
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+  // 값은 인코딩해서 저장(특수문자 안전)
+  document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
 }
+
 function getCookie(name: string): string | null {
-  const nameEQ = name + "=";
+  const nameEQ = encodeURIComponent(name) + "=";
   const ca = document.cookie.split(";");
   for (let c of ca) {
     c = c.trim();
-    if (c.startsWith(nameEQ)) return c.substring(nameEQ.length);
+    if (c.startsWith(nameEQ)) return decodeURIComponent(c.substring(nameEQ.length));
   }
   return null;
 }
+
 function deleteCookie(name: string) {
-  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+  document.cookie = `${encodeURIComponent(name)}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;`;
 }
