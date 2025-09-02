@@ -29,9 +29,7 @@ export default function MainSection4() {
 
   // Added refs for the two clickable containers
   const leftContainerRef = useRef<HTMLDivElement | null>(null);
-  const leftCardRef = useRef<HTMLDivElement | null>(null);
   const rightContainerRef = useRef<HTMLDivElement | null>(null);
-  const rightCardRef = useRef<HTMLDivElement | null>(null);
 
   const transition = { type: "spring", duration: 1, delay: 0.4, bounce: 0 } as const;
   const highlightClass = "rounded-[0.3em] px-px";
@@ -69,16 +67,12 @@ export default function MainSection4() {
   }, []);
 
   useLayoutEffect(() => {
-    if (!rightCardRef.current || !leftCardRef.current || !leftContainerRef.current) return;
+    if (!rightContainerRef.current || !leftContainerRef.current) return;
 
     let raf = 0;
     const applyHeight = (h: number) => {
-      leftCardRef.current!.style.boxSizing = "border-box";
-      leftCardRef.current!.style.height = `${h}px`;
-      leftCardRef.current!.style.minHeight = `${h}px`;
       leftContainerRef.current!.style.height = `${h}px`;
       leftContainerRef.current!.style.minHeight = `${h}px`;
-      leftCardRef.current!.style.transition = "height 160ms ease";
     };
 
     const ro = new ResizeObserver((entries) => {
@@ -89,17 +83,18 @@ export default function MainSection4() {
       }
     });
 
-    const initialH = Math.round(rightCardRef.current.getBoundingClientRect().height || 0);
+    const initialH = Math.round(rightContainerRef.current.getBoundingClientRect().height || 0);
     if (initialH) applyHeight(initialH);
 
-    ro.observe(rightCardRef.current);
+    ro.observe(rightContainerRef.current);
 
     const onWin = () => {
-      if (!rightCardRef.current) return;
-      const h = Math.round(rightCardRef.current.getBoundingClientRect().height || 0);
+      if (!rightContainerRef.current) return;
+      const h = Math.round(rightContainerRef.current.getBoundingClientRect().height || 0);
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => applyHeight(h));
     };
+
     window.addEventListener("resize", onWin);
 
     return () => {
@@ -212,7 +207,7 @@ export default function MainSection4() {
               </motion.div>
             )}
           </AnimatePresence>
-          <div ref={leftCardRef} className="w-full h-full rounded-3xl flex flex-col items-center justify-center overflow-hidden relative bg-white -z-10">
+          <div className="w-full h-full rounded-3xl flex flex-col items-center justify-center overflow-hidden relative bg-white -z-10">
             <div className="pt-6 px-6 md:pt-10 md:px-10 flex flex-col space-y-1.5 z-50 w-full">
               <div className="flex flex-col space-y-2">
                 <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/Team</p>
@@ -258,12 +253,8 @@ export default function MainSection4() {
       </div>
 
       {/* Right Section (Refactored) */}
-      <div
-        ref={rightContainerRef}
-        className="relative col-span-1 md:ml-4 mb-10 md:mb-0 cursor-none"
-        onClick={() => (showDetail == 2 ? setShowDetail(0) : setShowDetail(2))}
-      >
-        <div className="w-full h-full">
+      <div className="relative col-span-1 md:ml-4 mb-10 md:mb-0 cursor-none" onClick={() => (showDetail == 2 ? setShowDetail(0) : setShowDetail(2))}>
+        <div className="w-full h-fit" ref={rightContainerRef}>
           <Cursor
             attachToParent
             variants={{
@@ -348,7 +339,7 @@ export default function MainSection4() {
               </motion.div>
             )}
           </AnimatePresence>
-          <div ref={rightCardRef} className="w-full h-fit px-6 md:px-10 py-6 md:py-10 rounded-3xl flex flex-col overflow-hidden relative bg-white -z-10">
+          <div className="w-full h-fit px-6 md:px-10 py-6 md:py-10 rounded-3xl flex flex-col overflow-hidden relative bg-white -z-10">
             <div className="flex flex-col space-y-1.5 z-50 w-full shrink-0">
               <div className="flex flex-col space-y-2">
                 <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/Cost</p>
