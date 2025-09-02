@@ -90,7 +90,7 @@ export default function MainSection4() {
         className="relative col-span-1 md:mr-4 mb-10 md:mb-0 cursor-none"
         onClick={() => (showDetail == 1 ? setShowDetail(0) : setShowDetail(1))}
       >
-        <AspectRatio ratio={4 / 4.5} className="w-full">
+        <div className="w-full h-full">
           <Cursor
             attachToParent
             variants={{
@@ -217,7 +217,7 @@ export default function MainSection4() {
               ))}
             </div>
           </div>
-        </AspectRatio>
+        </div>
       </div>
 
       {/* Right Section (Refactored) */}
@@ -226,7 +226,7 @@ export default function MainSection4() {
         className="relative col-span-1 md:ml-4 mb-10 md:mb-0 cursor-none"
         onClick={() => (showDetail == 2 ? setShowDetail(0) : setShowDetail(2))}
       >
-        <AspectRatio ratio={4 / 4.5} className="w-full">
+        <div className="w-full h-fit">
           <Cursor
             attachToParent
             variants={{
@@ -324,12 +324,14 @@ export default function MainSection4() {
             </div>
 
             <div className="pt-3 md:pt-5 grow w-full relative flex items-center justify-center">
-              <div className="relative w-full h-full">
-                <Image src="/main-section-4-2-1.png" alt="메인 섹션 4 이미지" fill className="object-contain" />
+              <div className="w-full h-full">
+                <AspectRatio ratio={698 / 645}>
+                  <Image src="/main-section-4-2-1.png" alt="메인 섹션 4 이미지" fill className="object-contain" />
+                </AspectRatio>
               </div>
             </div>
           </div>
-        </AspectRatio>
+        </div>
       </div>
     </div>
   );
