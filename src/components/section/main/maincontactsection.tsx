@@ -154,8 +154,6 @@ export default function MainContactSection() {
     if (inView) {
       setKey((prev) => prev + 1);
     }
-
-    console.log(inView);
   }, [inView]);
 
   return (

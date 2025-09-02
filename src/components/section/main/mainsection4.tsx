@@ -104,6 +104,7 @@ export default function MainSection4() {
             ease: "easeInOut",
             duration: 0.15,
           }}
+          className="hidden md:block"
         >
           <motion.div
             animate={{
@@ -237,6 +238,7 @@ export default function MainSection4() {
             ease: "easeInOut",
             duration: 0.15,
           }}
+          className="hidden md:block"
         >
           <motion.div
             animate={{
