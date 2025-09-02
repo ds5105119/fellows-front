@@ -23,12 +23,6 @@ const fixedIcons = [
   { id: "powerpoint", alt: "PowerPoint", x: 80, y: 60, size: 88, delay: 1.0, src: "/main-section-4-1.png" },
 ] as const;
 
-const comparisonData = [
-  { fellows: ["자체 SaaS에서 프로젝트 관리,", "이슈 관리, 전자 계약 체결"], other: "인보이스, Notion" },
-  { fellows: ["해외 파트너사를 통해", "국내 대비 40% 비용 절감"], other: "-" },
-  { fellows: ["반복되는 미팅, 견적요청 없이", "몇 번이고 편하게 견적 수정"], other: "-" },
-] as const;
-
 export default function MainSection4() {
   const [scale, setScale] = useState(1.0);
   const [showDetail, setShowDetail] = useState(0);
