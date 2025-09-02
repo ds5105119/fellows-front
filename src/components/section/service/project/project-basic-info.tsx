@@ -5,11 +5,7 @@ import type { UserERPNextProject } from "@/@types/service/project";
 import { useCallback } from "react";
 import { toast } from "sonner";
 
-interface ProjectBasicInfoProps {
-  project: UserERPNextProject;
-}
-
-export function ProjectBasicInfo({ project }: ProjectBasicInfoProps) {
+export function ProjectBasicInfo({ project }: { project: UserERPNextProject; setEditedProject: (project: UserERPNextProject) => void }) {
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);

@@ -394,7 +394,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
               <ProjectHeader project={displayProject} />
             </div>
             <div className="px-8 py-6">
-              <ProjectBasicInfo project={displayProject} />
+              <ProjectBasicInfo project={displayProject} setEditedProject={setEditedProject} />
             </div>
             <ProjectStatus project={displayProject} session={session} setEditedProject={setEditedProject} />
             <div className="p-8">
@@ -465,7 +465,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
                   <ProjectHeader project={displayProject} />
                 </div>
                 <div className="px-4 py-6">
-                  <ProjectBasicInfo project={displayProject} />
+                  <ProjectBasicInfo project={displayProject} setEditedProject={setEditedProject} />
                 </div>
                 <ProjectStatus project={displayProject} session={session} setEditedProject={setEditedProject} />
                 <div className="p-4">
