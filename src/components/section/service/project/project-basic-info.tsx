@@ -19,6 +19,12 @@ export function ProjectBasicInfo({ project, setEditedProject }: { project: UserE
     }
   }, []);
 
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    e.target.style.height = "auto"; // 먼저 줄여주고
+    e.target.style.height = `${e.target.scrollHeight}px`; // 내용에 맞게 늘림
+    setEditedProject({ ...project, custom_project_title: e.target.value });
+  };
+
   return (
     <div className="w-full flex flex-col space-y-5">
       <div className="w-full">
@@ -29,7 +35,7 @@ export function ProjectBasicInfo({ project, setEditedProject }: { project: UserE
               rows={1}
               className="w-full text-3xl font-bold break-keep rounded-md border bg-zinc-50 resize-none h-fit p-3 focus:outline-0"
               value={project.custom_project_title ?? ""}
-              onChange={(e) => setEditedProject({ ...project, custom_project_title: e.target.value })}
+              onChange={handleChange}
             />
             <Button size="sm" onClick={() => setTitleEdit(false)} className="w-fit self-end">
               완료
