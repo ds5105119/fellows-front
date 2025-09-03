@@ -464,8 +464,8 @@ export const useEstimateProjectStatus = (projectId: string | null, options: SWRC
   return useSWR(projectId ? url : null, async (url: string) => await fetcher(url), options);
 };
 
-export const useEstimateProject = (projectId: string | null, initialMarkdown: string = "") => {
-  const [markdown, setMarkdown] = useState<string>(initialMarkdown);
+export const useEstimateProject = (projectId: string | null) => {
+  const [markdown, setMarkdown] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
 

@@ -245,7 +245,7 @@ export function ProjectStatus({
                   </Button>
                 </div>
                 <div className="flex flex-row-reverse md:flex-row items-center gap-3">
-                  <Button variant="ghost" size="icon" className="hover:bg-blue-500/10 border-0 focus-visible:ring-0" onClick={() => setOpenSheet(false)}>
+                  <Button variant="ghost" size="icon" className="hover:bg-blue-500/10" onClick={() => setOpenSheet(false)}>
                     <XIcon className="!size-5" />
                   </Button>
                 </div>

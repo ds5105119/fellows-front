@@ -30,7 +30,7 @@ export default function SelectLogo({ ...props }: React.HTMLAttributes<HTMLDivEle
     <div {...props}>
       <ContextMenu>
         <ContextMenuTrigger className="grow px-2">
-          <Link href="/" className="flex space-x-2 group">
+          <Link href="/" className="flex space-x-2 group focus:ring-0 focus-visible:ring-0">
             <Image
               src="/fellows/logo-img.svg"
               width={20}

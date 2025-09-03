@@ -21,7 +21,7 @@ export default function ProjectEstimator({ project }: Props) {
   const [showThinkingUI, setShowThinkingUI] = useState(false);
   const prevStatusRef = useRef<boolean | undefined>(undefined);
 
-  const { markdown, isLoading, startEstimate } = useEstimateProject(project.project_name, "");
+  const { markdown, isLoading, startEstimate } = useEstimateProject(project.project_name);
   const status = useEstimateProjectStatus(project.project_name);
 
   useEffect(() => {
