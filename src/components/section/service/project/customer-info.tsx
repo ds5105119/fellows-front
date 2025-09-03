@@ -10,7 +10,7 @@ import { useProjectCustomer } from "@/hooks/fetch/project";
 
 export function CustomerInfo({ projectSwr }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
   const project = projectSwr.data;
-  const customerSwr = useProjectCustomer(project?.customer ?? null);
+  const customerSwr = useProjectCustomer(project?.project_name ?? null);
   const customer = customerSwr.data ? customerSwr.data : null;
 
   return (
