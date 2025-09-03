@@ -110,7 +110,6 @@ export function ProjectStatus({
                   setEditedProject({
                     ...project,
                     custom_project_method: key,
-
                     custom_nocode_platform: null,
                   });
                 }}
