@@ -99,13 +99,15 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
           >
             <div className="flex flex-col">
               <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                {contract.status === "Unsigned"
-                  ? "사인 전"
-                  : contract.status === "Active" && contract.docstatus == 1
-                  ? "결제 전"
+                {contract.docstatus === 0
+                  ? contract.is_signed
+                    ? "결제 대기"
+                    : "사인 전"
+                  : contract.docstatus === 1 && contract.is_signed
+                  ? "진행 중"
                   : contract.docstatus === 2
-                  ? "계약 취소"
-                  : "결제 완료"}
+                  ? "취소됨"
+                  : "취소됨"}
               </h3>
               <h3 className="text-sm font-medium text-gray-900 transition-colors pt-2 pb-1">
                 {contract.custom_name || "계약서"} - {!contract.custom_subscribe ? `회차 정산형` : `정기 결제형`}
@@ -122,7 +124,7 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
             </div>
 
             <div className="flex items-center space-x-2 pt-1">
-              {contract.status === "Unsigned" && contract.docstatus !== 2 && customer?.email == session.user.email && (
+              {contract.docstatus === 0 && !contract.is_signed && customer?.email == session.user.email && (
                 <Button
                   size="sm"
                   className="text-sm font-bold h-8 px-3 shadow-none bg-blue-400 w-2/3"
@@ -134,7 +136,7 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
                   <Link href={`/service/project/${project_id}/contracts/${contract.name}`}>사인하기</Link>
                 </Button>
               )}
-              {contract.status === "Active" && contract.docstatus == 1 && customer?.email == session.user.email && (
+              {contract.docstatus === 0 && contract.is_signed && customer?.email == session.user.email && (
                 <Button
                   size="sm"
                   className="text-sm font-bold h-8 px-3 shadow-none bg-emerald-400 hover:bg-emerald-500 w-2/3"

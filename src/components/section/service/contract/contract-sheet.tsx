@@ -123,13 +123,15 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
           <div className="mt-1">
             <span className="text-sm font-bold">계약상태. </span>
             <span className="text-sm font-medium">
-              {contract?.status === "Unsigned"
-                ? "사인 전"
-                : contract?.status === "Active" && contract?.docstatus == 1
-                ? "결제 전"
+              {contract?.docstatus === 0
+                ? contract?.is_signed
+                  ? "결제 대기"
+                  : "사인 전"
+                : contract?.docstatus === 1 && contract?.is_signed
+                ? "진행 중"
                 : contract?.docstatus === 2
-                ? "계약 취소"
-                : "결제 완료"}
+                ? "취소됨"
+                : "취소됨"}
             </span>
           </div>
         </div>
@@ -337,7 +339,7 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
         </div>
       </div>
 
-      {contract?.docstatus !== 2 && (contract?.status == "Unsigned" || contract?.status == "Active") && customer?.email == session.user.email && (
+      {contract?.docstatus === 0 && !contract.is_signed && customer?.email == session.user.email && (
         <div className="w-full sticky bottom-0 z-20 px-5 sm:px-8">
           <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
 
@@ -414,7 +416,7 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
               </DialogContent>
             </Dialog>
 
-            {contract?.status == "Active" && (
+            {contract?.docstatus === 0 && contract.is_signed && customer?.email == session.user.email && (
               <Button type="button" className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold">
                 결제하기
               </Button>
