@@ -339,14 +339,14 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
         </div>
       </div>
 
-      {contract?.docstatus === 0 && !contract.is_signed && customer?.email == session.user.email && (
-        <div className="w-full sticky bottom-0 z-20 px-5 sm:px-8">
-          <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
+      <div className="w-full sticky bottom-0 z-20 px-5 sm:px-8">
+        <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
 
-          <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
+        <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
+          {contract?.docstatus === 0 && customer?.email == session.user.email && (
             <Dialog open={signDialogOpen} onOpenChange={setSignDialogOpen}>
               <DialogTrigger asChild>
-                {sign ? (
+                {contract.is_signed ? (
                   <Button className={cn("flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold")} type="button" variant="secondary">
                     다시 서명하기
                   </Button>
@@ -415,15 +415,14 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
                 </div>
               </DialogContent>
             </Dialog>
-
-            {contract?.docstatus === 0 && contract.is_signed && customer?.email == session.user.email && (
-              <Button type="button" className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold">
-                결제하기
-              </Button>
-            )}
-          </div>
+          )}
+          {contract?.docstatus === 0 && contract.is_signed && customer?.email == session.user.email && (
+            <Button type="button" className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold">
+              결제하기
+            </Button>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
