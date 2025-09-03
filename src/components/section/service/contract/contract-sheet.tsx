@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useRef, useEffect, useCallback } from "react";
 import { XIcon, Download } from "lucide-react";
 import type { Session } from "next-auth";
@@ -14,6 +15,7 @@ import Image from "next/image";
 import generatePDF, { Margin } from "react-to-pdf";
 import { cn } from "@/lib/utils";
 import { useProjectCustomer } from "@/hooks/fetch/project";
+import { toast } from "sonner";
 
 interface ContractSheetProps {
   contract: UserERPNextContract | undefined;
@@ -74,16 +76,14 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
 
         await updateContracts(contract.name, {
           is_signed: true,
-          custom_customer_sign: signatureData,
+          signee_company: signatureData,
         });
 
-        // Close dialog only after successful save
         setSignDialogOpen(false);
         sigCanvas.current.clear();
         setIsSigned(false);
-      } catch (error) {
-        console.error("Failed to save signature:", error);
-        // Handle error if needed
+      } catch {
+        toast.message("사인을 저장하는데 실패했습니다.");
       } finally {
         setIsSaving(false);
       }
@@ -91,7 +91,7 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
   };
 
   useEffect(() => {
-    setSign(contract?.custom_customer_sign ?? "");
+    setSign(contract?.signee_company ?? "");
   }, [contract]);
 
   return (
@@ -408,7 +408,7 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
                         className="bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 rounded-sm w-fit text-background flex items-center justify-center text-sm py-2 px-4 font-medium min-w-[80px]"
                         onClick={handleSignature}
                       >
-                        {isSaving ? "저장 중..." : "서명하기"}
+                        {isSaving ? "서명 중..." : "서명하기"}
                       </button>
                     </div>
                   </div>

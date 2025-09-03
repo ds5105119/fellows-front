@@ -36,6 +36,7 @@ export const userERPNextContractSchema = z.object({
   custom_customer_sign: z.string().nullable().optional(),
   signee: z.string().nullable().optional(),
   signed_on: z.string().datetime().nullable().optional(),
+  signee_company: z.string().nullable().optional(),
   ip_address: z.string().nullable().optional(),
   contract_template: z.string().nullable().optional(),
   contract_terms: z.string().nullable().optional(),
@@ -46,8 +47,11 @@ export const userERPNextContractSchema = z.object({
 export type UserERPNextContract = z.infer<typeof userERPNextContractSchema>;
 
 export const updateERPNextContractSchema = z.object({
+  signee: z.string().nullable().optional(),
+  signed_on: z.string().datetime().nullable().optional(),
+  signee_company: z.string().nullable().optional(),
+  ip_address: z.string().nullable().optional(),
   is_signed: z.boolean().nullable().optional(),
-  custom_customer_sign: z.string().nullable().optional(),
 });
 
 export type UpdateERPNextContract = z.infer<typeof updateERPNextContractSchema>;

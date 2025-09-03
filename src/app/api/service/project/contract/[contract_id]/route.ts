@@ -8,6 +8,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ cont
   const contract_id = (await params).contract_id;
   const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/contract/${contract_id}`;
 
+  const clientIp = request.headers.get("x-forwarded-for")?.split(",")[0] || request.headers.get("x-real-ip") || "unknown";
+  console.log(clientIp);
+  const bodyWithIp = { ...body, ip_address: clientIp };
+
   try {
     const response = await fetch(url, {
       method: "PUT",
@@ -15,7 +19,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ cont
         "Content-Type": "application/json",
         ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(bodyWithIp),
       redirect: "follow",
       credentials: "include",
     });
@@ -25,7 +29,6 @@ export async function PUT(request: Request, { params }: { params: Promise<{ cont
     return NextResponse.json(data);
   } catch (error) {
     console.error("API error:", error);
-
     return NextResponse.json({ error: "Failed to fetch project data" }, { status: 500 });
   }
 }
