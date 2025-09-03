@@ -9,8 +9,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ cont
   const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/contract/${contract_id}`;
 
   const clientIp = request.headers.get("x-forwarded-for")?.split(",")[0] || request.headers.get("x-real-ip") || "unknown";
-  console.log(clientIp);
-  const bodyWithIp = { ...body, ip_address: clientIp };
+  const bodyWithIp = {
+    ...body,
+    ip_address: clientIp,
+    signee: session?.user.name,
+  };
 
   try {
     const response = await fetch(url, {

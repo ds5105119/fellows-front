@@ -77,6 +77,7 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
         await updateContracts(contract.name, {
           is_signed: true,
           signee_company: signatureData,
+          signed_on: dayjs().utc().format("YYYY-MM-DD HH:mm:ss"),
         });
 
         setSignDialogOpen(false);
