@@ -8,6 +8,7 @@ import generatePDF, { Margin } from "react-to-pdf";
 import type { UserERPNextContract } from "@/@types/service/contract";
 import { SWRInfiniteResponse } from "swr/infinite";
 import { useUsers } from "@/hooks/fetch/user";
+import { useProjectOverView } from "@/hooks/fetch/project";
 
 interface ContractListProps {
   contractsSwr: SWRInfiniteResponse<{ items: UserERPNextContract[] }>;
@@ -26,6 +27,9 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
   const uniquePartyNames = Array.from(new Set(partyNames));
   const customersSwr = useUsers(uniquePartyNames);
   const customers = partyNames.map((name) => (customersSwr.data ?? [])[uniquePartyNames.indexOf(name)]);
+
+  const projectOverviewSwr = useProjectOverView();
+  const projects = projectOverviewSwr.data?.items ?? [];
 
   const handleContractClick = useCallback(
     (contract: UserERPNextContract) => {
@@ -70,6 +74,12 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
                 계약 상태
               </th>
               <th scope="col" className="px-5 py-3 text-left">
+                프로젝트
+              </th>
+              <th scope="col" className="px-5 py-3 text-left">
+                계약자
+              </th>
+              <th scope="col" className="px-5 py-3 text-left">
                 결제 방식
               </th>
               <th scope="col" className="px-5 py-3 text-left">
@@ -77,9 +87,6 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
               </th>
               <th scope="col" className="px-5 py-3 text-left">
                 일정
-              </th>
-              <th scope="col" className="px-5 py-3 text-left">
-                계약자
               </th>
               <th scope="col" className="px-5 py-3 text-left">
                 수정일
@@ -123,6 +130,10 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
                       : "취소됨"}
                   </div>
                 </td>
+                <td className="px-5 py-3 text-gray-700">
+                  {projects.find((project) => project.project_name == contract.document_name)?.custom_project_title ?? "프로젝트를 찾을 수 없음"}
+                </td>
+                <td className="px-5 py-3 text-gray-700">{customers[idx]?.name}</td>
                 <td className="px-5 py-3 text-gray-700">{!contract.custom_subscribe ? `회차 정산형` : `정기 결제형`}</td>
                 <td className="px-5 py-3 text-gray-700">
                   {!contract.custom_subscribe ? `${contract.custom_fee?.toLocaleString()} 원` : `${contract.custom_maintenance?.toLocaleString()}원 / 월`}
@@ -130,7 +141,6 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
                 <td className="px-5 py-3 text-gray-700">
                   {dayjs(contract.start_date).format("YYYY.MM.DD")} {contract.end_date && dayjs(contract.end_date).format("~ YYYY.MM.DD")}
                 </td>
-                <td className="px-5 py-3 text-gray-700">{customers[idx]?.name}</td>
                 <td className="px-5 py-3 text-gray-700">{dayjs(contract.modified).format("YYYY.MM.DD")}</td>
                 <td className="px-5 py-3 text-gray-700">
                   <Button
