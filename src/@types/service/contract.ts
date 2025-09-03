@@ -20,6 +20,18 @@ export const userERPNextContractSchema = z.object({
     }
     return d;
   }),
+  signed_on: z
+    .string()
+    .transform((v, ctx) => {
+      const d = new Date(v.replace(" ", "T"));
+      if (isNaN(d.getTime())) {
+        ctx.addIssue({ code: "custom", message: "Invalid datetime" });
+        return z.NEVER;
+      }
+      return d;
+    })
+    .nullable()
+    .optional(),
   modified_by: z.string(),
   docstatus: z.number().int(),
   idx: z.number().int(),
@@ -33,9 +45,7 @@ export const userERPNextContractSchema = z.object({
   custom_balance: z.number().nullable().optional(),
   custom_maintenance: z.number().int().default(0).nullable().optional(),
   is_signed: z.boolean().nullable().optional(),
-  custom_customer_sign: z.string().nullable().optional(),
   signee: z.string().nullable().optional(),
-  signed_on: z.string().datetime().nullable().optional(),
   signee_company: z.string().nullable().optional(),
   ip_address: z.string().nullable().optional(),
   contract_template: z.string().nullable().optional(),

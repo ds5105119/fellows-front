@@ -57,6 +57,11 @@ const contractsFetcher = async (url: string) => {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Fetch failed");
   const data = await res.json();
+  try {
+    erpNextContractPaginatedResponseSchema.parse(data);
+  } catch (err) {
+    console.log(err);
+  }
   return erpNextContractPaginatedResponseSchema.parse(data);
 };
 
