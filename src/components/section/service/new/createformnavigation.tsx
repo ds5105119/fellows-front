@@ -1,6 +1,7 @@
 "use client";
 import type React from "react";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 
 interface ProjectFormNavigationProps {
   currentStep: number;
@@ -29,6 +30,25 @@ export function ProjectFormNavigation({
   showTermsPrompt = false,
   onTermsAgreeAndNext,
 }: ProjectFormNavigationProps) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (showTermsPrompt && currentStep === 1) {
+          if (onTermsAgreeAndNext) {
+            onTermsAgreeAndNext();
+          }
+        } else if (currentStep < totalSteps) {
+          onNext();
+        } else {
+          onSubmit();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showTermsPrompt, currentStep, onTermsAgreeAndNext, onNext, onSubmit]);
+
   return (
     <div className="w-full sticky bottom-0 z-20 px-5 sm:px-8">
       <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
