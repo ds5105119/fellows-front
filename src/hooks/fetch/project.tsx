@@ -31,6 +31,7 @@ import {
 } from "@/@types/service/project";
 import dayjs from "@/lib/dayjs";
 import { signIn } from "next-auth/react";
+import { ProjectAdminUserAttributes, ProjectAdminUserAttributesSchema } from "@/@types/accounts/userdata";
 
 const API_BASE_URL = "/api/service/project";
 
@@ -77,6 +78,21 @@ export const useProject = (projectId: string | null): SWRResponse<UserERPNextPro
     async (url: string) => {
       try {
         return userERPNextProjectSchema.parse(await fetcher(url));
+      } catch (error) {
+        throw error;
+      }
+    },
+    { shouldRetryOnError: false }
+  );
+};
+
+export const useProjectCustomer = (projectId: string | null): SWRResponse<ProjectAdminUserAttributes> => {
+  const url = projectId ? `${API_BASE_URL}/${projectId}/customer` : null;
+  return useSWR(
+    url,
+    async (url: string) => {
+      try {
+        return ProjectAdminUserAttributesSchema.parse(await fetcher(url));
       } catch (error) {
         throw error;
       }

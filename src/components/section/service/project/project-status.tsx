@@ -9,7 +9,6 @@ import { DownloadIcon, XIcon } from "lucide-react";
 import Image from "next/image";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import ProjectEstimator from "./projectestimator";
-import SelectLogo from "@/components/resource/selectlogo";
 import dayjs from "dayjs";
 import { STATUS_MAPPING, PLATFORM_MAPPING, PROJECT_METHOD_MAPPING, NOCODE_PLATFORM_MAPPING } from "@/components/resource/project";
 import {
@@ -252,7 +251,16 @@ export function ProjectStatus({
               <div className="p-5 md:p-8" ref={targetRef}>
                 <div className="flex flex-col gap-5">
                   <div className="flex flex-col">
-                    <SelectLogo />
+                    <div className="flex space-x-2 group py-6">
+                      <Image
+                        src="/fellows/logo-img.svg"
+                        width={20}
+                        height={20}
+                        alt="image logo"
+                        className="transition-transform duration-500 transform group-hover:rotate-y-180"
+                      />
+                      <Image src="/fellows/logo-text.svg" width={91} height={20} alt="text logo" />
+                    </div>
                     <div className="text-2xl md:text-4xl font-extrabold mt-2">{project.custom_project_title} 예상 견적서</div>
                     <div className="mt-3">
                       <span className="text-sm font-bold">계약번호. </span>

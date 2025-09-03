@@ -111,6 +111,26 @@ export const UserAttributesSchema = z.object({
   email: z.string().email().optional().nullable(),
 });
 
+export const ProjectAdminUserAttributesSchema = z.object({
+  bio: z.array(z.string()).optional().nullable(),
+  birthdate: z.array(z.string()).optional().nullable(),
+  country: z.array(z.string()).optional().nullable(),
+  formatted: z.array(z.string()).optional().nullable(),
+  gender: z.array(z.string()).optional().nullable(),
+  link: z.array(z.string().url()).optional().nullable(),
+  locale: z.array(z.string()).optional().nullable(),
+  locality: z.array(z.string()).optional().nullable(),
+  location: z.array(z.string()).optional().nullable(),
+  name: z.array(z.string()).optional().nullable(),
+  phoneNumber: z.array(z.string()).optional().nullable(),
+  picture: z.array(z.string()).optional().nullable(),
+  postal_code: z.array(z.string()).optional().nullable(),
+  region: z.array(z.string()).optional().nullable(),
+  street: z.array(z.string()).optional().nullable(),
+  sub_locality: z.array(z.string()).optional().nullable(),
+  email: z.string().email().optional().nullable(),
+})
+
 export const ExternalUserAttributesSchema = z.object({
   bio: z.array(z.string()).optional().nullable(),
   birthdate: z.array(z.string()).optional().nullable(),
@@ -182,6 +202,7 @@ export type LocationDto = z.infer<typeof LocationSchema>;
 export type OIDCAddressDto = z.infer<typeof OIDCAddressSchema>;
 export type UserAttributes = z.infer<typeof UserAttributesSchema>;
 export type UserData = z.infer<typeof userData>;
+export type ProjectAdminUserAttributes = z.infer<typeof ProjectAdminUserAttributesSchema>;
 export type ExternalUsersAttributes = z.infer<typeof ExternalUsersAttributesSchema>;
 export type UpdateUserAttributes = z.infer<typeof UpdateUserAttributesSchema>;
 export type UserBusinessData = z.infer<typeof UserBusinessDataSchema>;
