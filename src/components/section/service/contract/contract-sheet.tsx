@@ -13,6 +13,7 @@ import SignatureCanvas from "react-signature-canvas";
 import Image from "next/image";
 import generatePDF, { Margin } from "react-to-pdf";
 import { cn } from "@/lib/utils";
+import { useProjectCustomer } from "@/hooks/fetch/project";
 
 interface ContractSheetProps {
   contract: UserERPNextContract | undefined;
@@ -29,6 +30,9 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
   const [signDialogOpen, setSignDialogOpen] = useState<boolean>(false);
 
   const sigCanvas = useRef<SignatureCanvas | null>(null);
+
+  const customerSwr = useProjectCustomer(contract?.document_name ?? null);
+  const customer = customerSwr.data;
 
   // 계약금 계산 함수
   const calculatePayments = (contract: UserERPNextContract) => {
@@ -144,11 +148,12 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
             <hr className="block md:hidden border-gray-200" />
             <div className="flex md:w-1/2 flex-col space-y-2 mt-1 md:mt-0">
               <div className="text-xs font-semibold text-muted-foreground">수신자</div>
-              <div className="text-base font-bold text-black">{session.user.name}</div>
-              <div className="text-xs font-semibold text-muted-foreground">이메일: {session.user.email}</div>
+              <div className="text-base font-bold text-black">{customer?.name}</div>
+              <div className="text-xs font-semibold text-muted-foreground">이메일: {customer?.email}</div>
               <div className="text-xs font-semibold text-muted-foreground">
-                주소: {session.user.address.street_address + " " + session.user.address.sub_locality}
+                주소: {customer?.street && customer?.sub_locality ? customer?.street + " " + customer?.sub_locality : "주소 등록이 필요합니다."}
               </div>
+              <div className="text-xs font-semibold text-muted-foreground">전화번호: {customer?.phoneNumber ?? "전화번호 등록이 필요합니다."}</div>
             </div>
           </div>
 
@@ -290,8 +295,8 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
           </div>
           <div className="text-xs font-semibold text-muted-foreground">
             <div className="text-base font-bold text-foreground mb-1">참고사항</div>
-            {contract?.custom_name} 와(과) 공급자 Fellows는 붙임에 의하여 위에 대한 계약을 체결하고 신의에 따라 성실히 계약상의 의무를 이행할 것을 확약하며 본
-            계약을 증명하기 위해 계약서 2부를 작성 기명 날인하여 {contract?.custom_name} 와(과) 공급자가 각각 1부씩 보관한다.
+            {customer?.name} 와(과) 공급자 Fellows는 붙임에 의하여 위에 대한 계약을 체결하고 신의에 따라 성실히 계약상의 의무를 이행할 것을 확약하며 본 계약을
+            증명하기 위해 계약서 2부를 작성 기명 날인하여 {customer?.name} 와(과) 공급자가 각각 1부씩 보관한다.
           </div>
         </div>
 
@@ -310,7 +315,7 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
           </div>
 
           <div className="text-sm font-bold">
-            <span className="font-normal">수신자</span>&nbsp;&nbsp;&nbsp;&nbsp;{session.user.name}
+            <span className="font-normal">수신자</span>&nbsp;&nbsp;&nbsp;&nbsp;{customer?.name}
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <span className="relative font-medium text-muted-foreground">
               (서명)
@@ -332,7 +337,7 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
         </div>
       </div>
 
-      {contract?.docstatus !== 2 && (contract?.status == "Unsigned" || contract?.status == "Active") && (
+      {contract?.docstatus !== 2 && (contract?.status == "Unsigned" || contract?.status == "Active") && customer?.email == session.user.email && (
         <div className="w-full sticky bottom-0 z-20 px-5 sm:px-8">
           <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
 

@@ -430,6 +430,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
               {activeTab2 === 0 && <FilesList projectSwr={project} session={session} />}
               {activeTab2 === 1 && (
                 <ContractList
+                  session={session}
                   projectSwr={project}
                   selectedContract={selectedContract}
                   onContractSelect={handleContractSelect}
@@ -480,6 +481,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             {activeMobileTab === 1 && <FilesList projectSwr={project} session={session} />}
             {activeMobileTab === 2 && (
               <ContractList
+                session={session}
                 projectSwr={project}
                 selectedContract={selectedContract}
                 onContractSelect={handleContractSelect}

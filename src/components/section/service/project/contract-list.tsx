@@ -1,4 +1,5 @@
 "use client";
+
 import { useCallback, useEffect, useRef } from "react";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { Info, Download, FileCheck, Loader2 } from "lucide-react";
@@ -10,20 +11,25 @@ import { cn } from "@/lib/utils";
 import dayjs from "@/lib/dayjs";
 import generatePDF, { Margin } from "react-to-pdf";
 import type { UserERPNextContract } from "@/@types/service/contract";
+import { useProjectCustomer } from "@/hooks/fetch/project";
+import { Session } from "next-auth";
 
 interface ContractListProps {
   projectSwr: SWRResponse<UserERPNextProject>;
   selectedContract?: UserERPNextContract;
   onContractSelect: (contract: UserERPNextContract) => void;
   initialContractName?: string;
+  session: Session;
 }
 
-export function ContractList({ projectSwr, selectedContract, onContractSelect, initialContractName }: ContractListProps) {
+export function ContractList({ projectSwr, selectedContract, onContractSelect, initialContractName, session }: ContractListProps) {
   const { data: project } = projectSwr;
   const project_id = project?.project_name ?? "";
   const { data: contractsSwr, isLoading } = useContracts({ project_id });
   const contracts = contractsSwr?.flatMap((page) => page.items) ?? [];
   const hasAutoSelected = useRef(false);
+  const customerSwr = useProjectCustomer(project?.project_name ?? null);
+  const customer = customerSwr.data;
 
   useEffect(() => {
     if (initialContractName && contracts.length > 0 && !hasAutoSelected.current && !selectedContract) {
@@ -116,7 +122,7 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
             </div>
 
             <div className="flex items-center space-x-2 pt-1">
-              {contract.status === "Unsigned" && contract.docstatus !== 2 && (
+              {contract.status === "Unsigned" && contract.docstatus !== 2 && customer?.email == session.user.email && (
                 <Button
                   size="sm"
                   className="text-sm font-bold h-8 px-3 shadow-none bg-blue-400 w-2/3"
@@ -128,7 +134,7 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
                   <Link href={`/service/project/${project_id}/contracts/${contract.name}`}>사인하기</Link>
                 </Button>
               )}
-              {contract.status === "Active" && contract.docstatus == 1 && (
+              {contract.status === "Active" && contract.docstatus == 1 && customer?.email == session.user.email && (
                 <Button
                   size="sm"
                   className="text-sm font-bold h-8 px-3 shadow-none bg-emerald-400 hover:bg-emerald-500 w-2/3"
