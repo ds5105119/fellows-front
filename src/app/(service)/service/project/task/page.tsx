@@ -6,18 +6,24 @@ import { GanttChart } from "@/components/section/service/task/gantt-chart";
 import { TreeTable } from "@/components/section/service/task/tree-table";
 import TaskNavigation from "@/components/section/service/task/task-navigation";
 
-export default function Page() {
+function Task() {
   const [taskView, setTaskView] = useState(false);
   const searchParams = useSearchParams();
 
   const projectId = searchParams.getAll("project_id");
 
   return (
+    <div className="shrink-0 w-full h-full flex flex-col">
+      <TaskNavigation taskView={taskView} setTaskView={setTaskView} />
+      {taskView ? <TreeTable /> : <GanttChart initalProjectId={projectId} />}
+    </div>
+  );
+}
+
+export default function Page() {
+  return (
     <Suspense>
-      <div className="shrink-0 w-full h-full flex flex-col">
-        <TaskNavigation taskView={taskView} setTaskView={setTaskView} />
-        {taskView ? <TreeTable /> : <GanttChart initalProjectId={projectId} />}
-      </div>
+      <Task />
     </Suspense>
   );
 }
