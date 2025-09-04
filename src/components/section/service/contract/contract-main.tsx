@@ -15,10 +15,10 @@ export default function ContractMain({ session }: { session: Session }) {
   const [contractSheetOpen, setContractSheetOpen] = useState<boolean>(false);
 
   const onContractSelect = (contract?: UserERPNextContract) => {
-    if (contract) {
+    setSelectedContract((prev) => (prev?.name === contract?.name ? prev : contract));
+    if (contract && contract?.name !== selectedContract?.name) {
       setContractSheetOpen(true);
     }
-    setSelectedContract(contract);
   };
 
   const handleContractSheetClose = (open: boolean) => {

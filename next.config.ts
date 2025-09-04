@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
       html2canvas: "html2canvas-pro",
     },
   },
+  experimental: {
+    globalNotFound: true,
+  },
 };
 
 export default nextConfig;
