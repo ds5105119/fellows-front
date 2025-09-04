@@ -34,7 +34,7 @@ export default async function MainSection7() {
               muted
               playsInline
             >
-              <source src="/hero-description-1.mp4" />
+              <source src="/hero-description-2.mp4" />
             </video>
           </div>
           <div className="pt-6 px-4 flex flex-col space-y-1.5">
