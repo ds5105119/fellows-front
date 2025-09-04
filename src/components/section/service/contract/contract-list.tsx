@@ -251,9 +251,9 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
 
   return (
     <div className="grid grid-cols-1 gap-3">
-      <div className="hidden lg:block text-sm font-bold">계약서: {contracts.length}건</div>
+      <div className="text-sm font-bold">계약서: {contracts.length}건</div>
 
-      <div className="hidden lg:block overflow-x-auto">
+      <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="sticky top-0 z-10 bg-blue-200/60 backdrop-blur supports-[backdrop-filter]:bg-blue-200/60">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -285,7 +285,7 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
       </div>
 
       {contracts.length === 0 && !isLoading && (
-        <div className="hidden lg:flex flex-col w-full">
+        <div className="flex flex-col w-full">
           <div className="h-44 flex flex-col justify-center space-y-4 items-center w-full rounded-lg bg-gradient-to-b from-blue-50 via-indigo-50 to-blue-50 px-8 mb-1 text-sm select-none">
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-sm">
               <FileCheck className="w-8 h-8 text-blue-500" />
