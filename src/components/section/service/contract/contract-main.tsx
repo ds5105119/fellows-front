@@ -1,9 +1,9 @@
 "use client";
 
 import { useContracts } from "@/hooks/fetch/contract";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
 import { ContractList } from "./contract-list";
-import { UserERPNextContract } from "@/@types/service/contract";
+import type { UserERPNextContract } from "@/@types/service/contract";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ContractSheet } from "./contract-sheet";
@@ -14,15 +14,15 @@ export default function ContractMain({ session }: { session: Session }) {
   const [selectedContract, setSelectedContract] = useState<UserERPNextContract>();
   const [contractSheetOpen, setContractSheetOpen] = useState<boolean>(false);
 
-  const onContractSelect = (contract?: UserERPNextContract) => {
-    setSelectedContract((prev) => (prev?.name === contract?.name ? prev : contract));
-    if (contract && contract?.name !== selectedContract?.name) {
-      setContractSheetOpen(true);
-    }
+  const onContractSelect = (contract: UserERPNextContract) => {
+    setSelectedContract(contract);
+    setContractSheetOpen(true);
   };
 
   const handleContractSheetClose = (open: boolean) => {
-    setSelectedContract(undefined);
+    if (!open) {
+      setSelectedContract(undefined);
+    }
     setContractSheetOpen(open);
   };
 

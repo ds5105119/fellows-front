@@ -365,11 +365,9 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
                 <div className="flex flex-col w-full">
                   <div className="border-b px-4 py-2 flex justify-between items-center">
                     <div className="text-sm font-bold">서명 입력하기</div>
-                    {!isSaving && (
-                      <Button variant="ghost" size="icon" onClick={() => setSignDialogOpen(false)}>
-                        <XIcon />
-                      </Button>
-                    )}
+                    <Button variant="ghost" size="icon" onClick={() => setSignDialogOpen(false)} disabled={isSaving}>
+                      <XIcon />
+                    </Button>
                   </div>
                   <div className="w-full flex flex-col space-y-3 relative px-6 py-4 md:px-12 md:py-8">
                     <div className="relative w-full">

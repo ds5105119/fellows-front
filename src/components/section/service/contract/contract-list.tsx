@@ -10,8 +10,8 @@ import type { SWRInfiniteResponse } from "swr/infinite";
 import { useUsers } from "@/hooks/fetch/user";
 import { useProjectOverView } from "@/hooks/fetch/project";
 import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from "@tanstack/react-table";
-import { ProjectAdminUserAttributes } from "@/@types/accounts/userdata";
-import { OverviewERPNextProject } from "@/@types/service/project";
+import type { ProjectAdminUserAttributes } from "@/@types/accounts/userdata";
+import type { OverviewERPNextProject } from "@/@types/service/project";
 
 interface ContractListProps {
   contractsSwr: SWRInfiniteResponse<{ items: UserERPNextContract[] }>;
@@ -37,28 +37,44 @@ type Contract = {
 const columnHelper = createColumnHelper<Contract>();
 
 export function ContractList({ contractsSwr, selectedContract, onContractSelect }: ContractListProps) {
-  const contracts = contractsSwr.data?.flatMap((page) => page.items) ?? [];
+  const projectOverviewSwr = useProjectOverView();
+
+  const projects = useMemo(() => projectOverviewSwr.data?.items ?? [], [projectOverviewSwr.data]);
+  const contracts = useMemo(() => contractsSwr.data?.flatMap((page) => page.items) ?? [], [contractsSwr.data]);
+
   const isReachedEnd = contractsSwr.data && contractsSwr.data.length > 0 && contractsSwr.data[contractsSwr.data.length - 1].items.length === 0;
   const isLoading =
     !isReachedEnd &&
     (contractsSwr.isLoading || (contractsSwr.data && contractsSwr.size > 0 && typeof contractsSwr.data[contractsSwr.size - 1] === "undefined"));
+  const contractMap = useMemo(() => {
+    const map = new Map<string, UserERPNextContract>();
+    contracts.forEach((contract) => {
+      map.set(contract.name, contract);
+    });
+    return map;
+  }, [contracts]);
 
-  const partyNames = contracts.map((c) => c.party_name).filter((name): name is string => Boolean(name));
-  const uniquePartyNames = Array.from(new Set(partyNames));
+  const partyNames = useMemo(() => contracts.map((c) => c.party_name).filter((name): name is string => Boolean(name)), [contracts]);
+  const uniquePartyNames = useMemo(() => Array.from(new Set(partyNames)), [partyNames]);
   const customersSwr = useUsers(uniquePartyNames);
-  const customers = partyNames.map((name) => (customersSwr.data ?? [])[uniquePartyNames.indexOf(name)]);
+  const customers = useMemo(
+    () => partyNames.map((name) => (customersSwr.data ?? [])[uniquePartyNames.indexOf(name)]),
+    [partyNames, uniquePartyNames, customersSwr.data]
+  );
 
-  const projectOverviewSwr = useProjectOverView();
-  const projects = projectOverviewSwr.data?.items ?? [];
+  const handleContractClick = useCallback(
+    (clickedContract: Contract) => {
+      if (clickedContract.name === selectedContract?.name) {
+        return;
+      }
 
-  const handleContractClick = (clickedContract: Contract) => {
-    if (clickedContract.name === selectedContract?.name) return;
-
-    const selected = contracts.find((c) => c.name === clickedContract.name);
-    if (!selected) return;
-
-    onContractSelect(selected);
-  };
+      const selected = contractMap.get(clickedContract.name);
+      if (selected) {
+        onContractSelect(selected);
+      }
+    },
+    [contracts, onContractSelect, selectedContract]
+  );
 
   const downloadContractPDF = useCallback(
     (contractName: string, custom_name: string, modified: Date) => {
@@ -84,11 +100,11 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
         }
       }, 500);
     },
-    [selectedContract, onContractSelect]
+    [selectedContract, onContractSelect, contracts]
   );
 
   const enhancedContracts = useMemo(() => {
-    if (!contracts) return [];
+    if (!contracts || contracts.length === 0) return [];
 
     return contracts.map((contract, idx) => {
       const customer = customers[idx];

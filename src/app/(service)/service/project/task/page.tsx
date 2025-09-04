@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { GanttChart } from "@/components/section/service/task/gantt-chart";
 import { TreeTable } from "@/components/section/service/task/tree-table";
 import TaskNavigation from "@/components/section/service/task/task-navigation";
 
-export default function Page() {
+function Task() {
   const [taskView, setTaskView] = useState(false);
   const searchParams = useSearchParams();
 
@@ -18,4 +18,10 @@ export default function Page() {
       {taskView ? <TreeTable /> : <GanttChart initalProjectId={projectId} />}
     </div>
   );
+}
+
+export default function Page() {
+  <Suspense>
+    <Task />
+  </Suspense>;
 }
