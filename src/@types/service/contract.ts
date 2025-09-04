@@ -75,7 +75,8 @@ export const erpNextContractRequestSchema = z.object({
     .default("modified")
     .nullable()
     .optional(),
-  status: z.union([z.string(), z.array(z.string()), z.null()]).optional(),
+  docstatus: z.number().int().nullable().optional(),
+  is_signed: z.boolean().nullable().optional(),
   start: z.string().date().nullable().optional(),
   end: z.string().date().nullable().optional(),
 });

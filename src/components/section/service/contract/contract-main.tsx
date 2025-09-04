@@ -9,10 +9,22 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { ContractSheet } from "./contract-sheet";
 import ContractHeader from "./contract-header";
 
+export type ContractFilters = {
+  keyword?: string;
+  order_by?: string;
+  type?: string;
+};
+
 export default function ContractMain({ session }: { session: Session }) {
-  const contractsSwr = useContracts({});
+  const [filters, setFilters] = useState<ContractFilters>({});
   const [selectedContract, setSelectedContract] = useState<UserERPNextContract>();
   const [contractSheetOpen, setContractSheetOpen] = useState<boolean>(false);
+
+  const contractsSwr = useContracts({
+    keyword: filters.keyword,
+    docstatus: filters.type === "0" ? undefined : filters.type === "1" || filters.type === "2" ? 0 : filters.type === "3" ? 1 : 2,
+    is_signed: filters.type === "0" ? undefined : filters.type === "1" ? false : filters.type === "2" ? true : filters.type === "3" ? true : undefined,
+  });
 
   const onContractSelect = (contract: UserERPNextContract) => {
     setSelectedContract(contract);
@@ -28,7 +40,7 @@ export default function ContractMain({ session }: { session: Session }) {
 
   return (
     <div className="w-full h-full">
-      <ContractHeader />
+      <ContractHeader filters={filters} setFilters={setFilters} />
       <div className="w-full px-6 py-4">
         <ContractList contractsSwr={contractsSwr} selectedContract={selectedContract} onContractSelect={onContractSelect} />
       </div>

@@ -24,9 +24,8 @@ export async function GET(request: NextRequest) {
 
     handleArrayParam("project_id");
     handleArrayParam("order_by", "modified desc");
-    handleArrayParam("status");
 
-    ["keyword", "start", "end"].forEach((key) => {
+    ["keyword", "start", "end", "docstatus", "is_signed"].forEach((key) => {
       const value = searchParams.get(key);
       if (value) params.set(key, value);
     });

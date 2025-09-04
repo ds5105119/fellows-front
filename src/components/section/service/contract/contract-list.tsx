@@ -171,13 +171,13 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
     columnHelper.accessor("project", {
       id: "project",
       header: "프로젝트",
-      size: 200,
+      size: 210,
       cell: ({ getValue }) => <div className="text-gray-700">{getValue()?.custom_project_title}</div>,
     }),
     columnHelper.accessor("customer", {
       id: "contractor",
       header: "계약자",
-      size: 80,
+      size: 120,
       cell: ({ getValue }) => <div className="text-gray-700">{getValue()?.name}</div>,
     }),
     columnHelper.accessor("custom_subscribe", {
@@ -189,7 +189,7 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
     columnHelper.display({
       id: "total",
       header: "합계",
-      size: 200,
+      size: 160,
       cell: ({ row }) => {
         const contract = row.original;
         return (
@@ -215,13 +215,13 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
     columnHelper.accessor("modified", {
       id: "modified",
       header: "수정일",
-      size: 80,
+      size: 120,
       cell: ({ getValue }) => <div className="text-gray-700">{dayjs(getValue()).format("YYYY.MM.DD")}</div>,
     }),
     columnHelper.display({
       id: "pdf",
       header: "PDF",
-      size: 40,
+      size: 110,
       cell: ({ row }) => {
         const contract = row.original;
         return (
@@ -254,7 +254,7 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
       <div className="text-sm font-bold">계약서: {contracts.length}건</div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="table-fixed w-full text-sm" style={{ width: "1230px" }}>
           <thead className="sticky top-0 z-10 bg-blue-200/60 backdrop-blur supports-[backdrop-filter]:bg-blue-200/60">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b border-black/5 text-xs font-semibold tracking-wide text-blue-600 uppercase">
@@ -274,7 +274,7 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
                 onClick={() => handleContractClick(row.original)}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-5 py-3" style={{ minWidth: `${cell.column.getSize()}px` }}>
+                  <td key={cell.id} className="px-5 py-3" style={{ width: `${cell.column.getSize()}px` }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}

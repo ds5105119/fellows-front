@@ -28,12 +28,6 @@ const contractsGetKeyFactory = (params: ERPNextContractRequest): SWRInfiniteKeyL
       orderByValues.forEach((value) => searchParams.append("order_by", value));
     }
 
-    // status: string | string[] | null
-    if (params.status) {
-      const statusValues = Array.isArray(params.status) ? params.status : [params.status];
-      statusValues.forEach((value) => searchParams.append("status", value));
-    }
-
     // project_id: string | string[] | null
     if (params.project_id) {
       const projectIds = Array.isArray(params.project_id) ? params.project_id : [params.project_id];
@@ -44,6 +38,9 @@ const contractsGetKeyFactory = (params: ERPNextContractRequest): SWRInfiniteKeyL
     if (params.keyword) {
       searchParams.append("keyword", params.keyword);
     }
+
+    if (typeof params.docstatus === "number") searchParams.append("docstatus", `${params.docstatus}`);
+    if (typeof params.is_signed === "boolean") searchParams.append("is_signed", params.is_signed ? "True" : "False");
 
     // start, end: Date | null
     if (params.start) searchParams.append("start", params.start);
