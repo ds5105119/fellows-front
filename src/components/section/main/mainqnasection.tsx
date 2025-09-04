@@ -73,10 +73,6 @@ export default function MainQnaSection() {
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">Frequently Asked Questions</h1>
           <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
             <h4 className="text-base md:text-lg font-semibold text-foreground">200+개의 고객사가 Fellows를 선택한 이유.</h4>
-            <Link href="/" className="flex items-center md:px-3 md:py-1.5 md:rounded-sm md:hover:bg-muted select-none">
-              <ArrowUpRight className="!size-7 text-blue-500" />
-              <p className="text-lg md:text-xl font-semibold text-blue-500">전체 사용사례 알아보기</p>
-            </Link>
           </div>
         </div>
       </div>

@@ -16,7 +16,7 @@ export type ContractFilters = {
 };
 
 export default function ContractMain({ session }: { session: Session }) {
-  const [filters, setFilters] = useState<ContractFilters>({});
+  const [filters, setFilters] = useState<ContractFilters>({ type: "0" });
   const [selectedContract, setSelectedContract] = useState<UserERPNextContract>();
   const [contractSheetOpen, setContractSheetOpen] = useState<boolean>(false);
 

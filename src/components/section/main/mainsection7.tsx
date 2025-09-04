@@ -15,9 +15,14 @@ export default async function MainSection7() {
                 <br />
                 끊임없이 더 나은 경험을 제공할 수 있도록 노력합니다.
               </h4>
-              <Link href="/" className="flex items-center md:px-3 md:py-1.5 md:rounded-sm md:hover:bg-muted select-none">
+              <Link
+                href="/blog"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center md:px-3 md:py-1.5 md:rounded-sm md:hover:bg-muted select-none"
+              >
                 <ArrowUpRight className="!size-7 text-blue-500" />
-                <p className="text-lg md:text-xl font-semibold text-blue-500">전체 사용사례 알아보기</p>
+                <p className="text-lg md:text-xl font-semibold text-blue-500">더 많이 알아보기</p>
               </Link>
             </div>
           </div>
