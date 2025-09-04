@@ -9,7 +9,7 @@ import type { UserERPNextContract } from "@/@types/service/contract";
 import type { SWRInfiniteResponse } from "swr/infinite";
 import { useUsers } from "@/hooks/fetch/user";
 import { useProjectOverView } from "@/hooks/fetch/project";
-import { useReactTable, getCoreRowModel, flexRender, createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from "@tanstack/react-table";
 import { ProjectAdminUserAttributes } from "@/@types/accounts/userdata";
 import { OverviewERPNextProject } from "@/@types/service/project";
 
