@@ -19,6 +19,7 @@ interface Props {
 export default function ProjectEstimator({ project }: Props) {
   const [lastGeneratedEstimate, setLastGeneratedEstimate] = useState("");
   const [showThinkingUI, setShowThinkingUI] = useState(false);
+  const [markdownCompleted, setMarkdownCompleted] = useState(false);
   const prevStatusRef = useRef<boolean | undefined>(undefined);
 
   const { markdown, isLoading, startEstimate } = useEstimateProject(project.project_name);
@@ -27,6 +28,11 @@ export default function ProjectEstimator({ project }: Props) {
   useEffect(() => {
     const currentStatus = status.data;
     const prevStatus = prevStatusRef.current;
+
+    if (markdownCompleted) {
+      prevStatusRef.current = currentStatus;
+      return;
+    }
 
     // 서버에서 처리 중인 상태가 확인되면 Thinking UI 유지
     if (currentStatus && !showThinkingUI) {
@@ -41,26 +47,25 @@ export default function ProjectEstimator({ project }: Props) {
       }, 500); // 500ms 지연
     }
 
-    // 이전 상태 저장
     prevStatusRef.current = currentStatus;
-  }, [status.data, isLoading, project.project_name]);
+  }, [status.data, isLoading, project.project_name, markdownCompleted, showThinkingUI]);
 
   // 스트리밍 markdown 도착 시 업데이트
   useEffect(() => {
     if (markdown) {
       setLastGeneratedEstimate(markdown);
-      setShowThinkingUI(false); // markdown 도착 시 Thinking UI 종료
+      setShowThinkingUI(false);
+      setMarkdownCompleted(true);
     }
   }, [markdown]);
 
   const handleStartEstimate = async () => {
+    setMarkdownCompleted(false);
     setShowThinkingUI(true);
-    setLastGeneratedEstimate(""); // 기존 마크다운 숨김
+    setLastGeneratedEstimate("");
 
-    // 서버 상태 갱신 (백그라운드에서 실행)
     status.mutate();
 
-    // 스트리밍 시작
     startEstimate();
   };
 
