@@ -13,12 +13,10 @@ const tabs = [
 const nocodeData = [
   {
     name: "Basic",
-    price: "200만원",
     features: ["반응형 디자인 구축", "기본 템플릿 커스터마이징", "페이지 15개 이하", "기본 SEO 설정", "관리자 교육", "1개월 무료 지원"],
   },
   {
     name: "Standard",
-    price: "400만원",
     features: [
       "프리미엄 템플릿 커스터마이징",
       "페이지 30개 이하",
@@ -31,7 +29,6 @@ const nocodeData = [
   },
   {
     name: "Premium",
-    price: "700만원",
     features: [
       "완전 커스텀 디자인",
       "무제한 페이지",
@@ -50,7 +47,6 @@ const shopifyPlans = [
     name: "Growth Boost",
     subtitle: "사업 초기",
     description: "합리적인 금액으로 쇼피파이 스토어 구축을 진행할 수 있습니다. 빠른 스토어 구축을 통해서 매출 발생이후 스토어를 고도화 해보세요.",
-    price: "200만원",
     features: [
       "반응형 디자인",
       "스토어 테마 제공",
@@ -70,7 +66,6 @@ const shopifyPlans = [
     name: "Standard Plan",
     subtitle: "중소기업용",
     description: "전반적인 구축에 대한 가이드라인과 개발 지원을 받을 수 있습니다. 중소기업용 플랜입니다. 가장 핵심적인 서비스로 구성되어 있습니다.",
-    price: "350만원",
     features: [
       "반응형 디자인",
       "스토어 테마 제공",
@@ -93,7 +88,6 @@ const shopifyPlans = [
     subtitle: "브랜딩 커스텀",
     description:
       "브랜딩에 따른 커스텀 및 개발을 제공합니다. 독자적인 브랜딩을 통해서 차별화된 스토어를 구축하고 운영에 필요한 앱에 대한 컨설팅과 세팅을 지원합니다.",
-    price: "500만원",
     features: [
       "반응형 디자인",
       "스토어 테마 제공",
@@ -121,7 +115,6 @@ const shopifyPlans = [
     subtitle: "풀커스텀",
     description:
       "브랜딩에 따른 기능 개발은 물론 서드파티 앱들과 테마의 유기적인 UX/UI 통합을 지원합니다. 오픈 이후 1개월까지 운영에 따른 개발 지원 서비스를 제공합니다.",
-    price: "800만원",
     features: [
       "반응형 디자인",
       "스토어 테마 제공",
