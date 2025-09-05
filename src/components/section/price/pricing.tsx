@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const tabs = [
   { id: "code", label: "코드" },
@@ -158,10 +159,12 @@ export function Pricing() {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900">가격</h1>
 
           <div className="flex items-center space-x-4">
-            <Button className="h-[36px] md:h-[48px] lg:h-[60px] text-sm md:text-base lg:text-lg font-bold px-3 md:px-4 lg:px-6" variant="secondary">
-              AI 견적 받아보기
+            <Button className="h-[36px] md:h-[48px] lg:h-[60px] text-sm md:text-base lg:text-lg font-bold px-3 md:px-4 lg:px-6" variant="secondary" asChild>
+              <Link href="/service/dashboard">AI 견적 받아보기</Link>
             </Button>
-            <Button className="h-[36px] md:h-[48px] lg:h-[60px] text-sm md:text-base lg:text-lg font-bold px-3 md:px-4 lg:px-6">문의하기</Button>
+            <Button className="h-[36px] md:h-[48px] lg:h-[60px] text-sm md:text-base lg:text-lg font-bold px-3 md:px-4 lg:px-6" asChild>
+              <a href="/#inquery">문의하기</a>
+            </Button>
           </div>
         </div>
 
@@ -208,7 +211,6 @@ export function Pricing() {
                 <div key={index}>
                   <div className="mb-6">
                     <h4 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h4>
-                    <div className="text-3xl font-bold text-blue-600">{plan.price}</div>
                   </div>
                   <div className="space-y-3">
                     {plan.features.map((feature, idx) => (
@@ -232,7 +234,6 @@ export function Pricing() {
                   <div className="mb-6">
                     <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
                     <p className="text-gray-500 text-sm font-medium">{plan.subtitle}</p>
-                    <div className="text-3xl font-bold text-blue-600 mt-3">{plan.price}</div>
                     <p className="text-gray-600 text-sm mt-3 leading-relaxed">{plan.description}</p>
                   </div>
                   <div className="space-y-3">
@@ -288,11 +289,12 @@ export function Pricing() {
             <Button
               className="h-[60px] md:h-[48px] lg:h-[60px] w-full md:w-fit text-lg md:text-base lg:text-lg font-bold px-3 md:px-4 lg:px-6"
               variant="secondary"
+              asChild
             >
-              AI 견적 받아보기
+              <Link href="/service/dashboard">AI 견적 받아보기</Link>
             </Button>
-            <Button className="h-[60px] md:h-[48px] lg:h-[60px] w-full md:w-fit text-lg md:text-base lg:text-lg font-bold px-3 md:px-4 lg:px-6">
-              문의하기
+            <Button className="h-[60px] md:h-[48px] lg:h-[60px] w-full md:w-fit text-lg md:text-base lg:text-lg font-bold px-3 md:px-4 lg:px-6" asChild>
+              <a href="/#inquery">문의하기</a>
             </Button>
           </div>
         </div>
