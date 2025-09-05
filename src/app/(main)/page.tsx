@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 
-import { BlurFade } from "@/components/magicui/blur-fade";
+import { InView } from "@/components/ui/in-view";
 import InViewBackground from "@/components/resource/inviewbackground";
 
 import MainSection1 from "@/components/section/main/mainsection1";
@@ -51,30 +51,100 @@ export default async function Page() {
         <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 w-full relative">
           <MainSection1 />
         </div>
-        <BlurFade className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
-          <MainSection2 />
-        </BlurFade>
+
+        <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+          <InView
+            variants={{
+              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+            }}
+            viewOptions={{ margin: "0px 0px 100px 0px" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <MainSection2 />
+          </InView>
+        </div>
+
         <div className="col-span-full relative" id="primary">
-          <BlurFade className="col-span-full py-10 pt-16 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
-            <MainSection4 />
-          </BlurFade>
+          <div className="col-span-full py-10 pt-16 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto relative">
+            <InView
+              variants={{
+                hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+                visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+              }}
+              viewOptions={{ margin: "0px 0px 100px 0px" }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <MainSection4 />
+            </InView>
+          </div>
           <InViewBackground className="bg-zinc-100" />
         </div>
-        <BlurFade className="col-span-full py-10 lg:py-24" id="secondary">
-          <MainSection3 />
-        </BlurFade>
-        <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="quaternary">
-          <MainSection7 />
-        </BlurFade>
-        <BlurFade className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="qna">
-          <MainQnaSection />
-        </BlurFade>
-        <BlurFade className="col-span-full pt-10 lg:pt-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="contact">
-          <MainContactSection />
-        </BlurFade>
-        <BlurFade className="col-span-full pt-20 pb-10 lg:pt-26 lg:pb-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="inquery">
-          <MainInquerySection />
-        </BlurFade>
+
+        <div className="col-span-full py-10 lg:py-24" id="secondary">
+          <InView
+            variants={{
+              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+            }}
+            viewOptions={{ margin: "0px 0px 100px 0px" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <MainSection3 />
+          </InView>
+        </div>
+
+        <div className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="quaternary">
+          <InView
+            variants={{
+              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+            }}
+            viewOptions={{ margin: "0px 0px 100px 0px" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <MainSection7 />
+          </InView>
+        </div>
+
+        <div className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="qna">
+          <InView
+            variants={{
+              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+            }}
+            viewOptions={{ margin: "0px 0px 100px 0px" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <MainQnaSection />
+          </InView>
+        </div>
+
+        <div className="col-span-full pt-10 lg:pt-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="contact">
+          <InView
+            variants={{
+              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+            }}
+            viewOptions={{ margin: "0px 0px 100px 0px" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <MainContactSection />
+          </InView>
+        </div>
+
+        <div className="col-span-full pt-20 pb-10 lg:pt-26 lg:pb-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="inquery">
+          <InView
+            variants={{
+              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+            }}
+            viewOptions={{ margin: "0px 0px 100px 0px" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <MainInquerySection />
+          </InView>
+        </div>
       </SessionProvider>
     </div>
   );
