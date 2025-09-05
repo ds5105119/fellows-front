@@ -15,7 +15,7 @@ export default function MobileHeader({ session }: { session: Session | null }) {
   const toggleNav = () => setIsOpen(!isOpen);
 
   const navItems = [
-    { name: "Pricing", href: "#" },
+    { name: "Pricing", href: "/price" },
     { name: "Works", href: "/works" },
     { name: "Blog", href: "/blog" },
   ];
