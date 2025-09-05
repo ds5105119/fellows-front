@@ -156,6 +156,7 @@ export function Pricing() {
               <Link href="/service/dashboard">AI 견적 받아보기</Link>
             </Button>
             <Button className="h-[36px] md:h-[48px] lg:h-[60px] text-sm md:text-base lg:text-lg font-bold px-3 md:px-4 lg:px-6" asChild>
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a href="/#inquery">문의하기</a>
             </Button>
           </div>
@@ -287,6 +288,7 @@ export function Pricing() {
               <Link href="/service/dashboard">AI 견적 받아보기</Link>
             </Button>
             <Button className="h-[60px] md:h-[48px] lg:h-[60px] w-full md:w-fit text-lg md:text-base lg:text-lg font-bold px-3 md:px-4 lg:px-6" asChild>
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a href="/#inquery">문의하기</a>
             </Button>
           </div>
