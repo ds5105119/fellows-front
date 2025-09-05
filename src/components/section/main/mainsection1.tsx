@@ -10,7 +10,7 @@ export default async function MainSection1() {
         <div className="relative w-full hidden md:block">
           {/* Base image */}
           <AspectRatio ratio={3146 / 1332}>
-            <Image src="/hero-desktop-2.jpg" fill alt="Image" className="rounded-md object-cover" priority />
+            <Image src="/hero-desktop.jpg" fill alt="Image" className="object-cover" priority />
           </AspectRatio>
 
           {/* Filter image layered above */}
@@ -47,7 +47,7 @@ export default async function MainSection1() {
         <div className="relative w-full block md:hidden">
           {/* Base image */}
           <AspectRatio ratio={987 / 1040}>
-            <Image src="/hero-desktop-2.jpg" fill alt="Image" className="rounded-md object-cover" priority />
+            <Image src="/hero-desktop-2.jpg" fill alt="Image" className="object-cover" priority />
             <div className="absolute inset-0 flex z-10 items-center justify-center">
               <div className="w-[85%] h-[100%] flex flex-col gap-3 text-end items-end justify-end">
                 <div className="flex flex-col w-full mb-7">
