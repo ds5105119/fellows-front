@@ -27,8 +27,8 @@ export default function FullHeader() {
             <Link href="/works" className="flex space-x-2 group">
               <p className="text-sm font-medium">Work</p>
             </Link>
-            <Link href="/price" className="flex space-x-2 group">
-              <p className="text-sm font-medium">요금</p>
+            <Link href="/solutions" className="flex space-x-2 group">
+              <p className="text-sm font-medium">솔루션</p>
             </Link>
             <Link href="/service/dashboard" className="flex space-x-2 group">
               <p className="text-sm font-medium">서비스</p>

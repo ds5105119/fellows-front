@@ -44,11 +44,11 @@ export default function NavButtonGroup({ session, ...props }: NavButtonGroupProp
           transition={{ type: "spring", duration: 0.5 }}
           className="flex space-x-7 font-bold"
         >
-          <Link href="/price" className="hover:opacity-80">
-            Price
+          <Link href="/solutions" className="hover:opacity-80">
+            Solution
           </Link>
           <Link href="/works" className="hover:opacity-80">
-            Works
+            Work
           </Link>
           <Link href="/blog" target="_blank" rel="noopener noreferrer" className="hover:opacity-80">
             Blog
