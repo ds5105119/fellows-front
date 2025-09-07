@@ -213,7 +213,7 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
           </div>
           <div className="flex w-full items-center space-x-1.5 text-muted-foreground">
             <Info className="!size-3.5" />
-            <div className="text-sm">내가 관리자인 프로젝트를 포함해서, 최대 10개의 프로젝트를 의뢰할 수 있어요.</div>
+            <div className="text-sm">최대 10개의 프로젝트를 의뢰할 수 있어요.</div>
           </div>
         </div>
       </div>
