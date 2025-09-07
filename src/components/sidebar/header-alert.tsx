@@ -166,17 +166,19 @@ export default function HeaderAlert() {
   };
 
   return (
-    <div className="relative w-full overflow-x-hidden">
+    <div className="relative w-full h-full overflow-x-hidden overflow-y-auto">
       {/* Header */}
-      <div className="sticky top-0 h-14 px-4 z-10 flex items-center">
+      <div className="sticky top-0 h-14 px-4 z-10 flex items-center bg-white">
         <div className="flex items-center justify-between w-full">
           <h1 className="text-xl font-bold text-gray-900">알림</h1>
-          <span className="text-sm text-gray-500 px-2.5 py-1 rounded-full bg-black/5">{alerts.filter((alert) => !alert.is_read).length}개의 새 알림</span>
+          <span className="mr-10 md:mr-0 text-sm text-gray-500 px-2.5 py-1 rounded-full bg-black/5">
+            {alerts.filter((alert) => !alert.is_read).length}개의 새 알림
+          </span>
         </div>
       </div>
 
       {/* Alerts list */}
-      <div className="pb-5">
+      <div>
         {alerts.length === 0 && !isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 px-4">
             <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-4">

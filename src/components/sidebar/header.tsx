@@ -38,7 +38,7 @@ export default function Header() {
               style={{ transformOrigin: "top right" }}
               className="absolute top-0 right-0 origin-top-right rounded-xl border border-zinc-950/10 bg-white p-0 shadow-[0_9px_9px_0px_rgba(0,0,0,0.01),_0_2px_5px_0px_rgba(0,0,0,0.06)] dark:bg-zinc-700"
             >
-              <div className="relative h-[500px] w-[364px] overflow-y-auto">
+              <div className="h-[500px] w-[364px]">
                 <HeaderAlert />
               </div>
             </MorphingPopoverContent>
@@ -67,15 +67,12 @@ export default function Header() {
               <SheetHeader className="sr-only">
                 <SheetTitle>프로젝트 상세</SheetTitle>
               </SheetHeader>
-              <div className="sticky top-0 w-full px-5 py-5 font-bold grid grid-cols-2 items-center z-50">
-                <div className="h-full flex items-center justify-start"></div>
-                <div className="h-full flex items-center justify-end">
-                  <SheetClose asChild>
-                    <Button variant="ghost" size="icon" className="focus-visible:ring-0 rounded-full bg-zinc-800 hover:bg-zinc-700">
-                      <XIcon className="size-5 text-zinc-50" strokeWidth={3} />
-                    </Button>
-                  </SheetClose>
-                </div>
+              <div className="absolute top-7 -translate-y-1/2 right-4 z-50">
+                <SheetClose asChild>
+                  <Button variant="ghost" size="icon" className="focus-visible:ring-0">
+                    <XIcon className="size-5" strokeWidth={3} />
+                  </Button>
+                </SheetClose>
               </div>
 
               <HeaderAlert />
