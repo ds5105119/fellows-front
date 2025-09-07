@@ -105,7 +105,7 @@ const ProjectStatusColumn = ({ session, status, keyword, orderBy, setSelectedPro
   // 'process' 상태의 아이템 개수를 부모 컴포넌트로 전달하기 위한 useEffect
   useEffect(() => {
     if (status === "process" && onProcessCountChange) {
-      onProcessCountChange(pages.length);
+      onProcessCountChange(pages.filter((page) => (page.custom_team.find((member) => member.member == session.sub)?.level ?? 4) < 2).length);
     }
   }, [pages.length, status, onProcessCountChange]);
 
@@ -213,7 +213,7 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
           </div>
           <div className="flex w-full items-center space-x-1.5 text-muted-foreground">
             <Info className="!size-3.5" />
-            <div className="text-sm">최대 10개의 프로젝트를 의뢰할 수 있어요.</div>
+            <div className="text-sm">내가 관리자인 프로젝트를 포함해서, 최대 10개의 프로젝트를 의뢰할 수 있어요.</div>
           </div>
         </div>
       </div>
