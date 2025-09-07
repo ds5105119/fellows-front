@@ -44,21 +44,9 @@ export default function Header() {
             </MorphingPopoverContent>
           </MorphingPopover>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden flex items-center justify-center"
-            onClick={() => {
-              toggleSidebar();
-            }}
-          >
-            <Menu className="!size-6" />
-            <span className="sr-only">Toggle Sidebar</span>
-          </Button>
-
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden flex items-center justify-center">
+              <Button variant="ghost" size="icon" className="md:hidden flex items-center justify-center mr-2">
                 <BellIcon className="!size-5.5" />
               </Button>
             </SheetTrigger>
@@ -79,6 +67,18 @@ export default function Header() {
               <SheetDescription className="sr-only" />
             </SheetContent>
           </Sheet>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden flex items-center justify-center"
+            onClick={() => {
+              toggleSidebar();
+            }}
+          >
+            <Menu className="!size-6" />
+            <span className="sr-only">Toggle Sidebar</span>
+          </Button>
         </div>
       </div>
     </header>
