@@ -288,16 +288,16 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
       </Sheet>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogHeader className="sr-only">
+          <DialogTitle className="text-xl font-bold">Fellows SaaS 프로젝트 만들기 가이드</DialogTitle>
+          <DialogDescription className="text-base text-muted-foreground" />
+        </DialogHeader>
         <DialogContent
           data-lenis-prevent
           className="bg-white !w-full md:!w-[calc(100%-2rem)] !max-w-7xl !top-full !translate-y-[-100%] md:!top-1/2 md:!translate-y-[-50%] h-[calc(100%-2.5rem)] md:h-fit !rounded-b-none !rounded-t-2xl md:!rounded-2xl !overflow-y-auto !border-0 !shadow-3xl p-0"
           overlayClassName="backdrop-blur-sm"
           showCloseButton={false}
         >
-          <DialogHeader className="sr-only">
-            <DialogTitle className="text-xl font-bold">Fellows SaaS 프로젝트 만들기 가이드</DialogTitle>
-            <DialogDescription className="text-base text-muted-foreground" />
-          </DialogHeader>
           <div className="h-full w-full">
             <div className="sticky top-0 w-full px-5 py-5 font-bold grid grid-cols-2 items-center z-50">
               <div className="h-full flex items-center justify-start"></div>

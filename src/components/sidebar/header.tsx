@@ -4,9 +4,10 @@ import BreadCrumb from "@/components/sidebar/breadcrumb";
 import SidebarTrigger from "@/components/sidebar/sidebartrigger";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { BellIcon, Menu } from "lucide-react";
+import { BellIcon, Menu, XIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { MorphingPopover, MorphingPopoverTrigger, MorphingPopoverContent } from "@/components/ui/morphing-popover";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useId } from "react";
 import HeaderAlert from "./header-alert";
 
@@ -16,7 +17,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 flex h-12 md:h-16 shrink-0 items-center gap-2 border-b border-b-sidebar-border bg-background transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-      <div className="relative flex w-full justify-between items-center gap-2 px-6 md:justify-start">
+      <div className="relative flex w-full justify-between items-center gap-2 px-4 md:px-6 md:justify-start">
         <SidebarTrigger className="-ml-1 pl-1.5 hidden md:block" />
         <BreadCrumb />
         <div className="flex items-center grow justify-end">
@@ -42,6 +43,7 @@ export default function Header() {
               </div>
             </MorphingPopoverContent>
           </MorphingPopover>
+
           <Button
             variant="ghost"
             size="icon"
@@ -53,6 +55,33 @@ export default function Header() {
             <Menu className="!size-6" />
             <span className="sr-only">Toggle Sidebar</span>
           </Button>
+
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden flex items-center justify-center">
+                <BellIcon className="!size-5.5" />
+              </Button>
+            </SheetTrigger>
+
+            <SheetContent className="overflow-hidden h-full w-full [&>button:first-of-type]:hidden gap-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:outline-none focus:border-none">
+              <SheetHeader className="sr-only">
+                <SheetTitle>프로젝트 상세</SheetTitle>
+              </SheetHeader>
+              <div className="sticky top-0 w-full px-5 py-5 font-bold grid grid-cols-2 items-center z-50">
+                <div className="h-full flex items-center justify-start"></div>
+                <div className="h-full flex items-center justify-end">
+                  <SheetClose asChild>
+                    <Button variant="ghost" size="icon" className="focus-visible:ring-0 rounded-full bg-zinc-800 hover:bg-zinc-700">
+                      <XIcon className="size-5 text-zinc-50" strokeWidth={3} />
+                    </Button>
+                  </SheetClose>
+                </div>
+              </div>
+
+              <HeaderAlert />
+              <SheetDescription className="sr-only" />
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>

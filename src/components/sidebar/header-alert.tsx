@@ -1,17 +1,122 @@
 "use client";
 
-import { AlertDto } from "@/@types/accounts/alert";
+import type React from "react";
+
+import type { AlertDto } from "@/@types/accounts/alert";
 import { deleteAlert, useAlerts } from "@/hooks/fetch/alert";
 import dayjs from "@/lib/dayjs";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, useInView } from "framer-motion";
 import { BellIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-function AlertItem({ alert, onOpen }: { alert: AlertDto; onDelete: (alert: AlertDto) => Promise<void>; onOpen: (alert: AlertDto) => void }) {
+function AlertItem({ alert, onDelete, onOpen }: { alert: AlertDto; onDelete: (alert: AlertDto) => Promise<void>; onOpen: (alert: AlertDto) => void }) {
+  const [dragState, setDragState] = useState({
+    isDragging: false,
+    startX: 0,
+    currentX: 0,
+    deltaX: 0,
+  });
+
+  const handleStart = (clientX: number) => {
+    setDragState({
+      isDragging: true,
+      startX: clientX,
+      currentX: clientX,
+      deltaX: 0,
+    });
+  };
+
+  const handleMove = (clientX: number) => {
+    if (!dragState.isDragging) return;
+
+    const deltaX = clientX - dragState.startX;
+    // Only allow left swipe (negative deltaX)
+    const clampedDeltaX = Math.min(0, deltaX);
+
+    setDragState((prev) => ({
+      ...prev,
+      currentX: clientX,
+      deltaX: clampedDeltaX,
+    }));
+  };
+
+  const handleEnd = async () => {
+    if (!dragState.isDragging) return;
+
+    const threshold = -100; // Swipe left threshold
+
+    if (dragState.deltaX < threshold) {
+      // Delete the alert
+      try {
+        await onDelete(alert);
+      } catch (error) {
+        console.error("Failed to delete alert:", error);
+      }
+    }
+
+    // Reset drag state
+    setDragState({
+      isDragging: false,
+      startX: 0,
+      currentX: 0,
+      deltaX: 0,
+    });
+  };
+
+  // Touch events
+  const handleTouchStart = (e: React.TouchEvent) => {
+    handleStart(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    handleMove(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    handleEnd();
+  };
+
+  // Mouse events for desktop
+  const handleMouseDown = (e: React.MouseEvent) => {
+    handleStart(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    handleMove(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    handleEnd();
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Prevent click if we were dragging
+    if (Math.abs(dragState.deltaX) > 5) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    onOpen(alert);
+  };
+
   return (
-    <div className="w-full h-22 px-4 hover:bg-black/5 transition-colors duration-200 flex items-center space-x-3 select-none" onClick={() => onOpen(alert)}>
+    <div
+      className="w-full h-22 px-4 hover:bg-black/5 transition-all duration-200 flex items-center space-x-3 select-none relative overflow-hidden"
+      style={{
+        transform: `translateX(${dragState.deltaX}px)`,
+        backgroundColor: dragState.deltaX < -50 ? "rgba(239, 68, 68, 0.1)" : undefined,
+      }}
+      onClick={handleClick}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={dragState.isDragging ? handleMouseMove : undefined}
+      onMouseUp={dragState.isDragging ? handleMouseUp : undefined}
+      onMouseLeave={dragState.isDragging ? handleMouseUp : undefined}
+    >
       <div className={cn("flex-shrink-0 size-12 rounded-xl flex items-center justify-center", !alert.is_read ? "bg-blue-500" : "bg-gray-400")}>
         <BellIcon className="!size-5 text-white" />
       </div>
