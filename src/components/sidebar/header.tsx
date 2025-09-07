@@ -4,27 +4,56 @@ import BreadCrumb from "@/components/sidebar/breadcrumb";
 import SidebarTrigger from "@/components/sidebar/sidebartrigger";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { BellIcon, Menu } from "lucide-react";
+import { motion } from "framer-motion";
+import { MorphingPopover, MorphingPopoverTrigger, MorphingPopoverContent } from "@/components/ui/morphing-popover";
+import { useId } from "react";
+import HeaderAlert from "./header-alert";
 
 export default function Header() {
   const { toggleSidebar } = useSidebar();
+  const uniqueId = useId();
 
   return (
-    <header className="sticky top-0 z-30 flex h-12 md:h-16 shrink-0 items-center gap-2 border-b border-b-sidebar-border bg-background transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-      <div className="flex w-full justify-between items-center gap-2 px-6 md:justify-start">
+    <header className="sticky top-0 z-50 flex h-12 md:h-16 shrink-0 items-center gap-2 border-b border-b-sidebar-border bg-background transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+      <div className="relative flex w-full justify-between items-center gap-2 px-6 md:justify-start">
         <SidebarTrigger className="-ml-1 pl-1.5 hidden md:block" />
         <BreadCrumb />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden flex items-center justify-center"
-          onClick={() => {
-            toggleSidebar();
-          }}
-        >
-          <Menu className="!size-6" />
-          <span className="sr-only">Toggle Sidebar</span>
-        </Button>
+        <div className="flex items-center grow justify-end">
+          <MorphingPopover
+            transition={{ type: "spring", bounce: 0.05, duration: 0.3 }}
+            variants={{
+              initial: { opacity: 0, scale: 0.8 },
+              animate: { opacity: 1, scale: 1 },
+              exit: { opacity: 0, scale: 0.8 },
+            }}
+          >
+            <MorphingPopoverTrigger className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-black/5 transition-colors duration-200 focus-visible:ring-0">
+              <motion.span layoutId={`popover-label-${uniqueId}`} className="hidden md:block">
+                <BellIcon className="!size-6" />
+              </motion.span>
+            </MorphingPopoverTrigger>
+            <MorphingPopoverContent
+              style={{ transformOrigin: "top right" }}
+              className="absolute top-0 right-0 origin-top-right rounded-xl border border-zinc-950/10 bg-white p-0 shadow-[0_9px_9px_0px_rgba(0,0,0,0.01),_0_2px_5px_0px_rgba(0,0,0,0.06)] dark:bg-zinc-700"
+            >
+              <div className="relative h-[500px] w-[364px] overflow-y-auto">
+                <HeaderAlert />
+              </div>
+            </MorphingPopoverContent>
+          </MorphingPopover>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden flex items-center justify-center"
+            onClick={() => {
+              toggleSidebar();
+            }}
+          >
+            <Menu className="!size-6" />
+            <span className="sr-only">Toggle Sidebar</span>
+          </Button>
+        </div>
       </div>
     </header>
   );

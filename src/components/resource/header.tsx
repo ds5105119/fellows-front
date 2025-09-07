@@ -30,7 +30,6 @@ export const headerData = {
   ],
   navSecondary: [
     { title: "설정", url: "/service/settings", icon: "FcSettings" },
-    { title: "알림", url: "/service/notification", icon: "FcInfo" },
     { title: "고객센터", url: "#", icon: "FcOnlineSupport" },
   ],
 };
