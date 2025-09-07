@@ -108,14 +108,12 @@ export default function IssueMain({ session }: { session: Session }) {
 
   return (
     <div className="w-full h-full flex flex-col xl:flex-row">
-      <div className="h-full">
-        <IssueSidebar
-          session={session}
-          project={filters.project_id}
-          setProject={(p) => setFilters({ ...filters, project_id: p })}
-          overviewProjects={overviewProjects}
-        />
-      </div>
+      <IssueSidebar
+        session={session}
+        project={filters.project_id}
+        setProject={(p) => setFilters({ ...filters, project_id: p })}
+        overviewProjects={overviewProjects}
+      />
       <div className="w-full h-full">
         <IssueFilterHeader
           filters={filters}

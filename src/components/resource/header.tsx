@@ -20,10 +20,10 @@ export const headerData = {
       ],
     },
     { title: "이슈", url: "/service/project/issue", icon: "FcTreeStructure" },
-    { title: "구독", url: "#", icon: "FcConferenceCall" },
+    { title: "구독", url: "/service/subscript", icon: "FcConferenceCall" },
   ],
   navSecondary: [
     { title: "설정", url: "/service/settings", icon: "FcSettings" },
-    { title: "고객센터", url: "#", icon: "FcOnlineSupport" },
+    { title: "고객센터", url: "/service/help", icon: "FcOnlineSupport" },
   ],
 };
