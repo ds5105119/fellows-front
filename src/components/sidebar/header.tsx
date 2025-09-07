@@ -6,7 +6,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { BellIcon, Menu, XIcon } from "lucide-react";
 import { motion } from "framer-motion";
-import { MorphingPopover, MorphingPopoverTrigger, MorphingPopoverContent } from "@/components/ui/morphing-popover";
+import { MorphingPopover, MorphingPopoverTrigger, MorphingPopoverContent } from "@/components/ui/motion-primitives/morphing-popover";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useId } from "react";
 import HeaderAlert from "./header-alert";

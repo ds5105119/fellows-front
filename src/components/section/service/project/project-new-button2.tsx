@@ -1,7 +1,7 @@
 "use client";
 
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
-import { MorphingPopover, MorphingPopoverTrigger, MorphingPopoverContent } from "@/components/ui/morphing-popover";
+import { MorphingPopover, MorphingPopoverTrigger, MorphingPopoverContent } from "@/components/ui/motion-primitives/morphing-popover";
 import { motion } from "motion/react";
 import { useActionState, useEffect, useId, useState } from "react";
 import { ArrowLeftIcon } from "lucide-react";

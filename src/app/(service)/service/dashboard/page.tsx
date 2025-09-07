@@ -4,6 +4,7 @@ import Onboarding from "@/components/section/dashboard/onboarding";
 import { ProjectOverviewChart } from "@/components/section/dashboard/projectoverview";
 import { TaskOverviewChart } from "@/components/section/dashboard/taskoverview";
 import { ContractOverview } from "@/components/section/dashboard/contractoverview";
+import { Blog } from "@/components/section/dashboard/blog";
 
 export default async function Page() {
   const session = await auth();
@@ -36,6 +37,10 @@ export default async function Page() {
         </div>
 
         <ContractOverview session={session} />
+      </div>
+
+      <div className="col-span-full md:col-span-3 md:col-start-2 flex flex-col gap-6 bg-white md:rounded-3xl overflow-hidden">
+        <Blog />
       </div>
 
       <div className="col-span-full p-8 md:col-span-7 md:col-start-5 flex flex-col gap-6 bg-white md:rounded-3xl">
