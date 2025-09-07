@@ -7,8 +7,24 @@ import {
   erpNextContractPaginatedResponseSchema,
   ERPNextContractRequest,
   UpdateERPNextContract,
+  UserERPNextContract,
+  userERPNextContractSchema,
 } from "@/@types/service/contract";
+import { SWRConfiguration, SWRResponse } from "swr";
+import useSWRImmutable from "swr/immutable";
 import useSWRInfinite, { SWRInfiniteConfiguration, SWRInfiniteKeyLoader } from "swr/infinite";
+
+const fetcher = async (url: string) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const errorMessage = errorData.detail || `API 요청 오류: ${response.statusText}`;
+    throw new Error(errorMessage);
+  }
+  const responseData = await response.json();
+
+  return responseData;
+};
 
 const contractsGetKeyFactory = (params: ERPNextContractRequest): SWRInfiniteKeyLoader<ERPNextContractPaginatedResponse> => {
   return (pageIndex, previousPageData) => {
@@ -70,6 +86,11 @@ export const useContracts = (params: ERPNextContractRequest, options: SWRInfinit
     ...options,
   };
   return useSWRInfinite(getKey, contractsFetcher, swrOptions);
+};
+
+export const useContract = (contract_id?: string, options: SWRConfiguration<UserERPNextContract> = {}): SWRResponse<UserERPNextContract> => {
+  const url = `/api/service/project/contract/${contract_id}`;
+  return useSWRImmutable(contract_id ? url : null, async (url: string) => userERPNextContractSchema.parse(await fetcher(url)), options);
 };
 
 export const updateContracts = async (name: string, data: UpdateERPNextContract) => {

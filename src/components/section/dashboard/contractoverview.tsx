@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useProjectOverView } from "@/hooks/fetch/project";
 import { cn } from "@/lib/utils";
 import { useContracts } from "@/hooks/fetch/contract";
@@ -10,6 +11,8 @@ import { Session } from "next-auth";
 import { FileCheck } from "lucide-react";
 
 export function ContractOverview({ session }: { session: Session }) {
+  const router = useRouter();
+
   const projectOverviewSwr = useProjectOverView();
   const contractsSwr = useContracts({ docstatus: 0 }, { initialSize: 5 });
 
@@ -27,6 +30,7 @@ export function ContractOverview({ session }: { session: Session }) {
     () => partyNames.map((name) => (customersSwr.data ?? [])[uniquePartyNames.indexOf(name)]),
     [partyNames, uniquePartyNames, customersSwr.data]
   );
+
   return (
     <div className="w-full md:h-fit flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
       <div className="w-full h-fit md:h-full flex flex-col">
@@ -61,7 +65,7 @@ export function ContractOverview({ session }: { session: Session }) {
               <tr
                 key={contract.name}
                 className="hover:bg-gray-100/80 transition-colors even:bg-gray-100/40 cursor-pointer"
-                onClick={() => console.log(contract)}
+                onClick={() => router.push(`/service/project/contracts/${contract.name}`)}
               >
                 <td className="px-5 py-3 text-gray-900 font-medium">{contract.custom_name || "계약서"}</td>
                 <td className="px-5 text-gray-700 text-xs font-medium">

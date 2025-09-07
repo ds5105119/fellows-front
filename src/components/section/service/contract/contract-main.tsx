@@ -1,13 +1,14 @@
 "use client";
 
-import { useContracts } from "@/hooks/fetch/contract";
+import { useContract, useContracts } from "@/hooks/fetch/contract";
 import type { Session } from "next-auth";
 import { ContractList } from "./contract-list";
 import type { UserERPNextContract } from "@/@types/service/contract";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ContractSheet } from "./contract-sheet";
 import ContractHeader from "./contract-header";
+import { useParams, usePathname } from "next/navigation";
 
 export type ContractFilters = {
   keyword?: string;
@@ -16,6 +17,10 @@ export type ContractFilters = {
 };
 
 export default function ContractMain({ session }: { session: Session }) {
+  const params = useParams();
+  const pathname = usePathname();
+  const contract_id = params?.contract_id as string | undefined;
+
   const [filters, setFilters] = useState<ContractFilters>({ type: "0" });
   const [selectedContract, setSelectedContract] = useState<UserERPNextContract>();
   const [contractSheetOpen, setContractSheetOpen] = useState<boolean>(false);
@@ -25,18 +30,28 @@ export default function ContractMain({ session }: { session: Session }) {
     docstatus: filters.type === "0" ? undefined : filters.type === "1" || filters.type === "2" ? 0 : filters.type === "3" ? 1 : 2,
     is_signed: filters.type === "0" ? undefined : filters.type === "1" ? false : filters.type === "2" ? true : filters.type === "3" ? true : undefined,
   });
+  const { data: contractFromUrl, error: contractError } = useContract(contract_id);
 
   const onContractSelect = (contract: UserERPNextContract) => {
     setSelectedContract(contract);
     setContractSheetOpen(true);
+    const newPath = `${pathname}/${encodeURIComponent(contract.name)}`;
+    window.history.replaceState(null, "", newPath);
   };
 
   const handleContractSheetClose = (open: boolean) => {
     if (!open) {
       setSelectedContract(undefined);
+      window.history.replaceState(null, "", "/service/project/contracts");
     }
     setContractSheetOpen(open);
   };
+
+  useEffect(() => {
+    if (contractFromUrl && contract_id) {
+      setSelectedContract(contractFromUrl);
+    }
+  }, [contractFromUrl, contract_id]);
 
   return (
     <div className="w-full h-full">
