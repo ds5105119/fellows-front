@@ -22,40 +22,28 @@ export function ContractOverview({ session }: { session: Session }) {
     [contractsSwr.data]
   );
 
-  const partyNames = useMemo(() => contracts.map((c) => c.party_name).filter((name): name is string => Boolean(name)), [contracts]);
-  const uniquePartyNames = useMemo(() => Array.from(new Set(partyNames)), [partyNames]);
-  const customersSwr = useUsers(uniquePartyNames);
-
-  const customers = useMemo(
-    () => partyNames.map((name) => (customersSwr.data ?? [])[uniquePartyNames.indexOf(name)]),
-    [partyNames, uniquePartyNames, customersSwr.data]
-  );
-
   return (
     <div className="w-full md:h-fit flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
       <div className="w-full h-fit md:h-full flex flex-col">
-        <table className="w-full text-sm">
+        <table className="w-full text-xs lg:text-sm">
           <thead className="sticky top-0 z-10 bg-blue-200/60 backdrop-blur supports-[backdrop-filter]:bg-blue-200/60">
             <tr className="border-b border-black/5 text-xs font-semibold tracking-wide text-blue-600 uppercase">
-              <th scope="col" className="px-5 py-3 text-left">
+              <th scope="col" className="px-2 lg:px-5 py-3 text-left">
                 이름
               </th>
-              <th scope="col" className="px-5 py-3 text-left">
+              <th scope="col" className="px-5 py-3 text-left hidden lg:block">
                 계약 상태
               </th>
-              <th scope="col" className="px-5 py-3 text-left">
+              <th scope="col" className="px-2 lg:px-5 py-3 text-left">
                 프로젝트
               </th>
-              <th scope="col" className="px-5 py-3 text-left">
-                계약자
-              </th>
-              <th scope="col" className="px-5 py-3 text-left">
+              <th scope="col" className="px-5 py-3 text-left hidden lg:block">
                 결제 방식
               </th>
-              <th scope="col" className="px-5 py-3 text-left">
+              <th scope="col" className="px-2 lg:px-5 py-3 text-left">
                 합계
               </th>
-              <th scope="col" className="px-5 py-3 text-left">
+              <th scope="col" className="px-5 py-3 text-left hidden lg:block">
                 일정
               </th>
             </tr>
@@ -67,8 +55,8 @@ export function ContractOverview({ session }: { session: Session }) {
                 className="hover:bg-gray-100/80 transition-colors even:bg-gray-100/40 cursor-pointer"
                 onClick={() => router.push(`/service/project/contracts/${contract.name}`)}
               >
-                <td className="px-5 py-3 text-gray-900 font-medium">{contract.custom_name || "계약서"}</td>
-                <td className="px-5 text-gray-700 text-xs font-medium">
+                <td className="px-2 lg:px-5 py-3 text-gray-900 font-medium">{contract.custom_name || "계약서"}</td>
+                <td className="px-5 text-gray-700 text-xs font-medium hidden lg:table-cell">
                   <div
                     className={cn(
                       "flex items-center justify-center px-1.5 py-0.5 rounded-sm border h-fit w-fit",
@@ -94,15 +82,14 @@ export function ContractOverview({ session }: { session: Session }) {
                       : "취소됨"}
                   </div>
                 </td>
-                <td className="px-5 py-3 text-gray-700">
+                <td className="px-2 lg:px-5 py-3 text-gray-700">
                   {projects.find((project) => project.project_name == contract.document_name)?.custom_project_title ?? "프로젝트를 찾을 수 없음"}
                 </td>
-                <td className="px-5 py-3 text-gray-700">{customers[idx]?.name}</td>
-                <td className="px-5 py-3 text-gray-700">{!contract.custom_subscribe ? `회차 정산형` : `정기 결제형`}</td>
-                <td className="px-5 py-3 text-gray-700">
+                <td className="px-5 py-3 text-gray-700 hidden lg:table-cell">{!contract.custom_subscribe ? `회차 정산형` : `정기 결제형`}</td>
+                <td className="px-2 lg:px-5 py-3 text-gray-700">
                   {!contract.custom_subscribe ? `${contract.custom_fee?.toLocaleString()} 원` : `${contract.custom_maintenance?.toLocaleString()}원 / 월`}
                 </td>
-                <td className="px-5 py-3 text-gray-700">
+                <td className="px-5 py-3 text-gray-700 hidden lg:table-cell">
                   {dayjs(contract.start_date).format("YYYY.MM.DD")} {contract.end_date && dayjs(contract.end_date).format("~ YYYY.MM.DD")}
                 </td>
               </tr>

@@ -20,13 +20,7 @@ export const headerData = {
       ],
     },
     { title: "이슈", url: "/service/project/issue", icon: "FcTreeStructure" },
-    { title: "지원사업", url: "/service/welfare", icon: "FcList" },
     { title: "구독", url: "#", icon: "FcConferenceCall" },
-  ],
-  documents: [
-    { title: "데이터 라이브러리", url: "#", icon: "FcDatabase" },
-    { title: "리포트", url: "#", icon: "FcBarChart" },
-    { title: "개발 상황", url: "#", icon: "FcCableRelease" },
   ],
   navSecondary: [
     { title: "설정", url: "/service/settings", icon: "FcSettings" },
