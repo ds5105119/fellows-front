@@ -30,19 +30,19 @@ export default function ContractMain({ session }: { session: Session }) {
     docstatus: filters.type === "0" ? undefined : filters.type === "1" || filters.type === "2" ? 0 : filters.type === "3" ? 1 : 2,
     is_signed: filters.type === "0" ? undefined : filters.type === "1" ? false : filters.type === "2" ? true : filters.type === "3" ? true : undefined,
   });
-  const { data: contractFromUrl, error: contractError } = useContract(contract_id);
+  const { data: contractFromUrl } = useContract(contract_id);
 
   const onContractSelect = (contract: UserERPNextContract) => {
     setSelectedContract(contract);
     setContractSheetOpen(true);
     const newPath = `${pathname}/${encodeURIComponent(contract.name)}`;
-    window.history.replaceState(null, "", newPath);
+    window.history.pushState(null, "", newPath);
   };
 
   const handleContractSheetClose = (open: boolean) => {
     if (!open) {
       setSelectedContract(undefined);
-      window.history.replaceState(null, "", "/service/project/contracts");
+      window.history.pushState(null, "", "/service/project/contracts");
     }
     setContractSheetOpen(open);
   };
@@ -50,6 +50,7 @@ export default function ContractMain({ session }: { session: Session }) {
   useEffect(() => {
     if (contractFromUrl && contract_id) {
       setSelectedContract(contractFromUrl);
+      setContractSheetOpen(true);
     }
   }, [contractFromUrl, contract_id]);
 
