@@ -53,9 +53,17 @@ async function compressImage(file: File): Promise<File> {
   }
 }
 
-export default async function imageUploadHandler(image: File) {
+export async function blogImageUploadHandler(image: File) {
   const compressedImg = await compressImage(image);
   const presigned = await getPresignedPutUrl("blog");
+  await uploadFileToPresignedUrl({ file: compressedImg, presigned: presigned });
+
+  return `${process.env.NEXT_PUBLIC_R2_URL}/${presigned.key}`;
+}
+
+export async function imageUploadHandler(image: File, suffix: string, name?: string) {
+  const compressedImg = await compressImage(image);
+  const presigned = await getPresignedPutUrl(suffix, name);
   await uploadFileToPresignedUrl({ file: compressedImg, presigned: presigned });
 
   return `${process.env.NEXT_PUBLIC_R2_URL}/${presigned.key}`;

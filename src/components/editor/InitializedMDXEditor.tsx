@@ -1,7 +1,7 @@
 "use client";
 
 import Toolbar from "./toolbar";
-import imageUploadHandler from "@/lib/imageUploadHandler";
+import { blogImageUploadHandler } from "@/lib/imageUploadHandler";
 import type { ForwardedRef } from "react";
 import {
   headingsPlugin,
@@ -52,7 +52,7 @@ export default function InitializedMDXEditor({ editorRef, ...props }: { editorRe
         }),
 
         // Image Upload Plugin
-        imagePlugin({ imageUploadHandler }),
+        imagePlugin({ imageUploadHandler: blogImageUploadHandler }),
       ]}
       {...props}
       ref={editorRef}

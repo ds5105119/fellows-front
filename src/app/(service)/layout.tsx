@@ -9,6 +9,7 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SWRProvider } from "@/lib/swrprovider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import GoogleAnalytics from "@/lib/googleanalytics";
+import ClientLocaleInit from "@/lib/clientlocaleinit";
 
 import "../globals.css";
 
@@ -41,6 +42,7 @@ export default async function RootLayout({
       <Analytics />
       <SpeedInsights />
       <GoogleAnalytics />
+      <ClientLocaleInit />
 
       <body className={`${pretendard.variable} ${satoshi.variable} overflow-y-auto overflow-x-hidden`}>
         <SidebarProvider

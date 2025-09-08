@@ -5,7 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { X, Plus, Upload } from "lucide-react";
-import imageUploadHandler from "@/lib/imageUploadHandler";
+import { blogImageUploadHandler } from "@/lib/imageUploadHandler";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
 
@@ -45,7 +45,7 @@ export function PostMetadata({ metadata, onChange }: PostMetadataProps) {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const imageUrl = await imageUploadHandler(file);
+      const imageUrl = await blogImageUploadHandler(file);
       onChange({
         ...metadata,
         titleImage: imageUrl,
