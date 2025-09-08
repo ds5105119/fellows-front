@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { HelpRead } from "@/@types/service/help";
 import { notFound, redirect } from "next/navigation";
+import Link from "next/link";
 
 async function getHelp(id: string): Promise<HelpRead | null> {
   const helpUrl = process.env.NEXT_PUBLIC_HELP_URL;
@@ -81,9 +82,9 @@ export default async function HelpDetailPage({ params }: { params: { id: string 
 
         {/* Back to Help List */}
         <div className="mt-8 text-center">
-          <a href="/help" className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <Link href="/help" className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             ← 도움말 목록으로 돌아가기
-          </a>
+          </Link>
         </div>
       </div>
 

@@ -77,8 +77,8 @@ export default function HelpPageClient({ session, helps }: HelpPageClientProps) 
           const cardBg = cardBackgrounds[index % cardBackgrounds.length];
 
           return (
-            <Link href={`/help/${help.id}`}>
-              <Card key={help.id} className={`hover:shadow-lg transition-all duration-200 cursor-pointer border-0 ${cardBg}`}>
+            <Link href={`/help/${help.id}`} key={help.id}>
+              <Card className={`hover:shadow-lg transition-all duration-200 cursor-pointer border-0 ${cardBg}`}>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2 mb-2">
