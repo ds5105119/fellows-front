@@ -26,7 +26,7 @@ export default function HelpToolbar({ session, helpId }: { session: Session; hel
 
   if (session?.user?.groups?.includes("/manager") && helpId) {
     return (
-      <div className="fixed bottom-10 left-10 md:bottom-8 md:left-8 flex flex-col items-center w-fit z-40">
+      <div className="fixed bottom-10 left-10 md:bottom-8 md:left-8 flex flex-col items-center w-fit z-50">
         <AnimatePresence>
           {isExpanded && (
             <>
@@ -103,7 +103,7 @@ export default function HelpToolbar({ session, helpId }: { session: Session; hel
     );
   } else if (session?.user?.groups?.includes("/manager")) {
     return (
-      <div className="fixed bottom-10 left-10 md:bottom-8 md:left-8 flex flex-col space-y-4 w-fit z-40">
+      <div className="fixed bottom-10 left-10 md:bottom-8 md:left-8 flex flex-col space-y-4 w-fit z-50">
         <motion.div whileHover={{ scale: 1.1 }} transition={{ type: "spring", stiffness: 500, damping: 25 }}>
           <Link
             href="/help/write"

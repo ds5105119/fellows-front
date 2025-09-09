@@ -18,6 +18,12 @@ export default function HelpSidebar({ helps, help }: { helps: HelpsRead; help?: 
         variant="ghost"
         className="w-full justify-start"
         onClick={() => {
+          if (help) {
+            router.push(`/help`);
+            setIsOpen(false); // Close mobile menu after click
+            return;
+          }
+
           const container = document.getElementById("main");
           container?.scrollTo({ top: 0, behavior: "smooth" });
           setIsOpen(false); // Close mobile menu after click
@@ -63,14 +69,14 @@ export default function HelpSidebar({ helps, help }: { helps: HelpsRead; help?: 
         <SidebarContent />
       </div>
 
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50">
-        <button className="flex items-center w-full justify-between bg-background px-4 py-2" onClick={() => setIsOpen(!isOpen)}>
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 border-b">
+        <button className="flex items-center w-full justify-between bg-background px-5 py-3" onClick={() => setIsOpen(!isOpen)}>
           <span className="flex items-center">
-            <Menu className="w-4 h-4 mr-2" />
+            <Menu className="!size-5 mr-2" strokeWidth={3} />
             카테고리
           </span>
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className="!size-5" strokeWidth={3} />
           </motion.div>
         </button>
       </div>
@@ -81,7 +87,7 @@ export default function HelpSidebar({ helps, help }: { helps: HelpsRead; help?: 
             <motion.div
               initial={{ opacity: 0, y: -10, scaleY: 0 }}
               animate={{ opacity: 1, y: 0, scaleY: 1 }}
-              exit={{ opacity: 0, y: -10, scaleY: 0 }}
+              exit={{ opacity: 0, y: 0, scaleY: 0 }}
               transition={{
                 type: "spring",
                 damping: 25,
@@ -89,7 +95,7 @@ export default function HelpSidebar({ helps, help }: { helps: HelpsRead; help?: 
                 duration: 0.3,
               }}
               style={{ transformOrigin: "top" }}
-              className="md:hidden fixed top-10 left-0 right-0 bg-zinc-200 p-4 z-50 max-h-44 overflow-y-auto"
+              className="md:hidden fixed top-12 left-0 right-0 bg-zinc-200 py-2 px-1 z-50 max-h-44 overflow-y-auto"
             >
               <SidebarContent />
             </motion.div>

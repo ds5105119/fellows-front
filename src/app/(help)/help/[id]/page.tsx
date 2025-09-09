@@ -25,8 +25,13 @@ export default async function HelpDetailPage({ params }: { params: Promise<{ id:
     return (
       <div className="flex h-full">
         <HelpSidebar helps={helps} help={help} />
-        <div className="md:ml-48 w-full flex flex-col items-center justify-center p-6 overflow-y-auto">
-          <div style={{ position: "relative", paddingBottom: "calc(52.32142857142858%)", height: 0, width: "100%" }}>
+        <div className="mt-12 md:mt-0 md:ml-48 w-full flex flex-col items-center md:justify-center p-5 overflow-y-auto">
+          <div className="mb-4 md:mb-6 w-full">
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-3 text-balance">{help.title}</h2>
+            {help.summary && <p className="text-sm md:text-base text-gray-600 text-pretty">{help.summary}</p>}
+          </div>
+
+          <div style={{ position: "relative", height: 0, width: "100%" }} className="pb-[calc(66%)] md:pb-[calc(52.32142857142858%)]">
             <iframe
               src={help.arcade}
               title="새 프로젝트 생성하기"
@@ -38,6 +43,8 @@ export default async function HelpDetailPage({ params }: { params: Promise<{ id:
             />
           </div>
         </div>
+
+        <HelpToolbar session={session} helpId={id} />
       </div>
     );
   }

@@ -36,7 +36,7 @@ export default function HelpPageClient({ helps }: { helps: HelpsRead }) {
       <HelpSidebar helps={helps} />
 
       {/* Main content */}
-      <div id="main" className="flex-1 p-6 ml-48 overflow-y-auto">
+      <div id="main" className="flex-1 p-6 mt-12 md:mt-0 md:ml-48 overflow-y-auto">
         {/* Search Section */}
         <div className="mb-8">
           <div className="relative max-w-md">
