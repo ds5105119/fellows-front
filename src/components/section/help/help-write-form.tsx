@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { type HelpCreate, HelpCreateSchema } from "@/@types/service/help";
+import { type HelpCreate, HelpCreateSchema, HelpRead } from "@/@types/service/help";
 import { ArrowLeft, Save, Eye, Upload } from "lucide-react";
 import Link from "next/link";
 import { imageUploadHandler } from "@/lib/imageUploadHandler";
@@ -30,7 +30,7 @@ const categories = [
   { value: "기타", label: "기타" },
 ];
 
-export default function HelpWriteForm({ session }: { session: Session }) {
+export default function HelpWriteForm({ session, help }: { session: Session; help?: HelpRead | null }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
@@ -44,6 +44,7 @@ export default function HelpWriteForm({ session }: { session: Session }) {
       content: "",
       summary: "",
       category: "",
+      ...help,
     },
   });
 
@@ -84,14 +85,14 @@ export default function HelpWriteForm({ session }: { session: Session }) {
   const onSubmit = async (data: HelpCreate) => {
     setIsSubmitting(true);
     try {
-      const helpUrl = process.env.NEXT_PUBLIC_HELP_URL;
+      const helpUrl = help ? `${process.env.NEXT_PUBLIC_HELP_URL}/${help.id}` : process.env.NEXT_PUBLIC_HELP_URL;
       if (!helpUrl) {
         toast.error("API URL이 설정되지 않았습니다");
         return;
       }
 
       const response = await fetch(helpUrl, {
-        method: "POST",
+        method: help ? "PUT" : "POST",
         headers: { "Content-Type": "application/json", ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }) },
         body: JSON.stringify(data),
       });
