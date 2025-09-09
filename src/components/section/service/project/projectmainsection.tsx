@@ -313,7 +313,7 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
             <div className="grow">
               <div style={{ position: "relative", height: "100%", width: "100%" }}>
                 <iframe
-                  src="http://localhost:3000/help/4810bda37814442fa70d214f0a5cdd45"
+                  src="/help/4810bda37814442fa70d214f0a5cdd45"
                   title="새 프로젝트 생성하기"
                   loading="lazy"
                   allowFullScreen
