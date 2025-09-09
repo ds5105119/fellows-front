@@ -299,7 +299,7 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
           showCloseButton={false}
         >
           <div className="h-full w-full">
-            <div className="sticky top-0 w-full px-5 py-5 font-bold grid grid-cols-2 items-center z-50">
+            <div className="sticky top-0 w-full px-5 py-5 font-bold grid grid-cols-2 items-center z-50 border-b">
               <div className="h-full flex items-center justify-start"></div>
               <div className="h-full flex items-center justify-end">
                 <DialogClose asChild>
@@ -310,12 +310,11 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
               </div>
             </div>
 
-            <div className="px-4 md:px-18 z-0 pb-15">
-              <div style={{ position: "relative", paddingBottom: "calc(52.32142857142858% + 41px)", height: 0, width: "100%" }}>
+            <div>
+              <div style={{ position: "relative", paddingBottom: "calc(50%)", height: 0, width: "100%" }}>
                 <iframe
-                  src="https://demo.arcade.software/lazPqTmlpQIQM06aFweN?embed&embed_mobile=inline&embed_desktop=inline&show_copy_link=true"
+                  src="http://localhost:3000/help/4810bda37814442fa70d214f0a5cdd45"
                   title="새 프로젝트 생성하기"
-                  frameBorder="0"
                   loading="lazy"
                   allowFullScreen
                   allow="clipboard-write"

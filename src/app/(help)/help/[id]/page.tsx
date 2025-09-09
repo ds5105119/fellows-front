@@ -2,40 +2,16 @@ import { auth } from "@/auth";
 import HelpToolbar from "@/components/section/help/help-toolbar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import type { HelpRead } from "@/@types/service/help";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import HelpSidebar from "@/components/section/help/help-sidebar";
+import { getHelp, getHelps } from "@/hooks/fetch/server/help";
 
-async function getHelp(id: string): Promise<HelpRead | null> {
-  const helpUrl = process.env.NEXT_PUBLIC_HELP_URL;
-
-  if (!helpUrl) {
-    console.error("NEXT_PUBLIC_HELP_URL environment variable is not set");
-    return null;
-  }
-
-  try {
-    const response = await fetch(`${helpUrl}/${id}`, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
-      throw new Error(`Failed to fetch help: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching help:", error);
-    return null;
-  }
-}
-
-export default async function HelpDetailPage({ params }: { params: { id: string } }) {
+export default async function HelpDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await auth();
-  const help = await getHelp(params.id);
+  const helps = await getHelps();
+  const help = await getHelp(id);
 
   if (!session?.user?.groups?.includes("/manager")) {
     redirect("/help");
@@ -45,8 +21,29 @@ export default async function HelpDetailPage({ params }: { params: { id: string 
     notFound();
   }
 
+  if (help.arcade) {
+    return (
+      <div className="flex h-full">
+        <HelpSidebar helps={helps} help={help} />
+        <div className="ml-48 w-full flex flex-col items-center justify-center p-6">
+          <div style={{ position: "relative", paddingBottom: "calc(52.32142857142858%)", height: 0, width: "100%" }}>
+            <iframe
+              src={help.arcade}
+              title="새 프로젝트 생성하기"
+              frameBorder="0"
+              loading="lazy"
+              allowFullScreen
+              allow="clipboard-write"
+              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", colorScheme: "light" }}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
+    <div className="min-h-screen p-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -75,7 +72,7 @@ export default async function HelpDetailPage({ params }: { params: { id: string 
           </CardHeader>
           <CardContent>
             <div className="prose prose-lg max-w-none">
-              <div className="text-gray-700 leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: help.content }} />
+              <div className="text-gray-700 leading-relaxed whitespace-pre-wrap" />
             </div>
           </CardContent>
         </Card>
@@ -88,7 +85,7 @@ export default async function HelpDetailPage({ params }: { params: { id: string 
         </div>
       </div>
 
-      <HelpToolbar session={session} helpId={params.id} />
+      <HelpToolbar session={session} helpId={id} />
     </div>
   );
 }

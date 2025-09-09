@@ -40,7 +40,7 @@ export default async function RootLayout({
       <ClientLocaleInit />
 
       <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-y-auto`}>
-        <main className="scrollbar-hide break-keep">{children}</main>
+        <main className="scrollbar-hide break-keep h-full">{children}</main>
         <Toaster />
       </body>
     </html>

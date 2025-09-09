@@ -3,9 +3,10 @@ import { z } from "zod";
 export const HelpCreateSchema = z.object({
   title: z.string(),
   title_image: z.string(),
-  content: z.string(),
+  content: z.string().nullable().optional(),
   summary: z.string().nullable().optional(),
   category: z.string().nullable().optional(),
+  arcade: z.string().nullable().optional(),
 });
 
 export type HelpCreate = z.infer<typeof HelpCreateSchema>;
@@ -14,9 +15,10 @@ export const HelpReadSchema = z.object({
   id: z.string(),
   title: z.string(),
   title_image: z.string(),
-  content: z.string(),
+  content: z.string().nullable().optional(),
   summary: z.string().nullable().optional(),
   category: z.string().nullable().optional(),
+  arcade: z.string().nullable().optional(),
 });
 
 export type HelpRead = z.infer<typeof HelpReadSchema>;
@@ -30,9 +32,10 @@ export type HelpsRead = z.infer<typeof HelpsReadSchema>;
 export const HelpUpdateSchema = z.object({
   title: z.string(),
   title_image: z.string(),
-  content: z.string(),
+  content: z.string().nullable().optional(),
   summary: z.string().nullable().optional(),
   category: z.string().nullable().optional(),
+  arcade: z.string().nullable().optional(),
 });
 
 export type HelpUpdate = z.infer<typeof HelpUpdateSchema>;

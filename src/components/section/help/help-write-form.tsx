@@ -20,12 +20,13 @@ import { imageUploadHandler } from "@/lib/imageUploadHandler";
 import { Session } from "next-auth";
 
 const categories = [
+  { value: "일반", label: "일반" },
+  { value: "프로젝트", label: "프로젝트" },
   { value: "견적서", label: "견적서" },
-  { value: "의뢰 수집", label: "의뢰 수집" },
-  { value: "영업 관리", label: "영업 관리" },
-  { value: "계약 관리", label: "계약 관리" },
-  { value: "정산 관리", label: "정산 관리" },
-  { value: "리소스 관리", label: "리소스 관리" },
+  { value: "테스크", label: "테스크" },
+  { value: "보고서", label: "보고서" },
+  { value: "이슈", label: "이슈" },
+  { value: "구독", label: "구독" },
   { value: "기타", label: "기타" },
 ];
 
@@ -213,6 +214,20 @@ export default function HelpWriteForm({ session }: { session: Session }) {
                       <FormLabel>요약</FormLabel>
                       <FormControl>
                         <Textarea placeholder="도움말의 간단한 요약을 입력하세요" {...field} value={field.value || ""} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="arcade"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>내용</FormLabel>
+                      <FormControl>
+                        <Input placeholder="아케이드 URL을 입력하세요" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
