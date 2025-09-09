@@ -20,6 +20,7 @@ import { ProjectsPaginatedResponse, UserERPNextProject } from "@/@types/service/
 import { useProjects } from "@/hooks/fetch/project";
 import { Button } from "@/components/ui/button";
 import { ProjectAINewButton } from "./project-new-button2";
+import HelpDialog from "../../help/help-dialog";
 
 // --- 타입 및 상수 정의 ---
 
@@ -122,7 +123,6 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
   const [inputText, setInputText] = useState<string>("");
   const [processCount, setProcessCount] = useState<number>(0);
   const [tabIndex, setTabIndex] = useState<number>(0);
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const keyword = useThrottle(inputText, 1000);
   const router = useRouter();
@@ -186,10 +186,12 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Button size="sm" variant="ghost" className="focus-visible:ring-0 text-blue-500 hover:text-blue-600" onClick={() => setIsDialogOpen(true)}>
-              <MessageCircleQuestion />
-              <p className="hidden md:inline-block">이용 가이드</p>
-            </Button>
+            <HelpDialog src="/help/4810bda37814442fa70d214f0a5cdd45" asChild>
+              <Button size="sm" variant="ghost" className="focus-visible:ring-0 text-blue-500 hover:text-blue-600">
+                <MessageCircleQuestion />
+                <p className="hidden md:inline-block">이용 가이드</p>
+              </Button>
+            </HelpDialog>
             <Button size="sm" className="bg-blue-500/15 hover:bg-blue-500/25 text-blue-500 transition-colors duration-200 focus-visible:ring-0" asChild>
               <Link href="/service/project/new">
                 <PlusIcon />
@@ -286,45 +288,6 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
           <SheetDescription className="sr-only" />
         </SheetContent>
       </Sheet>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogHeader className="sr-only">
-          <DialogTitle className="text-xl font-bold">Fellows SaaS 프로젝트 만들기 가이드</DialogTitle>
-          <DialogDescription className="text-base text-muted-foreground" />
-        </DialogHeader>
-        <DialogContent
-          data-lenis-prevent
-          className="bg-white !w-full md:!w-[calc(100%-2rem)] !max-w-7xl !top-full !translate-y-[-100%] md:!top-1/2 md:!translate-y-[-50%] h-[calc(100%-2.5rem)] md:h-[85%] !rounded-b-none !rounded-t-2xl md:!rounded-2xl !overflow-y-auto !border-0 !shadow-3xl p-0"
-          overlayClassName="backdrop-blur-sm"
-          showCloseButton={false}
-        >
-          <div className="h-full w-full flex flex-col">
-            <div className="sticky top-0 w-full px-3 py-3 font-bold grid grid-cols-2 items-center z-50 border-b">
-              <div className="h-full flex items-center justify-start pl-2">Fellows 도움말</div>
-              <div className="h-full flex items-center justify-end">
-                <DialogClose asChild>
-                  <Button variant="ghost" size="icon" className="hover:bg-blue-500/10 border-0 focus-visible:ring-0">
-                    <XIcon className="size-5" strokeWidth={3} />
-                  </Button>
-                </DialogClose>
-              </div>
-            </div>
-
-            <div className="grow">
-              <div style={{ position: "relative", height: "100%", width: "100%" }}>
-                <iframe
-                  src="/help/4810bda37814442fa70d214f0a5cdd45"
-                  title="새 프로젝트 생성하기"
-                  loading="lazy"
-                  allowFullScreen
-                  allow="clipboard-write"
-                  style={{ width: "100%", height: "100%", colorScheme: "light" }}
-                />
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

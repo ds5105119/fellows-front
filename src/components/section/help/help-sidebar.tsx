@@ -2,11 +2,12 @@
 
 import type { HelpRead, HelpsRead } from "@/@types/service/help";
 import { Button } from "@/components/ui/button";
-import { FileText, Menu, ChevronDown } from "lucide-react";
+import { FileText, Menu, ChevronDown, ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { helpCategories } from "@/hooks/fetch/server/help";
+import { cn } from "@/lib/utils";
 
 export default function HelpSidebar({ helps, help }: { helps: HelpsRead; help?: HelpRead }) {
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function HelpSidebar({ helps, help }: { helps: HelpsRead; help?: 
       >
         <FileText className="w-4 h-4 mr-2" />
         전체
+        <span className="ml-auto text-xs bg-muted px-2 py-1 rounded-full">{helps.items.length}</span>
       </Button>
       {helpCategories.map((category) => {
         const Icon = category.icon;
@@ -65,20 +67,30 @@ export default function HelpSidebar({ helps, help }: { helps: HelpsRead; help?: 
     <>
       {/* Desktop sidebar - unchanged */}
       <div className="hidden md:block w-48 bg-card border-r border-border p-4 absolute top-0 h-full overflow-y-auto">
+        {help && (
+          <Button variant="ghost" className="w-full justify-start mb-3" onClick={() => router.push("/help")}>
+            <ChevronLeft className="size-4 mr-2" />
+            전체보기
+          </Button>
+        )}
         <h2 className="font-semibold text-lg mb-4 ml-3">카테고리</h2>
         <SidebarContent />
       </div>
 
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 border-b">
-        <button className="flex items-center w-full justify-between bg-background px-5 py-3" onClick={() => setIsOpen(!isOpen)}>
+        <div className={cn("flex items-center w-full justify-between bg-background h-12", help ? "px-[9px]" : "px-5")}>
           <span className="flex items-center">
-            <Menu className="!size-5 mr-2" strokeWidth={3} />
+            {help && (
+              <Button variant="ghost" size="icon" className="mr-2" onClick={() => router.push("/help")}>
+                <ChevronLeft className="!size-5" strokeWidth={3} />
+              </Button>
+            )}
             카테고리
           </span>
-          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+          <motion.button animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} onClick={() => setIsOpen(!isOpen)}>
             <ChevronDown className="!size-5" strokeWidth={3} />
-          </motion.div>
-        </button>
+          </motion.button>
+        </div>
       </div>
 
       <AnimatePresence>
