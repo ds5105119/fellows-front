@@ -2,21 +2,11 @@
 
 import type { HelpRead, HelpsRead } from "@/@types/service/help";
 import { Button } from "@/components/ui/button";
-import { FileText, HelpCircle, FolderOpen, Receipt, CheckSquare, FileBarChart, AlertCircle, CreditCard, MoreHorizontal, Menu, ChevronDown } from "lucide-react";
+import { FileText, Menu, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-
-export const helpCategories = [
-  { value: "일반", label: "일반", icon: HelpCircle },
-  { value: "프로젝트", label: "프로젝트", icon: FolderOpen },
-  { value: "견적서", label: "견적서", icon: Receipt },
-  { value: "테스크", label: "테스크", icon: CheckSquare },
-  { value: "보고서", label: "보고서", icon: FileBarChart },
-  { value: "이슈", label: "이슈", icon: AlertCircle },
-  { value: "구독", label: "구독", icon: CreditCard },
-  { value: "기타", label: "기타", icon: MoreHorizontal },
-] as const;
+import { helpCategories } from "@/hooks/fetch/server/help";
 
 export default function HelpSidebar({ helps, help }: { helps: HelpsRead; help?: HelpRead }) {
   const router = useRouter();
@@ -73,8 +63,8 @@ export default function HelpSidebar({ helps, help }: { helps: HelpsRead; help?: 
         <SidebarContent />
       </div>
 
-      <div className="md:hidden fixed top-4 left-4 right-4 z-50">
-        <Button variant="outline" className="w-full justify-between bg-background shadow-lg" onClick={() => setIsOpen(!isOpen)}>
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50">
+        <button className="flex items-center w-full justify-between bg-background px-4 py-2" onClick={() => setIsOpen(!isOpen)}>
           <span className="flex items-center">
             <Menu className="w-4 h-4 mr-2" />
             카테고리
@@ -82,22 +72,12 @@ export default function HelpSidebar({ helps, help }: { helps: HelpsRead; help?: 
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
             <ChevronDown className="w-4 h-4" />
           </motion.div>
-        </Button>
+        </button>
       </div>
 
       <AnimatePresence>
         {isOpen && (
           <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="md:hidden fixed inset-0 bg-black/50 z-40"
-              style={{ top: "80px" }} // Start below the button
-              onClick={() => setIsOpen(false)}
-            />
-
             <motion.div
               initial={{ opacity: 0, y: -10, scaleY: 0 }}
               animate={{ opacity: 1, y: 0, scaleY: 1 }}
@@ -109,7 +89,7 @@ export default function HelpSidebar({ helps, help }: { helps: HelpsRead; help?: 
                 duration: 0.3,
               }}
               style={{ transformOrigin: "top" }}
-              className="md:hidden fixed top-16 left-4 right-4 bg-card border border-border rounded-lg shadow-lg p-4 z-50 max-h-96 overflow-y-auto"
+              className="md:hidden fixed top-10 left-0 right-0 bg-zinc-200 p-4 z-50 max-h-44 overflow-y-auto"
             >
               <SidebarContent />
             </motion.div>

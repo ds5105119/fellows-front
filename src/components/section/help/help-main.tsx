@@ -5,7 +5,8 @@ import { Search, HelpCircle } from "lucide-react";
 import { useState, useMemo } from "react";
 import type { HelpsRead } from "@/@types/service/help";
 import { HelpCard } from "./help-card";
-import HelpSidebar, { helpCategories } from "./help-sidebar";
+import HelpSidebar from "./help-sidebar";
+import { helpCategories } from "@/hooks/fetch/server/help";
 
 export default function HelpPageClient({ helps }: { helps: HelpsRead }) {
   const [searchQuery, setSearchQuery] = useState("");
