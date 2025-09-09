@@ -25,7 +25,7 @@ export default async function HelpDetailPage({ params }: { params: Promise<{ id:
     return (
       <div className="flex h-full">
         <HelpSidebar helps={helps} help={help} />
-        <div className="ml-48 w-full flex flex-col items-center justify-center p-6">
+        <div className="md:ml-48 w-full flex flex-col items-center justify-center p-6 overflow-y-auto">
           <div style={{ position: "relative", paddingBottom: "calc(52.32142857142858%)", height: 0, width: "100%" }}>
             <iframe
               src={help.arcade}

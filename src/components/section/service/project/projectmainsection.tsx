@@ -294,11 +294,11 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
         </DialogHeader>
         <DialogContent
           data-lenis-prevent
-          className="bg-white !w-full md:!w-[calc(100%-2rem)] !max-w-7xl !top-full !translate-y-[-100%] md:!top-1/2 md:!translate-y-[-50%] h-[calc(100%-2.5rem)] md:h-fit !rounded-b-none !rounded-t-2xl md:!rounded-2xl !overflow-y-auto !border-0 !shadow-3xl p-0"
+          className="bg-white !w-full md:!w-[calc(100%-2rem)] !max-w-7xl !top-full !translate-y-[-100%] md:!top-1/2 md:!translate-y-[-50%] h-[calc(100%-2.5rem)] md:h-4/5 !rounded-b-none !rounded-t-2xl md:!rounded-2xl !overflow-y-auto !border-0 !shadow-3xl p-0"
           overlayClassName="backdrop-blur-sm"
           showCloseButton={false}
         >
-          <div className="h-full w-full">
+          <div className="h-full w-full flex flex-col">
             <div className="sticky top-0 w-full px-5 py-5 font-bold grid grid-cols-2 items-center z-50 border-b">
               <div className="h-full flex items-center justify-start"></div>
               <div className="h-full flex items-center justify-end">
@@ -310,15 +310,15 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
               </div>
             </div>
 
-            <div>
-              <div style={{ position: "relative", paddingBottom: "calc(50%)", height: 0, width: "100%" }}>
+            <div className="grow">
+              <div style={{ position: "relative", height: "100%", width: "100%" }}>
                 <iframe
                   src="http://localhost:3000/help/4810bda37814442fa70d214f0a5cdd45"
                   title="새 프로젝트 생성하기"
                   loading="lazy"
                   allowFullScreen
                   allow="clipboard-write"
-                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", colorScheme: "light" }}
+                  style={{ width: "100%", height: "100%", colorScheme: "light" }}
                 />
               </div>
             </div>
