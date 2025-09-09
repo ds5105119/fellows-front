@@ -269,7 +269,7 @@ export function NavGroup({ name, items, showHelp, ...props }: NavGroupProps) {
         )}
         {showHelp && (
           <SidebarMenuItem>
-            <HelpDialog src="/help/4810bda37814442fa70d214f0a5cdd45" asChild>
+            <HelpDialog src="/help" asChild>
               <SidebarMenuButton
                 className={cn(
                   "[&>svg]:size-5 rounded-[3px] transition-colors duration-200",
