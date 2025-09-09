@@ -18,7 +18,6 @@ import { ArrowLeft, Save, Eye, Upload } from "lucide-react";
 import Link from "next/link";
 import { imageUploadHandler } from "@/lib/imageUploadHandler";
 import { Session } from "next-auth";
-import Editor from "@/components/editor/editor";
 
 const categories = [
   { value: "일반", label: "일반" },
@@ -122,13 +121,6 @@ export default function HelpWriteForm({ session, help }: { session: Session; hel
           <ArrowLeft className="w-4 h-4" />
           도움말 목록으로 돌아가기
         </Link>
-
-        <div className="flex items-center gap-2">
-          <Button type="button" variant="outline" onClick={() => setIsPreview(!isPreview)} className="flex items-center gap-2">
-            <Eye className="w-4 h-4" />
-            {isPreview ? "편집 모드" : "미리보기"}
-          </Button>
-        </div>
       </div>
 
       {/* Form Section */}
@@ -136,7 +128,7 @@ export default function HelpWriteForm({ session, help }: { session: Session; hel
         <CardHeader>
           <CardTitle>도움말 작성</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
@@ -242,12 +234,7 @@ export default function HelpWriteForm({ session, help }: { session: Session; hel
                   <FormItem>
                     <FormLabel>내용</FormLabel>
                     <FormControl>
-                      <Editor
-                        markdown={field.value || ""}
-                        placeholder="내용을 작성하세요. 이미지는 드래그 앤 드롭으로도 올릴 수 있습니다..."
-                        className="w-full h-full overflow-auto min-h-96"
-                        {...field}
-                      />
+                      <Textarea placeholder="도움말의 상세 내용을 입력하세요" {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
