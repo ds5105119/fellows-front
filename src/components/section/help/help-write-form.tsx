@@ -18,6 +18,7 @@ import { ArrowLeft, Save, Eye, Upload } from "lucide-react";
 import Link from "next/link";
 import { imageUploadHandler } from "@/lib/imageUploadHandler";
 import { Session } from "next-auth";
+import Editor from "@/components/editor/editor";
 
 const categories = [
   { value: "일반", label: "일반" },
@@ -130,188 +131,137 @@ export default function HelpWriteForm({ session, help }: { session: Session; hel
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Form Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>도움말 작성</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>제목</FormLabel>
+      {/* Form Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>도움말 작성</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>제목</FormLabel>
+                    <FormControl>
+                      <Input placeholder="도움말 제목을 입력하세요" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>카테고리</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                       <FormControl>
-                        <Input placeholder="도움말 제목을 입력하세요" {...field} />
+                        <SelectTrigger>
+                          <SelectValue placeholder="카테고리를 선택하세요" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.value} value={category.value}>
+                            {category.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>카테고리</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="카테고리를 선택하세요" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category.value} value={category.value}>
-                              {category.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="title_image"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>대표 이미지</FormLabel>
-                      <div>
-                        <div className="flex gap-2">
-                          <Input type="file" accept="image/*" onChange={handleImageUpload} disabled={isUploadingImage} className="hidden" id="image-upload" />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => document.getElementById("image-upload")?.click()}
-                            disabled={isUploadingImage}
-                            className="flex items-center gap-2"
-                          >
-                            <Upload className="w-4 h-4" />
-                            {isUploadingImage ? "업로드 중..." : "이미지 업로드"}
-                          </Button>
-                        </div>
-                        <FormControl>
-                          <Input className="sr-only hidden" {...field} />
-                        </FormControl>
+              <FormField
+                control={form.control}
+                name="title_image"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>대표 이미지</FormLabel>
+                    <div>
+                      <div className="flex gap-2">
+                        <Input type="file" accept="image/*" onChange={handleImageUpload} disabled={isUploadingImage} className="hidden" id="image-upload" />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => document.getElementById("image-upload")?.click()}
+                          disabled={isUploadingImage}
+                          className="flex items-center gap-2"
+                        >
+                          <Upload className="w-4 h-4" />
+                          {isUploadingImage ? "업로드 중..." : "이미지 업로드"}
+                        </Button>
                       </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="summary"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>요약</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="도움말의 간단한 요약을 입력하세요" {...field} value={field.value || ""} />
+                        <Input className="sr-only hidden" {...field} />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="arcade"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>내용</FormLabel>
-                      <FormControl>
-                        <Input placeholder="아케이드 URL을 입력하세요" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="summary"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>요약</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="도움말의 간단한 요약을 입력하세요" {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="content"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>내용</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="도움말의 상세 내용을 입력하세요" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="arcade"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>내용</FormLabel>
+                    <FormControl>
+                      <Input placeholder="아케이드 URL을 입력하세요" {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <Button type="submit" disabled={isSubmitting} className="w-full flex items-center gap-2">
-                  <Save className="w-4 h-4" />
-                  {isSubmitting ? "저장 중..." : "도움말 저장"}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>내용</FormLabel>
+                    <FormControl>
+                      <Editor
+                        markdown={field.value || ""}
+                        placeholder="내용을 작성하세요. 이미지는 드래그 앤 드롭으로도 올릴 수 있습니다..."
+                        className="w-full h-full overflow-auto min-h-96"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        {/* Preview Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>미리보기</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {watchedValues.title && (
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">{watchedValues.title}</h2>
-                  {watchedValues.category && (
-                    <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">{watchedValues.category}</span>
-                  )}
-                </div>
-              )}
-
-              {watchedValues.title_image && (
-                <div className="w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
-                  <img
-                    src={watchedValues.title_image || "/placeholder.svg"}
-                    alt="미리보기 이미지"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
-                  />
-                </div>
-              )}
-
-              {watchedValues.summary && (
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <h3 className="font-semibold text-gray-900 mb-2">요약</h3>
-                  <p className="text-gray-700 text-sm leading-relaxed">{watchedValues.summary}</p>
-                </div>
-              )}
-
-              {watchedValues.content && (
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">내용</h3>
-                  <div className="prose prose-sm max-w-none">
-                    <pre className="whitespace-pre-wrap text-gray-700 text-sm leading-relaxed">{watchedValues.content}</pre>
-                  </div>
-                </div>
-              )}
-
-              {!watchedValues.title && !watchedValues.content && (
-                <div className="text-center py-12 text-gray-500">
-                  <p>내용을 입력하면 여기에 미리보기가 표시됩니다</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+              <Button type="submit" disabled={isSubmitting} className="w-full flex items-center gap-2">
+                <Save className="w-4 h-4" />
+                {isSubmitting ? "저장 중..." : "도움말 저장"}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
