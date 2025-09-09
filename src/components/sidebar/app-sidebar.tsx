@@ -29,7 +29,7 @@ export async function AppSidebar() {
 
       <SidebarContent className="px-4 md:p-0">
         <NavGroup items={headerData.navMain} name="메인 메뉴" />
-        <NavGroup items={headerData.navSecondary} className="mt-auto" />
+        <NavGroup items={headerData.navSecondary} className="mt-auto" showHelp />
       </SidebarContent>
 
       <SidebarFooter className="px-6 md:px-2 md:pb-3 group-data-[collapsible=icon]:ml-2">

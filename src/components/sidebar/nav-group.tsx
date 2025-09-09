@@ -19,6 +19,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { useState, useEffect } from "react";
+import HelpDialog from "../section/help/help-dialog";
 
 interface SubItem {
   title: string;
@@ -36,9 +37,10 @@ interface NavItem {
 interface NavGroupProps extends React.ComponentPropsWithoutRef<typeof SidebarGroup> {
   name?: string;
   items: NavItem[];
+  showHelp?: boolean;
 }
 
-export function NavGroup({ name, items, ...props }: NavGroupProps) {
+export function NavGroup({ name, items, showHelp, ...props }: NavGroupProps) {
   const pathname = usePathname();
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [openCollapsibles, setOpenCollapsibles] = useState<Set<string>>(new Set());
@@ -264,6 +266,21 @@ export function NavGroup({ name, items, ...props }: NavGroupProps) {
               </SidebarMenuButton>
             </SidebarMenuItem>
           )
+        )}
+        {showHelp && (
+          <SidebarMenuItem>
+            <HelpDialog src="/help/4810bda37814442fa70d214f0a5cdd45" asChild>
+              <SidebarMenuButton
+                className={cn(
+                  "[&>svg]:size-5 rounded-[3px] transition-colors duration-200",
+                  "hover:text-primary hover:bg-sidebar-accent/50",
+                  "data-[active=true]:text-primary data-[active=true]:bg-sidebar-accent/50"
+                )}
+              >
+                <DynamicFcIcon name="FcIdea" className="group-data-[collapsible=icon]:-ml-0.5" /> <p className="hidden md:inline-block">이용 가이드</p>
+              </SidebarMenuButton>
+            </HelpDialog>
+          </SidebarMenuItem>
         )}
       </SidebarMenu>
     </SidebarGroup>
