@@ -9,8 +9,8 @@ import { motion } from "framer-motion";
 export function Logo({ size = 20 }: { size?: number }) {
   return (
     <div className="flex space-x-2 group">
-      <Image src="/fellows/logo-img.svg" width={20} height={size} alt="image logo" />
-      <Image src="/fellows/logo-text.svg" width={91} height={size} alt="text logo" />
+      <Image src="/fellows/logo-img.svg" width={20} height={size} alt="image logo" priority unoptimized />
+      <Image src="/fellows/logo-text.svg" width={91} height={size} alt="text logo" priority unoptimized />
     </div>
   );
 }
@@ -40,8 +40,10 @@ export default function SelectLogo({ ...props }: React.HTMLAttributes<HTMLDivEle
               height={20}
               alt="image logo"
               className="transition-transform duration-500 transform group-hover:rotate-y-180"
+              priority
+              unoptimized
             />
-            <Image src="/fellows/logo-text.svg" width={91} height={20} alt="text logo" />
+            <Image src="/fellows/logo-text.svg" width={91} height={20} alt="text logo" priority unoptimized />
           </Link>
         </ContextMenuTrigger>
         <ContextMenuContent className="rounded-2xl px-2.5 py-2.5 space-y-1 font-semibold w-fit" asChild>
