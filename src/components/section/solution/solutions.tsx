@@ -221,6 +221,7 @@ export function Solutions() {
                 </p>
               </AccordionContent>
             </AccordionItem>
+
             <AccordionItem value="animation-properties" className="py-3">
               <AccordionTrigger className="w-full pt-0.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
                 <div className="flex items-center">
@@ -235,6 +236,7 @@ export function Solutions() {
                 </p>
               </AccordionContent>
             </AccordionItem>
+
             <AccordionItem value="advanced-features" className="py-3">
               <AccordionTrigger className="w-full pt-0.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
                 <div className="flex items-center">
@@ -245,6 +247,43 @@ export function Solutions() {
               <AccordionContent className="origin-left">
                 <p className="pl-7 md:pl-6 pr-2 text-zinc-500 dark:text-zinc-400 text-base">
                   AI 견적 서비스는 무료입니다. AI견적 결과와 실제 최종 견적 결과는 다를 수 있습니다.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="security" className="py-3">
+              <AccordionTrigger className="w-full pt-0.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+                <div className="flex items-center">
+                  <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
+                  <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">💊 데이터 보안은 잘 이루어져 있나요?</div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="origin-left">
+                <p className="pl-7 md:pl-6 pr-2 text-zinc-500 dark:text-zinc-400 text-base">
+                  Fellows에서는 강력한 보안을 위해 아래와 같은 처리를 적용하고 있습니다.
+                  <br />
+                  <br />
+                  <span className="font-bold">SSE-C 암호화</span>
+                  <br />
+                  <span>
+                    모든 고객사의 파일 저장에는 SSE-C 암호화를 적용하고 있습니다. 모든 객체 단위로 사용자 암호화 키로 암호화 되어있어 허가받지 못한 누구도
+                    접근할 수 없습니다.
+                  </span>
+                  <br />
+                  <br />
+                  <span className="font-bold">SSL 암호화</span>
+                  <br />
+                  <span>Fellows와의 데이터 통신에는 SSL 암호화 프로토콜이 적용되어 누구도 데이터를 훔치거나 몰래 열어볼 수 없습니다.</span>
+                  <br />
+                  <br />
+                  <span className="font-bold">DB 및 VM 암호화</span>
+                  <br />
+                  <span>DB 및 VM은 암호화된 환경에서 실행됩니다. TPM2.0이 활성화된 환경에서 안전하게 데이터가 보호됩니다.</span>
+                  <br />
+                  <br />
+                  <span className="font-bold">AWS 자격증 소유</span>
+                  <br />
+                  <span>Fellows 멤버는 모두가 AWS 자격증 소유자입니다. 고객사를 위해 클라우드 아키텍쳐 및 보안에 더욱 힘쓰고 있습니다.</span>
                 </p>
               </AccordionContent>
             </AccordionItem>
