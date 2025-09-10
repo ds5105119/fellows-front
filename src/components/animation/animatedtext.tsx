@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { GeistSans } from "geist/font/sans";
 import { cn } from "@/lib/utils";
 
-export default function MainSection1Design() {
+export default function AnimatedText({ textClassName }: { textClassName?: string }) {
   const symbols = ["✵", "✷", "✸", "✹", "✺", "❉", "❋", "❤︎", "❖", "✠", "✢", "✣", "✤", "✥", "✖"];
 
   // 세련되고 대비가 강한 Tailwind 색상들
@@ -69,7 +69,7 @@ export default function MainSection1Design() {
     <div className="flex items-center justify-center">
       <motion.div key={animationKey} className="relative" onClick={handleReplay} whileHover={{ scale: isAnimating ? 1 : 1.1 }} whileTap={{ scale: 0.95 }}>
         <motion.div
-          className={cn("text-[46px] transition-all duration-300 ease-out cursor-pointer select-none", GeistSans.className)}
+          className={cn("transition-all duration-300 ease-out cursor-pointer select-none", GeistSans.className, textClassName)}
           style={{ color: currentColor }}
           onClick={handleReplay}
           whileHover={{ scale: isAnimating ? 1 : 1.1 }}
@@ -79,7 +79,7 @@ export default function MainSection1Design() {
         </motion.div>
 
         <motion.div
-          className={cn("absolute inset-0 text-[46px] blur-xl opacity-40 -z-10 transition-all duration-300 ease-out", GeistSans.className)}
+          className={cn("absolute inset-0 blur-xl opacity-40 -z-10 transition-all duration-300 ease-out", GeistSans.className, textClassName)}
           style={{ color: currentColor }}
           animate={{
             scale: isAnimating ? [1, 1.15, 1] : 1,
