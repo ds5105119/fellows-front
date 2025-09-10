@@ -157,7 +157,9 @@ export default function PlanSection({
               }}
               className="w-full"
             >
-              <PlanCard plan={plan} showButton={false} />
+              <div className="p-6">
+                <PlanCard plan={plan} showButton={false} />
+              </div>
             </div>
           ))}
         </div>
