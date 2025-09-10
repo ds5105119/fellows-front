@@ -9,7 +9,6 @@ import PlanSection from "./plansection";
 import { subscriptionPlans, shopifyPlans, outsourcingPlans, tabs } from "./data";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/motion-primitives/accordion";
 import { ChevronRight } from "lucide-react";
-import { toast } from "sonner";
 
 export function Solutions() {
   const router = useRouter();
