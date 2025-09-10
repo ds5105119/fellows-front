@@ -219,7 +219,7 @@ export function Solutions() {
             }}
           >
             <AccordionItem value="effort" className="py-3">
-              <AccordionTrigger className="w-full pt-1 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+              <AccordionTrigger className="w-full pt-1.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
                 <div className="flex items-center">
                   <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
                   <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">🤔 Fellows에서 개발하면 좋은 점이 무엇인가요?</div>
@@ -234,7 +234,7 @@ export function Solutions() {
             </AccordionItem>
 
             <AccordionItem value="animation-properties" className="py-3">
-              <AccordionTrigger className="w-full pt-1 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+              <AccordionTrigger className="w-full pt-1.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
                 <div className="flex items-center">
                   <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
                   <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">🖋️ 개발은 어떻게 의뢰할 수 있나요?</div>
@@ -263,7 +263,7 @@ export function Solutions() {
             </AccordionItem>
 
             <AccordionItem value="process" className="py-3">
-              <AccordionTrigger className="w-full pt-1 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+              <AccordionTrigger className="w-full pt-1.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
                 <div className="flex items-center">
                   <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
                   <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">📆 개발 과정이 어떻게 되나요?</div>
@@ -294,7 +294,7 @@ export function Solutions() {
             </AccordionItem>
 
             <AccordionItem value="subscription" className="py-3">
-              <AccordionTrigger className="w-full pt-1 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+              <AccordionTrigger className="w-full pt-1.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
                 <div className="flex items-center">
                   <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
                   <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">🚀 개발 이후 유지 보수는 어떻게 진행되나요?</div>
@@ -315,7 +315,7 @@ export function Solutions() {
             </AccordionItem>
 
             <AccordionItem value="advanced-features" className="py-3">
-              <AccordionTrigger className="w-full pt-1 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+              <AccordionTrigger className="w-full pt-1.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
                 <div className="flex items-center">
                   <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
                   <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">✨ AI 견적은 무료인가요?</div>
@@ -329,7 +329,7 @@ export function Solutions() {
             </AccordionItem>
 
             <AccordionItem value="security" className="py-3">
-              <AccordionTrigger className="w-full pt-1 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+              <AccordionTrigger className="w-full pt-1.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
                 <div className="flex items-center">
                   <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
                   <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">🔐 데이터 보안은 잘 이루어져 있나요?</div>
