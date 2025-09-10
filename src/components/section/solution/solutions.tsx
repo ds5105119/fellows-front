@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -12,7 +14,16 @@ const tabs = [
   { id: "shopify", label: "Shopify" },
 ];
 
-const shopifyPlans = [
+interface Plan {
+  name: string;
+  subtitle: string;
+  description: string;
+  price?: number;
+  period?: string;
+  features: { title: string; bold: boolean }[];
+}
+
+const shopifyPlans: Plan[] = [
   {
     name: "Growth Boost",
     subtitle: "사업 초기",
@@ -98,10 +109,11 @@ const shopifyPlans = [
   },
 ];
 
-const subscriptionPlans = [
+const subscriptionPlans: Plan[] = [
   {
     name: "Free",
     subtitle: "사업 초기",
+    price: 0,
     description: "사업 초기 무료 혜택으로 Fellows의 기술 제휴를 받아볼 수 있습니다.",
     features: [
       { title: "정기 비지니스 멘토링 제공(월 1회)", bold: false },
@@ -111,6 +123,7 @@ const subscriptionPlans = [
   {
     name: "Basic",
     subtitle: "유지보수",
+    price: 100,
     description: "개발 이후 Fellows에서 유지보수만 필요한 경우 합리적인 가격으로 지속적인 지원을 받을 수 있습니다.",
     features: [
       { title: "실시간 소통 채널 운영", bold: false },
@@ -119,12 +132,13 @@ const subscriptionPlans = [
       { title: "서버 운영 및 관리(유지보수)", bold: true },
       { title: "24시간 이내 SW 1차 장애 대응 진행", bold: true },
       { title: "분야별 전담팀 배정 (개발자)", bold: false },
-      { title: "월 16시간 개발 크레딧 제공", bold: true },
+      { title: "월 15시간 개발 크레딧 제공", bold: true },
     ],
   },
   {
     name: "Business",
     subtitle: "개발 인력이 필요한 팀",
+    price: 250,
     description: "구독형 개발로 Fellows에서 안정적으로 유지관리를 하는 동시에 새로운 개발 비용을 절감할 수 있습니다.",
     features: [
       { title: "실시간 소통 채널 운영", bold: false },
@@ -140,12 +154,11 @@ const subscriptionPlans = [
   },
   {
     name: "Enterprise",
-    subtitle: "주도적인 개발팀이 필요한 기업",
+    subtitle: "개발팀이 필요한 기업",
     description: "주도적인 개발팀이 필요한 경우, 스프린트 단위로 지속적인 개발이 필요한 경우, 인하우스와 같이 긴밀하게 협업할 개발팀이 필요한 경우 적합합니다.",
     features: [
       { title: "실시간 소통 채널 운영", bold: false },
       { title: "Fellows SaaS를 통한 WBS를 통한 개발 상황 추적", bold: false },
-      { title: "Fellows SaaS를 통한 일별 월별 보고서 생성 가능", bold: false },
       { title: "Fellows SaaS를 통한 프로젝트 모니터링", bold: false },
       { title: "서버 운영 및 관리(유지보수)", bold: true },
       { title: "24시간 이내 SW 1차 장애 대응 진행", bold: true },
@@ -156,132 +169,281 @@ const subscriptionPlans = [
   },
 ];
 
-export function Solutions() {
-  const [activeTab, setActiveTab] = useState("outsourcing");
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [carouselHeight, setCarouselHeight] = useState<number | null>(null);
-  const [subscriptionHeights, setSubscriptionHeights] = useState<number[]>([]);
-  const [shopifyHeights, setShopifyHeights] = useState<number[]>([]);
+const outsourcingPlans: Plan[] = [
+  {
+    name: "노코드 Standard",
+    subtitle: "합리적인 맞춤형 패키지",
+    description: "랜딩 페이지 제작 등에 특화된 솔루션입니다. 빠른 시간 내에 메인 1페이지를 최대 6섹션까지 커스터마이즈 할 수 있습니다.",
+    features: [
+      { title: "브랜드 맞춤 기획 & 카피라이팅 & 맞춤형 디자인", bold: false },
+      { title: "반응형 웹디자인(PC+Mobile)", bold: false },
+      { title: "기본 SEO설정", bold: false },
+      { title: "문의폼 1개 + HTML/CSS 커스터마이징", bold: true },
+      { title: "파비콘 제작", bold: false },
+      { title: "2회 수정", bold: true },
+    ],
+  },
+  {
+    name: "노코드 Deluxe",
+    subtitle: "브랜드 정체성 강화",
+    description: "간단한 기업 소개 페이지 등에 특화된 솔루션입니다. 메인 1페이지와 서브 4페이지까지 커스터마이즈 할 수 있습니다.",
+    features: [
+      { title: "브랜드 맞춤 기획 & 카피라이팅 & 맞춤형 디자인", bold: false },
+      { title: "반응형 웹디자인 + 기본 애니메이션", bold: false },
+      { title: "SEO설정 + 게시판/문의폼 커스텀", bold: true },
+      { title: "게시판/문의폼 커스텀", bold: false },
+      { title: "SNS연동(인스타그램, 유튜브 등)", bold: true },
+      { title: "HTML/CSS/JS 커스터마이징", bold: false },
+      { title: "3회 수정", bold: true },
+      { title: "1개월 무료 유지보수(텍스트/이미지 수정)", bold: false },
+      { title: "파비콘 제작", bold: false },
+    ],
+  },
+  {
+    name: "노코드 Premium",
+    subtitle: "예약, 결제 맞춤 기능",
+    description: "호텔 예약, 결제 연동 등이 필요한 사이트에 적합한 솔루션입니다. 메인 1페이지와 서브 8페이지까지 커스터마이즈 할 수 있습니다.",
+    features: [
+      { title: "브랜드 맞춤 기획 & 카피라이팅 & 맞춤 디자인", bold: false },
+      { title: "커스텀 반응형 + 고급 인터랙션/애니메이션", bold: false },
+      { title: "SNS/외부 플랫폼 연동", bold: true },
+      { title: "맞춤형 기능 개발(예약, 결제 등)", bold: true },
+      { title: "고급 SEO 최적화", bold: false },
+      { title: "HTML/CSS/JS 커스터마이징", bold: false },
+      { title: "5회 수정", bold: true },
+      { title: "2개월 무료 유지보수(텍스트/이미지 수정)", bold: false },
+      { title: "이미지, 파비콘 제작", bold: false },
+    ],
+  },
+  {
+    name: "코드",
+    subtitle: "완전 맞춤형 개발",
+    description: "기능과 확장성이 필요한 프로젝트에 적합한 솔루션입니다. 전문적인 웹 또는 앱이 필요한 경우 적합합니다.",
+    features: [
+      { title: "완전 맞춤형 개발", bold: true },
+      { title: "복잡한 기능 구현", bold: true },
+      { title: "확장성과 성능 최적화", bold: false },
+      { title: "데이터베이스 설계 및 구축", bold: false },
+      { title: "API 개발 및 연동", bold: true },
+      { title: "사용자 인증 및 권한 관리", bold: false },
+      { title: "실시간 기능 구현", bold: false },
+      { title: "클라우드 인프라 구축", bold: false },
+    ],
+  },
+];
 
-  const nocodeHiddenRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const subscriptionHiddenRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const shopifyHiddenRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const subscriptionSlideRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const shopifySlideRefs = useRef<(HTMLDivElement | null)[]>([]);
+interface PlanCardProps {
+  plan: Plan;
+  showButton?: boolean;
+  buttonText?: string;
+}
 
-  const nextSlide = (dataLength: number) => {
-    setCurrentSlide((prev) => (prev + 1) % dataLength);
-  };
-
-  const prevSlide = (dataLength: number) => {
-    setCurrentSlide((prev) => (prev - 1 + dataLength) % dataLength);
-  };
-
-  useEffect(() => {
-    const measureAllHeights = () => {
-      if (activeTab === "subscription") {
-        const heights: number[] = [];
-        subscriptionHiddenRefs.current.forEach((ref, index) => {
-          if (ref) {
-            const height = ref.scrollHeight;
-            heights[index] = height;
-          }
-        });
-        setSubscriptionHeights(heights);
-        setCarouselHeight(heights[currentSlide] || null);
-      } else if (activeTab === "shopify") {
-        const heights: number[] = [];
-        shopifyHiddenRefs.current.forEach((ref, index) => {
-          if (ref) {
-            const height = ref.scrollHeight;
-            heights[index] = height;
-          }
-        });
-        setShopifyHeights(heights);
-        setCarouselHeight(heights[currentSlide] || null);
-      } else if (activeTab === "outsourcing") {
-        const heights: number[] = [];
-        nocodeHiddenRefs.current.forEach((ref, index) => {
-          if (ref) {
-            const height = ref.scrollHeight;
-            heights[index] = height;
-          }
-        });
-        setSubscriptionHeights(heights);
-        setCarouselHeight(heights[currentSlide] || null);
-      }
-    };
-
-    const timer = setTimeout(measureAllHeights, 100);
-    return () => clearTimeout(timer);
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (activeTab === "subscription" && subscriptionHeights.length > 0) {
-      setCarouselHeight(subscriptionHeights[currentSlide]);
-    } else if (activeTab === "shopify" && shopifyHeights.length > 0) {
-      setCarouselHeight(shopifyHeights[currentSlide]);
-    } else if (activeTab === "outsourcing" && subscriptionHeights.length > 0) {
-      setCarouselHeight(subscriptionHeights[currentSlide]);
-    }
-  }, [currentSlide, activeTab, subscriptionHeights, shopifyHeights]);
-
+function PlanCard({ plan, showButton = true, buttonText = "문의하기" }: PlanCardProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 pt-32 md:pt-64">
-      <div className="fixed -top-[9999px] left-0 w-full opacity-0 pointer-events-none">
-        <div className="w-full px-4">
-          {subscriptionPlans.map((plan, index) => (
-            <div
-              key={`subscription-hidden-${index}`}
-              ref={(el) => {
-                subscriptionHiddenRefs.current[index] = el;
-              }}
-              className="w-full"
-            >
-              <div className="mb-6">
-                <h4 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h4>
-                <p className="text-gray-600 text-sm mb-4">VAT 별도</p>
-                <p className="text-gray-700 font-medium mb-4">{plan.description}</p>
-              </div>
-              <div className="space-y-3">
-                {plan.features.map((feature, idx) => (
-                  <div key={idx} className="text-gray-600 flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>{feature.title}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+    <div>
+      <div className="mb-6">
+        <div className="h-16">
+          <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
+          <p className="text-gray-500 text-sm font-medium">{plan.subtitle}</p>
         </div>
+        {plan.price !== undefined ? (
+          <p className="text-gray-600 text-xl font-bold mb-4">
+            {plan.price}만 원 <span className="text-sm">VAT 별도</span>
+          </p>
+        ) : (
+          <p className="text-gray-600 text-xl font-bold mb-4">별도 문의</p>
+        )}
 
-        <div className="w-full">
-          {shopifyPlans.map((plan, index) => (
-            <div
-              key={`shopify-hidden-${index}`}
-              ref={(el) => {
-                shopifyHiddenRefs.current[index] = el;
-              }}
-              className="w-full"
-            >
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
-                <p className="text-gray-500 text-sm font-medium">{plan.subtitle}</p>
-                <p className="text-gray-600 text-sm mt-3 leading-relaxed">{plan.description}</p>
-              </div>
-              <div className="space-y-3">
-                {plan.features.map((feature, idx) => (
-                  <div key={idx} className="text-gray-600 flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <span className={cn("text-sm", feature.bold ? "font-extrabold" : "")}>{feature.title}</span>
-                  </div>
-                ))}
-              </div>
+        {showButton && (
+          <Button className="w-full mb-4 bg-white" variant="outline">
+            {buttonText}
+          </Button>
+        )}
+        <div className="h-22">
+          <p className="text-gray-600 text-sm mt-2 leading-relaxed">{plan.description}</p>
+        </div>
+      </div>
+      <div className="space-y-1.5">
+        {plan.features.map((feature, idx) => (
+          <div key={idx} className="text-gray-600 flex items-start gap-2">
+            <div className="w-1 h-1 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+            <span className={cn("text-sm", feature.bold ? "font-extrabold" : "")}>{feature.title}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+interface PlanSectionProps {
+  plans: Plan[];
+  currentSlide: number;
+  setCurrentSlide: (slide: number) => void;
+  nextSlide: () => void;
+  prevSlide: () => void;
+  carouselHeight: number | null;
+  hiddenRefs: React.RefObject<(HTMLDivElement | null)[]>;
+  slideRefs: React.RefObject<(HTMLDivElement | null)[]>;
+  buttonText?: string;
+}
+
+function PlanSection({
+  plans,
+  currentSlide,
+  setCurrentSlide,
+  nextSlide,
+  prevSlide,
+  carouselHeight,
+  hiddenRefs,
+  slideRefs,
+  buttonText = "문의하기",
+}: PlanSectionProps) {
+  return (
+    <div className="px-4 md:px-0">
+      {/* Desktop Grid */}
+      <div className="hidden lg:block bg-zinc-100 rounded-xl">
+        <div className="grid grid-cols-4 divide-x-3 divide-background">
+          {plans.map((plan, index) => (
+            <div className="p-6 hover:bg-zinc-50 transition-colors duration-300">
+              <PlanCard key={index} plan={plan} buttonText={buttonText} />
             </div>
           ))}
         </div>
       </div>
 
+      {/* Mobile Carousel */}
+      <div className="lg:hidden">
+        <div className="relative">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex space-x-3">
+              {plans.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-2 h-2 rounded-full transition-colors ${currentSlide === index ? "bg-gray-800" : "bg-gray-300"}`}
+                />
+              ))}
+            </div>
+
+            <div className="flex space-x-2">
+              <button onClick={prevSlide} className="bg-black/5 hover:bg-gray-200 rounded-full p-3 transition-colors">
+                <ChevronLeft className="w-5 h-5 text-gray-700" />
+              </button>
+              <button onClick={nextSlide} className="bg-black/5 hover:bg-gray-200 rounded-full p-3 transition-colors">
+                <ChevronRight className="w-5 h-5 text-gray-700" />
+              </button>
+            </div>
+          </div>
+
+          <div
+            className="overflow-hidden transition-all duration-300 ease-in-out"
+            style={{
+              height: carouselHeight ? `${carouselHeight}px` : "auto",
+            }}
+          >
+            <div className="flex transition-transform duration-300 ease-in-out" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+              {plans.map((plan, index) => (
+                <div
+                  key={index}
+                  className="w-full flex-shrink-0"
+                  ref={(el) => {
+                    slideRefs.current[index] = el;
+                  }}
+                >
+                  <PlanCard plan={plan} showButton={false} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Hidden elements for height measurement */}
+      <div className="fixed -top-[9999px] left-0 w-full opacity-0 pointer-events-none">
+        <div className="w-full px-4">
+          {plans.map((plan, index) => (
+            <div
+              key={`hidden-${index}`}
+              ref={(el) => {
+                hiddenRefs.current[index] = el;
+              }}
+              className="w-full"
+            >
+              <PlanCard plan={plan} showButton={false} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function Solutions() {
+  const [activeTab, setActiveTab] = useState("outsourcing");
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [carouselHeight, setCarouselHeight] = useState<number | null>(null);
+  const [heights, setHeights] = useState<number[]>([]);
+
+  const hiddenRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const getCurrentPlans = () => {
+    switch (activeTab) {
+      case "subscription":
+        return subscriptionPlans;
+      case "shopify":
+        return shopifyPlans;
+      case "outsourcing":
+        return outsourcingPlans;
+      default:
+        return outsourcingPlans;
+    }
+  };
+
+  const nextSlide = () => {
+    const plans = getCurrentPlans();
+    setCurrentSlide((prev) => (prev + 1) % plans.length);
+  };
+
+  const prevSlide = () => {
+    const plans = getCurrentPlans();
+    setCurrentSlide((prev) => (prev - 1 + plans.length) % plans.length);
+  };
+
+  useEffect(() => {
+    const measureHeights = () => {
+      const newHeights: number[] = [];
+      hiddenRefs.current.forEach((ref, index) => {
+        if (ref) {
+          newHeights[index] = ref.scrollHeight;
+        }
+      });
+      setHeights(newHeights);
+      setCarouselHeight(newHeights[currentSlide] || null);
+    };
+
+    const timer = setTimeout(measureHeights, 100);
+    return () => clearTimeout(timer);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (heights.length > 0) {
+      setCarouselHeight(heights[currentSlide]);
+    }
+  }, [currentSlide, heights]);
+
+  const currentPlans = getCurrentPlans();
+  const getButtonText = () => {
+    switch (activeTab) {
+      case "subscription":
+        return "구독 결제하기";
+      default:
+        return "문의하기";
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-12 pt-32 md:pt-64">
       <div className="col-span-full md:col-span-10 md:col-start-2 lg:col-span-8 lg:col-start-3 py-12">
         <div className="flex items-center justify-between mb-56 px-4 md:px-0">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900">솔루션</h1>
@@ -295,7 +457,6 @@ export function Solutions() {
               <Link href="/service/dashboard">AI 견적 받아보기</Link>
             </Button>
             <Button className="h-[46px] md:h-[48px] lg:h-[60px] text-base md:text-base lg:text-lg font-bold px-6 md:px-6 lg:px-6" asChild>
-              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a href="/#inquery">문의하기</a>
             </Button>
           </div>
@@ -327,230 +488,17 @@ export function Solutions() {
           </div>
         </div>
 
-        {activeTab === "outsourcing" && (
-          <div className="px-4 md:px-0">
-            <div className="bg-zinc-100 rounded-xl p-12 text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-8">코드 & 노코드 개발 지원</div>
-              <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                우리는 코드와 노코드 개발을 모두 지원합니다. 프로젝트의 특성과 요구사항에 맞는 최적의 솔루션을 제공합니다.
-              </p>
-              <div className="grid md:grid-cols-2 gap-8 mt-8">
-                <div className="text-left">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">코드 개발</h3>
-                  <ul className="space-y-2 text-gray-600">
-                    <li className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>완전 맞춤형 개발</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>복잡한 기능 구현</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>확장성과 성능 최적화</span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="text-left">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">노코드 개발</h3>
-                  <ul className="space-y-2 text-gray-600">
-                    <li className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>빠른 프로토타입 개발</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>비용 효율적인 솔루션</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>쉬운 유지보수</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "subscription" && (
-          <div className="px-4 md:px-0">
-            <div className="hidden lg:block bg-zinc-100 rounded-xl">
-              <div className="grid grid-cols-4 divide-x-3 divide-background">
-                {subscriptionPlans.map((plan, index) => (
-                  <div key={index} className="p-6">
-                    <div className="mb-6">
-                      <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
-                      <p className="text-gray-500 text-sm font-medium mb-4">{plan.subtitle}</p>
-                      <Button className="w-full mb-4 bg-white" variant="outline">
-                        문의하기
-                      </Button>
-                      <p className="text-gray-600 text-sm mt-3 leading-relaxed">{plan.description}</p>
-                    </div>
-                    <div className="space-y-1.5">
-                      {plan.features.map((feature, idx) => (
-                        <div key={idx} className="text-gray-600 flex items-start gap-2">
-                          <div className="w-1 h-1 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className={cn("text-sm", feature.bold ? "font-extrabold" : "")}>{feature.title}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="lg:hidden">
-              <div className="relative">
-                <div className="flex items-center justify-between mt-8">
-                  <div className="flex space-x-3">
-                    {subscriptionPlans.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentSlide(index)}
-                        className={`w-2 h-2 rounded-full transition-colors ${currentSlide === index ? "bg-gray-800" : "bg-gray-300"}`}
-                      />
-                    ))}
-                  </div>
-
-                  <div className="flex space-x-2">
-                    <button onClick={() => prevSlide(subscriptionPlans.length)} className="bg-gray-100 hover:bg-gray-200 rounded-full p-3 transition-colors">
-                      <ChevronLeft className="w-5 h-5 text-gray-700" />
-                    </button>
-                    <button onClick={() => nextSlide(subscriptionPlans.length)} className="bg-gray-100 hover:bg-gray-200 rounded-full p-3 transition-colors">
-                      <ChevronRight className="w-5 h-5 text-gray-700" />
-                    </button>
-                  </div>
-                </div>
-
-                <div
-                  className="overflow-hidden transition-all duration-300 ease-in-out"
-                  style={{
-                    height: carouselHeight ? `${carouselHeight}px` : "auto",
-                  }}
-                >
-                  <div className="flex transition-transform duration-300 ease-in-out" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-                    {subscriptionPlans.map((plan, index) => (
-                      <div
-                        key={index}
-                        className="w-full flex-shrink-0 px-4"
-                        ref={(el) => {
-                          subscriptionSlideRefs.current[index] = el;
-                        }}
-                      >
-                        <div className="mb-6">
-                          <h4 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h4>
-                          <p className="text-gray-600 text-sm mb-4">VAT 별도</p>
-                          <Button className="w-full mb-4 bg-transparent" variant="outline">
-                            구독 결제하기
-                          </Button>
-                          <p className="text-gray-700 font-medium mb-4">이런 분들에게 추천해요!</p>
-                          <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
-                        </div>
-                        <div className="space-y-3">
-                          {plan.features.map((feature, idx) => (
-                            <div key={idx} className="text-gray-600 flex items-start gap-2">
-                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                              <span>{feature.title}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "shopify" && (
-          <div>
-            <div className="hidden lg:block bg-zinc-100 rounded-xl">
-              <div className="grid grid-cols-4 divide-x-3 divide-background">
-                {shopifyPlans.map((plan, index) => (
-                  <div key={index} className="p-6 hover:bg-zinc-50 transition-colors duration-300">
-                    <div className="mb-6">
-                      <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
-                      <p className="text-gray-500 text-sm font-medium mb-4">{plan.subtitle}</p>
-                      <Button className="w-full mb-4 bg-white" variant="outline">
-                        문의하기
-                      </Button>
-                      <p className="text-gray-600 text-sm mt-3 leading-relaxed">{plan.description}</p>
-                    </div>
-                    <div className="space-y-1.5">
-                      {plan.features.map((feature, idx) => (
-                        <div key={idx} className="text-gray-600 flex items-start gap-2">
-                          <div className="w-1 h-1 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className={cn("text-sm", feature.bold ? "font-extrabold" : "")}>{feature.title}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="lg:hidden px-4 md:px-0">
-              <div className="relative">
-                <div className="flex items-center justify-between mb-8">
-                  <div className="flex space-x-3">
-                    {shopifyPlans.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentSlide(index)}
-                        className={`w-2 h-2 rounded-full transition-colors ${currentSlide === index ? "bg-gray-800" : "bg-gray-300"}`}
-                      />
-                    ))}
-                  </div>
-
-                  <div className="flex space-x-2">
-                    <button onClick={() => prevSlide(shopifyPlans.length)} className="bg-black/5 hover:bg-gray-200 rounded-full p-3 transition-colors">
-                      <ChevronLeft className="w-5 h-5 text-gray-700" />
-                    </button>
-                    <button onClick={() => nextSlide(shopifyPlans.length)} className="bg-black/5 hover:bg-gray-200 rounded-full p-3 transition-colors">
-                      <ChevronRight className="w-5 h-5 text-gray-700" />
-                    </button>
-                  </div>
-                </div>
-
-                <div
-                  className="overflow-hidden transition-all duration-300 ease-in-out"
-                  style={{
-                    height: carouselHeight ? `${carouselHeight}px` : "auto",
-                  }}
-                >
-                  <div className="flex transition-transform duration-300 ease-in-out" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-                    {shopifyPlans.map((plan, index) => (
-                      <div
-                        key={index}
-                        className="w-full flex-shrink-0"
-                        ref={(el) => {
-                          shopifySlideRefs.current[index] = el;
-                        }}
-                      >
-                        <div className="mb-6">
-                          <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
-                          <p className="text-gray-500 text-sm font-medium">{plan.subtitle}</p>
-                          <p className="text-gray-600 text-sm mt-3 leading-relaxed">{plan.description}</p>
-                        </div>
-                        <div className="space-y-3">
-                          {plan.features.map((feature, idx) => (
-                            <div key={idx} className="text-gray-600 flex items-start gap-2">
-                              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                              <span className={cn("text-sm", feature.bold ? "font-extrabold" : "")}>{feature.title}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <PlanSection
+          plans={currentPlans}
+          currentSlide={currentSlide}
+          setCurrentSlide={setCurrentSlide}
+          nextSlide={nextSlide}
+          prevSlide={prevSlide}
+          carouselHeight={carouselHeight}
+          hiddenRefs={hiddenRefs}
+          slideRefs={slideRefs}
+          buttonText={getButtonText()}
+        />
 
         <div className="mt-20 px-4 md:px-0">
           <h2 className="text-3xl font-bold mb-12 text-center text-gray-900">자주 묻는 질문</h2>
@@ -594,7 +542,6 @@ export function Solutions() {
               <Link href="/service/dashboard">AI 견적 받아보기</Link>
             </Button>
             <Button className="h-[60px] md:h-[48px] lg:h-[60px] w-full md:w-fit text-lg md:text-base lg:text-lg font-bold px-3 md:px-4 lg:px-6" asChild>
-              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a href="/#inquery">문의하기</a>
             </Button>
           </div>
