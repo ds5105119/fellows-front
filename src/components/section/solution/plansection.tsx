@@ -123,7 +123,7 @@ export default function PlanSection({
           <div
             className="overflow-hidden transition-all duration-300 ease-in-out"
             style={{
-              height: carouselHeight ? `${carouselHeight}px` : "auto",
+              height: carouselHeight ? `${carouselHeight + 20}px` : "auto", // Added 40px padding for safety
             }}
           >
             <div className="flex transition-transform duration-300 ease-in-out" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
@@ -137,7 +137,7 @@ export default function PlanSection({
                     }
                   }}
                 >
-                  <div className="rounded-2xl bg-zinc-100 p-6">
+                  <div className="rounded-2xl bg-zinc-100 p-6 pb-8">
                     <PlanCard plan={plan} onButtonClick={onButtonClick} />
                   </div>
                 </div>
@@ -148,7 +148,7 @@ export default function PlanSection({
       </div>
 
       {/* Hidden elements for height measurement */}
-      <div className="fixed -top-[9999px] left-0 w-full opacity-0 pointer-events-none">
+      <div className="fixed -top-[9999px] left-0 opacity-0 pointer-events-none" style={{ width: "100vw" }}>
         <div className="w-full px-4">
           {plans.map((plan, index) => (
             <div
@@ -160,7 +160,7 @@ export default function PlanSection({
               }}
               className="w-full"
             >
-              <div className="p-6">
+              <div className="rounded-2xl bg-zinc-100 p-6 pb-8">
                 <PlanCard plan={plan} onButtonClick={onButtonClick} />
               </div>
             </div>
