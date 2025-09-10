@@ -21,10 +21,10 @@ const shopifyPlans = [
       { title: "반응형 디자인", bold: false },
       { title: "스토어 테마 제공", bold: false },
       { title: "스토어 기본 세팅", bold: false },
-      { title: "상품수 20개 이하 등록지원", bold: false },
+      { title: "상품수 20개 이하 등록지원", bold: true },
       { title: "상품진열 및 가이드 개발", bold: false },
       { title: "검색 엔진 최적화", bold: false },
-      { title: "글로벌 결제 모듈(페이팔) 세팅 지원", bold: false },
+      { title: "글로벌 결제모듈(페이팔) 세팅 지원", bold: true },
       { title: "구글 애널리틱스, 페이스북 픽셀 탑재", bold: false },
       { title: "다국어 운영 앱 세팅 지원", bold: false },
       { title: "쇼피파이 운영 교육", bold: false },
@@ -39,10 +39,10 @@ const shopifyPlans = [
       { title: "스토어 테마 제공", bold: false },
       { title: "스토어 기본 세팅", bold: false },
       { title: "상품 리스트, 상품 상세 제한적 테마커스텀", bold: true },
-      { title: "상품수 40개 이하 등록 지원", bold: false },
+      { title: "상품수 40개 이하 등록 지원", bold: true },
       { title: "상품 진열 및 가이드 제안", bold: false },
       { title: "검색 엔진 최적화", bold: false },
-      { title: "글로벌 결제 모듈(페이팔) 세팅 지원", bold: false },
+      { title: "글로벌 결제모듈(페이팔) 세팅 지원", bold: true },
       { title: "구글 애널리틱스, 페이스북 픽셀 탑재", bold: false },
       { title: "다국어 운영 앱 세팅 지원", bold: false },
       { title: "리뷰앱 세팅 지원", bold: false },
@@ -59,10 +59,10 @@ const shopifyPlans = [
       { title: "스토어 테마 제공", bold: false },
       { title: "스토어 기본 세팅", bold: false },
       { title: "테마 기반 제한적 테마커스텀", bold: true },
-      { title: "상품수 100개 이하 등록 지원", bold: false },
+      { title: "상품수 100개 이하 등록 지원", bold: true },
       { title: "상품 진열 및 가이드 제안", bold: false },
       { title: "검색 엔진 최적화", bold: false },
-      { title: "글로벌 결제 모듈(페이팔)/PG 세팅 지원", bold: false },
+      { title: "글로벌 결제모듈(페이팔)/PG세팅 지원", bold: true },
       { title: "구글 애널리틱스, 페이스북 픽셀 탑재", bold: false },
       { title: "다국어 운영 앱 세팅", bold: false },
       { title: "리뷰앱 세팅", bold: false },
@@ -76,17 +76,16 @@ const shopifyPlans = [
   {
     name: "Brand Master",
     subtitle: "풀커스텀",
-    description:
-      "브랜딩에 따른 기능 개발은 물론 서드파티 앱들과 테마의 유기적인 UX/UI 통합을 지원합니다. 오픈 이후 1개월까지 운영에 따른 개발 지원 서비스를 제공합니다.",
+    description: "브랜딩에 따른 기능 개발은 물론 서드파티 앱들과 테마의 유기적인 UX/UI 통합을 지원합니다. 개발 지원 서비스를 제공합니다.",
     features: [
       { title: "반응형 디자인", bold: false },
       { title: "스토어 테마 제공", bold: false },
       { title: "스토어 기본 세팅", bold: false },
       { title: "테마 풀커스텀", bold: true },
-      { title: "상품수 협의 등록 지원", bold: false },
+      { title: "상품수 협의 등록 지원", bold: true },
       { title: "상품 진열 및 가이드 제안", bold: false },
       { title: "검색 엔진 최적화", bold: false },
-      { title: "글로벌 결제 모듈(페이팔)/PG 세팅 지원", bold: false },
+      { title: "글로벌 결제모듈(페이팔)/PG세팅 지원", bold: true },
       { title: "구글 애널리틱스, 페이스북 픽셀 탑재", bold: false },
       { title: "다국어 운영 앱 세팅", bold: false },
       { title: "리뷰앱 세팅", bold: false },
@@ -95,62 +94,64 @@ const shopifyPlans = [
       { title: "쇼피파이 운영 교육", bold: false },
       { title: "마케팅 컨설팅 및 마케팅 운영 지원", bold: false },
       { title: "구글 쇼핑 연동 지원", bold: false },
-      { title: "오픈 이후 1개월 기술컨설팅", bold: false },
     ],
   },
 ];
 
 const subscriptionPlans = [
   {
-    name: "FREE",
-    price: "0",
-    unit: "만원",
-    period: "/월",
-    description: "신규 사업을 준비하는 팀",
-    features: ["실시간 소통 채널 운영", "정기 비지니스 멘토링 제공(월 1회)", "사업 계획서 기술 검토"],
-  },
-  {
-    name: "BASIC",
-    price: "75",
-    unit: "만원",
-    period: "/월",
-    description: "MVP 서비스 운영 유지보수가 필요한 팀",
+    name: "Free",
+    subtitle: "사업 초기",
+    description: "사업 초기 무료 혜택으로 Fellows의 기술 제휴를 받아볼 수 있습니다.",
     features: [
-      "실시간 소통 채널 운영",
-      "서버 운영 및 관리(유지보수)",
-      "월간 운용보고서 제공",
-      "정기 비지니스 멘토링 제공(격주 1회)",
-      "분야별 전담팀 배정 (개발자)",
+      { title: "정기 비지니스 멘토링 제공(월 1회)", bold: false },
+      { title: "사업 계획서 기술 검토", bold: false },
     ],
   },
   {
-    name: "BUSINESS",
-    price: "420",
-    unit: "만원",
-    period: "/월",
-    description: "서비스 운영에 개발 인력이 필요한 팀",
+    name: "Basic",
+    subtitle: "유지보수",
+    description: "개발 이후 Fellows에서 유지보수만 필요한 경우 합리적인 가격으로 지속적인 지원을 받을 수 있습니다.",
     features: [
-      "실시간 소통 채널 운영",
-      "서버 운영 및 관리(유지보수)",
-      "월간 운용보고서 제공",
-      "추가 기능 개발",
-      "정기 비지니스 멘토링 제공(격주 1회)",
-      "분야별 전담팀 배정 (기획, 디자이너, 개발자)",
+      { title: "실시간 소통 채널 운영", bold: false },
+      { title: "Fellows SaaS를 통한 WBS를 통한 개발 상황 추적", bold: false },
+      { title: "Fellows SaaS를 통한 일별 월별 보고서 생성 가능", bold: false },
+      { title: "서버 운영 및 관리(유지보수)", bold: true },
+      { title: "24시간 이내 SW 1차 장애 대응 진행", bold: true },
+      { title: "분야별 전담팀 배정 (개발자)", bold: false },
+      { title: "월 16시간 개발 크레딧 제공", bold: true },
     ],
   },
   {
-    name: "ENTERPRISE",
-    price: "1,000",
-    unit: "만원",
-    period: "/월",
-    description: "사업개발에 주도적인 개발팀이 필요한 기업",
+    name: "Business",
+    subtitle: "개발 인력이 필요한 팀",
+    description: "구독형 개발로 Fellows에서 안정적으로 유지관리를 하는 동시에 새로운 개발 비용을 절감할 수 있습니다.",
     features: [
-      "실시간 소통 채널 운영",
-      "서버 운영 및 관리(유지보수)",
-      "월간 운용보고서 제공",
-      "추가 기능 개발",
-      "정기 비지니스 멘토링 제공(격주 1회)",
-      "분야별 전담팀 배정 (기획, 디자이너, 개발자 2명, 마케터)",
+      { title: "실시간 소통 채널 운영", bold: false },
+      { title: "Fellows SaaS를 통한 WBS를 통한 개발 상황 추적", bold: false },
+      { title: "Fellows SaaS를 통한 일별 월별 보고서 생성 가능", bold: false },
+      { title: "Fellows SaaS를 통한 프로젝트 모니터링", bold: false },
+      { title: "서버 운영 및 관리(유지보수)", bold: true },
+      { title: "24시간 이내 SW 1차 장애 대응 진행", bold: true },
+      { title: "분야별 전담팀 배정 (개발자, 기획, 디자인)", bold: false },
+      { title: "Fellows Project Manager 1명", bold: true },
+      { title: "월 100시간 개발 크레딧 제공", bold: true },
+    ],
+  },
+  {
+    name: "Enterprise",
+    subtitle: "주도적인 개발팀이 필요한 기업",
+    description: "주도적인 개발팀이 필요한 경우, 스프린트 단위로 지속적인 개발이 필요한 경우, 인하우스와 같이 긴밀하게 협업할 개발팀이 필요한 경우 적합합니다.",
+    features: [
+      { title: "실시간 소통 채널 운영", bold: false },
+      { title: "Fellows SaaS를 통한 WBS를 통한 개발 상황 추적", bold: false },
+      { title: "Fellows SaaS를 통한 일별 월별 보고서 생성 가능", bold: false },
+      { title: "Fellows SaaS를 통한 프로젝트 모니터링", bold: false },
+      { title: "서버 운영 및 관리(유지보수)", bold: true },
+      { title: "24시간 이내 SW 1차 장애 대응 진행", bold: true },
+      { title: "분야별 전담팀 배정 (개발자, 기획, 디자인)", bold: false },
+      { title: "Fellows Project Manager 1명", bold: true },
+      { title: "협의 개발 크레딧 제공", bold: true },
     ],
   },
 ];
@@ -239,11 +240,6 @@ export function Solutions() {
             >
               <div className="mb-6">
                 <h4 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h4>
-                <div className="flex items-baseline gap-1 mb-2">
-                  <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                  <span className="text-lg text-gray-600">{plan.unit}</span>
-                  <span className="text-lg text-gray-600">{plan.period}</span>
-                </div>
                 <p className="text-gray-600 text-sm mb-4">VAT 별도</p>
                 <p className="text-gray-700 font-medium mb-4">{plan.description}</p>
               </div>
@@ -251,7 +247,7 @@ export function Solutions() {
                 {plan.features.map((feature, idx) => (
                   <div key={idx} className="text-gray-600 flex items-start gap-2">
                     <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <span>{feature}</span>
+                    <span>{feature.title}</span>
                   </div>
                 ))}
               </div>
@@ -385,24 +381,18 @@ export function Solutions() {
                 {subscriptionPlans.map((plan, index) => (
                   <div key={index} className="p-6">
                     <div className="mb-6">
-                      <h4 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h4>
-                      <div className="flex items-baseline gap-1 mb-2">
-                        <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                        <span className="text-lg text-gray-600">{plan.unit}</span>
-                        <span className="text-lg text-gray-600">{plan.period}</span>
-                      </div>
-                      <p className="text-gray-600 text-sm mb-4">VAT 별도</p>
-                      <Button className="w-full mb-4 bg-transparent" variant="outline">
-                        구독 결제하기
+                      <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
+                      <p className="text-gray-500 text-sm font-medium mb-4">{plan.subtitle}</p>
+                      <Button className="w-full mb-4 bg-white" variant="outline">
+                        문의하기
                       </Button>
-                      <p className="text-gray-700 font-medium mb-4">이런 분들에게 추천해요!</p>
-                      <p className="text-gray-600 text-sm">{plan.description}</p>
+                      <p className="text-gray-600 text-sm mt-3 leading-relaxed">{plan.description}</p>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-1.5">
                       {plan.features.map((feature, idx) => (
                         <div key={idx} className="text-gray-600 flex items-start gap-2">
-                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span>{feature}</span>
+                          <div className="w-1 h-1 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <span className={cn("text-sm", feature.bold ? "font-extrabold" : "")}>{feature.title}</span>
                         </div>
                       ))}
                     </div>
@@ -451,11 +441,6 @@ export function Solutions() {
                       >
                         <div className="mb-6">
                           <h4 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h4>
-                          <div className="flex items-baseline gap-1 mb-2">
-                            <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                            <span className="text-lg text-gray-600">{plan.unit}</span>
-                            <span className="text-lg text-gray-600">{plan.period}</span>
-                          </div>
                           <p className="text-gray-600 text-sm mb-4">VAT 별도</p>
                           <Button className="w-full mb-4 bg-transparent" variant="outline">
                             구독 결제하기
@@ -467,7 +452,7 @@ export function Solutions() {
                           {plan.features.map((feature, idx) => (
                             <div key={idx} className="text-gray-600 flex items-start gap-2">
                               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                              <span>{feature}</span>
+                              <span>{feature.title}</span>
                             </div>
                           ))}
                         </div>
@@ -485,7 +470,7 @@ export function Solutions() {
             <div className="hidden lg:block bg-zinc-100 rounded-xl">
               <div className="grid grid-cols-4 divide-x-3 divide-background">
                 {shopifyPlans.map((plan, index) => (
-                  <div key={index} className="p-6">
+                  <div key={index} className="p-6 hover:bg-zinc-50 transition-colors duration-300">
                     <div className="mb-6">
                       <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
                       <p className="text-gray-500 text-sm font-medium mb-4">{plan.subtitle}</p>
