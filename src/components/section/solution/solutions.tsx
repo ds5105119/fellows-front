@@ -3,6 +3,7 @@
 import type React from "react";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -304,8 +305,8 @@ function PlanSection({
       <div className="hidden lg:block bg-zinc-100 rounded-xl">
         <div className="grid grid-cols-4 divide-x-3 divide-background">
           {plans.map((plan, index) => (
-            <div className="p-6 hover:bg-zinc-50 transition-colors duration-300">
-              <PlanCard key={index} plan={plan} buttonText={buttonText} />
+            <div key={index} className="p-6 hover:bg-zinc-50 transition-colors duration-300">
+              <PlanCard plan={plan} buttonText={buttonText} />
             </div>
           ))}
         </div>
@@ -379,6 +380,8 @@ function PlanSection({
 }
 
 export function Solutions() {
+  const router = useRouter();
+
   const [activeTab, setActiveTab] = useState("outsourcing");
   const [currentSlide, setCurrentSlide] = useState(0);
   const [carouselHeight, setCarouselHeight] = useState<number | null>(null);
@@ -456,8 +459,8 @@ export function Solutions() {
             >
               <Link href="/service/dashboard">AI 견적 받아보기</Link>
             </Button>
-            <Button className="h-[46px] md:h-[48px] lg:h-[60px] text-base md:text-base lg:text-lg font-bold px-6 md:px-6 lg:px-6" asChild>
-              <a href="/#inquery">문의하기</a>
+            <Button className="h-[46px] md:h-[48px] lg:h-[60px] text-base md:text-base lg:text-lg font-bold px-6 md:px-6 lg:px-6" onClick={() => router.push("/#inquery")}>
+              문의하기
             </Button>
           </div>
         </div>
@@ -541,8 +544,8 @@ export function Solutions() {
             >
               <Link href="/service/dashboard">AI 견적 받아보기</Link>
             </Button>
-            <Button className="h-[60px] md:h-[48px] lg:h-[60px] w-full md:w-fit text-lg md:text-base lg:text-lg font-bold px-3 md:px-4 lg:px-6" asChild>
-              <a href="/#inquery">문의하기</a>
+            <Button className="h-[60px] md:h-[48px] lg:h-[60px] w-full md:w-fit text-lg md:text-base lg:text-lg font-bold px-3 md:px-4 lg:px-6" onClick={() => router.push("/#inquery")}>
+              문의하기
             </Button>
           </div>
         </div>
