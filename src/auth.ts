@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthConfig } from "next-auth";
 import Keycloak from "next-auth/providers/keycloak";
 import { JWT } from "next-auth/jwt";
 import { jwtDecode } from "jwt-decode";
@@ -120,6 +120,10 @@ export const {
   signOut,
   unstable_update: update,
 } = NextAuth({
+  pages: {
+    error: "/error",
+  },
+
   providers: [
     Keycloak({
       account(account) {
@@ -127,6 +131,7 @@ export const {
       },
     }),
   ],
+
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
