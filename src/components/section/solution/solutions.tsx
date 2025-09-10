@@ -199,7 +199,7 @@ export function Solutions() {
           onButtonClick={onButtonClick}
         />
 
-        <div className="mt-24 md:mt-32 px-4 md:px-0">
+        <div className="mt-20 md:mt-28 px-4 md:px-0">
           <div className="flex items-center space-x-2.5 mb-12 md:mb-16">
             <div className="w-1.5 h-2.5 bg-emerald-400" />
             <h2 className="text-3xl font-bold text-gray-900">자주 묻는 질문</h2>
