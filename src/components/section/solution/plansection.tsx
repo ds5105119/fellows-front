@@ -134,7 +134,7 @@ export default function PlanSection({
                     }
                   }}
                 >
-                  <div className="rounded-2xl bg-zinc-100 p-5">
+                  <div className="rounded-2xl bg-zinc-100 p-6">
                     <PlanCard plan={plan} showButton={false} />
                   </div>
                 </div>
@@ -155,7 +155,7 @@ export default function PlanSection({
                   hiddenRefs.current[index] = el;
                 }
               }}
-              className="w-full rounded-2xl bg-zinc-100 p-5"
+              className="w-full"
             >
               <PlanCard plan={plan} showButton={false} />
             </div>

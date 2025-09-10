@@ -123,7 +123,7 @@ export function Solutions() {
     <div className="grid grid-cols-1 md:grid-cols-12 pt-32 md:pt-64">
       <div className="col-span-full md:col-span-10 md:col-start-2 lg:col-span-8 lg:col-start-3 py-12">
         <div className="flex items-center justify-between px-4 md:px-0">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 flex items-center space-x-4">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 flex items-center space-x-2 md:space-x-4">
             <p>솔루션</p>
             <AnimatedText textClassName="text-4xl md:text-5xl lg:text-6xl" />
           </h1>
