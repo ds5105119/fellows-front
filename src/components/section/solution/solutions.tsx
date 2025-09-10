@@ -9,6 +9,7 @@ import PlanSection from "./plansection";
 import { subscriptionPlans, shopifyPlans, outsourcingPlans, tabs } from "./data";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/motion-primitives/accordion";
 import { ChevronRight } from "lucide-react";
+import { toast } from "sonner";
 
 export function Solutions() {
   const router = useRouter();
@@ -112,10 +113,20 @@ export function Solutions() {
   const currentPlans = getCurrentPlans();
   const getButtonText = () => {
     switch (activeTab) {
-      case "subscription":
-        return "문의하기";
       default:
         return "문의하기";
+    }
+  };
+  const onButtonClick = () => {
+    switch (activeTab) {
+      case "subscription":
+        return router.push("mailto:contact@iihus.com");
+      case "shopify":
+        return router.push("/#inquery");
+      case "outsourcing":
+        return router.push("/#inquery");
+      default:
+        return router.push("/#inquery");
     }
   };
 
@@ -185,6 +196,7 @@ export function Solutions() {
           hiddenRefs={hiddenRefs}
           slideRefs={slideRefs}
           buttonText={getButtonText()}
+          onButtonClick={onButtonClick}
         />
 
         <div className="mt-24 md:mt-32 px-4 md:px-0">
@@ -207,41 +219,107 @@ export function Solutions() {
               },
             }}
           >
-            <AccordionItem value="getting-started" className="py-3">
-              <AccordionTrigger className="w-full pt-0.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+            <AccordionItem value="effort" className="py-3">
+              <AccordionTrigger className="w-full pt-1 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
                 <div className="flex items-center">
                   <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
-                  <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">Fellows에서 개발하면 좋은 점이 무엇인가요?</div>
+                  <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">🤔 Fellows에서 개발하면 좋은 점이 무엇인가요?</div>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="origin-left">
                 <p className="pl-7 md:pl-6 pr-2 text-zinc-500 dark:text-zinc-400 text-base">
-                  Fellows에서는 높은 수준의 말레이시아 및 인도네시아의 인하우스 개발자가 작업에 투입됩니다. 자체적으로 유닛, 단위 테스트를 통해 최종 납품시
-                  메이저 이슈 1% 미만, 마이너 이슈 5% 미만의 기준을 충족시키고 있습니다.
+                  Fellows에서는 최고 수준의 글로벌 인하우스 개발자가 국내 대비 30~40% 저렴한 가격으로 개발에 투입됩니다. 자체적으로 유닛, 단위 테스트를 통해
+                  최종 납품시 메이저 이슈 1% 미만, 마이너 이슈 5% 미만의 기준을 충족시키고 있습니다.
                 </p>
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="animation-properties" className="py-3">
-              <AccordionTrigger className="w-full pt-0.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+              <AccordionTrigger className="w-full pt-1 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
                 <div className="flex items-center">
                   <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
-                  <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">개발은 어떻게 의뢰할 수 있나요?</div>
+                  <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">🖋️ 개발은 어떻게 의뢰할 수 있나요?</div>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="origin-left">
                 <p className="pl-7 md:pl-6 pr-2 text-zinc-500 dark:text-zinc-400 text-base">
-                  프로젝트를 만든 뒤 정보를 적고 전달 버튼을 누르면 매니저가 배치됩니다. 이후 최종 견적을 받아볼 수 있으며, 견적을 수락하면 개발팀이 작업을
-                  시작합니다.
+                  <span className="font-bold">프로젝트 제작</span>
+                  <br />
+                  <span>Fellows SaaS를 통해 프로젝트를 만들고 AI를 통해 페이지에 알맞은 기능을 추천을 받아볼 수 있습니다.</span>
+                  <br />
+                  <br />
+                  <span className="font-bold">기능요구서 제작</span>
+                  <br />
+                  <span>
+                    기획 의도에 맞는 결과물 산출을 위해 기능요구서를 제작하는 편이 좋습니다. 제작한 기능요구서 파일을 Fellows SaaS에 등록한 프로젝트에
+                    첨부해주세요.
+                  </span>
+                  <br />
+                  <br />
+                  <span className="font-bold">견적 의뢰하기</span>
+                  <br />
+                  <span>견적 의뢰하기 버튼을 눌러 견적을 의뢰할 수 있습니다.</span>
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="process" className="py-3">
+              <AccordionTrigger className="w-full pt-1 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+                <div className="flex items-center">
+                  <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
+                  <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">📆 개발 과정이 어떻게 되나요?</div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="origin-left">
+                <p className="pl-7 md:pl-6 pr-2 text-zinc-500 dark:text-zinc-400 text-base">
+                  <span className="font-bold">프로젝트 의뢰</span>
+                  <br />
+                  <span>기능요구서, 별도 첨부 파일 등을 사이트 제작에 필요한 정보를 Fellows SaaS를 통해 전달하고 견적을 의뢰할 수 있습니다.</span>
+                  <br />
+                  <br />
+                  <span className="font-bold">초안 전달 및 피드백</span>
+                  <br />
+                  <span>메인 및 주요 페이지 초안을 전달하고 고객 의견을 충분히 반영해 수정합니다.</span>
+                  <br />
+                  <br />
+                  <span className="font-bold">과업 수행</span>
+                  <br />
+                  <span>Fellows SaaS를 통해 전자계약서를 전달받을 수 있습니다. 결제가 끝나고 난 뒤 최적화된 웹 혹은 앱을 완성합니다.</span>
+                  <br />
+                  <br />
+                  <span className="font-bold">최종 디자인 확정 & 검수</span>
+                  <br />
+                  <span>최종 디자인 및 기능을 검수하며 마지막 피드백을 반영합니다. 1개월간의 무상 기본 유지보수 기간이 제공됩니다.</span>
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="subscription" className="py-3">
+              <AccordionTrigger className="w-full pt-1 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+                <div className="flex items-center">
+                  <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
+                  <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">🚀 개발 이후 유지 보수는 어떻게 진행되나요?</div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="origin-left">
+                <p className="pl-7 md:pl-6 pr-2 text-zinc-500 dark:text-zinc-400 text-base">
+                  <span className="font-bold">기본 유지보수</span>
+                  <br />
+                  <span>프로젝트 종료 후 1달간의 무료 유지보수 기간이 제공됩니다.</span>
+                  <br />
+                  <br />
+                  <span className="font-bold">구독형 유지보수 플랜</span>
+                  <br />
+                  <span>구독형 유지보수 플랜을 선택하여 유지보수 또는 새로운 기능 개발 등이 가능합니다.</span>
                 </p>
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="advanced-features" className="py-3">
-              <AccordionTrigger className="w-full pt-0.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+              <AccordionTrigger className="w-full pt-1 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
                 <div className="flex items-center">
                   <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
-                  <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">AI 견적은 무료인가요?</div>
+                  <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">✨ AI 견적은 무료인가요?</div>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="origin-left">
@@ -252,10 +330,10 @@ export function Solutions() {
             </AccordionItem>
 
             <AccordionItem value="security" className="py-3">
-              <AccordionTrigger className="w-full pt-0.5 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
+              <AccordionTrigger className="w-full pt-1 pb-1.5 md:pb-3 text-left text-zinc-950 dark:text-zinc-50">
                 <div className="flex items-center">
                   <ChevronRight className="size-5 text-zinc-950 transition-transform duration-200 group-data-expanded:rotate-90 dark:text-zinc-50" />
-                  <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">💊 데이터 보안은 잘 이루어져 있나요?</div>
+                  <div className="ml-2 text-zinc-950 dark:text-zinc-50 text-lg md:text-xl font-bold">🔐 데이터 보안은 잘 이루어져 있나요?</div>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="origin-left">

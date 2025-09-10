@@ -18,9 +18,10 @@ interface PlanCardProps {
   plan: Plan;
   showButton?: boolean;
   buttonText?: string;
+  onButtonClick: () => void;
 }
 
-function PlanCard({ plan, showButton = true, buttonText = "문의하기" }: PlanCardProps) {
+function PlanCard({ plan, showButton = true, buttonText = "문의하기", onButtonClick }: PlanCardProps) {
   return (
     <div>
       <div className="mb-6">
@@ -37,7 +38,7 @@ function PlanCard({ plan, showButton = true, buttonText = "문의하기" }: Plan
         )}
 
         {showButton && (
-          <Button className="w-full mb-4 bg-white" variant="outline">
+          <Button className="w-full mb-4 bg-white" variant="outline" onClick={onButtonClick}>
             {buttonText}
           </Button>
         )}
@@ -67,6 +68,7 @@ interface PlanSectionProps {
   hiddenRefs: React.RefObject<(HTMLDivElement | null)[]>;
   slideRefs: React.RefObject<(HTMLDivElement | null)[]>;
   buttonText?: string;
+  onButtonClick: () => void;
 }
 
 export default function PlanSection({
@@ -79,6 +81,7 @@ export default function PlanSection({
   hiddenRefs,
   slideRefs,
   buttonText = "문의하기",
+  onButtonClick,
 }: PlanSectionProps) {
   return (
     <div className="px-4 md:px-0">
@@ -87,7 +90,7 @@ export default function PlanSection({
         <div className="grid grid-cols-4 divide-x-3 divide-background">
           {plans.map((plan, index) => (
             <div key={index} className="p-6 hover:bg-zinc-50 transition-colors duration-300">
-              <PlanCard plan={plan} buttonText={buttonText} />
+              <PlanCard plan={plan} buttonText={buttonText} onButtonClick={onButtonClick} />
             </div>
           ))}
         </div>
@@ -135,7 +138,7 @@ export default function PlanSection({
                   }}
                 >
                   <div className="rounded-2xl bg-zinc-100 p-6">
-                    <PlanCard plan={plan} showButton={false} />
+                    <PlanCard plan={plan} onButtonClick={onButtonClick} />
                   </div>
                 </div>
               ))}
@@ -158,7 +161,7 @@ export default function PlanSection({
               className="w-full"
             >
               <div className="p-6">
-                <PlanCard plan={plan} showButton={false} />
+                <PlanCard plan={plan} onButtonClick={onButtonClick} />
               </div>
             </div>
           ))}
