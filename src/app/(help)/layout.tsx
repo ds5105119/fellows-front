@@ -23,8 +23,8 @@ const satoshi = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "블로그 - Fellows",
-  description: "Fellow Blog에서 보도자료를 읽고, 업데이트를 받고, 영상을 보고, 이미지를 다운로드 받을 수 있습니다.",
+  title: "도움말 - Fellows",
+  description: "Fellow 도움말에서 Fellows와 외주 개발 시 필요한 도움말을 빠르게 확인할 수 있습니다.",
 };
 
 export default async function RootLayout({

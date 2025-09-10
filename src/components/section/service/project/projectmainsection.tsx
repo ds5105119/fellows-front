@@ -123,6 +123,7 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
   const [inputText, setInputText] = useState<string>("");
   const [processCount, setProcessCount] = useState<number>(0);
   const [tabIndex, setTabIndex] = useState<number>(0);
+  const [projectId, setProjectId] = useState(project_id);
 
   const keyword = useThrottle(inputText, 1000);
   const router = useRouter();
@@ -131,7 +132,9 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
   const handleProjectSelect = useCallback(
     (project: UserERPNextProject | null) => {
       if (project) {
-        router.push(`/service/project/${project.project_name}`, { scroll: false });
+        window.history.pushState(null, "", `/service/project/${project.project_name}`);
+        setProjectId(project.project_name);
+        // router.push(`/service/project/${project.project_name}`, { scroll: false });
       }
     },
     [router]
@@ -141,7 +144,9 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
   const handleSheetOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        router.push("/service/project", { scroll: false });
+        window.history.pushState(null, "", "/service/project");
+        setProjectId(undefined);
+        // router.push("/service/project", { scroll: false });
       }
     },
     [router]
@@ -279,12 +284,12 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
       </div>
 
       {/*  Sheet opens immediately without waiting for data */}
-      <Sheet open={!!project_id} onOpenChange={handleSheetOpenChange}>
+      <Sheet open={!!projectId} onOpenChange={handleSheetOpenChange}>
         <SheetContent className="overflow-hidden h-full w-full sm:max-w-full md:w-3/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:outline-none focus:border-none">
           <SheetHeader className="sr-only">
             <SheetTitle>프로젝트 상세</SheetTitle>
           </SheetHeader>
-          {project_id && <ProjectDetailSheet project_id={project_id} onClose={() => handleSheetOpenChange(false)} session={session} />}
+          {projectId && <ProjectDetailSheet project_id={projectId} onClose={() => handleSheetOpenChange(false)} session={session} />}
           <SheetDescription className="sr-only" />
         </SheetContent>
       </Sheet>
