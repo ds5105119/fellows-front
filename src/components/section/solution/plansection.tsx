@@ -31,7 +31,7 @@ function PlanCard({ plan, showButton = true, buttonText = "문의하기", onButt
         </div>
         {plan.price !== undefined ? (
           <p className="text-gray-600 text-xl font-bold mb-4">
-            {plan.price}만 원 <span className="text-sm">VAT 별도</span>
+            {plan.price}만 원{plan.price !== 0 && "~"} <span className="text-sm">{plan.price !== 0 && "VAT 별도"}</span>
           </p>
         ) : (
           <p className="text-gray-600 text-xl font-bold mb-4">별도 문의</p>

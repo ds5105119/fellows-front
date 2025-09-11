@@ -162,7 +162,8 @@ export const subscriptionPlans: Plan[] = [
 export const outsourcingPlans: Plan[] = [
   {
     name: "노코드 Standard",
-    subtitle: "합리적인 맞춤형 패키지",
+    subtitle: "합리적인 개발 패키지",
+    price: 80,
     description: "랜딩 페이지 제작 등에 특화된 솔루션입니다. 빠른 시간 내에 메인 1페이지를 최대 6섹션까지 커스터마이즈 할 수 있습니다.",
     features: [
       { title: "브랜드 맞춤 기획 & 카피라이팅 & 맞춤형 디자인", bold: false },
@@ -170,12 +171,12 @@ export const outsourcingPlans: Plan[] = [
       { title: "기본 SEO설정", bold: false },
       { title: "문의폼 1개 + HTML/CSS 커스터마이징", bold: true },
       { title: "파비콘 제작", bold: false },
-      { title: "2회 수정", bold: true },
     ],
   },
   {
-    name: "노코드 Deluxe",
+    name: "노코드 Premium",
     subtitle: "브랜드 정체성 강화",
+    price: 180,
     description: "간단한 기업 소개 페이지 등에 특화된 솔루션입니다. 메인 1페이지와 서브 4페이지까지 커스터마이즈 할 수 있습니다.",
     features: [
       { title: "브랜드 맞춤 기획 & 카피라이팅 & 맞춤형 디자인", bold: false },
@@ -184,15 +185,13 @@ export const outsourcingPlans: Plan[] = [
       { title: "게시판/문의폼 커스텀", bold: false },
       { title: "SNS연동(인스타그램, 유튜브 등)", bold: true },
       { title: "HTML/CSS/JS 커스터마이징", bold: false },
-      { title: "3회 수정", bold: true },
-      { title: "1개월 무료 유지보수(텍스트/이미지 수정)", bold: false },
       { title: "파비콘 제작", bold: false },
     ],
   },
   {
-    name: "노코드 Premium",
+    name: "노코드 Enterprise",
     subtitle: "예약, 결제 맞춤 기능",
-    description: "호텔 예약, 결제 연동 등이 필요한 사이트에 적합한 솔루션입니다. 메인 1페이지와 서브 8페이지까지 커스터마이즈 할 수 있습니다.",
+    description: "호텔 예약, 결제 연동 등이 필요한 사이트에 적합한 솔루션입니다. 모든 페이지를 커스터마이즈 할 수 있습니다.",
     features: [
       { title: "브랜드 맞춤 기획 & 카피라이팅 & 맞춤 디자인", bold: false },
       { title: "커스텀 반응형 + 고급 인터랙션/애니메이션", bold: false },
@@ -200,8 +199,6 @@ export const outsourcingPlans: Plan[] = [
       { title: "맞춤형 기능 개발(예약, 결제 등)", bold: true },
       { title: "고급 SEO 최적화", bold: false },
       { title: "HTML/CSS/JS 커스터마이징", bold: false },
-      { title: "5회 수정", bold: true },
-      { title: "2개월 무료 유지보수(텍스트/이미지 수정)", bold: false },
       { title: "이미지, 파비콘 제작", bold: false },
     ],
   },
