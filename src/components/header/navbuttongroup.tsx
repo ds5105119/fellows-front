@@ -48,7 +48,7 @@ export default function NavButtonGroup({ session, ...props }: NavButtonGroupProp
             Price
           </Link>
           <Link href="/works" className="hover:opacity-80">
-            Work
+            Works
           </Link>
           <Link href="/blog" target="_blank" rel="noopener noreferrer" className="hover:opacity-80">
             Blog

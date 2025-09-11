@@ -16,7 +16,7 @@ export default function MobileHeader({ session }: { session: Session | null }) {
 
   const navItems = [
     { name: "Price", href: "/price" },
-    { name: "Work", href: "/works" },
+    { name: "Works", href: "/works" },
     { name: "Blog", href: "/blog" },
   ];
 

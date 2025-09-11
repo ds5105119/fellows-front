@@ -1,7 +1,7 @@
 import Image from "next/image";
-import SelectLogo from "../resource/selectlogo";
+import SelectLogo from "@/components/resource/selectlogo";
 import Link from "next/link";
-import HelpDialog from "../section/help/help-dialog";
+import HelpDialog from "@/components/section/help/help-dialog";
 
 export default function Footer() {
   return (

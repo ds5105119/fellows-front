@@ -1,34 +1,45 @@
-"use client";
-
-import LetterSwapPingPong from "@/components/fancy/text/letter-swap-pingpong-anim";
+import Image from "next/image";
 import SelectLogo from "@/components/resource/selectlogo";
+import Link from "next/link";
+import HelpDialog from "@/components/section/help/help-dialog";
 
 export default function Footer() {
   return (
-    <footer className="bg-neutral-50 w-full grid grid-cols-4 md:grid-cols-12 gap-6 relative">
-      <div className="z-10 col-span-full mx-6 my-12 md:mx-0 md:my-20 md:col-span-9 md:col-start-2">
-        <SelectLogo />
+    <footer className="bg-neutral-50 w-full grid grid-cols-4 md:grid-cols-12 gap-6">
+      <div className="z-10 col-span-full mx-6 my-12 md:mx-0 md:my-20 md:col-span-10 md:col-start-2">
+        <div className="w-full flex justify-between items-center">
+          <SelectLogo />
+          <div className="h-5 md:h-8 flex justify-end">
+            <Image src="/shopify partners logo.png" alt="쇼피파이 파트너 로고" width={438} height={74} className="h-full w-auto object-contain grayscale" />
+          </div>
+        </div>
 
         <div className="self-stretch inline-flex justify-start items-start gap-9 mt-4">
           <div className="w-fit inline-flex flex-col justify-start items-start gap-2.5">
-            <LetterSwapPingPong
-              label="Fellows* 정보"
-              staggerFrom={"center"}
-              reverse={false}
-              className="self-stretch justify-start text-black text-sm font-semibold"
-            />
+            <div className="self-stretch justify-start text-black text-sm font-semibold">Fellows* 정보</div>
             <div className="self-stretch flex flex-col justify-start items-start gap-2">
-              <div className="justify-start text-neutral-500 text-sm font-normal">채용 안내</div>
-              <div className="justify-start text-neutral-500 text-sm font-normal">채용 안내</div>
+              <Link href="/" className="justify-start text-neutral-500 text-sm font-normal">
+                홈
+              </Link>
+              <Link href="/price" className="justify-start text-neutral-500 text-sm font-normal">
+                가격
+              </Link>
+              <Link href="/blog" className="justify-start text-neutral-500 text-sm font-normal">
+                블로그
+              </Link>
+              <HelpDialog>
+                <div className="justify-start text-neutral-500 text-sm font-normal cursor-pointer">도움말</div>
+              </HelpDialog>
             </div>
           </div>
 
           <div className="inline-flex flex-col justify-start items-start gap-2.5">
             <div className="self-stretch justify-start text-black text-sm font-semibold">제품</div>
             <div className="self-stretch flex flex-col justify-start items-start gap-2">
-              <div className="justify-start text-neutral-500 text-sm font-normal">에이전시</div>
+              <Link href="/service/dashboard" className="justify-start text-neutral-500 text-sm font-normal">
+                Fellows SaaS
+              </Link>
               <div className="justify-start text-neutral-500 text-sm font-normal">팀 구독</div>
-              <div className="justify-start text-neutral-500 text-sm font-normal">정부지원사업 조회</div>
             </div>
           </div>
         </div>
@@ -65,8 +76,7 @@ export default function Footer() {
           </div>
 
           <div className="self-stretch justify-start text-neutral-500 text-xs md:text-xs font-normal leading-none text-center">
-            IIH | 대표이사: 김동현 | 주소: 서울특별시 강남구 XX대로 000 | 전화: 000-000-0000 | 사업자등록번호: 000-00-00000 | 통신판매업신고번호:
-            제0000-서울강남-00000호
+            IIH | 대표이사: 김동현 | 주소: 서울시 강남구 영동대로 602, 6층 | 사업자등록번호: 000-00-00000 | 통신판매업신고번호: 제0000-서울강남-00000호
           </div>
         </div>
       </div>
