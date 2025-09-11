@@ -15,7 +15,7 @@ export default async function Home() {
     return (
       <>
         <MainHeader />
-        <div className="h-screen">
+        <div className="h-dvh overflow-x-hidden">
           <div className="absolute -inset-1">
             <MeshGradientComponent className="opacity-100" colors={["#ADF6BD", "#0D50BB"]} />
           </div>
@@ -24,7 +24,7 @@ export default async function Home() {
 
           <div className="flex flex-col w-full h-full items-center justify-between py-10 md:py-16">
             <div />
-            <div className="text-xl md:text-2xl text-white font-bold mt-5">Works 페이지는 현재 공사중이에요</div>
+            <div className="text-xl md:text-2xl text-white font-bold md:mt-5">Works 페이지는 현재 공사중이에요</div>
             <div className="text-sm md:text-base text-white font-normal">아무 곳이나 눌러 홈 화면으로 돌아갈 수 있습니다.</div>
           </div>
         </div>
