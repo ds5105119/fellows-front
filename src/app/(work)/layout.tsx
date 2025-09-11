@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import LenisProvider from "@/lib/lenisprovider";
+import GoogleAnalytics from "@/lib/googleanalytics";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import "../globals.css";
-import "lenis/dist/lenis.css";
-import GoogleAnalytics from "@/lib/googleanalytics";
 import { GeistSans } from "geist/font/sans";
-import Navbar from "@/components/section/work/navbar";
 import { cn } from "@/lib/utils";
 import Footer from "@/components/section/work/footer";
+import "../globals.css";
+import "lenis/dist/lenis.css";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
@@ -37,7 +36,6 @@ export default async function RootLayout({
       <body className={cn(pretendard.className, GeistSans.className, " overflow-x-hidden")}>
         <LenisProvider>
           <div className="relative overscroll-none">
-            <Navbar />
             <main className="scrollbar-hide break-keep">{children}</main>
             <Footer />
           </div>
