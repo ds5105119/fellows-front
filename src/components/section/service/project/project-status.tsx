@@ -88,7 +88,7 @@ export function ProjectStatus({
         <h3 className="text-sm font-bold">개발 방식</h3>
         <DropdownMenu open={canEdit ? openMethod : false} onOpenChange={(val) => canEdit && setOpenMethod(val)}>
           <DropdownMenuTrigger>
-            <div className="flex space-x-2 w-44 justify-end">
+            <div className="flex space-x-2 w-fit justify-end">
               <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold select-none">
                 {project.custom_project_method ? PROJECT_METHOD_MAPPING[project.custom_project_method].title : "정해지지 않았어요"}
               </div>
@@ -125,7 +125,7 @@ export function ProjectStatus({
           <h3 className="text-sm font-bold">노코드 플랫폼</h3>
           <DropdownMenu open={canEdit ? openNocode : false} onOpenChange={(val) => canEdit && setOpenNocode(val)}>
             <DropdownMenuTrigger>
-              <div className="flex space-x-2 w-44 justify-end">
+              <div className="flex space-x-2 w-fit justify-end">
                 <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold select-none">
                   {project.custom_nocode_platform ? NOCODE_PLATFORM_MAPPING[project.custom_nocode_platform].title : "정해지지 않았어요"}
                 </div>
@@ -142,11 +142,16 @@ export function ProjectStatus({
                   onSelect={(e) => {
                     e.preventDefault();
                   }}
-                  onCheckedChange={() => {
-                    setEditedProject({
-                      ...project,
-                      custom_nocode_platform: key,
-                    });
+                  onCheckedChange={(checked) => {
+                    checked
+                      ? setEditedProject({
+                          ...project,
+                          custom_nocode_platform: key,
+                        })
+                      : setEditedProject({
+                          ...project,
+                          custom_nocode_platform: undefined,
+                        });
                   }}
                 >
                   {value.title}
@@ -161,12 +166,15 @@ export function ProjectStatus({
         <h3 className="text-sm font-bold">플랫폼</h3>
         <DropdownMenu open={canEdit ? openPlatform : false} onOpenChange={(val) => canEdit && setOpenPlatform(val)}>
           <DropdownMenuTrigger>
-            <div className="flex space-x-2 w-44 justify-end select-none">
+            <div className="flex space-x-2 w-fit justify-end select-none">
               {project.custom_platforms?.map((val, i) => (
                 <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
                   {PLATFORM_MAPPING[val.platform]}
                 </div>
               ))}
+              {(project.custom_platforms === null || project.custom_platforms.length === 0) && (
+                <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">정해지지 않았어요</div>
+              )}
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="drop-shadow-white/10 drop-shadow-2xl p-0 !h-fit !w-fit overflow-y-auto scrollbar-hide focus-visible:ring-0">
@@ -203,7 +211,7 @@ export function ProjectStatus({
         <h3 className="text-sm font-bold">{project.custom_project_status === "draft" ? "예상 종료일" : "계약 종료일"}</h3>
         <DropdownMenu open={canEdit ? openEndDate : false} onOpenChange={(val) => canEdit && setOpenEndDate(val)}>
           <DropdownMenuTrigger asChild>
-            <div className="flex space-x-2 w-44 justify-end">
+            <div className="flex space-x-2 w-fit justify-end">
               <div className="px-2 py-1 rounded-sm bg-muted text-xs font-bold truncate">
                 {project.expected_end_date ? dayjs(project.expected_end_date).format("YYYY-MM-DD") : "정해지지 않았어요"}
               </div>

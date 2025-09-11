@@ -420,23 +420,29 @@ function ProjectItem({ session, project, idx, openMenu, setOpenMenu, meta, id, j
               </p>
             ) : (
               <p>
-                <span className="font-bold">AI 견적을 생성하여 확인해보세요.</span> 원
+                <span className="font-bold">{project.custom_project_status === "draft" ? "AI 견적을 생성하여 확인해보세요." : "정해지지 않았어요."}</span>
               </p>
             )}
           </div>
         </div>
 
-        <div className={cn("w-full flex space-x-2 items-center font-medium", project.expected_start_date ? "text-zinc-700" : "text-zinc-400")}>
+        <div
+          className={cn(
+            "w-full flex space-x-2 items-center font-medium",
+            project.expected_start_date || project.expected_end_date ? "text-zinc-700" : "text-zinc-400"
+          )}
+        >
           <Calendar className="!size-3.5 shrink-0" />
-          <div className="flex items-center space-x-2 min-w-0 flex-1">
+          <div className="flex items-center space-x-1.5 min-w-0 flex-1">
             {project.expected_start_date && (
-              <div className="truncate text-xs">{dayjs(project.expected_start_date).format("YYYY-MM-DD") ?? "정해지지 않았어요"}</div>
+              <div className="truncate text-xs text-zinc-700">{dayjs(project.expected_start_date).format("YYYY-MM-DD") ?? "정해지지 않았어요"}</div>
             )}
             {project.expected_start_date && !project.expected_end_date && <div className="text-xs font-normal text-zinc-400 flex-shrink-0">시작</div>}
-            {project.expected_end_date && <ArrowRight className="!size-3 flex-shrink-0" />}
+            {project.expected_start_date && project.expected_end_date && <ArrowRight className="!size-3 flex-shrink-0" />}
             {project.expected_end_date && (
-              <div className="truncate text-xs">{dayjs(project.expected_end_date).format("YYYY-MM-DD") ?? "정해지지 않았어요"}</div>
+              <div className="truncate text-xs text-zinc-700">{dayjs(project.expected_end_date).format("YYYY-MM-DD") ?? "정해지지 않았어요"}</div>
             )}
+            {!project.expected_start_date && project.expected_end_date && <div className="text-xs font-normal text-zinc-400 flex-shrink-0">종료</div>}
             {!project.expected_start_date && !project.expected_end_date && <div className="truncate text-xs">마감 목표를 설정할 수 있어요</div>}
           </div>
         </div>
