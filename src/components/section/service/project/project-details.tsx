@@ -99,7 +99,11 @@ function FeatureItem({
   categoryTitle,
   index,
 }: {
-  feature: any;
+  feature: {
+    icon: string;
+    title: string;
+    description?: string;
+  };
   isActive: boolean;
   onToggle: () => void;
   categoryTitle: string;
