@@ -89,7 +89,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const pathname = usePathname();
 
   // State 관리
-  const project = useProject(project_id);
+  const projectSwr = useProject(project_id);
   const [editedProject, setEditedProject] = useState<UserERPNextProject | undefined>();
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [autosave, setAutosave] = useState<boolean>(false);
@@ -171,10 +171,10 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
 
   //  Calculate editable status more efficiently
   const editable = useMemo(() => {
-    if (!project.data?.custom_team || !session.sub) return false;
-    const member = project.data.custom_team.find((member: TeamMember) => member.member === session.sub);
+    if (!projectSwr.data?.custom_team || !session.sub) return false;
+    const member = projectSwr.data.custom_team.find((member: TeamMember) => member.member === session.sub);
     return member ? member.level < 3 : false;
-  }, [project.data?.custom_team, session.sub]);
+  }, [projectSwr.data?.custom_team, session.sub]);
 
   //  Initialize autosave based on editable status
   useEffect(() => {
@@ -202,7 +202,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
 
   const tabs1 = useMemo(
     () => [
-      project.data?.customer ? (
+      projectSwr.data?.customer ? (
         <div className="flex space-x-1.5 items-center" key="customer-ok">
           <span>계약자</span>
           <div className="size-2.5 rounded-full bg-emerald-500" />
@@ -218,7 +218,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         <div className="size-2.5 rounded-full bg-emerald-500" />
       </div>,
     ],
-    [project.data?.customer]
+    [projectSwr.data?.customer]
   );
 
   const tabs2 = useMemo(
@@ -242,26 +242,26 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     setIsUpdating(true);
     try {
       await updateProject(project_id, updateERPNextProjectSchema.parse(editedProject));
-      await project.mutate();
+      await projectSwr.mutate();
     } catch {
       toast.error("프로젝트 저장에 실패했습니다.");
     } finally {
       setIsUpdating(false);
     }
-  }, [editable, editedProject, project_id, project]);
+  }, [editable, editedProject, project_id, projectSwr]);
 
   const handleRetry = useCallback(() => {
-    project.mutate();
-  }, [project]);
+    projectSwr.mutate();
+  }, [projectSwr]);
 
   const acceptInvite = useCallback(async () => {
     try {
       await acceptInviteProjectGroup(project_id);
-      await project.mutate();
+      await projectSwr.mutate();
     } catch {
       toast.error("초대 수락에 실패했습니다.");
     }
-  }, [project_id, project]);
+  }, [project_id, projectSwr]);
 
   const handleContractSelect = useCallback(
     (contract: UserERPNextContract) => {
@@ -308,19 +308,19 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
 
   //  Simplified project data sync
   useEffect(() => {
-    if (project.data) {
-      setEditedProject(project.data);
+    if (projectSwr.data) {
+      setEditedProject(projectSwr.data);
     }
-  }, [project.data]);
+  }, [projectSwr.data]);
 
   //  Optimized autosave with better dependency management
   useEffect(() => {
-    if (!autosave || !editable || !project.data || !editedProject) {
+    if (!autosave || !editable || !projectSwr.data || !editedProject) {
       return;
     }
 
     intervalRef.current = setInterval(() => {
-      const original = JSON.stringify(project.data);
+      const original = JSON.stringify(projectSwr.data);
       const current = JSON.stringify(editedProject);
 
       if (original !== current && !isUpdating) {
@@ -335,30 +335,30 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         clearInterval(intervalRef.current);
       }
     };
-  }, [autosave, editable, project.data, editedProject, isUpdating, handleUpdateProject]);
+  }, [autosave, editable, projectSwr.data, editedProject, isUpdating, handleUpdateProject]);
 
   //  Simplified level calculation
   useEffect(() => {
-    if (project.data?.custom_team && session.sub) {
-      const member = project.data.custom_team.find((member: TeamMember) => member.member === session.sub);
+    if (projectSwr.data?.custom_team && session.sub) {
+      const member = projectSwr.data.custom_team.find((member: TeamMember) => member.member === session.sub);
       setLevel(member?.level ?? 5);
     }
-  }, [project.data?.custom_team, session.sub]);
+  }, [projectSwr.data?.custom_team, session.sub]);
 
   //  Show content immediately even if editedProject is not ready
-  const displayProject = editedProject || project.data;
+  const displayProject = editedProject || projectSwr.data;
 
   if (!displayProject) {
     return <ProjectLoading />;
   }
 
   //  Show loading only for initial load, not for every render
-  if (project.isLoading && !project.data) {
+  if (projectSwr.isLoading && !projectSwr.data) {
     return <ProjectLoading />;
   }
 
   // 에러 상태 (404)
-  if (project.error) {
+  if (projectSwr.error) {
     return <Project404 onClose={onClose} onRetry={handleRetry} />;
   }
 
@@ -383,7 +383,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
       )}
 
       {/* 헤더 */}
-      <ProjectDetailSheetHeader onClose={onClose} project={project} />
+      <ProjectDetailSheetHeader onClose={onClose} project={projectSwr} />
 
       {/* 메인 콘텐츠 */}
       <div className="grid grid-cols-1 md:grid-cols-5 md:overflow-hidden overflow-x-hidden h-[calc(100%-48px)]">
@@ -396,7 +396,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             <div className="px-8 py-6">
               <ProjectBasicInfo project={displayProject} setEditedProject={setEditedProject} />
             </div>
-            <ProjectStatus project={displayProject} session={session} setEditedProject={setEditedProject} />
+            <ProjectStatus projectSwr={projectSwr} project={displayProject} session={session} setEditedProject={setEditedProject} />
             <div className="p-8">
               <ProjectDetails project={displayProject} setEditedProject={setEditedProject} />
             </div>
@@ -414,7 +414,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             <Flattabs tabs={tabs1} activeTab={activeTab1} handleTabChange={setActiveTab1} />
             {/* 탭 콘텐츠 */}
             <div className="w-full bg-muted">
-              {activeTab1 === 0 && <CustomerInfo projectSwr={project} session={session} />}
+              {activeTab1 === 0 && <CustomerInfo projectSwr={projectSwr} session={session} />}
               {activeTab1 === 1 && (
                 <div className="px-6 py-4">
                   <p className="text-gray-600">문서 관련 내용이 여기에 표시됩니다.</p>
@@ -427,17 +427,17 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             <Flattabs tabs={tabs2} activeTab={activeTab2} handleTabChange={handleDesktopTabChange} />
             {/* 탭 콘텐츠 */}
             <div className="w-full h-[calc(100%-41px)] overflow-y-auto">
-              {activeTab2 === 0 && <FilesList projectSwr={project} session={session} />}
+              {activeTab2 === 0 && <FilesList projectSwr={projectSwr} session={session} />}
               {activeTab2 === 1 && (
                 <ContractList
                   session={session}
-                  projectSwr={project}
+                  projectSwr={projectSwr}
                   selectedContract={selectedContract}
                   onContractSelect={handleContractSelect}
                   initialContractName={initialContractName}
                 />
               )}
-              {activeTab2 === 2 && <TeamsList projectSwr={project} session={session} />}
+              {activeTab2 === 2 && <TeamsList projectSwr={projectSwr} session={session} />}
             </div>
           </div>
         </div>
@@ -448,7 +448,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
           <Flattabs tabs={tabs1} activeTab={activeTab1} handleTabChange={setActiveTab1} />
           {/* 탭 콘텐츠 */}
           <div className="w-full bg-muted">
-            {activeTab1 === 0 && <CustomerInfo projectSwr={project} session={session} />}
+            {activeTab1 === 0 && <CustomerInfo projectSwr={projectSwr} session={session} />}
             {activeTab1 === 1 && (
               <div className="px-6 py-4">
                 <p className="text-gray-600">문서 관련 내용이 여기에 표시됩니다.</p>
@@ -468,7 +468,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
                 <div className="px-4 py-6">
                   <ProjectBasicInfo project={displayProject} setEditedProject={setEditedProject} />
                 </div>
-                <ProjectStatus project={displayProject} session={session} setEditedProject={setEditedProject} />
+                <ProjectStatus projectSwr={projectSwr} project={displayProject} session={session} setEditedProject={setEditedProject} />
                 <div className="p-4">
                   <ProjectDetails project={displayProject} setEditedProject={setEditedProject} />
                 </div>
@@ -478,17 +478,17 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
                 </div>
               </>
             )}
-            {activeMobileTab === 1 && <FilesList projectSwr={project} session={session} />}
+            {activeMobileTab === 1 && <FilesList projectSwr={projectSwr} session={session} />}
             {activeMobileTab === 2 && (
               <ContractList
                 session={session}
-                projectSwr={project}
+                projectSwr={projectSwr}
                 selectedContract={selectedContract}
                 onContractSelect={handleContractSelect}
                 initialContractName={initialContractName}
               />
             )}
-            {activeMobileTab === 3 && <TeamsList projectSwr={project} session={session} />}
+            {activeMobileTab === 3 && <TeamsList projectSwr={projectSwr} session={session} />}
           </div>
         </div>
       </div>

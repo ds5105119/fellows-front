@@ -509,7 +509,7 @@ export const useEstimateProject = (projectId: string | null) => {
           setIsLoading(true);
           toast.error("이미 견적이 생성 중입니다.");
         } else {
-          toast.error(`견적 생성 실패: ${response.statusText}`);
+          toast.error("견적을 생성하는데 실패했습니다.");
         }
         setIsLoading(false);
         controller.abort(); // 에러 발생 시 스트림 중단

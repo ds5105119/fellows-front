@@ -7,73 +7,59 @@ import MarkdownPreview from "@/components/ui/markdownpreview";
 import { useEffect, useState, useRef } from "react";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { useEstimateProject, useEstimateProjectStatus } from "@/hooks/fetch/project";
-import { mutate } from "swr";
+import { SWRResponse } from "swr";
 import { Table, TableBody, TableCell, TableFooter, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { TextShimmer } from "@/components/resource/text-shimmer";
 
 interface Props {
+  projectSwr: SWRResponse<UserERPNextProject>;
   project: UserERPNextProject;
 }
 
-export default function ProjectEstimator({ project }: Props) {
+export default function ProjectEstimator({ projectSwr, project }: Props) {
   const [lastGeneratedEstimate, setLastGeneratedEstimate] = useState("");
   const [showThinkingUI, setShowThinkingUI] = useState(false);
-  const [markdownCompleted, setMarkdownCompleted] = useState(false);
   const prevStatusRef = useRef<boolean | undefined>(undefined);
 
   const { markdown, isLoading, startEstimate } = useEstimateProject(project.project_name);
   const status = useEstimateProjectStatus(project.project_name);
 
   useEffect(() => {
-    const currentStatus = status.data;
-    const prevStatus = prevStatusRef.current;
-
-    if (markdownCompleted) {
-      prevStatusRef.current = currentStatus;
-      return;
-    }
-
-    // 서버에서 처리 중인 상태가 확인되면 Thinking UI 유지
-    if (currentStatus && !showThinkingUI) {
+    if (status.data && !markdown) {
       setShowThinkingUI(true);
-    }
-    // 서버 처리가 완료되면 (true -> false 변경 시) 항상 프로젝트 데이터 갱신
-    else if (!currentStatus && prevStatus === true && !isLoading) {
+    } else if (!status.data && prevStatusRef.current === true) {
       setShowThinkingUI(false);
-
-      setTimeout(() => {
-        mutate(`/api/service/project/${project.project_name}`);
-      }, 500); // 500ms 지연
+      status.mutate();
+      projectSwr.mutate();
     }
 
-    prevStatusRef.current = currentStatus;
-  }, [status.data, isLoading, project.project_name, markdownCompleted, showThinkingUI]);
+    prevStatusRef.current = status.data;
+  }, [status.data, markdown, isLoading, project.project_name]);
 
-  // 스트리밍 markdown 도착 시 업데이트
   useEffect(() => {
+    setLastGeneratedEstimate(markdown);
+
     if (markdown) {
-      setLastGeneratedEstimate(markdown);
       setShowThinkingUI(false);
-      setMarkdownCompleted(true);
     }
-  }, [markdown]);
+
+    if (!isLoading) {
+      status.mutate();
+      projectSwr.mutate();
+    }
+  }, [markdown, isLoading]);
 
   const handleStartEstimate = async () => {
-    setMarkdownCompleted(false);
     setShowThinkingUI(true);
     setLastGeneratedEstimate("");
-
-    status.mutate();
-
     startEstimate();
   };
 
   // 현재 표시할 견적 결정
-  const currentEstimate = showThinkingUI ? "" : markdown || project.custom_ai_estimate || lastGeneratedEstimate;
+  const currentEstimate = showThinkingUI ? "" : lastGeneratedEstimate || project.custom_ai_estimate;
 
   const hasExistingEstimate = Boolean(project.custom_ai_estimate || lastGeneratedEstimate);
-  const isThinking = showThinkingUI || isLoading;
   const showEstimateContent = Boolean(currentEstimate);
   const showPricingTable = showEstimateContent && !isLoading;
 
@@ -99,13 +85,13 @@ export default function ProjectEstimator({ project }: Props) {
       </div>
 
       {/* Thinking UI */}
-      {isThinking && (
+      {showThinkingUI && (
         <TextShimmer className="text-sm relativ">견적서를 생성하는 중입니다. 1분 정도 걸릴 수 있으니 견적서가 준비되면 다시 확인해 주세요 • • •</TextShimmer>
       )}
 
       {/* 견적 내용 표시 */}
       {showEstimateContent && (
-        <MarkdownPreview loading={showThinkingUI} className="!prose-sm mb-12">
+        <MarkdownPreview loading={isLoading && !showThinkingUI} className="!prose-sm mb-12">
           {currentEstimate}
         </MarkdownPreview>
       )}
@@ -124,21 +110,21 @@ export default function ProjectEstimator({ project }: Props) {
             <TableBody>
               <TableRow>
                 <TableCell className="w-2/5 font-medium bg-muted">총 합계</TableCell>
-                <TableCell className="w-3/5 text-right">{(project.estimated_costing ?? 0).toLocaleString()} 원</TableCell>
+                <TableCell className="w-3/5 text-right">{(projectSwr.data?.estimated_costing ?? 0).toLocaleString()} 원</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="w-2/5 font-medium bg-muted">공급가액</TableCell>
-                <TableCell className="w-3/5 text-right">{(project.estimated_costing ?? 0).toLocaleString()} 원</TableCell>
+                <TableCell className="w-3/5 text-right">{(projectSwr.data?.estimated_costing ?? 0).toLocaleString()} 원</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="w-2/5 font-medium bg-muted">VAT 10%</TableCell>
-                <TableCell className="w-3/5 text-right">{((project.estimated_costing ?? 0) * 0.1).toLocaleString()} 원</TableCell>
+                <TableCell className="w-3/5 text-right">{((projectSwr.data?.estimated_costing ?? 0) * 0.1).toLocaleString()} 원</TableCell>
               </TableRow>
             </TableBody>
             <TableFooter>
               <TableRow>
                 <TableCell className="w-2/5 bg-black text-white">Total</TableCell>
-                <TableCell className="w-3/5 text-right bg-black text-white">{((project.estimated_costing ?? 0) * 1.1).toLocaleString()} 원</TableCell>
+                <TableCell className="w-3/5 text-right bg-black text-white">{((projectSwr.data?.estimated_costing ?? 0) * 1.1).toLocaleString()} 원</TableCell>
               </TableRow>
             </TableFooter>
           </Table>

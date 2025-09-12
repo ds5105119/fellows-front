@@ -339,7 +339,7 @@ export default function MarkdownPreview({
       {loading && (
         <div
           ref={overlayRef}
-          className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
+          className="absolute bottom-0 left-0 right-0 h-44 pointer-events-none"
           style={{
             background: `linear-gradient(
               to bottom,

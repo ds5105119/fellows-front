@@ -21,12 +21,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import DatePicker from "./datepicker";
 import generatePDF, { Margin } from "react-to-pdf";
+import { SWRResponse } from "swr";
 
 export function ProjectStatus({
+  projectSwr,
   project,
   session,
   setEditedProject,
 }: {
+  projectSwr: SWRResponse<UserERPNextProject>;
   project: UserERPNextProject;
   session: Session;
   setEditedProject: (project: UserERPNextProject) => void;
@@ -317,7 +320,7 @@ export function ProjectStatus({
 
                   <hr className="border-gray-200" />
 
-                  <ProjectEstimator project={project} />
+                  <ProjectEstimator projectSwr={projectSwr} project={project} />
                 </div>
               </div>
             </div>
