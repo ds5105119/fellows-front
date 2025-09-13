@@ -4,7 +4,7 @@ import type { z } from "zod";
 import type { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { platformEnum, readinessLevelEnum, type CreateERPNextProject } from "@/@types/service/project";
+import { platformEnum, readinessLevelEnum, type CreateERPNextProject, type ProjectMethod } from "@/@types/service/project";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
 import { PLATFORM_MAPPING, READYNISS_MAPPING, PROJECT_METHOD_MAPPING, NOCODE_PLATFORM_MAPPING } from "@/components/resource/project";
@@ -19,6 +19,39 @@ const getEnumValues = <T extends z.ZodEnum<[string, ...string[]]>>(enumType: T):
   return Object.values(enumType.Values) as z.infer<typeof enumType>[];
 };
 
+function ProjectMethodButton({
+  value,
+  selected,
+  readiness,
+  onChange,
+}: {
+  value: ProjectMethod;
+  selected: CreateERPNextProject["custom_project_method"];
+  readiness: string | undefined;
+  onChange: (value: CreateERPNextProject["custom_project_method"]) => void;
+}) {
+  const method = PROJECT_METHOD_MAPPING[value as keyof typeof PROJECT_METHOD_MAPPING];
+
+  return (
+    <button
+      type="button"
+      className={cn(
+        "flex flex-col space-y-1.5 shadow-none transition-colors duration-200 ease-in-out rounded-md text-start p-4",
+        value === selected ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
+      )}
+      onClick={() => onChange(selected === value ? undefined : value)}
+    >
+      <p className="w-full font-bold">{method.title}</p>
+      <div className="px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2 bg-foreground text-background">특징</div>
+      <p className="w-full text-sm font-medium">{method.description}</p>
+      <div className={cn("px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2", "shadow-[inset_0_0_0_1px] shadow-foreground/70 text-foreground")}>
+        예상 비용
+      </div>
+      <p className="w-full text-sm font-medium">{method.price[readiness as keyof typeof method.price]}만 원~</p>
+    </button>
+  );
+}
+
 export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1Props) {
   const { control, getValues, setValue, watch } = form;
   const platforms = getValues("custom_platforms");
@@ -29,15 +62,26 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
     let allowedKeys: string[] = [];
 
     if (projectMethod === "nocode") {
-      allowedKeys = ["wordpress", "webflow", "imweb", "framer", "bubble"];
+      allowedKeys = ["imweb", "framer", "wordpress", "webflow", "bubble"];
     } else if (projectMethod === "shop") {
-      allowedKeys = ["cafe24", "godo", "imweb", "shopify"];
+      allowedKeys = ["shopify", "imweb", "cafe24"];
     }
 
     return (Object.entries(NOCODE_PLATFORM_MAPPING) as [keyof typeof NOCODE_PLATFORM_MAPPING, { title: string; description: string }][]).filter(([key]) =>
       allowedKeys.includes(key)
     );
   }, [projectMethod]);
+
+  const availableMethods = useMemo(() => {
+    const methods: string[] = [];
+
+    if (platforms.length > 0) methods.push("code");
+    if (platforms.length > 0 && !platforms.some((i) => ["android", "ios"].includes(i.platform))) {
+      methods.push("nocode", "shop");
+    }
+
+    return methods as ProjectMethod[];
+  }, [platforms]);
 
   return (
     <>
@@ -141,105 +185,18 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                   <FormLabel className="text-sm font-medium">개발 방식</FormLabel>
                   <FormControl>
                     <div className="flex flex-col space-y-3">
-                      {platforms.length > 0 && (
-                        <button
-                          type="button"
-                          className={cn(
-                            "flex flex-col space-y-1.5 shadow-none transition-colors duration-200 ease-in-out rounded-md text-start p-4",
-                            "code" === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
-                          )}
-                          onClick={() => {
-                            if (field.value !== "code") {
-                              field.onChange("code");
-                            } else {
-                              field.onChange(undefined);
-                            }
+                      {availableMethods.map((method) => (
+                        <ProjectMethodButton
+                          key={method}
+                          value={method}
+                          selected={field.value}
+                          readiness={readiness}
+                          onChange={(val) => {
+                            field.onChange(val);
                             setValue("custom_nocode_platform", undefined);
                           }}
-                        >
-                          <p className="w-full font-bold">{PROJECT_METHOD_MAPPING["code"].title}</p>
-                          <div className={cn("px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2 bg-foreground text-background")}>특징</div>
-                          <p className="w-full text-sm font-medium">{PROJECT_METHOD_MAPPING["code"].description}</p>
-                          <div
-                            className={cn(
-                              "px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2",
-                              "shadow-[inset_0_0_0_1px] shadow-foreground/70 text-foreground",
-                              "transform-gpu backface-hidden will-change-transform"
-                            )}
-                          >
-                            가격
-                          </div>
-                          <p className="w-full text-sm font-medium">
-                            {readiness == "idea" ? "1000만 원~" : readiness == "requirements" ? "800만 원~" : "500만 원~"}
-                          </p>
-                        </button>
-                      )}
-                      {platforms.length && !platforms.some((i) => i.platform == "android") && !platforms.some((i) => i.platform == "ios") && (
-                        <button
-                          type="button"
-                          className={cn(
-                            "flex flex-col space-y-1.5 shadow-none transition-colors duration-200 ease-in-out rounded-md text-start p-4",
-                            "nocode" === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
-                          )}
-                          onClick={() => {
-                            if (field.value !== "nocode") {
-                              field.onChange("nocode");
-                            } else {
-                              field.onChange(undefined);
-                            }
-                            setValue("custom_nocode_platform", undefined);
-                          }}
-                        >
-                          <p className="w-full font-bold">{PROJECT_METHOD_MAPPING["nocode"].title}</p>
-                          <div className={cn("px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2 bg-foreground text-background")}>특징</div>
-                          <p className="w-full text-sm font-medium">{PROJECT_METHOD_MAPPING["nocode"].description}</p>
-                          <div
-                            className={cn(
-                              "px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2",
-                              "shadow-[inset_0_0_0_1px] shadow-foreground/70 text-foreground",
-                              "transform-gpu backface-hidden will-change-transform"
-                            )}
-                          >
-                            가격
-                          </div>
-                          <p className="w-full text-sm font-medium">
-                            {readiness == "idea" ? "300만 원~" : readiness == "requirements" ? "200만 원~" : "100만 원~"}
-                          </p>
-                        </button>
-                      )}
-                      {platforms.length && !platforms.some((i) => i.platform == "android") && !platforms.some((i) => i.platform == "ios") && (
-                        <button
-                          type="button"
-                          className={cn(
-                            "flex flex-col space-y-1.5 shadow-none transition-colors duration-200 ease-in-out rounded-md text-start p-4",
-                            "shop" === field.value ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
-                          )}
-                          onClick={() => {
-                            if (field.value !== "shop") {
-                              field.onChange("shop");
-                            } else {
-                              field.onChange(undefined);
-                            }
-                            setValue("custom_nocode_platform", undefined);
-                          }}
-                        >
-                          <p className="w-full font-bold">{PROJECT_METHOD_MAPPING["shop"].title}</p>
-                          <div className={cn("px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2 bg-foreground text-background")}>특징</div>
-                          <p className="w-full text-sm font-medium">{PROJECT_METHOD_MAPPING["shop"].description}</p>
-                          <div
-                            className={cn(
-                              "px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2",
-                              "shadow-[inset_0_0_0_1px] shadow-foreground/70 text-foreground",
-                              "transform-gpu backface-hidden will-change-transform"
-                            )}
-                          >
-                            가격
-                          </div>
-                          <p className="w-full text-sm font-medium">
-                            {readiness == "idea" ? "300만 원~" : readiness == "requirements" ? "200만 원~" : "100만 원~"}
-                          </p>
-                        </button>
-                      )}
+                        />
+                      ))}
                     </div>
                   </FormControl>
                   <FormMessage />

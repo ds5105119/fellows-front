@@ -45,6 +45,7 @@ export default function ProjectEstimator({ projectSwr, project }: Props) {
     }
 
     if (!isLoading) {
+      setShowThinkingUI(false);
       status.mutate();
       projectSwr.mutate();
     }

@@ -1,69 +1,33 @@
 "use client";
 
-import type React from "react";
-
-import { useEffect, useState, useRef, useActionState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import type { Session } from "next-auth";
-import { signIn } from "next-auth/react";
-import { toast } from "sonner";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { ChevronRight, Loader2Icon } from "lucide-react";
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { MorphingPopover, MorphingPopoverTrigger, MorphingPopoverContent } from "@/components/ui/motion-primitives/morphing-popover";
+import { motion } from "motion/react";
+import { useActionState, useEffect, useId, useState } from "react";
+import { ArrowLeftIcon } from "lucide-react";
+import { GlowEffect } from "@/components/ui/glow-effect";
+import { Session } from "next-auth";
 import { type EstimateFormState, getEstimateInfoAction } from "@/hooks/fetch/server/project";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
-import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
 
-const placeholderTexts = ["3분만에 AI 견적을 받아보세요.", "의뢰하려는 사이트에 대해 설명해주세요."];
-
-export default function ProjectNewButton({ session, initialDescription }: { session: Session | null; initialDescription: string }) {
+export function ProjectAINewButton({ session }: { session: Session | null }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [description, setDescription] = useState(initialDescription);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [isNavigating, setIsNavigating] = useState(false);
-  const [isAutoSubmitting, setIsAutoSubmitting] = useState(false);
+  const uniqueId = useId();
+  const [note, setNote] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [state, formAction] = useActionState<EstimateFormState, FormData>(getEstimateInfoAction, null);
+  const { isMobile } = useSidebar();
 
-  const isParentLoading = isNavigating || isAutoSubmitting;
-  const [placeholderIdx, setPlaceholderIdx] = useState(0);
-
-  const adjustTextareaHeight = () => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = "auto";
-      const scrollHeight = textarea.scrollHeight;
-      const minHeight = 80; // minimum height in pixels
-      textarea.style.height = `${Math.max(scrollHeight, minHeight)}px`;
-    }
+  const closeMenu = () => {
+    setIsOpen(false);
   };
-
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(e.target.value);
-    adjustTextareaHeight();
-  };
-
-  useEffect(() => {
-    adjustTextareaHeight();
-  }, [description]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPlaceholderIdx((prev) => (prev + 1) % placeholderTexts.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   const handleFormSubmit = (formData: FormData) => {
-    if (!session) {
-      document.cookie = `pendingDescription=${encodeURIComponent(description)}; path=/; max-age=300; SameSite=Lax`;
-      signIn("keycloak", { redirectTo: "/?from=cookie" });
-    }
-
-    setIsNavigating(false);
-    setIsAutoSubmitting(false);
-
     if (session) {
       formAction(formData);
     }
@@ -71,8 +35,6 @@ export default function ProjectNewButton({ session, initialDescription }: { sess
 
   useEffect(() => {
     if (state?.success) {
-      setIsNavigating(true);
-      toast.success("견적 생성에 성공했습니다!");
       sessionStorage.setItem(
         "project_info",
         JSON.stringify({
@@ -82,166 +44,144 @@ export default function ProjectNewButton({ session, initialDescription }: { sess
       );
       router.push(`/service/project/new?from=session`);
     } else if (state?.error) {
-      setIsNavigating(false);
-      setIsAutoSubmitting(false);
       toast.error(state.error);
     }
   }, [state, router]);
 
-  useEffect(() => {
-    const fromCookie = searchParams.get("from") === "cookie";
-    if (session && initialDescription && fromCookie) {
-      setIsAutoSubmitting(true);
-      router.replace("/");
-      router.refresh();
+  if (isMobile)
+    return (
+      <Drawer>
+        <DrawerTrigger asChild>
+          <Button className="h-8 items-center rounded-md gap-1.5 px-2.5 has-[>svg]:px-2.5 bg-black text-white hover:bg-black/65 transition-colors duration-200 focus-visible:ring-0">
+            <BreathingSparkles size={16} />
+          </Button>
+        </DrawerTrigger>
+        <DrawerContent>
+          <motion.div
+            className="pointer-events-none absolute inset-0 -z-50"
+            animate={{
+              opacity: isVisible ? 1 : 0,
+            }}
+            transition={{
+              duration: 0.2,
+              ease: "easeOut",
+            }}
+          >
+            <div className="pointer-events-none absolute inset-0 bg-white z-10 rounded-t-lg" />
+            <GlowEffect colors={["#0894FF", "#C959DD", "#FF2E54", "#FF9004"]} mode="colorShift" blur="medium" duration={4} className="rounded-t-lg" />
+          </motion.div>
 
-      const formData = new FormData();
-      formData.append("description", initialDescription);
-      formAction(formData);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, initialDescription, searchParams, formAction, router]);
+          <DrawerHeader>
+            <DrawerTitle>프로젝트 만들기</DrawerTitle>
+            <DrawerDescription>내용을 분석해 프로젝트의 개발 방향을 추천해드리겠습니다.</DrawerDescription>
+          </DrawerHeader>
 
-  useEffect(() => {
-    return () => {
-      setIsNavigating(false);
-      setIsAutoSubmitting(false);
-    };
-  }, []);
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button size="sm" className="bg-black hover:bg-black/65 text-white transition-colors duration-200 focus-visible:ring-0 hidden md:inline-flex">
-          <BreathingSparkles /> AI로 만들기
-        </Button>
-      </DialogTrigger>
-      <DialogContent
-        className="!max-w-7xl !w-[calc(100vw-2rem)] !h-4/5 rounded-3xl px-4"
-        overlayClassName="backdrop-blur-sm bg-black/10"
-        showCloseButton={false}
-      >
-        <DialogHeader className="sr-only">
-          <DialogTitle className="sr-only">새 프로젝트 생성</DialogTitle>
-        </DialogHeader>
-
-        <motion.div
-          className="w-full h-full flex flex-col"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-        >
-          <form action={handleFormSubmit} className="w-full h-full flex flex-col relative">
-            <div className="flex-1 flex items-center justify-center relative">
-              <div className="w-full max-w-4xl relative">
-                <div className="relative">
-                  <AnimatePresence mode="wait">
-                    {!description && (
-                      <motion.div
-                        key={placeholderIdx}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3 }}
-                        className="absolute inset-0 flex items-center justify-center pointer-events-none text-gray-400 dark:text-gray-500 text-base md:text-lg font-semibold text-center z-10"
-                      >
-                        {placeholderTexts[placeholderIdx]}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <Textarea
-                    ref={textareaRef}
-                    name="description"
-                    value={description}
-                    onChange={handleDescriptionChange}
-                    placeholder=""
-                    onWheel={(e) => e.stopPropagation()}
-                    className="w-full bg-transparent border-none focus-visible:ring-0 outline-none
-                            shadow-none resize-none scrollbar-hide leading-relaxed text-foreground
-                            overflow-hidden text-base md:text-lg font-semibold
-                            placeholder:text-transparent p-8 text-center min-h-[80px]"
-                    spellCheck="false"
-                    style={{
-                      textAlign: "center",
-                      lineHeight: "1.5",
-                      height: "auto",
-                      caretColor: description ? "currentColor" : "transparent",
-                    }}
-                  />
-                </div>
-              </div>
+          <form action={handleFormSubmit} className="flex h-full flex-col">
+            <div className="px-4 h-28 pb-1">
+              <textarea
+                placeholder="만들고 싶은 앱/웹의 구체적인 설명 혹은 요구사항을 적어주세요."
+                name="description"
+                className="w-full h-full resize-none rounded-sm border bg-transparent px-2.5 py-2 outline-hidden text-base"
+                autoFocus
+                onChange={(e) => setNote(e.target.value)}
+              />
             </div>
 
-            <AnimatePresence>
-              {description.trim() && (
-                <motion.div
-                  initial={{ opacity: 0, y: 50, scale: 0.8 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 50, scale: 0.8 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 25,
-                    duration: 0.4,
-                  }}
-                  className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-                >
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="relative">
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-full blur-lg"
-                      animate={{
-                        scale: [1, 1.1, 1],
-                        opacity: [0.3, 0.6, 0.3],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Number.POSITIVE_INFINITY,
-                        ease: "easeInOut",
-                      }}
-                    />
-                    <Button
-                      size="lg"
-                      type="submit"
-                      className="relative bg-black hover:bg-black/80 text-white rounded-full px-8 py-3 font-semibold shadow-lg transition-all duration-200"
-                      disabled={isParentLoading}
-                    >
-                      {isParentLoading ? (
-                        <>
-                          <Loader2Icon className="animate-spin mr-2 h-4 w-4" />
-                          AI가 분석중...
-                        </>
-                      ) : (
-                        <>
-                          견적 받기
-                          <ChevronRight className="ml-2 h-4 w-4" />
-                        </>
-                      )}
-                    </Button>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {isParentLoading && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-3xl"
+            <DrawerFooter className="w-full flex flex-row justify-between gap-0 space-x-4 pb-4 pt-3">
+              <Button
+                type="submit"
+                className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold"
+                onClick={() => {
+                  setIsVisible(true);
+                }}
               >
-                <div className="text-center">
-                  <motion.div
-                    className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                  />
-                  <p className="text-gray-600 dark:text-gray-400 font-medium">AI가 견적을 생성하고 있습니다...</p>
-                </div>
-              </motion.div>
-            )}
+                다음
+              </Button>
+              <DrawerClose asChild>
+                <Button type="button" className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold" variant="secondary">
+                  취소
+                </Button>
+              </DrawerClose>
+            </DrawerFooter>
           </form>
+        </DrawerContent>
+      </Drawer>
+    );
+
+  return (
+    <MorphingPopover
+      transition={{ type: "spring", bounce: 0.05, duration: 0.3 }}
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      variants={{
+        initial: { opacity: 0, scale: 0.8 },
+        animate: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, scale: 0.8 },
+      }}
+    >
+      <MorphingPopoverTrigger className="flex h-8 items-center rounded-md gap-1.5 px-2.5 has-[>svg]:px-2.5 bg-black text-white hover:bg-black/65 transition-colors duration-200 focus-visible:ring-0">
+        <motion.span layoutId={`popover-label-${uniqueId}`} className="text-sm">
+          AI로 만들기
+        </motion.span>
+      </MorphingPopoverTrigger>
+      <MorphingPopoverContent
+        style={{ transformOrigin: "top right" }}
+        className="overflow-visible absolute top-0 right-0 origin-top-right rounded-xl border border-zinc-950/10 bg-white p-0 shadow-[0_9px_9px_0px_rgba(0,0,0,0.01),_0_2px_5px_0px_rgba(0,0,0,0.06)] dark:bg-zinc-700"
+      >
+        <motion.div
+          className="pointer-events-none absolute inset-0 -z-10"
+          animate={{
+            opacity: isVisible ? 1 : 0,
+          }}
+          transition={{
+            duration: 0.2,
+            ease: "easeOut",
+          }}
+        >
+          <GlowEffect colors={["#0894FF", "#C959DD", "#FF2E54", "#FF9004"]} mode="colorShift" blur="medium" duration={4} />
         </motion.div>
-      </DialogContent>
-    </Dialog>
+
+        <div className="relative h-[200px] w-[364px]">
+          <form action={handleFormSubmit} className="flex h-full flex-col">
+            <motion.span
+              layoutId={`popover-label-${uniqueId}`}
+              aria-hidden="true"
+              style={{
+                opacity: note ? 0 : 1,
+              }}
+              className="absolute top-3 left-4 text-sm text-zinc-500 select-none pointer-events-none dark:text-zinc-400"
+            >
+              만들고 싶은 앱/웹의 구체적인 설명 혹은 요구사항을 적어주세요.
+            </motion.span>
+            <textarea
+              name="description"
+              className="h-full w-full resize-none rounded-md bg-transparent px-4 py-3 text-sm outline-hidden"
+              autoFocus
+              onChange={(e) => setNote(e.target.value)}
+            />
+            <div key="close" className="flex justify-between py-3 pr-4 pl-2">
+              <button
+                type="button"
+                className="flex items-center rounded-lg bg-white px-2 py-1 text-sm text-zinc-950 hover:bg-zinc-100 dark:bg-zinc-700 dark:text-zinc-50 dark:hover:bg-zinc-600"
+                onClick={closeMenu}
+                aria-label="Close popover"
+              >
+                <ArrowLeftIcon size={16} className="text-zinc-900 dark:text-zinc-100" />
+              </button>
+              <button
+                className="relative ml-1 flex h-8 shrink-0 scale-100 appearance-none items-center justify-center rounded-lg border border-zinc-950/10 bg-transparent px-2 text-sm text-zinc-500 transition-colors select-none hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 active:scale-[0.98] dark:border-zinc-50/10 dark:text-zinc-50 dark:hover:bg-zinc-800"
+                type="submit"
+                aria-label="Submit note"
+                onClick={() => {
+                  setIsVisible(true);
+                }}
+              >
+                제출
+              </button>
+            </div>
+          </form>
+        </div>
+      </MorphingPopoverContent>
+    </MorphingPopover>
   );
 }

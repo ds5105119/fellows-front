@@ -2,22 +2,32 @@ import { CreateERPNextProject } from "@/@types/service/project";
 
 export const categorizedFeatures = [
   {
+    title: "회원/인증",
+    items: [
+      { icon: "🥳", title: "회원가입 및 로그인" },
+      { icon: "👥", title: "소셜 로그인" },
+      { icon: "🔐", title: "본인인증 로그인" },
+      { icon: "🙍", title: "회원 정보" },
+      { icon: "👋", title: "회원 탈퇴" },
+      { icon: "🚩", title: "회원 신고" },
+    ],
+  },
+  {
+    title: "온보딩/초기화면",
+    items: [
+      { icon: "", title: "초기화면" },
+      { icon: "", title: "팝업" },
+      { icon: "", title: "온보딩" },
+    ],
+  },
+  {
     title: "도구 및 기술",
     items: [
-      { icon: "✏️", title: "노코드 웹", description: "비용을 크게 절감할 수 있지만 커스터마이징이 제한됩니다." },
       { icon: "🌐", title: "다국어 지원" },
       { icon: "📁", title: "파일 업로드" },
       { icon: "🔎", title: "검색 기능" },
       { icon: "🗺️", title: "지도" },
       { icon: "📆", title: "예약 시스템" },
-    ],
-  },
-  {
-    title: "회원/인증",
-    items: [
-      { icon: "🔐", title: "회원가입 및 로그인" },
-      { icon: "👥", title: "소셜 로그인" },
-      { icon: "🙍", title: "회원 관리" },
     ],
   },
   {
@@ -102,33 +112,44 @@ export const PROJECT_METHOD_MAPPING = {
     description:
       "원하는 대로 커스터마이징할 수 있어, 복잡한 로직이나 차별화된 기능이 필요한 서비스에 적합해요. " +
       "초기 개발 비용이 높고 유지 보수 인력이 필요할 수 있어요.",
+    price: {
+      idea: 1000,
+      requirements: 900,
+      wireframe: 800,
+    },
   },
   nocode: {
     title: "노코드 개발",
     description: "개발 리소스가 부족한 초기 단계나 MVP 제작에 유리하지만, " + "기능 확장이나 사용자 정의에는 제약이 있어요.",
+    price: {
+      idea: 120,
+      requirements: 90,
+      wireframe: 80,
+    },
   },
   shop: {
     title: "쇼핑몰",
     description: "상품 등록, 결제, 배송 등의 핵심 기능이 기본 제공되지만, " + "쇼핑몰 외의 고유 기능 추가는 제한적이에요.",
+    price: {
+      idea: 250,
+      requirements: 220,
+      wireframe: 200,
+    },
   },
 } as const;
 
 export const NOCODE_PLATFORM_MAPPING = {
-  cafe24: {
-    title: "카페 24",
-    description: "쇼핑몰에 최적화된 노코드 플랫폼으로, 빠른 구축이 가능해요.",
+  shopify: {
+    title: "Shopify",
+    description: "쇼핑몰에 최적화된 노코드 플랫폼이에요. 글로벌 시장에 적합한 다양한 기능을 제공해요.",
   },
   imweb: {
     title: "아임웹",
     description: "디자인과 개발을 통합한 노코드 플랫폼으로, 반응형 웹사이트 제작에 최적화되어 있어요.",
   },
-  godo: {
-    title: "고도몰",
-    description: "한국 시장에 최적화된 쇼핑몰 노코드 플랫폼으로, 다양한 결제 수단과 배송 옵션을 지원해요.",
-  },
-  shopify: {
-    title: "Shopify",
-    description: "쇼핑몰에 최적화된 노코드 플랫폼이에요. 글로벌 시장에 적합한 다양한 기능을 제공해요.",
+  cafe24: {
+    title: "카페 24",
+    description: "쇼핑몰에 최적화된 노코드 플랫폼으로, 빠른 구축이 가능해요.",
   },
   framer: {
     title: "Framer",

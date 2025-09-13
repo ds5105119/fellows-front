@@ -18,7 +18,7 @@ export function RecommendationLoading({ currentStep, totalSteps, isRecommanding,
         </div>
       </div>
 
-      <div className="flex justify-center mt-24 md:mt-36 mb-64 md:mb-64">
+      <div className="flex justify-center mt-24 md:mt-44 mb-64 md:mb-64">
         <AIRecommendSkeleton isLoading={isRecommanding} hasCompleted={hasCompleted} />
       </div>
     </div>

@@ -277,7 +277,7 @@ export function NavGroup({ name, items, showHelp, ...props }: NavGroupProps) {
                   "data-[active=true]:text-primary data-[active=true]:bg-sidebar-accent/50"
                 )}
               >
-                <DynamicFcIcon name="FcIdea" className="group-data-[collapsible=icon]:-ml-0.5" /> <span>이용 가이드</span>
+                <DynamicFcIcon name="FcIdea" className="group-data-[collapsible=icon]:-ml-0.5" /> <span className="font-medium text-sm">이용 가이드</span>
               </SidebarMenuButton>
             </HelpDialog>
           </SidebarMenuItem>

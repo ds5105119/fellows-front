@@ -18,7 +18,7 @@ import { Info, MessageCircleQuestion, PlusIcon, SearchIcon } from "lucide-react"
 import { ProjectsPaginatedResponse, UserERPNextProject } from "@/@types/service/project";
 import { useProjects } from "@/hooks/fetch/project";
 import { Button } from "@/components/ui/button";
-import { ProjectAINewButton } from "./project-new-button2";
+import { ProjectAINewButton } from "./project-new-button";
 import HelpDialog from "../../help/help-dialog";
 
 // --- 타입 및 상수 정의 ---

@@ -528,7 +528,7 @@ export const useEstimateProject = (projectId: string | null) => {
       onclose: () => {
         setIsLoading(false);
         setAbortController(null);
-        toast.success("AI 견적이 완료되었습니다.");
+        toast.success("AI 견적이 종료되었습니다.");
       },
       onerror: (err) => {
         setIsLoading(false);
