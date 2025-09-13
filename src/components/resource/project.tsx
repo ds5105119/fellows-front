@@ -21,6 +21,38 @@ export const categorizedFeatures = [
     ],
   },
   {
+    title: "알림",
+    items: [
+      { icon: "", title: "시스템 푸시 알림" },
+      { icon: "", title: "관리자 푸시 알림" },
+      { icon: "", title: "알림톡" },
+      { icon: "", title: "SMS 알림" },
+      { icon: "", title: "이메일 알림" },
+      { icon: "", title: "알림 on, off" },
+      { icon: "", title: "알림 내역" },
+    ],
+  },
+  {
+    title: "쇼핑몰 기능",
+    items: [
+      { icon: "🛒", title: "상품관리", description: "상품 등록, 수정, 카테고리 관리가 가능해요." },
+      { icon: "📦", title: "배송관리", description: "주문 처리 및 송장 등록이 가능해요." },
+      { icon: "💳", title: "PG 연동", description: "결제 시스템을 연동해 사용자 결제를 처리할 수 있어요." },
+      { icon: "🧾", title: "세금계산서/영수증" },
+    ],
+  },
+  {
+    title: "결제 기능",
+    items: [
+      { icon: "", title: "결제내역", default: true },
+      { icon: "", title: "PG 연동", description: "결제 시스템을 연동해 사용자 결제를 처리할 수 있어요." },
+      { icon: "", title: "인앱 결제", view: { code: true, shopify: false, imweb: false, cafe24: false } },
+      { icon: "", title: "결제 수단 등록" },
+      { icon: "", title: "정기 결제" },
+      { icon: "", title: "세금계산서/영수증" },
+    ],
+  },
+  {
     title: "도구 및 기술",
     items: [
       { icon: "🌐", title: "다국어 지원" },
@@ -36,15 +68,6 @@ export const categorizedFeatures = [
       { icon: "🛠️", title: "관리자 페이지", description: "운영자가 상품, 회원, 게시글을 관리할 수 있어요." },
       { icon: "📈", title: "관리자 통계", description: "GA 또는 관리자 페이지에 각종 지표를 시각화해 제공해요." },
       { icon: "💾", title: "데이터 백업", description: "주기적으로 데이터 백업을 하고 복구할 수 있어요." },
-    ],
-  },
-  {
-    title: "쇼핑몰 기능",
-    items: [
-      { icon: "🛒", title: "상품관리", description: "상품 등록, 수정, 카테고리 관리가 가능해요." },
-      { icon: "📦", title: "배송관리", description: "주문 처리 및 송장 등록이 가능해요." },
-      { icon: "💳", title: "PG 연동", description: "결제 시스템을 연동해 사용자 결제를 처리할 수 있어요." },
-      { icon: "🧾", title: "세금계산서/영수증" },
     ],
   },
   {
