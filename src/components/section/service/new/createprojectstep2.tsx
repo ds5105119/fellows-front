@@ -91,7 +91,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
         name="custom_features"
         render={({ field }) => (
           <FormItem>
-            <div className="w-full flex flex-col gap-2">
+            <div className="w-full flex flex-col gap-1">
               {categorizedFeatures.map((category) => {
                 const isOpen = openMap[category.title] ?? false;
 
