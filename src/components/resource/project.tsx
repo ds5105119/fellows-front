@@ -562,9 +562,9 @@ export const NOCODE_PLATFORM_MAPPING: Record<NoCodePlatform, { title: string; de
 };
 
 export const READYNISS_MAPPING = {
-  idea: { icon: "💡", title: "아이디어 구상 단계", description: "아이디어를 구상하고 있습니다." },
-  requirements: { icon: "📋", title: "기획/요구사항 정의", description: "기획/요구사항을 정의하고 있습니다." },
-  wireframe: { icon: "⚒️", title: "와이어프레임/디자인", description: "와이어프레임/디자인을 정의하고 있습니다." },
+  idea: { icon: "💡", title: "아이디어 구상 단계", description: "아직 아이디어만 있는 경우 선택하세요." },
+  requirements: { icon: "📋", title: "기획/요구사항 정의", description: "기획/요구사항을 정의하였을 때 선택하세요." },
+  wireframe: { icon: "⚒️", title: "디자인/콘텐츠 제작완료", description: "와이어프레임/디자인을 정의하고 콘텐츠를 제작하였을 때 선택하세요." },
 };
 
 export const STATUS_MAPPING: Record<string, string> = {
