@@ -31,11 +31,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
   const nocode_platform = useWatch({ name: "custom_nocode_platform", control });
   const custom_features = useWatch({ name: "custom_features", control });
 
-  const [openMap, setOpenMap] = useState<Record<string, boolean>>(
-    Object.fromEntries(
-      categorizedFeatures.map((category) => [category.title, category.items.some((item) => custom_features?.map((val) => val.feature).includes(item.title))])
-    )
-  );
+  const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
 
   const toggleCategory = (title: string) => {
     setOpenMap((prev) => ({ ...prev, [title]: !prev[title] }));
@@ -76,12 +72,12 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
   useEffect(() => {
     if (!custom_features) return;
 
-    setOpenMap(() => {
-      const updated: Record<string, boolean> = {};
+    setOpenMap((prev) => {
+      const updated: Record<string, boolean> = { ...prev };
 
       categorizedFeatures.forEach((category) => {
         const hasFeature = category.items.some((item) => custom_features.some((val) => val.feature === item.title));
-        updated[category.title] = hasFeature;
+        if (hasFeature) updated[category.title] = true;
       });
 
       return updated;
@@ -113,7 +109,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                     <button
                       type="button"
                       className={cn(
-                        "w-full flex items-center justify-between text-sm font-medium py-3 mb-2 rounded-md bg-gray-100 px-3 pl-4.5",
+                        "w-full flex items-center justify-between space-x-2 py-3 mb-2 rounded-md bg-gray-100 px-3 pl-4.5",
                         isOpen ? "bg-blue-100" : "bg-gray-100"
                       )}
                       onClick={() => {
@@ -138,7 +134,12 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                         }
                       }}
                     >
-                      {category.icon} {category.title}
+                      <div className="flex flex-col text-sm font-medium text-start">
+                        <p>
+                          {category.icon} {category.title}
+                        </p>
+                        <div className="w-full text-xs font-normal mt-1">{category.description}</div>
+                      </div>
                       <SwitchIndicator checked={isOpen} />
                     </button>
 
@@ -227,7 +228,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
             </FormItem>
           )}
         />
-      )}{" "}
+      )}
       <FormField
         control={control}
         name="expected_end_date"

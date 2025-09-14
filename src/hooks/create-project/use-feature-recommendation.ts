@@ -80,7 +80,8 @@ export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProjec
           doctype: "Features",
           feature,
         }));
-        form.setValue("custom_features", features, { shouldDirty: true });
+        form.setValue("custom_features", []);
+        form.setValue("custom_features", features);
       }
     }
   }, [hasCompleted, estimateFeatures?.data?.feature_list, form]);

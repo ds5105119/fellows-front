@@ -4,6 +4,7 @@ export const categorizedFeatures = [
   {
     icon: "👤",
     title: "회원/인증",
+    description: "서비스 이용의 기본이 되는 회원 관련 기능입니다.",
     items: [
       {
         icon: "🥳",
@@ -52,6 +53,7 @@ export const categorizedFeatures = [
   {
     icon: "🔔",
     title: "알림",
+    description: "사용자에게 중요한 정보를 효과적으로 전달하기 위한 기능입니다.",
     items: [
       {
         icon: "🔔",
@@ -107,6 +109,7 @@ export const categorizedFeatures = [
   {
     icon: "🛒",
     title: "쇼핑몰 기능",
+    description: "온라인 상점을 운영하는 데 필요한 핵심 기능들입니다.",
     items: [
       {
         icon: "🛍️",
@@ -155,6 +158,7 @@ export const categorizedFeatures = [
   {
     icon: "💳",
     title: "결제 기능",
+    description: "사용자가 서비스 내에서 편리하게 결제할 수 있도록 지원하는 기능입니다.",
     items: [
       {
         icon: "💳",
@@ -201,110 +205,9 @@ export const categorizedFeatures = [
     ],
   },
   {
-    icon: "🛠️",
-    title: "도구 및 기술",
-    items: [
-      {
-        icon: "🌐",
-        title: "다국어 지원",
-        description: "여러 언어로 콘텐츠를 제공할 수 있어요.",
-        default: { code: false, shopify: false, imweb: false, cafe24: false, framer: false, webflow: false, wordpress: false, bubble: false },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-      },
-      {
-        icon: "🔎",
-        title: "검색 기능",
-        description: "키워드 검색을 통해 원하는 콘텐츠를 쉽게 찾을 수 있어요.",
-        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: true, wordpress: true, bubble: false },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-      },
-      {
-        icon: "🗺️",
-        title: "지도",
-        description: "구글맵, 네이버지도 등 위치 서비스를 제공할 수 있어요.",
-        default: { code: false, shopify: false, imweb: false, cafe24: false, framer: false, webflow: false, wordpress: false, bubble: false },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-      },
-      {
-        icon: "📆",
-        title: "예약 시스템",
-        description: "예약, 일정 관리 기능을 제공해요.",
-        default: { code: false, shopify: false, imweb: false, cafe24: false, framer: false, webflow: false, wordpress: false, bubble: false },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-      },
-    ],
-  },
-  {
-    icon: "🖥️",
-    title: "운영/관리자",
-    items: [
-      {
-        icon: "🛠️",
-        title: "관리자 페이지",
-        description: "운영자가 상품, 회원, 게시글을 관리할 수 있어요.",
-        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-      },
-      {
-        icon: "📈",
-        title: "관리자 통계",
-        description: "GA 또는 관리자 페이지에서 지표를 시각화해 제공해요.",
-        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: false, wordpress: false, bubble: false },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-      },
-      {
-        icon: "💾",
-        title: "데이터 백업",
-        description: "주기적으로 데이터 백업을 하고 복구할 수 있어요.",
-        default: { code: false, shopify: true, imweb: false, cafe24: false, framer: false, webflow: true, wordpress: false, bubble: true },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: false, webflow: true, wordpress: true, bubble: true },
-      },
-    ],
-  },
-  {
-    icon: "🎨",
-    title: "사용자 인터페이스",
-    items: [
-      {
-        icon: "📱",
-        title: "마이페이지",
-        description: "내 정보와 활동 내역을 한눈에 볼 수 있어요.",
-        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: true, wordpress: false, bubble: false },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-      },
-      {
-        icon: "⚙️",
-        title: "설정 페이지",
-        description: "알림, 개인정보, 보안 설정 등을 변경할 수 있어요.",
-        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: true, wordpress: false, bubble: false },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-      },
-      {
-        icon: "📞",
-        title: "고객센터",
-        description: "FAQ, 문의 접수를 통해 고객 지원을 받을 수 있어요.",
-        default: { code: false, shopify: false, imweb: true, cafe24: true, framer: false, webflow: false, wordpress: false, bubble: false },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-      },
-      {
-        icon: "📚",
-        title: "문서/헬프 센터",
-        description: "사용 가이드를 문서로 제공할 수 있어요.",
-        default: { code: false, shopify: false, imweb: false, cafe24: false, framer: false, webflow: false, wordpress: false, bubble: false },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-      },
-      {
-        icon: "💬",
-        title: "채팅 기능",
-        description: "실시간 채팅을 통해 사용자 간 소통할 수 있어요.",
-        default: { code: false, shopify: false, imweb: false, cafe24: false, framer: false, webflow: false, wordpress: false, bubble: false },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-      },
-    ],
-  },
-  {
     icon: "👋",
     title: "온보딩/초기화면",
+    description: "사용자가 서비스에 처음 방문했을 때 쉽게 적응할 수 있도록 돕는 기능입니다.",
     items: [
       {
         icon: "🏠",
@@ -332,6 +235,7 @@ export const categorizedFeatures = [
   {
     icon: "🏙️",
     title: "콘텐츠",
+    description: "사용자가 직접 정보를 생성하고 소비하며 상호작용하는데 필요한 기능입니다.",
     items: [
       {
         icon: "📝",
@@ -362,25 +266,25 @@ export const categorizedFeatures = [
         view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
       },
       {
-        icon: "✒️",
+        icon: "🗂️",
         title: "콘텐츠 분류",
         description: "콘텐츠를 카테고리로 나눠 분류할 수 있어요.",
-        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: true, wordpress: true, bubble: false },
         view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
       },
       {
-        icon: "✒️",
+        icon: "📊",
         title: "콘텐츠 정렬",
         description: "콘텐츠를 최신순, 인기순 등으로 정렬할 수 있어요.",
-        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+        default: { code: false, shopify: false, imweb: true, cafe24: true, framer: false, webflow: false, wordpress: false, bubble: false },
         view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
       },
       {
-        icon: "✒️",
+        icon: "👍",
         title: "콘텐츠 추천",
         description: "사용자별로 콘텐츠를 추천할 수 있어요.",
-        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
-        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+        default: { code: false, shopify: false, imweb: false, cafe24: false, framer: false, webflow: false, wordpress: false, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: false, webflow: true, wordpress: true, bubble: true },
       },
       {
         icon: "🖼️",
@@ -420,8 +324,114 @@ export const categorizedFeatures = [
     ],
   },
   {
+    icon: "🛠️",
+    title: "도구 및 기술",
+    description: "서비스의 기능성을 확장하고 사용자 경험을 풍부하게 만드는 기능입니다.",
+    items: [
+      {
+        icon: "🌐",
+        title: "다국어 지원",
+        description: "여러 언어로 콘텐츠를 제공할 수 있어요.",
+        default: { code: false, shopify: false, imweb: false, cafe24: false, framer: false, webflow: false, wordpress: false, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+      {
+        icon: "🔎",
+        title: "검색 기능",
+        description: "키워드 검색을 통해 원하는 콘텐츠를 쉽게 찾을 수 있어요.",
+        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: true, wordpress: true, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+      {
+        icon: "🗺️",
+        title: "지도",
+        description: "구글맵, 네이버지도 등 위치 서비스를 제공할 수 있어요.",
+        default: { code: false, shopify: false, imweb: false, cafe24: false, framer: false, webflow: false, wordpress: false, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+      {
+        icon: "📆",
+        title: "예약 시스템",
+        description: "예약, 일정 관리 기능을 제공해요.",
+        default: { code: false, shopify: false, imweb: false, cafe24: false, framer: false, webflow: false, wordpress: false, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+    ],
+  },
+  {
+    icon: "🖥️",
+    title: "운영/관리자",
+    description: "운영에 필요한 관리자 전용 기능입니다.",
+    items: [
+      {
+        icon: "🛠️",
+        title: "관리자 페이지",
+        description: "운영자가 상품, 회원, 게시글을 관리할 수 있어요.",
+        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+      {
+        icon: "📈",
+        title: "관리자 통계",
+        description: "GA 또는 관리자 페이지에서 지표를 시각화해 제공해요.",
+        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: false, wordpress: false, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+      {
+        icon: "💾",
+        title: "데이터 백업",
+        description: "주기적으로 데이터 백업을 하고 복구할 수 있어요.",
+        default: { code: false, shopify: true, imweb: false, cafe24: false, framer: false, webflow: true, wordpress: false, bubble: true },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: false, webflow: true, wordpress: true, bubble: true },
+      },
+    ],
+  },
+  {
+    icon: "🎨",
+    title: "사용자 인터페이스",
+    description: "사용자가 서비스를 이용하며 직접 마주하는 화면과 상호작용 요소들입니다.",
+    items: [
+      {
+        icon: "📱",
+        title: "마이페이지",
+        description: "내 정보와 활동 내역을 한눈에 볼 수 있어요.",
+        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: true, wordpress: false, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+      {
+        icon: "⚙️",
+        title: "설정 페이지",
+        description: "알림, 개인정보, 보안 설정 등을 변경할 수 있어요.",
+        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: true, wordpress: false, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+      {
+        icon: "📞",
+        title: "고객센터",
+        description: "FAQ, 문의 접수를 통해 고객 지원을 받을 수 있어요.",
+        default: { code: false, shopify: false, imweb: true, cafe24: true, framer: false, webflow: false, wordpress: false, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+      {
+        icon: "📚",
+        title: "문서/헬프 센터",
+        description: "사용 가이드를 문서로 제공할 수 있어요.",
+        default: { code: false, shopify: false, imweb: false, cafe24: false, framer: false, webflow: false, wordpress: false, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+      {
+        icon: "💬",
+        title: "채팅 기능",
+        description: "실시간 채팅을 통해 사용자 간 소통할 수 있어요.",
+        default: { code: false, shopify: false, imweb: false, cafe24: false, framer: false, webflow: false, wordpress: false, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+    ],
+  },
+  {
     icon: "✨",
     title: "고급 기능",
+    description: "특정 비즈니스 모델이나 고도화된 사용자 경험을 위해 필요한 전문 기능입니다.",
     items: [
       {
         icon: "📱",
@@ -453,7 +463,7 @@ export const categorizedFeatures = [
       },
       {
         icon: "🛡️",
-        title: "RABC",
+        title: "RBAC",
         description: "팀별, 직책별 등 역할 및 접근 제어 시스템을 구축합니다.",
         default: { code: false, shopify: false, imweb: false, cafe24: false, framer: false, webflow: false, wordpress: false, bubble: false },
         view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
