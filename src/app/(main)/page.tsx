@@ -60,6 +60,7 @@ export default async function Page() {
             }}
             viewOptions={{ margin: "0px 0px 100px 0px" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
+            once
           >
             <MainSection2 />
           </InView>
@@ -74,6 +75,7 @@ export default async function Page() {
               }}
               viewOptions={{ margin: "0px 0px 100px 0px" }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
+              once
             >
               <MainSection4 />
             </InView>
@@ -89,6 +91,7 @@ export default async function Page() {
             }}
             viewOptions={{ margin: "0px 0px 100px 0px" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
+            once
           >
             <MainSection3 />
           </InView>
@@ -102,6 +105,7 @@ export default async function Page() {
             }}
             viewOptions={{ margin: "0px 0px 100px 0px" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
+            once
           >
             <MainSection7 />
           </InView>
@@ -115,6 +119,7 @@ export default async function Page() {
             }}
             viewOptions={{ margin: "0px 0px 100px 0px" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
+            once
           >
             <MainQnaSection />
           </InView>
@@ -128,6 +133,7 @@ export default async function Page() {
             }}
             viewOptions={{ margin: "0px 0px 100px 0px" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
+            once
           >
             <MainContactSection />
           </InView>
@@ -141,6 +147,7 @@ export default async function Page() {
             }}
             viewOptions={{ margin: "0px 0px 100px 0px" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
+            once
           >
             <MainInquerySection />
           </InView>

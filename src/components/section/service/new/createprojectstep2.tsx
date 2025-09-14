@@ -76,11 +76,16 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
   useEffect(() => {
     if (!custom_features) return;
 
-    setOpenMap(
-      Object.fromEntries(
-        categorizedFeatures.map((category) => [category.title, category.items.some((item) => custom_features.map((val) => val.feature).includes(item.title))])
-      )
-    );
+    setOpenMap(() => {
+      const updated: Record<string, boolean> = {};
+
+      categorizedFeatures.forEach((category) => {
+        const hasFeature = category.items.some((item) => custom_features.some((val) => val.feature === item.title));
+        updated[category.title] = hasFeature;
+      });
+
+      return updated;
+    });
   }, [custom_features, categorizedFeatures]);
 
   return (
