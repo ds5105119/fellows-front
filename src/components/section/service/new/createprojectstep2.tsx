@@ -134,6 +134,12 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                               item={item}
                               isChecked={field.value?.some((f) => f.feature == item.title) || false}
                               onButtonClick={() => {
+                                if (project_method === "code") {
+                                  if (item.default["code"]) return;
+                                } else {
+                                  if (item.default[nocode_platform as NoCodePlatform]) return;
+                                }
+
                                 const current = field.value || [];
                                 const include = current.some((f) => f.feature == item.title);
                                 field.onChange(
