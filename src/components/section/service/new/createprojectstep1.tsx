@@ -92,7 +92,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
           <FormItem>
             <FormLabel className="text-sm font-medium">프로젝트 이름</FormLabel>
             <FormControl>
-              <AnimatedUnderlineInput placeholder="이름을 입력해주세요. (예: 쇼핑몰 구축)" {...field} value={field.value ?? ""} />
+              <AnimatedUnderlineInput placeholder="이름을 입력해주세요. (예: 쇼핑몰 구축)" {...field} value={field.value ?? ""} id="project_name" />
             </FormControl>
             <FormMessage />
           </FormItem>

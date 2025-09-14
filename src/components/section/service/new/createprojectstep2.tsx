@@ -1,20 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { FormField, FormItem, FormMessage, FormLabel, FormControl } from "@/components/ui/form";
-import { categorizedFeatures } from "@/components/resource/project";
 import { FeatureItemWithTooltip } from "@/components/form/featureitemwithtooltip";
-import { CreateERPNextProject } from "@/@types/service/project";
+import { categorizedFeatures } from "@/components/resource/project";
+import { CreateProjectStep2MaintenanceField } from "./createprojectstep2maintenancefield";
+import { CreateERPNextProject, NoCodePlatform } from "@/@types/service/project";
+import { motion, AnimatePresence } from "framer-motion";
 import TagInput from "@/components/form/taginput";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
-
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import "dayjs/locale/ko";
 import DatePicker from "@/components/section/service/new/datepicker";
-import { CreateProjectStep2MaintenanceField } from "./createprojectstep2maintenancefield";
-dayjs.extend(relativeTime);
-dayjs.locale("ko");
+import dayjs from "@/lib/dayjs";
+import { SwitchIndicator } from "@/components/ui/switch-indicator";
+import { cn } from "@/lib/utils";
 
 interface CreateProjectFormStep2Props {
   form: UseFormReturn<CreateERPNextProject>;
@@ -29,6 +28,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
   } = form;
 
   const project_method = getValues("custom_project_method");
+  const nocode_platform = getValues("custom_nocode_platform");
 
   return (
     <>
@@ -37,28 +37,84 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
         name="custom_features"
         render={({ field }) => (
           <FormItem>
-            <div className="w-full flex flex-col gap-5">
-              {categorizedFeatures.map((category) =>
-                project_method !== "code" && category.title === "프리미엄 기능" ? null : (
-                  <div key={category.title} className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <div className="col-span-full text-sm font-medium mb-1">{category.title}</div>
-                    {category.items.map((item) => (
-                      <FeatureItemWithTooltip
-                        key={item.title}
-                        item={item}
-                        isChecked={field.value?.some((f) => f.feature == item.title) || false}
-                        onButtonClick={() => {
-                          const current = field.value || [];
-                          const include = current.some((f) => f.feature == item.title);
-                          field.onChange(
-                            include ? current.filter((p) => p.feature !== item.title) : [...current, { doctype: "Features", feature: item.title }]
-                          );
-                        }}
-                      />
-                    ))}
+            <div className="w-full flex flex-col gap-2">
+              {categorizedFeatures.map((category) => {
+                const visibleItems = category.items.filter((item) => {
+                  if (project_method === "code" && !item.view.code) return false;
+                  if ((project_method === "nocode" || project_method === "shop") && !item.view[nocode_platform as NoCodePlatform]) return false;
+                  return true;
+                });
+
+                if (visibleItems.length === 0) return null;
+
+                const [open, setOpen] = useState(category.items.some((item) => field.value?.map((val) => val.feature).includes(item.title)));
+
+                return (
+                  <div key={category.title} className="w-full">
+                    {/* Title Row */}
+                    <button
+                      type="button"
+                      className={cn(
+                        "w-full flex items-center justify-between text-sm font-medium py-3 mb-2 rounded-md bg-gray-100 px-3 pl-4.5",
+                        open ? "bg-blue-100" : "bg-gray-100"
+                      )}
+                      onClick={() => {
+                        if (open) {
+                          setOpen(false);
+                          field.onChange(field.value?.filter((val) => !category.items.map((item) => item.title).includes(val.feature)));
+                        } else {
+                          setOpen(true);
+                          if (project_method === "code") {
+                            field.onChange([
+                              ...(field.value ?? []),
+                              ...category.items.filter((item) => item.default["code"]).map((item) => ({ doctype: "Features", feature: item.title })),
+                            ]);
+                          } else {
+                            field.onChange([
+                              ...(field.value ?? []),
+                              ...category.items
+                                .filter((item) => item.default[nocode_platform as NoCodePlatform])
+                                .map((item) => ({ doctype: "Features", feature: item.title })),
+                            ]);
+                          }
+                        }
+                      }}
+                    >
+                      {category.icon} {category.title}
+                      <SwitchIndicator checked={open} />
+                    </button>
+
+                    {/* AnimatePresence로 높이/opacity 애니메이션 */}
+                    <AnimatePresence initial={false}>
+                      {open && (
+                        <motion.div
+                          key="content"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2"
+                        >
+                          {visibleItems.map((item) => (
+                            <FeatureItemWithTooltip
+                              key={item.title}
+                              item={item}
+                              isChecked={field.value?.some((f) => f.feature == item.title) || false}
+                              onButtonClick={() => {
+                                const current = field.value || [];
+                                const include = current.some((f) => f.feature == item.title);
+                                field.onChange(
+                                  include ? current.filter((p) => p.feature !== item.title) : [...current, { doctype: "Features", feature: item.title }]
+                                );
+                              }}
+                            />
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                )
-              )}
+                );
+              })}
             </div>
             <FormMessage />
           </FormItem>
