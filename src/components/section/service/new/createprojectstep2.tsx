@@ -209,23 +209,25 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
           </FormItem>
         )}
       />
-      <FormField
-        control={control}
-        name="custom_preferred_tech_stacks"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm font-medium">선호 기술 스택</FormLabel>
-            <FormControl>
-              <TagInput
-                value={field.value ? field.value.map((item) => item.stack) : []}
-                onChange={(val) => field.onChange(val.map((v) => ({ stack: v })))}
-                placeholder={field.value && field.value.length > 0 ? "⌫ 키로 지울 수 있어요." : "쉼표(,)로 구분하여 입력해주세요. (얘시: Next.js)"}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {project_method === "code" && (
+        <FormField
+          control={control}
+          name="custom_preferred_tech_stacks"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium">선호 기술 스택</FormLabel>
+              <FormControl>
+                <TagInput
+                  value={field.value ? field.value.map((item) => item.stack) : []}
+                  onChange={(val) => field.onChange(val.map((v) => ({ stack: v })))}
+                  placeholder={field.value && field.value.length > 0 ? "⌫ 키로 지울 수 있어요." : "쉼표(,)로 구분하여 입력해주세요. (얘시: Next.js)"}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}{" "}
       <FormField
         control={control}
         name="expected_end_date"
