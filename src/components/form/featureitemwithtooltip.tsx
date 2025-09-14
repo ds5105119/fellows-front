@@ -9,10 +9,12 @@ import { SwitchIndicator } from "@/components/ui/switch-indicator";
 export const FeatureItemWithTooltip = ({
   item,
   isChecked,
+  isDefault,
   onButtonClick,
 }: {
   item: { icon?: string; title: string; description?: string };
   isChecked: boolean;
+  isDefault?: boolean;
   onButtonClick: (title: string) => void;
 }) => {
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -68,7 +70,7 @@ export const FeatureItemWithTooltip = ({
           <div className="w-6 h-6" />
         )}
       </div>
-      <SwitchIndicator checked={!!isChecked} />
+      {!isDefault && <SwitchIndicator checked={!!isChecked} />}
     </button>
   );
 };

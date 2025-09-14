@@ -31,6 +31,16 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
   const nocode_platform = useWatch({ name: "custom_nocode_platform", control });
   const custom_features = useWatch({ name: "custom_features", control });
 
+  const [openMap, setOpenMap] = useState<Record<string, boolean>>(
+    Object.fromEntries(
+      categorizedFeatures.map((category) => [category.title, category.items.some((item) => custom_features?.map((val) => val.feature).includes(item.title))])
+    )
+  );
+
+  const toggleCategory = (title: string) => {
+    setOpenMap((prev) => ({ ...prev, [title]: !prev[title] }));
+  };
+
   const areFeaturesEqual = (
     a: { doctype: string | null; feature: string }[] | null | undefined,
     b: { doctype: string | null; feature: string }[] | null | undefined
@@ -72,6 +82,8 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
           <FormItem>
             <div className="w-full flex flex-col gap-2">
               {categorizedFeatures.map((category) => {
+                const isOpen = openMap[category.title] ?? false;
+
                 const visibleItems = category.items.filter((item) => {
                   if (project_method === "code" && !item.view.code) return false;
                   if ((project_method === "nocode" || project_method === "shop") && !item.view[nocode_platform as NoCodePlatform]) return false;
@@ -80,8 +92,6 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
 
                 if (visibleItems.length === 0) return null;
 
-                const [open, setOpen] = useState(category.items.some((item) => field.value?.map((val) => val.feature).includes(item.title)));
-
                 return (
                   <div key={category.title} className="w-full">
                     {/* Title Row */}
@@ -89,14 +99,14 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                       type="button"
                       className={cn(
                         "w-full flex items-center justify-between text-sm font-medium py-3 mb-2 rounded-md bg-gray-100 px-3 pl-4.5",
-                        open ? "bg-blue-100" : "bg-gray-100"
+                        isOpen ? "bg-blue-100" : "bg-gray-100"
                       )}
                       onClick={() => {
-                        if (open) {
-                          setOpen(false);
+                        toggleCategory(category.title);
+
+                        if (isOpen) {
                           field.onChange(field.value?.filter((val) => !category.items.map((item) => item.title).includes(val.feature)));
                         } else {
-                          setOpen(true);
                           if (project_method === "code") {
                             field.onChange([
                               ...(field.value ?? []),
@@ -114,12 +124,12 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                       }}
                     >
                       {category.icon} {category.title}
-                      <SwitchIndicator checked={open} />
+                      <SwitchIndicator checked={isOpen} />
                     </button>
 
                     {/* AnimatePresence로 높이/opacity 애니메이션 */}
                     <AnimatePresence initial={false}>
-                      {open && (
+                      {isOpen && (
                         <motion.div
                           key="content"
                           initial={{ height: 0, opacity: 0 }}
