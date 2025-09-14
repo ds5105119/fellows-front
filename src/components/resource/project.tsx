@@ -136,10 +136,17 @@ export const categorizedFeatures = [
     title: "쇼핑몰 기능",
     items: [
       {
-        icon: "🛒",
+        icon: "🛍️",
         title: "상품관리",
         description: "상품 등록, 삭제, 수정 및 주문 관리가 가능해요.",
-        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: false, wordpress: true, bubble: false },
+        default: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+      {
+        icon: "🛒",
+        title: "장바구니",
+        description: "상품을 장바구니에 담아 결제가 가능해요.",
+        default: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
         view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
       },
       {
@@ -150,9 +157,23 @@ export const categorizedFeatures = [
         view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
       },
       {
-        icon: "📦",
+        icon: "🚛",
         title: "배송추적",
         description: "배송 추적이 가능해요.",
+        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: false, wordpress: true, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+      {
+        icon: "🙅",
+        title: "환불 및 반품 관리",
+        description: "구매한 상품의 환불 및 반품이 가능해요.",
+        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: false, wordpress: true, bubble: false },
+        view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
+      },
+      {
+        icon: "✏️",
+        title: "교환 신청",
+        description: "구매한 상품의 교환 신청이 가능해요.",
         default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: false, wordpress: true, bubble: false },
         view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
       },
@@ -166,7 +187,7 @@ export const categorizedFeatures = [
         icon: "💳",
         title: "결제내역",
         description: "사용자가 결제한 내역을 확인할 수 있어요.",
-        default: { code: false, shopify: true, imweb: true, cafe24: true, framer: false, webflow: false, wordpress: true, bubble: false },
+        default: { code: true, shopify: true, imweb: true, cafe24: true, framer: false, webflow: false, wordpress: true, bubble: false },
         view: { code: true, shopify: true, imweb: true, cafe24: true, framer: true, webflow: true, wordpress: true, bubble: true },
       },
       {

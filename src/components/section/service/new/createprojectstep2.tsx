@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { UseFormReturn, useWatch } from "react-hook-form";
 import { FormField, FormItem, FormMessage, FormLabel, FormControl } from "@/components/ui/form";
 import { FeatureItemWithTooltip } from "@/components/form/featureitemwithtooltip";
 import { categorizedFeatures } from "@/components/resource/project";
@@ -27,8 +27,41 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
     formState: { errors },
   } = form;
 
-  const project_method = getValues("custom_project_method");
-  const nocode_platform = getValues("custom_nocode_platform");
+  const project_method = useWatch({ name: "custom_project_method", control });
+  const nocode_platform = useWatch({ name: "custom_nocode_platform", control });
+  const custom_features = useWatch({ name: "custom_features", control });
+
+  const areFeaturesEqual = (
+    a: { doctype: string | null; feature: string }[] | null | undefined,
+    b: { doctype: string | null; feature: string }[] | null | undefined
+  ) => {
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+    if (a.length !== b.length) return false;
+
+    const setB = new Set(b.map((f) => f.feature));
+    return a.every((f) => setB.has(f.feature));
+  };
+
+  useEffect(() => {
+    if (!custom_features) return;
+
+    const additional = custom_features.flatMap((feature) => {
+      const category = categorizedFeatures.find((c) => c.items.some((item) => item.title === feature.feature));
+      if (!category) return [];
+
+      return project_method === "code"
+        ? category.items.filter((item) => item.default["code"]).map((item) => ({ doctype: "Features", feature: item.title }))
+        : category.items.filter((item) => item.default[nocode_platform as NoCodePlatform]).map((item) => ({ doctype: "Features", feature: item.title }));
+    });
+
+    const allFeatures = [...custom_features, ...additional];
+    const uniqueFeatures = Array.from(new Map(allFeatures.map((f) => [f.feature, f])).values());
+
+    if (!areFeaturesEqual(uniqueFeatures, custom_features)) {
+      setValue("custom_features", uniqueFeatures, { shouldDirty: false });
+    }
+  }, [custom_features, project_method, nocode_platform, setValue, categorizedFeatures]);
 
   return (
     <>
