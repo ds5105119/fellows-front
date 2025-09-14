@@ -73,6 +73,16 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
     }
   }, [custom_features, project_method, nocode_platform, setValue, categorizedFeatures]);
 
+  useEffect(() => {
+    if (!custom_features) return;
+
+    setOpenMap(
+      Object.fromEntries(
+        categorizedFeatures.map((category) => [category.title, category.items.some((item) => custom_features.map((val) => val.feature).includes(item.title))])
+      )
+    );
+  }, [custom_features, categorizedFeatures]);
+
   return (
     <>
       <FormField
@@ -156,6 +166,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                                   include ? current.filter((p) => p.feature !== item.title) : [...current, { doctype: "Features", feature: item.title }]
                                 );
                               }}
+                              isDefault={project_method === "code" ? item.default["code"] : item.default[nocode_platform as NoCodePlatform]}
                             />
                           ))}
                         </motion.div>

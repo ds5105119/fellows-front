@@ -4,9 +4,8 @@ import { toast } from "sonner";
 import { useGetEstimateFeatures } from "@/hooks/fetch/project";
 import { CreateERPNextProject } from "@/@types/service/project";
 
-export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProject>, currentStep: number) {
+export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProject>) {
   const [isRecommending, setIsRecommending] = useState(false);
-  const [isFirstTimeInStep2, setIsFirstTimeInStep2] = useState(true);
   const [hasCompleted, setHasCompleted] = useState(false);
   const [isSuccess, setIsSuccess] = useState(true);
 
@@ -31,7 +30,7 @@ export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProjec
     nocode_platform: watchedFields[5] || "",
   });
 
-  const handleRecommendAgain = async () => {
+  const handleRecommend = async () => {
     setIsRecommending(false);
     setHasCompleted(false);
     Object.values(timeoutRefs.current).forEach((timeout) => {
@@ -43,15 +42,6 @@ export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProjec
     fetchStartTime.current = Date.now();
     await estimateFeatures.fetchData();
   };
-
-  // Start recommendation when entering step 2 for the first time
-  useEffect(() => {
-    if (isFirstTimeInStep2 && currentStep === 2) {
-      setIsFirstTimeInStep2(false);
-      fetchStartTime.current = Date.now();
-      estimateFeatures.fetchData();
-    }
-  }, [isFirstTimeInStep2, currentStep]);
 
   // Handle loading state
   useEffect(() => {
@@ -87,10 +77,10 @@ export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProjec
       } else {
         setIsSuccess(true);
         const features = estimateFeatures.data.feature_list.map((feature) => ({
-          doctype: "Features" as const,
+          doctype: "Features",
           feature,
         }));
-        form.setValue("custom_features", features);
+        form.setValue("custom_features", features, { shouldDirty: true });
       }
     }
   }, [hasCompleted, estimateFeatures?.data?.feature_list, form]);
@@ -118,6 +108,6 @@ export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProjec
     isSuccess,
     isRecommending,
     hasCompleted,
-    handleRecommendAgain,
+    handleRecommend,
   };
 }

@@ -23,7 +23,7 @@ export const FeatureItemWithTooltip = ({
       type="button"
       key={item.title}
       className={cn(
-        "flex items-center justify-between not-odd:col-span-1 py-2.5 px-3 rounded-md font-semibold text-sm cursor-pointer text-left",
+        "flex items-center justify-between not-odd:col-span-1 h-11 px-3 rounded-md font-semibold text-sm cursor-pointer text-left",
         isChecked ? "bg-blue-100" : "bg-gray-100"
       )}
       onClick={() => onButtonClick(item.title)}
@@ -59,7 +59,10 @@ export const FeatureItemWithTooltip = ({
                   setTooltipOpen(false);
                 }}
               >
-                <Info strokeWidth={2.3} className="!size-6 text-neutral-400 z-10 rounded-sm p-1 hover:bg-neutral-200 transition-colors duration-200 shrink-0" />
+                <Info
+                  strokeWidth={2.3}
+                  className="!size-6 text-neutral-400 z-10 rounded-sm p-1 hover:backdrop-brightness-90 transition-colors duration-200 shrink-0"
+                />
               </TooltipTrigger>
               <TooltipContent onClick={(e) => e.stopPropagation()} side="top" align="center" className="w-fit z-50">
                 <p className="text-sm">{item.description}</p>
@@ -70,7 +73,11 @@ export const FeatureItemWithTooltip = ({
           <div className="w-6 h-6" />
         )}
       </div>
-      {!isDefault && <SwitchIndicator checked={!!isChecked} />}
+      {!isDefault ? (
+        <SwitchIndicator checked={!!isChecked} />
+      ) : (
+        <div className="text-xs w-9 py-0.5 flex items-center justify-center rounded-full border border-blue-300 bg-blue-200 text-blue-600">필수</div>
+      )}
     </button>
   );
 };

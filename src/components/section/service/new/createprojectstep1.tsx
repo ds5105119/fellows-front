@@ -225,7 +225,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                     {filteredPlatforms.map(([key, value]) => (
                       <button
                         className={cn(
-                          "col-span-1 h-11 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-md text-sm",
+                          "col-span-1 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-md text-start text-sm p-4",
                           field.value === key ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
                         )}
                         type="button"
@@ -234,7 +234,8 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                           field.onChange(key);
                         }}
                       >
-                        {value.title}
+                        <p className="w-full font-bold">{value.title}</p>
+                        <p className="w-full text-sm font-medium mt-1">{value.description}</p>
                       </button>
                     ))}
                   </div>

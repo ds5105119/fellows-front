@@ -11,7 +11,6 @@ import { useProjectForm } from "@/hooks/create-project/use-project-form";
 import { useFeatureRecommendation } from "@/hooks/create-project/use-feature-recommendation";
 import { ProjectFormNavigation } from "./createformnavigation";
 import { CreateProjectTermsSection } from "./createprojecttermssection";
-import { RecommendationLoading } from "./recommandationloading";
 import { Loader2 } from "lucide-react";
 import { ProjectInfoEstimateResponse } from "@/@types/service/project";
 import { useSearchParams } from "next/navigation";
@@ -42,7 +41,7 @@ export default function CreateProject() {
   const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
     useProjectForm(description, info);
 
-  const { isSuccess, isRecommending, hasCompleted, handleRecommendAgain } = useFeatureRecommendation(form, currentStep);
+  const { isSuccess, isRecommending, handleRecommend } = useFeatureRecommendation(form);
 
   // 직접 Intersection Observer 구현
   const checkVisibility = useCallback(() => {
@@ -159,19 +158,6 @@ export default function CreateProject() {
     );
   }
 
-  if (isRecommending) {
-    return (
-      <div className="flex w-full h-full min-h-screen">
-        <div className="hidden h-full flex-col max-w-md shrink-0 scrollbar-hide pl-20 pr-10">
-          <CreateProjectSide />
-        </div>
-        <div className="flex flex-col w-full mx-auto lg:w-xl h-full scrollbar-hide shrink-0">
-          <RecommendationLoading currentStep={currentStep} totalSteps={totalSteps} isRecommanding={isRecommending} hasCompleted={hasCompleted} />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex w-full h-full min-h-screen">
       <div className="hidden h-full flex-col max-w-md shrink-0 scrollbar-hide pl-20 pr-10">
@@ -186,8 +172,9 @@ export default function CreateProject() {
               <p className="text-sm md:text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">{currentStepMeta.description}</p>
             </div>
             {currentStep === 2 && (
-              <Button type="button" onClick={handleRecommendAgain} disabled={isRecommending} className="font-semibold text-background">
-                다시 추천받기
+              <Button type="button" onClick={handleRecommend} disabled={isRecommending} className="font-semibold text-background">
+                {isRecommending && <Loader2 className="h-4 w-4 animate-spin" />}
+                AI 추천받기
               </Button>
             )}
           </div>
