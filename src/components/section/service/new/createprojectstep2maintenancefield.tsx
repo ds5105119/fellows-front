@@ -147,16 +147,7 @@ function MaintenanceForm({ form, onSubscribe, onCancel }: { form: UseFormReturn<
           </div>
 
           <div className="flex items-center space-x-2 text-sm">
-            <span>Fellows SaaS를 통한 WBS를 통한 개발 상황 추적</span>
-          </div>
-          <div className="flex items-center space-x-2 text-sm">
-            <span>Fellows SaaS를 통한 일별, 월별 보고서 생성 가능</span>
-          </div>
-          <div className="flex items-center space-x-2 text-sm">
-            <span>Fellows SaaS를 통한 프로젝트 문의 가능</span>
-          </div>
-          <div className="flex items-center space-x-2 text-sm">
-            <span>다국어 지원 (한국어, 영어)</span>
+            <span>Fellows SaaS 기본 기능</span>
           </div>
           <div className="flex items-center space-x-2 text-sm">
             <span>24시간 이내 SW 1차 장애 대응 진행</span>

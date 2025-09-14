@@ -231,7 +231,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
         name="expected_end_date"
         render={({}) => (
           <FormItem>
-            <FormLabel className="text-sm font-medium">희망 일정</FormLabel>
+            <FormLabel className="text-sm font-medium">희망 마감일</FormLabel>
             <FormControl>
               <div className="rounded-2xl overflow-hidden">
                 <DatePicker
