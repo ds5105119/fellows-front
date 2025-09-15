@@ -17,7 +17,7 @@ export const erpNextToDoStatusEnum = z.enum(["Open", "Closed", "Cancelled"]);
 export const erpNextToDoPriorityEnum = z.enum(["High", "Medium", "Low"]);
 export const projectMethodEnum = z.enum(["code", "nocode", "shop"]);
 export type ProjectMethod = z.infer<typeof projectMethodEnum>;
-export const noCodePlatformEnum = z.enum(["cafe24", "framer", "imweb", "shopify", "webflow", "wordpress", "bubble"]);
+export const noCodePlatformEnum = z.enum(["cafe24", "framer", "imweb", "shopify", "webflow", "wordpress", "bubble", "other"]);
 export type NoCodePlatform = z.infer<typeof noCodePlatformEnum>;
 
 // --- Child Table Models for ERPNext ---
@@ -129,8 +129,8 @@ export const createERPNextProjectSchema = z.object({
   custom_project_title: z.string(),
   custom_project_summary: z.string(),
   custom_readiness_level: z.string(),
-  custom_project_method: projectMethodEnum.optional().nullable(),
-  custom_nocode_platform: noCodePlatformEnum.optional().nullable(),
+  custom_project_method: projectMethodEnum.optional(),
+  custom_nocode_platform: noCodePlatformEnum.optional(),
 
   expected_start_date: z.string().optional().nullable(),
   expected_end_date: z.string().optional().nullable(),
@@ -373,9 +373,9 @@ export type ProjectFeatureEstimateRequest = z.infer<typeof projectFeatureEstimat
 export const projectInfoEstimateResponseSchema = z.object({
   custom_project_title: z.string(),
   custom_readiness_level: z.string(),
-  custom_project_method: projectMethodEnum.optional().nullable(),
-  custom_nocode_platform: noCodePlatformEnum.optional().nullable(),
-  custom_platforms: z.array(platformEnum).optional().default([]),
+  custom_platforms: z.array(platformEnum),
+  custom_project_method: projectMethodEnum,
+  custom_nocode_platform: noCodePlatformEnum,
 });
 export type ProjectInfoEstimateResponse = z.infer<typeof projectInfoEstimateResponseSchema>;
 

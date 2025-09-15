@@ -6,7 +6,7 @@ import { FormField, FormItem, FormMessage, FormLabel, FormControl } from "@/comp
 import { FeatureItemWithTooltip } from "@/components/form/featureitemwithtooltip";
 import { categorizedFeatures } from "@/components/resource/project";
 import { CreateProjectStep2MaintenanceField } from "./createprojectstep2maintenancefield";
-import { CreateERPNextProject, NoCodePlatform } from "@/@types/service/project";
+import { CreateERPNextProject } from "@/@types/service/project";
 import { motion, AnimatePresence } from "framer-motion";
 import TagInput from "@/components/form/taginput";
 import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
@@ -50,24 +50,64 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
   };
 
   useEffect(() => {
-    if (!custom_features) return;
+    const additional = custom_features
+      ? custom_features.flatMap((feature) => {
+          const category = categorizedFeatures.find((c) => c.items.some((item) => item.title === feature.feature));
+          if (!category) return [];
 
-    const additional = custom_features.flatMap((feature) => {
-      const category = categorizedFeatures.find((c) => c.items.some((item) => item.title === feature.feature));
-      if (!category) return [];
+          if (project_method === "code") {
+            return category.items.filter((item) => item.default.code).map((item) => ({ doctype: "Features", feature: item.title }));
+          } else if (project_method === "nocode") {
+            return nocode_platform
+              ? category.items
+                  .filter((item) => item.default.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"])
+                  .map((item) => ({ doctype: "Features", feature: item.title }))
+              : category.items.filter((item) => item.default.nocode.other).map((item) => ({ doctype: "Features", feature: item.title }));
+          } else if (project_method === "shop") {
+            return nocode_platform
+              ? category.items
+                  .filter((item) => item.default.shop[nocode_platform as "shopify" | "imweb" | "cafe24"])
+                  .map((item) => ({ doctype: "Features", feature: item.title }))
+              : category.items.filter((item) => item.default.shop.other).map((item) => ({ doctype: "Features", feature: item.title }));
+          }
 
-      return project_method === "code"
-        ? category.items.filter((item) => item.default["code"]).map((item) => ({ doctype: "Features", feature: item.title }))
-        : category.items.filter((item) => item.default[nocode_platform as NoCodePlatform]).map((item) => ({ doctype: "Features", feature: item.title }));
-    });
+          return [];
+        })
+      : [];
 
-    const allFeatures = [...custom_features, ...additional];
+    const allFeatures = [...(custom_features ?? []), ...additional];
     const uniqueFeatures = Array.from(new Map(allFeatures.map((f) => [f.feature, f])).values());
 
     if (!areFeaturesEqual(uniqueFeatures, custom_features)) {
       setValue("custom_features", uniqueFeatures, { shouldDirty: false });
     }
   }, [custom_features, project_method, nocode_platform, setValue, categorizedFeatures]);
+
+  useEffect(() => {
+    const alwaysOn = categorizedFeatures.flatMap((category) => {
+      if (!category) return [];
+
+      if (project_method === "code") {
+        return category.items.filter((item) => item.alwaysOn.code).map((item) => ({ doctype: "Features", feature: item.title }));
+      } else if (project_method === "nocode") {
+        return nocode_platform
+          ? category.items
+              .filter((item) => item.alwaysOn.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"])
+              .map((item) => ({ doctype: "Features", feature: item.title }))
+          : category.items.filter((item) => item.alwaysOn.nocode.other).map((item) => ({ doctype: "Features", feature: item.title }));
+      } else if (project_method === "shop") {
+        return nocode_platform
+          ? category.items
+              .filter((item) => item.alwaysOn.shop[nocode_platform as "shopify" | "imweb" | "cafe24"])
+              .map((item) => ({ doctype: "Features", feature: item.title }))
+          : category.items.filter((item) => item.alwaysOn.shop.other).map((item) => ({ doctype: "Features", feature: item.title }));
+      }
+
+      return [];
+    });
+
+    setValue("custom_features", alwaysOn, { shouldDirty: false });
+  }, [categorizedFeatures, nocode_platform, project_method, setValue]);
 
   useEffect(() => {
     if (!custom_features) return;
@@ -96,9 +136,29 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                 const isOpen = openMap[category.title] ?? false;
 
                 const visibleItems = category.items.filter((item) => {
-                  if (project_method === "code" && !item.view.code) return false;
-                  if ((project_method === "nocode" || project_method === "shop") && !item.view[nocode_platform as NoCodePlatform]) return false;
-                  return true;
+                  if (project_method === "code") {
+                    return item.view.code;
+                  } else if (project_method === "nocode") {
+                    return nocode_platform
+                      ? item.view.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"]
+                      : item.view.nocode.other;
+                  } else if (project_method === "shop") {
+                    return nocode_platform ? item.view.shop[nocode_platform as "shopify" | "imweb" | "cafe24"] : item.view.shop.other;
+                  }
+                  return false;
+                });
+
+                const categoryHasAlwaysOn = category.items.some((item) => {
+                  if (project_method === "code") {
+                    return item.alwaysOn.code;
+                  } else if (project_method === "nocode") {
+                    return nocode_platform
+                      ? item.alwaysOn.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"]
+                      : item.alwaysOn.nocode.other;
+                  } else if (project_method === "shop") {
+                    return nocode_platform ? item.alwaysOn.shop[nocode_platform as "shopify" | "imweb" | "cafe24"] : item.alwaysOn.shop.other;
+                  }
+                  return false;
                 });
 
                 if (visibleItems.length === 0) return null;
@@ -113,6 +173,8 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                         isOpen ? "bg-blue-100" : "bg-gray-100"
                       )}
                       onClick={() => {
+                        if (categoryHasAlwaysOn) return;
+
                         toggleCategory(category.title);
 
                         if (isOpen) {
@@ -121,26 +183,45 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                           if (project_method === "code") {
                             field.onChange([
                               ...(field.value ?? []),
-                              ...category.items.filter((item) => item.default["code"]).map((item) => ({ doctype: "Features", feature: item.title })),
+                              ...category.items.filter((item) => item.default.code).map((item) => ({ doctype: "Features", feature: item.title })),
                             ]);
-                          } else {
+                          } else if (project_method === "nocode") {
                             field.onChange([
                               ...(field.value ?? []),
-                              ...category.items
-                                .filter((item) => item.default[nocode_platform as NoCodePlatform])
-                                .map((item) => ({ doctype: "Features", feature: item.title })),
+                              ...(nocode_platform
+                                ? category.items
+                                    .filter((item) => item.default.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"])
+                                    .map((item) => ({ doctype: "Features", feature: item.title }))
+                                : category.items.filter((item) => item.default.nocode.other).map((item) => ({ doctype: "Features", feature: item.title }))),
+                            ]);
+                          } else if (project_method === "shop") {
+                            field.onChange([
+                              ...(field.value ?? []),
+                              ...(nocode_platform
+                                ? category.items
+                                    .filter((item) => item.default.shop[nocode_platform as "shopify" | "imweb" | "cafe24"])
+                                    .map((item) => ({ doctype: "Features", feature: item.title }))
+                                : category.items.filter((item) => item.default.shop.other).map((item) => ({ doctype: "Features", feature: item.title }))),
                             ]);
                           }
                         }
                       }}
                     >
-                      <div className="flex flex-col text-sm font-medium text-start">
+                      <div className="flex flex-col text-sm font-semibold text-start">
                         <p>
                           {category.icon} {category.title}
                         </p>
-                        <div className="w-full text-xs font-normal mt-1">{category.description}</div>
+                        <div className="w-full text-xs font-medium mt-1">{category.description}</div>
                       </div>
-                      <SwitchIndicator checked={isOpen} />
+                      <div className="shrink-0">
+                        {!categoryHasAlwaysOn ? (
+                          <SwitchIndicator checked={isOpen} />
+                        ) : (
+                          <div className="text-xs w-9 py-0.5 flex items-center justify-center rounded-full border border-blue-300 bg-blue-200 text-blue-600 font-semibold">
+                            포함
+                          </div>
+                        )}
+                      </div>
                     </button>
 
                     {/* AnimatePresence로 높이/opacity 애니메이션 */}
@@ -161,9 +242,16 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                               isChecked={field.value?.some((f) => f.feature == item.title) || false}
                               onButtonClick={() => {
                                 if (project_method === "code") {
-                                  if (item.default["code"]) return;
-                                } else {
-                                  if (item.default[nocode_platform as NoCodePlatform]) return;
+                                  if (item.default.code) return;
+                                } else if (project_method === "nocode") {
+                                  if (
+                                    nocode_platform
+                                      ? item.default.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"]
+                                      : item.default.nocode.other
+                                  )
+                                    return;
+                                } else if (project_method === "shop") {
+                                  if (nocode_platform ? item.default.shop[nocode_platform as "shopify" | "imweb" | "cafe24"] : item.default.shop.other) return;
                                 }
 
                                 const current = field.value || [];
@@ -172,7 +260,19 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
                                   include ? current.filter((p) => p.feature !== item.title) : [...current, { doctype: "Features", feature: item.title }]
                                 );
                               }}
-                              isDefault={project_method === "code" ? item.default["code"] : item.default[nocode_platform as NoCodePlatform]}
+                              isDefault={
+                                project_method === "code"
+                                  ? item.default.code || item.alwaysOn.code
+                                  : project_method === "nocode"
+                                  ? nocode_platform
+                                    ? item.default.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"] ||
+                                      item.alwaysOn.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"]
+                                    : item.default.nocode.other || item.alwaysOn.nocode.other
+                                  : nocode_platform
+                                  ? item.default.shop[nocode_platform as "shopify" | "imweb" | "cafe24"] ||
+                                    item.alwaysOn.shop[nocode_platform as "shopify" | "imweb" | "cafe24"]
+                                  : item.default.shop.other || item.alwaysOn.shop.other
+                              }
                             />
                           ))}
                         </motion.div>

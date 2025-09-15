@@ -39,7 +39,7 @@ function ProjectMethodButton({
         "flex flex-col space-y-1.5 shadow-none transition-colors duration-200 ease-in-out rounded-md text-start p-4",
         value === selected ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
       )}
-      onClick={() => onChange(selected === value ? undefined : value)}
+      onClick={() => onChange(value)}
     >
       <p className="w-full font-bold">{method.title}</p>
       <div className="px-2.5 py-1 rounded-full text-xs font-semibold w-fit mt-2 bg-foreground text-background">특징</div>
@@ -62,9 +62,9 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
     let allowedKeys: string[] = [];
 
     if (projectMethod === "nocode") {
-      allowedKeys = ["imweb", "framer", "wordpress", "webflow", "bubble"];
+      allowedKeys = ["imweb", "framer", "wordpress", "webflow", "bubble", "other"];
     } else if (projectMethod === "shop") {
-      allowedKeys = ["shopify", "imweb", "cafe24"];
+      allowedKeys = ["shopify", "imweb", "cafe24", "other"];
     }
 
     return (Object.entries(NOCODE_PLATFORM_MAPPING) as [keyof typeof NOCODE_PLATFORM_MAPPING, { title: string; description: string }][]).filter(([key]) =>
@@ -90,7 +90,9 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
         name="custom_project_title"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-sm font-medium">프로젝트 이름</FormLabel>
+            <FormLabel htmlFor="project_name" className="text-sm font-medium">
+              프로젝트 이름
+            </FormLabel>
             <FormControl>
               <AnimatedUnderlineInput placeholder="이름을 입력해주세요. (예: 쇼핑몰 구축)" {...field} value={field.value ?? ""} id="project_name" />
             </FormControl>
