@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import LenisProvider from "@/lib/lenisprovider";
+import ClientLocaleInit from "@/lib/clientlocaleinit";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleTagManager } from "@next/third-parties/google";
 import MainHeader from "@/components/header/mainheader";
 import Footer from "@/components/footer/footer";
 import "../globals.css";
 import "lenis/dist/lenis.css";
-import GoogleAnalytics from "@/lib/googleanalytics";
 
 const pretendard = localFont({
   src: "../../fonts/PretendardVariable.woff2",
@@ -72,7 +73,8 @@ export default async function RootLayout({
     <html lang="ko_KR" className="scroll-smooth">
       <Analytics />
       <SpeedInsights />
-      <GoogleAnalytics />
+      <ClientLocaleInit />
+      <GoogleTagManager gtmId="GTM-W3M5P7KT" />
 
       <body className={`${pretendard.className} ${satoshi.className} h-screen overflow-y-auto selection:bg-blue-400 selection:text-white`}>
         <script

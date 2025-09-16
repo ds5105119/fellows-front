@@ -3,13 +3,13 @@ import localFont from "next/font/local";
 import Header from "@/components/sidebar/header";
 import Footer from "@/components/footer/footer";
 import Toaster from "@/components/ui/toaster";
+import ClientLocaleInit from "@/lib/clientlocaleinit";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleTagManager } from "@next/third-parties/google";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SWRProvider } from "@/lib/swrprovider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import GoogleAnalytics from "@/lib/googleanalytics";
-import ClientLocaleInit from "@/lib/clientlocaleinit";
 
 import "../globals.css";
 
@@ -41,8 +41,8 @@ export default async function RootLayout({
     <html lang="en">
       <Analytics />
       <SpeedInsights />
-      <GoogleAnalytics />
       <ClientLocaleInit />
+      <GoogleTagManager gtmId="GTM-W3M5P7KT" />
 
       <body className={`${pretendard.variable} ${satoshi.variable} overflow-y-auto overflow-x-hidden`}>
         <SidebarProvider

@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import ClientLocaleInit from "@/lib/clientlocaleinit";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import GoogleAnalytics from "@/lib/googleanalytics";
+import { GoogleTagManager } from "@next/third-parties/google";
 import FullHeader from "@/components/header/fullheader";
 import Footer from "@/components/footer/footer";
 import Toaster from "@/components/ui/toaster";
@@ -38,10 +38,10 @@ export default async function RootLayout({
     <html lang="en">
       <Analytics />
       <SpeedInsights />
-      <GoogleAnalytics />
+      <ClientLocaleInit />
+      <GoogleTagManager gtmId="GTM-W3M5P7KT" />
 
       <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-y-auto`}>
-        <ClientLocaleInit />
         <div className="relative overscroll-none">
           <FullHeader />
           <main className="scrollbar-hide break-keep">{children}</main>

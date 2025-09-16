@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import LenisProvider from "@/lib/lenisprovider";
-import GoogleAnalytics from "@/lib/googleanalytics";
+import ClientLocaleInit from "@/lib/clientlocaleinit";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleTagManager } from "@next/third-parties/google";
 import { GeistSans } from "geist/font/sans";
 import { cn } from "@/lib/utils";
 import Footer from "@/components/section/work/footer";
@@ -31,7 +32,8 @@ export default async function RootLayout({
     <html lang="en h-screen overflow-y-auto">
       <Analytics />
       <SpeedInsights />
-      <GoogleAnalytics />
+      <ClientLocaleInit />
+      <GoogleTagManager gtmId="GTM-W3M5P7KT" />
 
       <body className={cn(pretendard.className, GeistSans.className, " overflow-x-hidden")}>
         <LenisProvider>

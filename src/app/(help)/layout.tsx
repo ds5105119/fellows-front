@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import ClientLocaleInit from "@/lib/clientlocaleinit";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import GoogleAnalytics from "@/lib/googleanalytics";
+import { GoogleTagManager } from "@next/third-parties/google";
 import Toaster from "@/components/ui/toaster";
 import "../globals.css";
 import "lenis/dist/lenis.css";
@@ -36,8 +36,8 @@ export default async function RootLayout({
     <html lang="ko_KR">
       <Analytics />
       <SpeedInsights />
-      <GoogleAnalytics />
       <ClientLocaleInit />
+      <GoogleTagManager gtmId="GTM-W3M5P7KT" />
 
       <body className={`${pretendard.variable} ${satoshi.variable} h-screen overflow-y-auto`}>
         <main className="scrollbar-hide break-keep h-full">{children}</main>
