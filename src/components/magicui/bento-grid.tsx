@@ -68,7 +68,7 @@ const BentoCard = ({ name, className, background, description, href, cta, ...pro
       >
         <motion.div
           animate={{
-            width: isHovering ? 32 : 16,
+            width: isHovering ? 80 : 16,
             height: isHovering ? 32 : 16,
           }}
           className="flex items-center justify-center rounded-[24px] bg-gray-500/40 backdrop-blur-md dark:bg-gray-300/40"
@@ -82,7 +82,7 @@ const BentoCard = ({ name, className, background, description, href, cta, ...pro
                 className="inline-flex w-full items-center justify-center"
               >
                 <div className="inline-flex items-center text-sm text-white dark:text-black">
-                  <PlusIcon className="h-4 w-4" />
+                  More <PlusIcon className="ml-1 h-4 w-4" />
                 </div>
               </motion.div>
             ) : null}
