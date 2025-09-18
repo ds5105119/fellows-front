@@ -24,7 +24,7 @@ interface BentoCardProps extends ComponentPropsWithoutRef<"a"> {
 
 const BentoGrid = ({ children, className, ...props }: BentoGridProps) => {
   return (
-    <div className={cn("grid w-full auto-rows-[22rem] lg:auto-rows-[24rem] grid-cols-3 gap-4 lg:gap-8", className)} {...props}>
+    <div className={cn("grid w-full grid-cols-3 gap-4 lg:gap-8", className)} {...props}>
       {children}
     </div>
   );
@@ -89,12 +89,12 @@ const BentoCard = ({ name, className, background, description, href, cta, ...pro
           </AnimatePresence>
         </motion.div>
       </Cursor>
-      <a key={name} className={cn("group absolute inset-0 flex flex-col justify-between overflow-hidden", "cursor-none")} href={href} {...props}>
-        <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-2 p-6 lg:p-10 transition-all">
+      <a key={name} className={cn("group w-full h-full flex flex-col overflow-hidden pt-6 md:pt-10", "cursor-none")} href={href} {...props}>
+        <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-2 transition-all px-6 md:px-10 pb-6 md:pb-8">
           <div className="max-w-lg text-base md:text-lg font-semibold text-foreground whitespace-pre-wrap block">{description}</div>
           <h3 className="text-xl lg:text-[26px] font-extrabold text-foreground whitespace-pre-wrap dark:text-neutral-300">{name}</h3>
         </div>
-        <div className="-z-10">{background}</div>
+        <div className="-z-10 w-full h-full">{background}</div>
         <div
           className={cn(
             "pointer-events-none absolute bottom-0 hidden lg:flex w-full translate-y-10 transform-gpu flex-row items-center p-10 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"

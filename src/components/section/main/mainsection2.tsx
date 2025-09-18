@@ -5,9 +5,7 @@ import Image from "next/image";
 import { BadgeCheckIcon, ChevronRight, CopyPlus, ZapIcon } from "lucide-react";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import MainSection2Dialog from "./mainsection2dialog";
-
-const date = new Date();
-date.setDate(2);
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const files = [
   {
@@ -31,42 +29,8 @@ const files = [
     body: "AI 기반 SaaS 🤖 서비스를 소개하는 웹페이지를 만들어주세요 🌐 핵심 기능 소개 🧠, 요금제 💵, 가입 흐름 📋까지 깔끔하게 정리되면 좋겠어요!",
   },
 ];
+
 const features = [
-  {
-    name: "더 적은 예산으로 만드는\n높은 수준의 결과물",
-    description: (
-      <div className="flex items-center space-x-2">
-        <BadgeCheckIcon className="size-4 md:size-5 text-emerald-500" strokeWidth={3} />
-        <div>다양한 개발 영역</div>
-        <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
-      </div>
-    ),
-    href: "#primary",
-    cta: "더 알아보기",
-    className: "col-span-3 md:col-span-1 bg-emerald-50 transition-colors duration-300 ease-in-out",
-    background: (
-      <Marquee pauseOnHover className="absolute -bottom-24 md:-bottom-12 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]">
-        {files.map((f, idx) => (
-          <figure
-            key={idx}
-            className={cn(
-              "relative w-32 cursor-pointer overflow-hidden rounded-xl border p-4",
-              "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
-              "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]",
-              "transform-gpu blur-[0.5px] transition-all duration-300 ease-out hover:blur-none bg-white z-20"
-            )}
-          >
-            <div className="flex flex-row items-center gap-2">
-              <div className="flex flex-col">
-                <figcaption className="text-sm font-medium dark:text-white ">{f.name}</figcaption>
-              </div>
-            </div>
-            <blockquote className="mt-2 text-xs">{f.body}</blockquote>
-          </figure>
-        ))}
-      </Marquee>
-    ),
-  },
   {
     name: "한눈에 체계적인 프로젝트 관리 가능",
     description: (
@@ -78,10 +42,89 @@ const features = [
     ),
     href: "#secondary",
     cta: "더 알아보기",
-    className: "col-span-3 md:col-span-2 bg-gradient-to-b to-cyan-400/10 via-cyan-500/10 from-blue-400/10 transition-colors duration-300 ease-in-out",
+    className: "col-span-full md:col-span-4 bg-gradient-to-b to-cyan-400/10 via-cyan-500/10 from-blue-400/10 transition-colors duration-300 ease-in-out",
     background: (
-      <div className="absolute top-10 md:top-0 w-full h-full transition-all duration-300 ease-out group-hover:scale-110 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
-        <Image src="/bento3.png" alt="Image" className="rounded-md object-cover object-[40%_30%] md:object-[10%_20%]" fill priority />
+      <div className="grow w-full relative flex items-center justify-center px-6 md:px-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
+        <div className="w-full h-fit">
+          <AspectRatio ratio={2 / 1}>
+            <Image src="/bento3.png" alt="Image" fill className="object-contain" />
+          </AspectRatio>
+        </div>
+      </div>
+    ),
+  },
+  {
+    name: "더 적은 예산으로 만드는\n높은 수준의 결과물",
+    description: (
+      <div className="flex items-center space-x-2">
+        <BadgeCheckIcon className="size-4 md:size-5 text-emerald-500" strokeWidth={3} />
+        <div>다양한 개발 영역</div>
+        <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
+      </div>
+    ),
+    href: "#primary",
+    cta: "더 알아보기",
+    className: "col-span-full md:col-span-2 bg-emerald-50 transition-colors duration-300 ease-in-out",
+    background: (
+      <div className="w-full h-full flex flex-col justify-center pb-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_40%)]">
+        <Marquee pauseOnHover className="[--duration:30s]">
+          {files.map((f, idx) => (
+            <figure
+              key={idx}
+              className={cn(
+                "relative w-48 md:w-64 h-30 md:h-32 cursor-pointer overflow-hidden rounded-xl p-4",
+                "transform-gpu transition-all duration-300 ease-out hover:blur-none bg-white z-20"
+              )}
+            >
+              <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-col">
+                  <figcaption className="text-xs md:text-sm font-medium dark:text-white ">{f.name}</figcaption>
+                </div>
+              </div>
+              <blockquote className="mt-2 text-[11px] md:text-xs line-clamp-4">{f.body}</blockquote>
+            </figure>
+          ))}
+        </Marquee>
+        <Marquee pauseOnHover reverse className="[--duration:30s]">
+          {files.map((f, idx) => (
+            <figure
+              key={idx}
+              className={cn(
+                "relative w-48 md:w-64 h-30 md:h-32 cursor-pointer overflow-hidden rounded-xl p-4",
+                "transform-gpu transition-all duration-300 ease-out hover:blur-none bg-white z-20"
+              )}
+            >
+              <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-col">
+                  <figcaption className="text-xs md:text-sm font-medium dark:text-white ">{f.name}</figcaption>
+                </div>
+              </div>
+              <blockquote className="mt-2 text-xs text-[11px] md:text-xs line-clamp-4">{f.body}</blockquote>
+            </figure>
+          ))}
+        </Marquee>
+      </div>
+    ),
+  },
+  {
+    name: "견적서부터 보고서까지\n자유로운 전자 문서 생성",
+    description: (
+      <div className="flex items-center space-x-2">
+        <CopyPlus className="size-4 md:size-5 text-orange-500" strokeWidth={3} />
+        <div>필수 부가 기능</div>
+        <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
+      </div>
+    ),
+    className: "col-span-full md:col-span-2 bg-muted transition-colors duration-300 ease-in-out",
+    href: "#quaternary",
+    cta: "더 알아보기",
+    background: (
+      <div className="grow w-full relative flex items-center justify-center px-6 md:px-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
+        <div className="w-full h-fit">
+          <AspectRatio ratio={727 / 888}>
+            <Image src="/bento4.png" alt="Image" fill className="object-contain" />
+          </AspectRatio>
+        </div>
       </div>
     ),
   },
@@ -101,28 +144,14 @@ const features = [
     ),
     href: "#",
     cta: "더 알아보기",
-    className: "col-span-3 md:col-span-2 bg-amber-400/10 transition-colors duration-300 ease-in-out",
+    className: "col-span-full md:col-span-4 bg-amber-50 transition-colors duration-300 ease-in-out",
     background: (
-      <div className="absolute top-10 md:top-0 w-full h-full transition-all duration-300 ease-out group-hover:scale-110 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
-        <Image src="/bento2.png" alt="Image" className="rounded-md object-cover object-[80%_30%] md:object-[10%_20%]" fill priority />
-      </div>
-    ),
-  },
-  {
-    name: "지원사업 탐색부터\n팀원 관리까지 한눈에",
-    description: (
-      <div className="flex items-center space-x-2">
-        <CopyPlus className="size-4 md:size-5 text-orange-500" strokeWidth={3} />
-        <div>필수 부가 기능</div>
-        <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
-      </div>
-    ),
-    className: "col-span-3 md:col-span-1 bg-muted transition-colors duration-300 ease-in-out",
-    href: "#quaternary",
-    cta: "더 알아보기",
-    background: (
-      <div className="absolute left-6 md:left-10 -bottom-1 md:-bottom-5 origin-top-right rounded-md border transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)] w-[120%] group-hover:scale-102">
-        <Image src="/funnel.png" alt="Image" className="rounded-md object-cover" width={500} height={500} priority />
+      <div className="grow w-full relative flex items-center justify-center pl-6 md:pl-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
+        <div className="w-full h-fit">
+          <AspectRatio ratio={2 / 1}>
+            <Image src="/bento2.png" alt="Image" fill className="object-contain" />
+          </AspectRatio>
+        </div>
       </div>
     ),
   },
@@ -143,7 +172,7 @@ export default async function MainSection2() {
         </div>
       </div>
 
-      <BentoGrid>
+      <BentoGrid className="grid-cols-6">
         {features.map((feature, idx) => (
           <BentoCard key={idx} {...feature} />
         ))}
