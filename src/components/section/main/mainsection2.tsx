@@ -42,7 +42,7 @@ const features = [
     ),
     href: "#secondary",
     cta: "더 알아보기",
-    className: "col-span-full md:col-span-4 bg-gradient-to-b to-cyan-400/10 via-cyan-500/10 from-blue-400/10 transition-colors duration-300 ease-in-out",
+    className: "col-span-full md:col-span-4 bg-sky-50 transition-colors duration-300 ease-in-out",
     background: (
       <div className="grow w-full relative flex items-center justify-center px-6 md:px-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
         <div className="w-full h-fit">
@@ -64,7 +64,7 @@ const features = [
     ),
     href: "#primary",
     cta: "더 알아보기",
-    className: "col-span-full md:col-span-2 bg-emerald-50 transition-colors duration-300 ease-in-out",
+    className: "col-span-full md:col-span-2 bg-sky-50 transition-colors duration-300 ease-in-out",
     background: (
       <div className="w-full h-full flex flex-col justify-center pb-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_40%)]">
         <Marquee pauseOnHover className="[--duration:30s]">
@@ -115,7 +115,7 @@ const features = [
         <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
       </div>
     ),
-    className: "col-span-full md:col-span-2 bg-muted transition-colors duration-300 ease-in-out",
+    className: "col-span-full md:col-span-2 bg-sky-50 transition-colors duration-300 ease-in-out",
     href: "#quaternary",
     cta: "더 알아보기",
     background: (
@@ -144,7 +144,7 @@ const features = [
     ),
     href: "#",
     cta: "더 알아보기",
-    className: "col-span-full md:col-span-4 bg-amber-50 transition-colors duration-300 ease-in-out",
+    className: "col-span-full md:col-span-4 bg-sky-50 transition-colors duration-300 ease-in-out",
     background: (
       <div className="grow w-full relative flex items-center justify-center pl-6 md:pl-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
         <div className="w-full h-fit">
