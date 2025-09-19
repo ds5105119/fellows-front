@@ -77,7 +77,7 @@ const features = [
             <figure
               key={idx}
               className={cn(
-                "relative w-64 h-36 md:h-40 cursor-pointer overflow-hidden rounded-xl p-6",
+                "relative w-64 md:w-80 h-36 md:h-44 cursor-pointer overflow-hidden rounded-xl p-6",
                 "transform-gpu transition-all duration-300 ease-out hover:blur-none bg-white z-20",
                 "flex flex-col justify-between"
               )}
@@ -85,8 +85,8 @@ const features = [
               <div>{f.icon}</div>
               <div className="flex flex-row items-center gap-2">
                 <div className="flex flex-col">
-                  <figcaption className="text-sm md:text-base font-bold dark:text-white ">{f.name}</figcaption>
-                  <blockquote className="mt-2 text-[11px] md:text-xs line-clamp-4">{f.body}</blockquote>
+                  <figcaption className="text-sm md:text-lg font-bold dark:text-white ">{f.name}</figcaption>
+                  <blockquote className="mt-2 text-[11px] md:text-sm line-clamp-4">{f.body}</blockquote>
                 </div>
               </div>
             </figure>
