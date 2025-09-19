@@ -2,31 +2,36 @@ import { cn } from "@/lib/utils";
 import { BentoCard, BentoGrid } from "@/components/magicui/bento-grid";
 import { Marquee } from "@/components/magicui/marquee";
 import Image from "next/image";
-import { BadgeCheckIcon, ChevronRight, CopyPlus, ZapIcon } from "lucide-react";
+import { BadgeCheckIcon, ChevronRight, CopyPlus, ZapIcon, Globe, Users, Rocket, Shield, Workflow } from "lucide-react";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import MainSection2Dialog from "./mainsection2dialog";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
-const files = [
+const marqueeContents = [
   {
-    name: "가상화폐 거래소",
-    body: "비트코인 기반의 가상화폐 거래소 웹사이트를 만들어주세요 💰 실시간 시세 조회 📊, 시세 차트 📈, 회원가입 📝과 보안 중심의 로그인 시스템 🔐까지 포함되면 좋겠어요.",
+    icon: <Globe className="size-6 text-green-500" />,
+    name: "글로벌 개발 인력",
+    body: "글로벌 수준의 개발 인력을 활용해 최대 25% 이상 비용 절감 효과를 경험해보세요.",
   },
   {
-    name: "쥬얼리 브랜드 쇼핑몰 💍",
-    body: "쥬얼리 브랜드✨의 감성을 살릴 수 있는 쇼핑몰 사이트를 만들어주세요 💖 우아한 디자인 🎨과 함께 카드💳·간편결제 기능 💸도 넣어줄 수 있을까요?",
+    icon: <Users className="size-6 text-sky-500" />,
+    name: "전문 협업 시스템",
+    body: "Fellows SaaS를 통해 프로젝트 진행 상황을 투명하게 공유하고 긴밀히 협업합니다.",
   },
   {
-    name: "랜딩 페이지 🚀",
-    body: "브랜드 홍보를 위한 세련된 랜딩 페이지를 만들어주세요 ✨ 반응형 디자인 📱에 스크롤 애니메이션 🎞️과 인터랙티브한 구성 🎯도 부탁드려요!",
+    icon: <Rocket className="size-6 text-purple-500" />,
+    name: "빠른 개발 사이클",
+    body: "애자일 프로세스를 기반으로 MVP에서 상용 서비스까지 빠르고 유연하게 개발합니다.",
   },
   {
-    name: "산업용 앱 개발",
-    body: "산업 현장에서 사용할 수 있는 내부 전용 앱을 개발해주세요 ⚙️ GPG 키 기반의 보안 기능 🔑과 파일 업로드 📂, 사용자 권한 관리 👤도 필요해요.",
+    icon: <Shield className="size-6 text-red-500" />,
+    name: "보안 중심 설계",
+    body: "엔터프라이즈 보안 기준에 맞춘 인증, 권한 관리, 데이터 보호로 안심할 수 있습니다.",
   },
   {
-    name: "AI SaaS 서비스 페이지",
-    body: "AI 기반 SaaS 🤖 서비스를 소개하는 웹페이지를 만들어주세요 🌐 핵심 기능 소개 🧠, 요금제 💵, 가입 흐름 📋까지 깔끔하게 정리되면 좋겠어요!",
+    icon: <Workflow className="size-6 text-yellow-500" />,
+    name: "엔드투엔드 지원",
+    body: "기획부터 디자인, 개발, 배포, 유지보수까지 원스톱으로 지원합니다.",
   },
 ];
 
@@ -66,40 +71,24 @@ const features = [
     cta: "더 알아보기",
     className: "col-span-full md:col-span-2 bg-sky-50 transition-colors duration-300 ease-in-out",
     background: (
-      <div className="w-full h-full flex flex-col justify-center pb-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_40%)]">
-        <Marquee pauseOnHover className="[--duration:30s]">
-          {files.map((f, idx) => (
+      <div className="w-full h-full flex flex-col justify-end pb-10 md:pb-16 [mask-image:linear-gradient(to_top,transparent_0%,#000_40%)]">
+        <Marquee pauseOnHover className="[--duration:40s]">
+          {marqueeContents.map((f, idx) => (
             <figure
               key={idx}
               className={cn(
-                "relative w-48 md:w-64 h-30 md:h-32 cursor-pointer overflow-hidden rounded-xl p-4",
-                "transform-gpu transition-all duration-300 ease-out hover:blur-none bg-white z-20"
+                "relative w-64 h-36 md:h-40 cursor-pointer overflow-hidden rounded-xl p-6",
+                "transform-gpu transition-all duration-300 ease-out hover:blur-none bg-white z-20",
+                "flex flex-col justify-between"
               )}
             >
+              <div>{f.icon}</div>
               <div className="flex flex-row items-center gap-2">
                 <div className="flex flex-col">
-                  <figcaption className="text-xs md:text-sm font-medium dark:text-white ">{f.name}</figcaption>
+                  <figcaption className="text-sm md:text-base font-bold dark:text-white ">{f.name}</figcaption>
+                  <blockquote className="mt-2 text-[11px] md:text-xs line-clamp-4">{f.body}</blockquote>
                 </div>
               </div>
-              <blockquote className="mt-2 text-[11px] md:text-xs line-clamp-4">{f.body}</blockquote>
-            </figure>
-          ))}
-        </Marquee>
-        <Marquee pauseOnHover reverse className="[--duration:30s]">
-          {files.map((f, idx) => (
-            <figure
-              key={idx}
-              className={cn(
-                "relative w-48 md:w-64 h-30 md:h-32 cursor-pointer overflow-hidden rounded-xl p-4",
-                "transform-gpu transition-all duration-300 ease-out hover:blur-none bg-white z-20"
-              )}
-            >
-              <div className="flex flex-row items-center gap-2">
-                <div className="flex flex-col">
-                  <figcaption className="text-xs md:text-sm font-medium dark:text-white ">{f.name}</figcaption>
-                </div>
-              </div>
-              <blockquote className="mt-2 text-xs text-[11px] md:text-xs line-clamp-4">{f.body}</blockquote>
             </figure>
           ))}
         </Marquee>
