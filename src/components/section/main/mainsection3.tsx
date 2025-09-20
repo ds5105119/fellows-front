@@ -16,8 +16,10 @@ import { AnimatePresence, motion, useAnimation, useInView } from "framer-motion"
 import { useLenis } from "lenis/react";
 import { Button } from "@/components/ui/button";
 
-const features = [
+const featuresData = [
   {
+    title: "차트와 대시보드",
+    description: "프로젝트 진행 상황을 한 곳에서 확인할 수 있습니다",
     header: (
       <>
         <p className="text-foreground text-base font-bold">차트와 대시보드</p>
@@ -27,7 +29,7 @@ const features = [
         </p>
       </>
     ),
-    children: (
+    carouselChildren: (
       <div className="absolute inset-0">
         <div className="w-[180%] absolute top-36 xl:top-40 left-2 xl:left-4">
           <AspectRatio ratio={931 / 790} className="w-full">
@@ -36,101 +38,7 @@ const features = [
         </div>
       </div>
     ),
-  },
-  {
-    header: (
-      <>
-        <p className="text-foreground text-base font-bold">실시간 태스크 관리</p>
-        <p className="text-foreground leading-normal">
-          진행 중인 작업 현황을
-          <br />
-          실시간으로 전달해드려요
-        </p>
-      </>
-    ),
-    background: "bg-gradient-to-t from-blue-400/80 via-blue-400/70 to-indigo-400/80",
-    children: (
-      <div className="absolute inset-0">
-        <div className="w-[280%] absolute top-36 xl:top-40 left-6 xl:left-8">
-          <AspectRatio ratio={1143 / 595} className="w-full">
-            <Image src="/service-task.png" alt="대시보드 케러셀 이미지" className="rounded-md object-cover border border-zinc-300" fill />
-          </AspectRatio>
-        </div>
-      </div>
-    ),
-  },
-  {
-    header: (
-      <>
-        <p className="text-foreground text-base font-bold">비즈니스 페이지도 매장 쇼핑몰도</p>
-        <p className="text-foreground leading-normal">
-          어떤 프로젝트든
-          <br />
-          부담 없이 계획하세요
-        </p>
-      </>
-    ),
-    background: (
-      <div className="absolute inset-0 -z-10">
-        <Image src="/service-carousel-background.jpg" alt="대시보드 케러셀 이미지" fill className="object-cover" />
-      </div>
-    ),
-    children: (
-      <div className="absolute inset-0">
-        <div className="w-[100%] absolute top-36 xl:top-40 left-6 xl:left-8">
-          <AspectRatio ratio={9 / 16} className="w-full">
-            <Image src="/service-carousel-main.jpg" alt="대시보드 케러셀 이미지" fill className="rounded-md object-cover border border-zinc-300" />
-          </AspectRatio>
-        </div>
-      </div>
-    ),
-  },
-  {
-    header: (
-      <>
-        <p className="text-background text-base font-bold">AI 보고서 작성</p>
-        <p className="text-background leading-normal">
-          담당 매니저 + AI 레포트까지
-          <br />
-          간단하게 작업 현황을 파악하세요
-        </p>
-      </>
-    ),
-    background: "bg-gradient-to-t from-emerald-500/80 via-emerald-500/70 to-teal-500/80",
-    children: (
-      <div className="absolute inset-0">
-        <div className="w-full absolute top-36 xl:top-40 left-6 xl:left-8">
-          <AspectRatio ratio={575 / 870} className="w-full">
-            <Image src="/service-report.png" alt="대시보드 케러셀 이미지" className="rounded-md object-cover border border-zinc-300" fill />
-          </AspectRatio>
-        </div>
-      </div>
-    ),
-  },
-  {
-    header: (
-      <>
-        <p className="text-background text-base font-bold">커다란 프로젝트라면</p>
-        <p className="text-background leading-normal">
-          팀원과 함께
-          <br />
-          체계적으로 관리하세요
-        </p>
-      </>
-    ),
-    background: (
-      <div className="absolute inset-0">
-        <MeshGradientComponent className="opacity-100" colors={["#be73ff", "rgb(255, 90, 214)", "#ff2323", "#ff9849"]} />
-      </div>
-    ),
-    children: <TeamMembersSection />,
-  },
-];
-
-const featureDetails = [
-  {
-    title: "차트와 대시보드",
-    description: "프로젝트 진행 상황을 한 곳에서 확인할 수 있습니다",
+    background: undefined,
     details: [
       "실시간 프로젝트 진행률 추적",
       "시각적 차트와 그래프로 데이터 분석",
@@ -138,7 +46,7 @@ const featureDetails = [
       "팀 성과 지표 및 KPI 모니터링",
       "자동 리포트 생성 및 내보내기 기능",
     ],
-    children: (
+    dialogChildren: (
       <div className="w-full flex flex-col space-y-6 md:space-y-12">
         <div className="relative w-full pt-10 md:pt-20 bg-zinc-100 rounded-3xl overflow-hidden flex flex-col space-y-6">
           <div className="text-xl lg:text-2xl xl:text-3xl font-bold px-8 sm:px-20 md:px-30 lg:px-32 xl:px-34 break-keep tracking-tight leading-tight">
@@ -156,28 +64,37 @@ const featureDetails = [
 
           <div className="absolute left-8 sm:left-20 md:left-30 lg:left-32 xl:left-34 bottom-0 w-[calc(100%-2rem)] sm:w-[calc(100%-5rem)] md:w-[calc(100%-7.5rem)] lg:w-[calc(100%-8rem)] xl:w-[calc(100%-8.5rem)]">
             <AspectRatio ratio={2055 / 1034}>
-              <Image alt="케러셀 내붑 다이얼로그 이미지" src="/section-3-dialog-1-1.png" className="h-full w-auto object-contain" fill />
+              <Image alt="케러셀 내부 다이얼로그 이미지" src="/section-3-dialog-1-1.png" className="h-full w-auto object-contain" fill />
             </AspectRatio>
           </div>
         </div>
 
         <div className="relative w-full pt-10 md:pt-20 bg-zinc-100 rounded-3xl overflow-hidden flex flex-col space-y-6">
           <div className="text-xl lg:text-2xl xl:text-3xl font-bold px-8 sm:px-20 md:px-30 lg:px-32 xl:px-34 break-keep tracking-tight leading-tight">
+            차트와 대시보드.&nbsp;
+            <span className="text-muted-foreground">
+              대시보드의 다양한 차트를 통해 프로젝트의 실시간 상황을 빠르게 파악해보세요. 진행 중인 프로젝트와 결제 전인 계약서 등에 빠르게 접근할 수 있습니다.
+            </span>
+          </div>
+
+          <div className="w-[calc(100%-4rem)] sm:w-[calc(100%-8rem)] md:w-[calc(100%-12rem)] lg:w-[calc(100%-16rem)] xl:w-[calc(100%-20rem)] mr-16 sm:mr-32 md:mr-48 lg:mr-64 xl:mr-80 mb-8 sm:mb-11 md:mb-14 lg:mb-17 xl:mb-20">
+            <AspectRatio ratio={2675 / 2155}>
+              <Image alt="케러셀 내부 다이얼로그 이미지" src="/section-3-dialog-1-3.png" className="h-full w-auto object-contain" fill />
+            </AspectRatio>
+          </div>
+        </div>
+
+        <div className="relative w-full pt-10 md:pt-20 bg-zinc-100 rounded-3xl overflow-hidden flex flex-col space-y-6 md:space-y-8">
+          <div className="text-xl lg:text-2xl xl:text-3xl font-bold px-8 sm:px-20 md:px-30 lg:px-32 xl:px-34 break-keep tracking-tight leading-tight">
             간단한 설정.&nbsp;
             <span className="text-muted-foreground">
-              ‘튜토리얼’을 이용하면 프로젝트를 만들고 프로젝트의 진행 상황을 추적하는 방법에 대해 손쉽게 배울 수 있습니다.
+              '튜토리얼'을 이용하면 프로젝트를 만들고 프로젝트의 진행 상황을 추적하는 방법에 대해 손쉽게 배울 수 있습니다.
             </span>
           </div>
 
           <div className="w-[calc(100%-4rem)] sm:w-[calc(100%-10rem)] md:w-[calc(100%-15rem)] lg:w-[calc(100%-16rem)] xl:w-[calc(100%-17rem)] ml-8 sm:ml-20 md:ml-30 lg:ml-32 xl:ml-34 mb-8 sm:mb-11 md:mb-14 lg:mb-17 xl:mb-20">
-            <AspectRatio ratio={2055 / 1034}>
-              <div />
-            </AspectRatio>
-          </div>
-
-          <div className="absolute left-8 sm:left-20 md:left-30 lg:left-32 xl:left-34 bottom-8 sm:bottom-11 md:bottom-14 lg:bottom-17 xl:bottom-20 w-[calc(100%-4rem)] sm:w-[calc(100%-10rem)] md:w-[calc(100%-15rem)] lg:w-[calc(100%-16rem)] xl:w-[calc(100%-17rem)]">
             <AspectRatio ratio={2441 / 1126}>
-              <Image alt="케러셀 내붑 다이얼로그 이미지" src="/section-3-dialog-1-2.png" className="h-full w-auto object-contain" fill />
+              <Image alt="케러셀 내부 다이얼로그 이미지" src="/section-3-dialog-1-2.png" className="h-full w-auto object-contain" fill />
             </AspectRatio>
           </div>
         </div>
@@ -187,11 +104,56 @@ const featureDetails = [
   {
     title: "실시간 태스크 관리",
     description: "진행 중인 작업 현황을 실시간으로 전달해드려요",
+    header: (
+      <>
+        <p className="text-foreground text-base font-bold">실시간 태스크 관리</p>
+        <p className="text-foreground leading-normal">
+          진행 중인 작업 현황을
+          <br />
+          실시간으로 전달해드려요
+        </p>
+      </>
+    ),
+    background: "bg-gradient-to-t from-blue-400/80 via-blue-400/70 to-indigo-400/80",
+    carouselChildren: (
+      <div className="absolute inset-0">
+        <div className="w-[280%] absolute top-36 xl:top-40 left-6 xl:left-8">
+          <AspectRatio ratio={1143 / 595} className="w-full">
+            <Image src="/service-task.png" alt="대시보드 케러셀 이미지" className="rounded-md object-cover border border-zinc-300" fill />
+          </AspectRatio>
+        </div>
+      </div>
+    ),
     details: ["실시간 작업 상태 업데이트", "팀원별 작업 할당 및 추적", "우선순위 기반 태스크 정렬", "마감일 알림 및 리마인더", "작업 히스토리 및 로그 관리"],
+    dialogChildren: null,
   },
   {
     title: "비즈니스 페이지도 매장 쇼핑몰도",
     description: "어떤 프로젝트든 부담 없이 계획하세요",
+    header: (
+      <>
+        <p className="text-foreground text-base font-bold">비즈니스 페이지도 매장 쇼핑몰도</p>
+        <p className="text-foreground leading-normal">
+          어떤 프로젝트든
+          <br />
+          부담 없이 계획하세요
+        </p>
+      </>
+    ),
+    background: (
+      <div className="absolute inset-0 -z-10">
+        <Image src="/service-carousel-background.jpg" alt="대시보드 케러셀 이미지" fill className="object-cover" />
+      </div>
+    ),
+    carouselChildren: (
+      <div className="absolute inset-0">
+        <div className="w-[100%] absolute top-36 xl:top-40 left-6 xl:left-8">
+          <AspectRatio ratio={9 / 16} className="w-full">
+            <Image src="/service-carousel-main.jpg" alt="대시보드 케러셀 이미지" fill className="rounded-md object-cover border border-zinc-300" />
+          </AspectRatio>
+        </div>
+      </div>
+    ),
     details: [
       "다양한 프로젝트 템플릿 제공",
       "비즈니스 페이지 및 쇼핑몰 구축 지원",
@@ -199,16 +161,55 @@ const featureDetails = [
       "SEO 최적화 도구 내장",
       "결제 시스템 및 주문 관리 통합",
     ],
+    dialogChildren: null,
   },
   {
     title: "AI 보고서 작성",
     description: "담당 매니저 + AI 레포트까지 간단하게 작업 현황을 파악하세요",
+    header: (
+      <>
+        <p className="text-background text-base font-bold">AI 보고서 작성</p>
+        <p className="text-background leading-normal">
+          담당 매니저 + AI 레포트까지
+          <br />
+          간단하게 작업 현황을 파악하세요
+        </p>
+      </>
+    ),
+    background: "bg-gradient-to-t from-emerald-500/80 via-emerald-500/70 to-teal-500/80",
+    carouselChildren: (
+      <div className="absolute inset-0">
+        <div className="w-full absolute top-36 xl:top-40 left-6 xl:left-8">
+          <AspectRatio ratio={575 / 870} className="w-full">
+            <Image src="/service-report.png" alt="대시보드 케러셀 이미지" className="rounded-md object-cover border border-zinc-300" fill />
+          </AspectRatio>
+        </div>
+      </div>
+    ),
     details: ["AI 기반 자동 보고서 생성", "프로젝트 진행 상황 분석", "성과 예측 및 리스크 분석", "맞춤형 인사이트 제공", "다양한 형식의 보고서 출력"],
+    dialogChildren: null,
   },
   {
     title: "커다란 프로젝트라면",
     description: "팀원과 함께 체계적으로 관리하세요",
+    header: (
+      <>
+        <p className="text-background text-base font-bold">커다란 프로젝트라면</p>
+        <p className="text-background leading-normal">
+          팀원과 함께
+          <br />
+          체계적으로 관리하세요
+        </p>
+      </>
+    ),
+    background: (
+      <div className="absolute inset-0">
+        <MeshGradientComponent className="opacity-100" colors={["#be73ff", "rgb(255, 90, 214)", "#ff2323", "#ff9849"]} />
+      </div>
+    ),
+    carouselChildren: <TeamMembersSection />,
     details: ["팀원 역할 및 권한 관리", "실시간 협업 도구", "팀 커뮤니케이션 허브", "프로젝트 단계별 워크플로우", "팀 성과 분석 및 피드백"],
+    dialogChildren: null,
   },
 ];
 
@@ -460,7 +461,7 @@ const Cell = ({
         </div>
         {children}
         {typeof background !== "string" && typeof background !== "undefined" && background}
-        {featureDetails[index].children && (
+        {featuresData[index].dialogChildren && (
           <Button variant="ghost" size="icon" className="absolute bottom-5 right-5 focus-visible:ring-0 rounded-full bg-zinc-800 hover:bg-zinc-700">
             <PlusIcon className="size-5 text-zinc-50" strokeWidth={3} />
           </Button>
@@ -491,7 +492,7 @@ export default function MainSection3() {
   const threshold = 30;
 
   const handleFeatureClick = (index: number) => {
-    if (featureDetails[index].children) {
+    if (featuresData[index].dialogChildren) {
       setSelectedFeature(index);
       setIsDialogOpen(true);
       lenis?.stop();
@@ -661,8 +662,15 @@ export default function MainSection3() {
         ]}
       >
         <CarouselContent className="w-full !overflow-visible" style={{ overflow: "visible" }}>
-          {features.map((feature, index) => (
-            <Cell key={index} onClick={handleFeatureClick} index={index} {...feature} />
+          {featuresData.map((feature, index) => (
+            <Cell
+              key={index}
+              onClick={handleFeatureClick}
+              index={index}
+              header={feature.header}
+              children={feature.carouselChildren}
+              background={feature.background}
+            />
           ))}
         </CarouselContent>
 
@@ -715,8 +723,8 @@ export default function MainSection3() {
           {selectedFeature !== null && (
             <>
               <DialogHeader className="sr-only">
-                <DialogTitle className="text-xl font-bold">{featureDetails[selectedFeature].title}</DialogTitle>
-                <DialogDescription className="text-base text-muted-foreground">{featureDetails[selectedFeature].description}</DialogDescription>
+                <DialogTitle className="text-xl font-bold">{featuresData[selectedFeature].title}</DialogTitle>
+                <DialogDescription className="text-base text-muted-foreground">{featuresData[selectedFeature].description}</DialogDescription>
               </DialogHeader>
               <div className="h-full w-full">
                 <div className="sticky top-0 w-full px-5 py-5 font-bold grid grid-cols-2 items-center z-50">
@@ -732,10 +740,10 @@ export default function MainSection3() {
 
                 <div className="h-full px-4 md:px-18 z-0">
                   <div className="flex flex-col space-y-3 text-2xl xl:text-5xl font-extrabold w-3/4">
-                    <p className="text-foreground text-base font-bold break-keep">{featureDetails[selectedFeature].title}</p>
-                    <p className="text-foreground leading-tight break-keep">{featureDetails[selectedFeature].description}</p>
+                    <p className="text-foreground text-base font-bold break-keep">{featuresData[selectedFeature].title}</p>
+                    <p className="text-foreground leading-tight break-keep">{featuresData[selectedFeature].description}</p>
                   </div>
-                  <div className="flex mt-12 md:mt-18">{featureDetails[selectedFeature].children}</div>
+                  <div className="flex mt-12 md:mt-18">{featuresData[selectedFeature].dialogChildren}</div>
                 </div>
               </div>
             </>

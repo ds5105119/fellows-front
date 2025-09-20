@@ -174,32 +174,37 @@ export default function MainSection4() {
 
                   <div className="text text-xs md:text-sm lg:text-base leading-normal space-y-4">
                     <p>
-                      개발은 코드와 노코드 모두를 지원하며, 다국적 개발 파트너사와 협력하여 진행됩니다. 국내 SI 대비
+                      Fellows는 단순한 외주 개발사가 아니라, 글로벌
                       <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                        25~30% 비용 절감
+                        마케팅·기술 전문가 네트워크
                       </TextHighlighter>
-                      이 가능하며, 프로젝트 관리, 견적, 전자 계약, 테스크 관리, 인보이스까지 자체 SaaS 플랫폼을 통해 모든 과정을 한 곳에서 투명하게 확인하고
-                      관리할 수 있습니다.
+                      와 협력하여 프로젝트를 진행합니다. GTM 전략, SEO 최적화, Google Ads(GAD), Meta Ads(CPAS), Google Analytics(GA4)까지 아우르는
+                      <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
+                        엔드투엔드 디지털 역량
+                      </TextHighlighter>
+                      을 제공합니다.
                     </p>
 
                     <p className="hidden xl:inline-block">
-                      반복되는 미팅이나 견적 요청 없이, 고객은 원하는 만큼 편하게 프로젝트를 조정할 수 있으며, AI가 제공하는 예상 견적과 기능 추천으로
-                      의사결정이 훨씬 쉬워집니다. 이렇게 우리는 스타트업이 보다 빠르고 효율적으로 개발을 진행할 수 있도록 돕습니다.
+                      고객은 단순한 개발을 넘어, 서비스 론칭 이후의 성장 전략까지 함께 설계할 수 있습니다. 프로젝트 관리, 퍼포먼스 마케팅, 데이터 분석을 통합
+                      지원하여
+                      <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
+                        스타트업과 기업이 더 빠르고 확실하게 시장에서 자리 잡도록 돕습니다.
+                      </TextHighlighter>
                     </p>
 
                     <p className="whitespace-break-spaces">
                       디자인이 필요할 경우, 국내 최고 수준의 디자인 하우스와 협업하여
                       <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                        세심하고 완벽한 UI/UX 경험
+                        세심하고 전략적인 UI/UX 경험
                       </TextHighlighter>
-                      를 제공합니다. 디자인은 높은 수준의 마감과 다양한 인터랙션을 구현합니다.
+                      을 제공합니다. 단순히 보기 좋은 화면이 아닌, 실제 사용자 전환율을 높이는 설계와 다양한 인터랙션을 구현합니다.
                     </p>
 
                     <p>
-                      글로벌 전문가와 고급 디자인 역량, AI 기반 프로젝트 분석과 추천, 자체 SaaS를 통한 투명한 관리까지 갖춘 Fellows 단순 개발 대행을 넘어,
-                      고객이 생각하는 아이디어를 현실로 구현하는 과정 전체를 체계적으로 지원합니다. 코드와 노코드 개발을 아우르는 글로벌 전문가 풀로,&nbsp;
+                      글로벌 전문가 네트워크, 고급 디자인 역량, 데이터 기반 마케팅 전략까지 갖춘 Fellows는 단순 개발 대행을 넘어,
                       <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                        비용과 시간 모두를 절감하며 최고의 결과를 제공합니다.
+                        아이디어를 시장에서 성공시키는 전 과정을 지원합니다.
                       </TextHighlighter>
                     </p>
                   </div>
@@ -302,11 +307,11 @@ export default function MainSection4() {
                 transition={{ duration: 0.3 }}
               >
                 <div className="max-w-md mx-auto px-8 p-0 text-white">
-                  <h1 className="text-2xl md:text-4xl font-medium mb-6 md:mb-12 font-calendas tracking-tight">Fellows Teams</h1>
+                  <h1 className="text-2xl md:text-4xl font-medium mb-6 md:mb-12 font-calendas tracking-tight">Cost Efficient</h1>
 
                   <div className="text text-xs md:text-sm lg:text-base leading-normal space-y-4">
                     <p>
-                      개발은 코드와 노코드 모두를 지원하며, 말레이시아, 인도네시아 등 다국적 개발 파트너사와 협력하여 진행됩니다. 국내 SI 대비
+                      개발은 코드와 노코드 모두를 지원하며, 다국적 개발 파트너사와 협력하여 진행됩니다. 국내 SI 대비
                       <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
                         25~30% 비용 절감
                       </TextHighlighter>
@@ -315,21 +320,16 @@ export default function MainSection4() {
                     </p>
 
                     <p className="hidden xl:inline-block">
-                      반복되는 미팅이나 견적 요청 없이, 고객은 원하는 만큼 편하게 프로젝트를 조정할 수 있으며, AI가 제공하는 예상 견적과 기능 추천으로
-                      의사결정이 훨씬 쉬워집니다. 이렇게 우리는 스타트업이 보다 빠르고 효율적으로 개발을 진행할 수 있도록 돕습니다.
-                    </p>
-
-                    <p className="whitespace-break-spaces">
-                      디자인이 필요할 경우, 국내 최고 수준의 디자인 하우스와 협업하여
+                      반복되는 미팅이나 견적 요청 없이, 고객은 원하는 만큼 프로젝트를 조정할 수 있으며, AI가 제공하는 예상 견적과 기능 추천으로
                       <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                        세심하고 완벽한 UI/UX 경험
+                        의사결정이 훨씬 쉬워집니다.
                       </TextHighlighter>
-                      를 제공합니다. 디자인은 높은 수준의 마감과 다양한 인터랙션을 구현합니다.
+                      이렇게 우리는 스타트업이 보다 빠르고 효율적으로 개발을 진행할 수 있도록 돕습니다.
                     </p>
 
                     <p>
-                      글로벌 전문가와 고급 디자인 역량, AI 기반 프로젝트 분석과 추천, 자체 SaaS를 통한 투명한 관리까지 갖춘 Fellows 단순 개발 대행을 넘어,
-                      고객이 생각하는 아이디어를 현실로 구현하는 과정 전체를 체계적으로 지원합니다. 코드와 노코드 개발을 아우르는 글로벌 전문가 풀로,&nbsp;
+                      글로벌 전문가와 고급 디자인 역량, AI 기반 프로젝트 분석과 추천, 자체 SaaS를 통한 투명한 관리까지 갖춘 Fellows는 단순 개발 대행을 넘어,
+                      고객이 생각하는 아이디어를 코드와 노코드 개발을 아우르는 글로벌 전문가 풀로,&nbsp;
                       <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
                         비용과 시간 모두를 절감하며 최고의 결과를 제공합니다.
                       </TextHighlighter>
