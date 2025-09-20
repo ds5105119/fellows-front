@@ -135,7 +135,7 @@ const features = [
     cta: "더 알아보기",
     className: "col-span-full md:col-span-4 bg-sky-50 transition-colors duration-300 ease-in-out",
     background: (
-      <div className="grow w-full relative flex items-center justify-center pl-6 md:pl-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
+      <div className="grow w-full relative flex items-center justify-center px-6 md:px-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
         <div className="w-full h-fit">
           <AspectRatio ratio={2 / 1}>
             <Image src="/bento2.png" alt="Image" fill className="object-contain" />
