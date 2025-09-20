@@ -88,7 +88,7 @@ const featuresData = [
           <div className="text-xl lg:text-2xl xl:text-3xl font-bold px-8 sm:px-20 md:px-30 lg:px-32 xl:px-34 break-keep tracking-tight leading-tight">
             간단한 설정.&nbsp;
             <span className="text-muted-foreground">
-              '튜토리얼'을 이용하면 프로젝트를 만들고 프로젝트의 진행 상황을 추적하는 방법에 대해 손쉽게 배울 수 있습니다.
+              &apos;튜토리얼&apos;을 이용하면 프로젝트를 만들고 프로젝트의 진행 상황을 추적하는 방법에 대해 손쉽게 배울 수 있습니다.
             </span>
           </div>
 
