@@ -142,7 +142,6 @@ export default function CreateProject() {
     try {
       handleSubmitClick();
     } catch (error) {
-      console.error("제출 실패:", error);
       setIsSubmitting(false);
     }
   };

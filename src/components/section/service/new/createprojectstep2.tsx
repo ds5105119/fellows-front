@@ -14,6 +14,7 @@ import DatePicker from "@/components/section/service/new/datepicker";
 import dayjs from "@/lib/dayjs";
 import { SwitchIndicator } from "@/components/ui/switch-indicator";
 import { cn } from "@/lib/utils";
+import { Info } from "lucide-react";
 
 interface CreateProjectFormStep2Props {
   form: UseFormReturn<CreateERPNextProject>;
@@ -171,6 +172,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
           )}
         />
       )}
+
       <FormField
         control={control}
         name="custom_content_pages"
@@ -195,6 +197,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
           </FormItem>
         )}
       />
+
       {projectMethod === "code" && (
         <FormField
           control={control}
@@ -214,6 +217,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
           )}
         />
       )}
+
       <FormField
         control={control}
         name="expected_end_date"
@@ -237,7 +241,17 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
           </FormItem>
         )}
       />
+
       <CreateProjectStep2MaintenanceField form={form} />
+
+      <div className="w-full flex flex-col space-y-4">
+        <div className="flex space-x-1 text-muted-foreground">
+          <div className="pt-[1.4px]">
+            <Info className="!size-3.5" />
+          </div>
+          <p className="text-xs break-keep">파일 첨부는 프로젝트를 만든 뒤 부터 가능해요.</p>
+        </div>
+      </div>
     </>
   );
 }
