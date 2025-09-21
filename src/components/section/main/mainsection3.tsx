@@ -663,14 +663,9 @@ export default function MainSection3() {
       >
         <CarouselContent className="w-full !overflow-visible" style={{ overflow: "visible" }}>
           {featuresData.map((feature, index) => (
-            <Cell
-              key={index}
-              onClick={handleFeatureClick}
-              index={index}
-              header={feature.header}
-              children={feature.carouselChildren}
-              background={feature.background}
-            />
+            <Cell key={index} onClick={handleFeatureClick} index={index} header={feature.header} background={feature.background}>
+              {feature.carouselChildren}
+            </Cell>
           ))}
         </CarouselContent>
 
