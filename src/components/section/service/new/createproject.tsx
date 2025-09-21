@@ -14,6 +14,7 @@ import { CreateProjectTermsSection } from "./createprojecttermssection";
 import { Loader2 } from "lucide-react";
 import { ProjectInfoEstimateResponse } from "@/@types/service/project";
 import { useSearchParams } from "next/navigation";
+import { useWatch } from "react-hook-form";
 
 export default function CreateProject() {
   const searchParams = useSearchParams();
@@ -40,6 +41,7 @@ export default function CreateProject() {
 
   const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
     useProjectForm(description, info);
+  const project_method = useWatch({ name: "custom_project_method", control: form.control });
 
   const { isSuccess, isRecommending, handleRecommend } = useFeatureRecommendation(form);
 
@@ -171,7 +173,7 @@ export default function CreateProject() {
               <p className="text-2xl md:text-3xl font-bold mt-3">{currentStepMeta?.title || "정보 입력"}</p>
               <p className="text-sm md:text-base font-normal text-muted-foreground mt-2 whitespace-pre-wrap">{currentStepMeta.description}</p>
             </div>
-            {currentStep === 2 && (
+            {currentStep === 2 && project_method == "code" && (
               <Button type="button" onClick={handleRecommend} disabled={isRecommending} className="font-semibold text-background">
                 {isRecommending && <Loader2 className="h-4 w-4 animate-spin" />}
                 AI 추천받기

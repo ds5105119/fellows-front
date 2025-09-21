@@ -81,34 +81,9 @@ export function useFeatureRecommendation(form: UseFormReturn<CreateERPNextProjec
           doctype: "Features",
           feature,
         }));
-        const project_method = form.getValues("custom_project_method");
-        const nocode_platform = form.getValues("custom_nocode_platform");
 
-        const alwaysOn = categorizedFeatures.flatMap((category) => {
-          if (!category) return [];
-
-          if (project_method === "code") {
-            return category.items.filter((item) => item.alwaysOn.code).map((item) => ({ doctype: "Features", feature: item.title }));
-          } else if (project_method === "nocode") {
-            return nocode_platform
-              ? category.items
-                  .filter((item) => item.alwaysOn.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"])
-                  .map((item) => ({ doctype: "Features", feature: item.title }))
-              : category.items.filter((item) => item.alwaysOn.nocode.other).map((item) => ({ doctype: "Features", feature: item.title }));
-          } else if (project_method === "shop") {
-            return nocode_platform
-              ? category.items
-                  .filter((item) => item.alwaysOn.shop[nocode_platform as "shopify" | "imweb" | "cafe24"])
-                  .map((item) => ({ doctype: "Features", feature: item.title }))
-              : category.items.filter((item) => item.alwaysOn.shop.other).map((item) => ({ doctype: "Features", feature: item.title }));
-          }
-
-          return [];
-        });
-
-        const allFeatures = [...features, ...alwaysOn];
         form.setValue("custom_features", []);
-        form.setValue("custom_features", allFeatures);
+        form.setValue("custom_features", features);
       }
     }
   }, [hasCompleted, estimateFeatures?.data?.feature_list, form]);

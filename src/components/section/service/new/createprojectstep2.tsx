@@ -19,6 +19,17 @@ interface CreateProjectFormStep2Props {
   form: UseFormReturn<CreateERPNextProject>;
 }
 
+const areFeaturesEqual = (
+  a: { doctype: string | null; feature: string }[] | null | undefined,
+  b: { doctype: string | null; feature: string }[] | null | undefined
+) => {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  const setB = new Set(b.map((f) => f.feature));
+  return a.every((f) => setB.has(f.feature));
+};
+
 export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2Props) {
   const {
     control,
@@ -28,264 +39,138 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
   } = form;
 
   const project_method = useWatch({ name: "custom_project_method", control });
-  const nocode_platform = useWatch({ name: "custom_nocode_platform", control });
   const custom_features = useWatch({ name: "custom_features", control });
 
   const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
 
-  const toggleCategory = (title: string) => {
-    setOpenMap((prev) => ({ ...prev, [title]: !prev[title] }));
+  // 1. 사용자 인터랙션: UI 상태인 openMap만 직접 변경
+  const toggleCategory = (categoryTitle: string) => {
+    setOpenMap((prev) => ({ ...prev, [categoryTitle]: !prev[categoryTitle] }));
   };
 
-  const areFeaturesEqual = (
-    a: { doctype: string | null; feature: string }[] | null | undefined,
-    b: { doctype: string | null; feature: string }[] | null | undefined
-  ) => {
-    if (!a && !b) return true;
-    if (!a || !b) return false;
-    if (a.length !== b.length) return false;
-
-    const setB = new Set(b.map((f) => f.feature));
-    return a.every((f) => setB.has(f.feature));
-  };
-
+  // 2. UI 변경 -> 데이터 동기화 (사용자 토글 결과 반영)
   useEffect(() => {
-    const additional = custom_features
-      ? custom_features.flatMap((feature) => {
-          const category = categorizedFeatures.find((c) => c.items.some((item) => item.title === feature.feature));
-          if (!category) return [];
+    const currentFeatures = getValues("custom_features") || [];
 
-          if (project_method === "code") {
-            return category.items.filter((item) => item.default.code).map((item) => ({ doctype: "Features", feature: item.title }));
-          } else if (project_method === "nocode") {
-            return nocode_platform
-              ? category.items
-                  .filter((item) => item.default.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"])
-                  .map((item) => ({ doctype: "Features", feature: item.title }))
-              : category.items.filter((item) => item.default.nocode.other).map((item) => ({ doctype: "Features", feature: item.title }));
-          } else if (project_method === "shop") {
-            return nocode_platform
-              ? category.items
-                  .filter((item) => item.default.shop[nocode_platform as "shopify" | "imweb" | "cafe24"])
-                  .map((item) => ({ doctype: "Features", feature: item.title }))
-              : category.items.filter((item) => item.default.shop.other).map((item) => ({ doctype: "Features", feature: item.title }));
-          }
-
-          return [];
-        })
-      : [];
-
-    const allFeatures = [...(custom_features ?? []), ...additional];
-    const uniqueFeatures = Array.from(new Map(allFeatures.map((f) => [f.feature, f])).values());
-
-    if (!areFeaturesEqual(uniqueFeatures, custom_features)) {
-      setValue("custom_features", uniqueFeatures, { shouldDirty: false });
-    }
-  }, [custom_features, project_method, nocode_platform, setValue, categorizedFeatures]);
-
-  useEffect(() => {
-    const alwaysOn = categorizedFeatures.flatMap((category) => {
-      if (!category) return [];
-
-      if (project_method === "code") {
-        return category.items.filter((item) => item.alwaysOn.code).map((item) => ({ doctype: "Features", feature: item.title }));
-      } else if (project_method === "nocode") {
-        return nocode_platform
-          ? category.items
-              .filter((item) => item.alwaysOn.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"])
-              .map((item) => ({ doctype: "Features", feature: item.title }))
-          : category.items.filter((item) => item.alwaysOn.nocode.other).map((item) => ({ doctype: "Features", feature: item.title }));
-      } else if (project_method === "shop") {
-        return nocode_platform
-          ? category.items
-              .filter((item) => item.alwaysOn.shop[nocode_platform as "shopify" | "imweb" | "cafe24"])
-              .map((item) => ({ doctype: "Features", feature: item.title }))
-          : category.items.filter((item) => item.alwaysOn.shop.other).map((item) => ({ doctype: "Features", feature: item.title }));
+    // openMap을 기반으로 custom_features가 가져야 할 목표 상태를 계산
+    const targetFeatures = categorizedFeatures.flatMap((category) => {
+      if (!openMap[category.title]) {
+        return []; // 카테고리가 닫혀있으면 모든 관련 피처를 제외
       }
 
-      return [];
+      // 카테고리가 열려있으면, 기존의 사용자 선택 피처와 default 피처를 합침
+      const existingUserFeatures = currentFeatures.filter((feature) => category.items.some((item) => item.title === feature.feature && !item.default));
+      const defaultFeatures = category.items.filter((item) => item.default).map((item) => ({ doctype: "Features", feature: item.title }));
+
+      // Map을 사용해 중복을 제거하며 두 배열을 합침
+      const combined = new Map();
+      existingUserFeatures.forEach((f) => combined.set(f.feature, f));
+      defaultFeatures.forEach((f) => combined.set(f.feature, f));
+
+      return Array.from(combined.values());
     });
 
-    setValue("custom_features", alwaysOn, { shouldDirty: false });
-  }, [categorizedFeatures, nocode_platform, project_method, setValue]);
+    // 계산된 목표 상태가 현재 상태와 다를 경우에만 업데이트하여 루프 방지
+    if (!areFeaturesEqual(currentFeatures, targetFeatures)) {
+      setValue("custom_features", targetFeatures, { shouldDirty: true });
+    }
+  }, [openMap, setValue]);
 
+  // 3. 데이터 변경 -> UI 동기화 (외부 데이터 주입 반영)
   useEffect(() => {
-    if (!custom_features) return;
+    const features = custom_features || [];
 
-    setOpenMap((prev) => {
-      const updated: Record<string, boolean> = { ...prev };
+    // custom_features를 기반으로 openMap이 가져야 할 이상적인 상태를 계산
+    const idealOpenMap = categorizedFeatures.reduce((acc, category) => {
+      const isOpen = category.items.some((item) => features.some((f) => f.feature === item.title));
+      return { ...acc, [category.title]: isOpen };
+    }, {} as Record<string, boolean>);
 
-      categorizedFeatures.forEach((category) => {
-        const hasFeature = category.items.some((item) => custom_features.some((val) => val.feature === item.title));
-        if (hasFeature) updated[category.title] = true;
-      });
-
-      return updated;
-    });
-  }, [custom_features, categorizedFeatures]);
+    // 계산된 이상적인 상태가 현재 UI 상태와 다를 경우에만 업데이트하여 루프 방지
+    if (JSON.stringify(openMap) !== JSON.stringify(idealOpenMap)) {
+      setOpenMap(idealOpenMap);
+    }
+  }, [custom_features]);
 
   return (
     <>
-      <FormField
-        control={control}
-        name="custom_features"
-        render={({ field }) => (
-          <FormItem>
-            <div className="w-full flex flex-col gap-1">
-              {categorizedFeatures.map((category) => {
-                const isOpen = openMap[category.title] ?? false;
+      {project_method === "code" && (
+        <FormField
+          control={control}
+          name="custom_features"
+          render={({ field }) => (
+            <FormItem>
+              <div className="w-full flex flex-col gap-1">
+                {categorizedFeatures.map((category) => {
+                  const isOpen = openMap[category.title] ?? false;
+                  const visibleItems = category.items.filter((item) => item.view);
 
-                const visibleItems = category.items.filter((item) => {
-                  if (project_method === "code") {
-                    return item.view.code;
-                  } else if (project_method === "nocode") {
-                    return nocode_platform
-                      ? item.view.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"]
-                      : item.view.nocode.other;
-                  } else if (project_method === "shop") {
-                    return nocode_platform ? item.view.shop[nocode_platform as "shopify" | "imweb" | "cafe24"] : item.view.shop.other;
-                  }
-                  return false;
-                });
+                  if (visibleItems.length === 0) return null;
 
-                const categoryHasAlwaysOn = category.items.some((item) => {
-                  if (project_method === "code") {
-                    return item.alwaysOn.code;
-                  } else if (project_method === "nocode") {
-                    return nocode_platform
-                      ? item.alwaysOn.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"]
-                      : item.alwaysOn.nocode.other;
-                  } else if (project_method === "shop") {
-                    return nocode_platform ? item.alwaysOn.shop[nocode_platform as "shopify" | "imweb" | "cafe24"] : item.alwaysOn.shop.other;
-                  }
-                  return false;
-                });
-
-                if (visibleItems.length === 0) return null;
-
-                return (
-                  <div key={category.title} className="w-full">
-                    {/* Title Row */}
-                    <button
-                      type="button"
-                      className={cn(
-                        "w-full flex items-center justify-between space-x-2 py-3 mb-2 rounded-md bg-gray-100 px-3 pl-4.5",
-                        isOpen ? "bg-blue-100" : "bg-gray-100"
-                      )}
-                      onClick={() => {
-                        if (categoryHasAlwaysOn) return;
-
-                        toggleCategory(category.title);
-
-                        if (isOpen) {
-                          field.onChange(field.value?.filter((val) => !category.items.map((item) => item.title).includes(val.feature)));
-                        } else {
-                          if (project_method === "code") {
-                            field.onChange([
-                              ...(field.value ?? []),
-                              ...category.items.filter((item) => item.default.code).map((item) => ({ doctype: "Features", feature: item.title })),
-                            ]);
-                          } else if (project_method === "nocode") {
-                            field.onChange([
-                              ...(field.value ?? []),
-                              ...(nocode_platform
-                                ? category.items
-                                    .filter((item) => item.default.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"])
-                                    .map((item) => ({ doctype: "Features", feature: item.title }))
-                                : category.items.filter((item) => item.default.nocode.other).map((item) => ({ doctype: "Features", feature: item.title }))),
-                            ]);
-                          } else if (project_method === "shop") {
-                            field.onChange([
-                              ...(field.value ?? []),
-                              ...(nocode_platform
-                                ? category.items
-                                    .filter((item) => item.default.shop[nocode_platform as "shopify" | "imweb" | "cafe24"])
-                                    .map((item) => ({ doctype: "Features", feature: item.title }))
-                                : category.items.filter((item) => item.default.shop.other).map((item) => ({ doctype: "Features", feature: item.title }))),
-                            ]);
-                          }
-                        }
-                      }}
-                    >
-                      <div className="flex flex-col text-sm font-semibold text-start">
-                        <p>
-                          {category.icon} {category.title}
-                        </p>
-                        <div className="w-full text-xs font-medium mt-1">{category.description}</div>
-                      </div>
-                      <div className="shrink-0">
-                        {!categoryHasAlwaysOn ? (
-                          <SwitchIndicator checked={isOpen} />
-                        ) : (
-                          <div className="text-xs w-9 py-0.5 flex items-center justify-center rounded-full border border-blue-300 bg-blue-200 text-blue-600 font-semibold">
-                            포함
-                          </div>
+                  return (
+                    <div key={category.title} className="w-full">
+                      {/* Title Row */}
+                      <button
+                        type="button"
+                        className={cn(
+                          "w-full flex items-center justify-between space-x-2 py-3 mb-2 rounded-md bg-gray-100 px-3 pl-4.5",
+                          isOpen ? "bg-blue-100" : "bg-gray-100"
                         )}
-                      </div>
-                    </button>
+                        onClick={() => {
+                          toggleCategory(category.title);
+                        }}
+                      >
+                        <div className="flex flex-col text-sm font-semibold text-start">
+                          <p>
+                            {category.icon} {category.title}
+                          </p>
+                          <div className="w-full text-xs font-medium mt-1">{category.description}</div>
+                        </div>
+                        <div className="shrink-0">
+                          <SwitchIndicator checked={isOpen} />
+                        </div>
+                      </button>
 
-                    {/* AnimatePresence로 높이/opacity 애니메이션 */}
-                    <AnimatePresence initial={false}>
-                      {isOpen && (
-                        <motion.div
-                          key="content"
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="overflow-hidden grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2"
-                        >
-                          {visibleItems.map((item) => (
-                            <FeatureItemWithTooltip
-                              key={item.title}
-                              item={item}
-                              isChecked={field.value?.some((f) => f.feature == item.title) || false}
-                              onButtonClick={() => {
-                                if (project_method === "code") {
-                                  if (item.default.code) return;
-                                } else if (project_method === "nocode") {
-                                  if (
-                                    nocode_platform
-                                      ? item.default.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"]
-                                      : item.default.nocode.other
-                                  )
-                                    return;
-                                } else if (project_method === "shop") {
-                                  if (nocode_platform ? item.default.shop[nocode_platform as "shopify" | "imweb" | "cafe24"] : item.default.shop.other) return;
-                                }
+                      {/* AnimatePresence로 높이/opacity 애니메이션 */}
+                      <AnimatePresence initial={false}>
+                        {isOpen && (
+                          <motion.div
+                            key="content"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2"
+                          >
+                            {visibleItems.map((item) => (
+                              <FeatureItemWithTooltip
+                                key={item.title}
+                                item={item}
+                                isChecked={field.value?.some((f) => f.feature == item.title) || false}
+                                onButtonClick={() => {
+                                  if (item.default) return;
 
-                                const current = field.value || [];
-                                const include = current.some((f) => f.feature == item.title);
-                                field.onChange(
-                                  include ? current.filter((p) => p.feature !== item.title) : [...current, { doctype: "Features", feature: item.title }]
-                                );
-                              }}
-                              isDefault={
-                                project_method === "code"
-                                  ? item.default.code || item.alwaysOn.code
-                                  : project_method === "nocode"
-                                  ? nocode_platform
-                                    ? item.default.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"] ||
-                                      item.alwaysOn.nocode[nocode_platform as "imweb" | "framer" | "webflow" | "wordpress" | "bubble"]
-                                    : item.default.nocode.other || item.alwaysOn.nocode.other
-                                  : nocode_platform
-                                  ? item.default.shop[nocode_platform as "shopify" | "imweb" | "cafe24"] ||
-                                    item.alwaysOn.shop[nocode_platform as "shopify" | "imweb" | "cafe24"]
-                                  : item.default.shop.other || item.alwaysOn.shop.other
-                              }
-                            />
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                );
-              })}
-            </div>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+                                  const current = field.value || [];
+                                  const include = current.some((f) => f.feature == item.title);
+                                  field.onChange(
+                                    include ? current.filter((p) => p.feature !== item.title) : [...current, { doctype: "Features", feature: item.title }]
+                                  );
+                                }}
+                                isDefault={item.default}
+                              />
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
       <FormField
         control={control}
         name="custom_content_pages"
