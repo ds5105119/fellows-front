@@ -1,7 +1,7 @@
 "use client";
 
 import type { z } from "zod";
-import type { UseFormReturn } from "react-hook-form";
+import { useWatch, type UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { platformEnum, readinessLevelEnum, type CreateERPNextProject, type ProjectMethod } from "@/@types/service/project";
@@ -53,10 +53,11 @@ function ProjectMethodButton({
 }
 
 export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1Props) {
-  const { control, getValues, setValue, watch } = form;
+  const { control, getValues, setValue } = form;
   const platforms = getValues("custom_platforms");
   const readiness = getValues("custom_readiness_level");
-  const projectMethod = watch("custom_project_method");
+  const projectMethod = useWatch({ name: "custom_project_method", control });
+  const nocodePlatform = useWatch({ name: "custom_nocode_platform", control });
 
   const filteredPlatforms = useMemo(() => {
     let allowedKeys: string[] = [];
@@ -191,11 +192,13 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                         <ProjectMethodButton
                           key={method}
                           value={method}
-                          selected={field.value}
+                          selected={projectMethod}
                           readiness={readiness}
                           onChange={(val) => {
                             field.onChange(val);
-                            setValue("custom_nocode_platform", undefined);
+                            if (val === "code") setValue("custom_nocode_platform", undefined);
+                            else if (val === "shop") setValue("custom_nocode_platform", "shopify");
+                            else setValue("custom_nocode_platform", "imweb");
                           }}
                         />
                       ))}
@@ -228,7 +231,7 @@ export default function CreateProjectFormStep1({ form }: CreateProjectFormStep1P
                       <button
                         className={cn(
                           "col-span-1 font-semibold shadow-none transition-colors duration-200 ease-in-out rounded-md text-start text-sm p-4",
-                          field.value === key ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
+                          nocodePlatform === key ? "bg-blue-500 text-background hover:bg-blue-500" : "bg-gray-100 hover:bg-gray-300"
                         )}
                         type="button"
                         key={key}

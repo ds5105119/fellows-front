@@ -231,122 +231,132 @@ export function ProjectDetails({ project, setEditedProject }: ProjectDetailsProp
       {/* Project Description Section */}
       <ProjectDescriptionSection project={project} setEditedProject={setEditedProject} />
 
-      {/* Features Section */}
-      <Dialog>
-        <div className="w-full flex flex-col space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold">기능</div>
-            <DialogTrigger asChild>
-              <button
-                disabled={!isDraft}
-                className={cn(
-                  !isDraft && "hidden sr-only",
-                  "cursor-pointer select-none px-2 py-1 rounded-sm bg-muted text-xs font-bold flex items-center hover:bg-zinc-200 transition-colors duration-300"
-                )}
-              >
-                <p>기능 추가하기</p>
-                <PlusIcon className="!size-4 ml-1" />
-              </button>
-            </DialogTrigger>
-          </div>
-          <div className="w-full flex flex-wrap gap-2 p-2 rounded-xs bg-zinc-50 border">
-            <SelectedFeaturesDisplay features={project.custom_features} />
-          </div>
-        </div>
-
-        <DialogContent showCloseButton={false} className="drop-shadow-white/10 drop-shadow-2xl p-0 h-3/4 overflow-y-auto scrollbar-hide focus-visible:ring-0">
-          <DialogHeader className="sr-only">
-            <DialogTitle className="sr-only">기능 선택 창</DialogTitle>
-            <DialogDescription className="sr-only" />
-          </DialogHeader>
-          <div className="w-full h-full flex flex-col">
-            {/* Search Input */}
-            <div className="sticky top-0 w-full px-2 py-2 border-b border-b-muted bg-white">
-              <Input
-                className="border-none focus:ring-0 focus-visible:ring-0 md:text-base shadow-none"
-                placeholder="검색어 입력"
-                value={featureKeyword}
-                onChange={(e) => setFeatureKeyword(e.target.value)}
-              />
-            </div>
-
-            <div className="Flex flex-col grow space-y-2 py-5 px-3">
-              {/* Selected Features Display */}
-              <div className="text-xs font-bold text-muted-foreground px-2">선택된 기능들 ({selectedFeaturesCount})</div>
-              <div className="w-full flex flex-wrap gap-2 px-2">
-                {project.custom_features?.map((val, i) => {
-                  const feature = filteredCategorizedFeatures.flatMap((category) => category.items).find((item) => item.title === val.feature);
-
-                  return feature ? (
-                    <div key={i} className="relative pl-2 pr-2 py-1 bg-muted text-xs font-bold flex space-x-1 shrink-0 items-center rounded-sm overflow-hidden">
-                      <p>
-                        {feature.icon}&nbsp;&nbsp;{feature.title}
-                      </p>
-                      <div className="group flex items-center">
-                        <button onClick={() => handleSelectedFeatureRemove(feature.title)}>
-                          <XIcon className="!size-3 hover:cursor-pointer" />
-                        </button>
-                        <div className="absolute inset-0 transition-colors group-hover:bg-black/5 pointer-events-none" />
-                      </div>
-                    </div>
-                  ) : null;
-                })}
-              </div>
-
-              {/* Category Filter */}
-              <div className="text-xs font-bold text-muted-foreground pt-4 px-2">
-                {featureCategory === "" ? `모든 기능들 (${totalFeaturesCount})` : `${featureCategory} (${totalFeaturesCount})`}
-              </div>
-              <DragScrollContainer className="flex space-x-2 px-2">
-                <button
-                  className={cn(
-                    "py-1 rounded-sm px-2 text-sm font-bold shrink-0",
-                    featureCategory === "" ? "text-white bg-blue-400" : "text-black border border-gray-200"
-                  )}
-                  onClick={() => setFeatureCategory("")}
-                >
-                  전체
-                </button>
-                {filteredCategorizedFeatures.map((category) => (
+      {project.custom_project_method === "code" && (
+        <>
+          {/* Features Section */}
+          <Dialog>
+            <div className="w-full flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">기능</div>
+                <DialogTrigger asChild>
                   <button
-                    key={category.title}
+                    disabled={!isDraft}
                     className={cn(
-                      "py-1 rounded-sm px-2 text-sm font-bold shrink-0",
-                      featureCategory === category.title ? "text-white bg-blue-400" : "text-black border border-gray-200"
+                      !isDraft && "hidden sr-only",
+                      "cursor-pointer select-none px-2 py-1 rounded-sm bg-muted text-xs font-bold flex items-center hover:bg-zinc-200 transition-colors duration-300"
                     )}
-                    onClick={() => setFeatureCategory(category.title)}
                   >
-                    {category.title}
+                    <p>기능 추가하기</p>
+                    <PlusIcon className="!size-4 ml-1" />
                   </button>
-                ))}
-              </DragScrollContainer>
-
-              {/* Feature List */}
-              <div className="w-full flex flex-col space-y-1 mt-4">
-                {filteredFeatures.map((category) =>
-                  category.items.map((val, i) => {
-                    const isActive = project.custom_features?.some((f) => f.feature === val.title) || false;
-
-                    return (
-                      <FeatureItem
-                        key={category.title + i}
-                        feature={val}
-                        isActive={isActive}
-                        onToggle={() => handleFeatureToggle(val.title)}
-                        categoryTitle={category.title}
-                        index={i}
-                      />
-                    );
-                  })
-                )}
+                </DialogTrigger>
+              </div>
+              <div className="w-full flex flex-wrap gap-2 p-2 rounded-xs bg-zinc-50 border">
+                <SelectedFeaturesDisplay features={project.custom_features} />
               </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
-      {/* Technology Stack Section */}
-      <TechnologyStackSection project={project} />
+            <DialogContent
+              showCloseButton={false}
+              className="drop-shadow-white/10 drop-shadow-2xl p-0 h-3/4 overflow-y-auto scrollbar-hide focus-visible:ring-0"
+            >
+              <DialogHeader className="sr-only">
+                <DialogTitle className="sr-only">기능 선택 창</DialogTitle>
+                <DialogDescription className="sr-only" />
+              </DialogHeader>
+              <div className="w-full h-full flex flex-col">
+                {/* Search Input */}
+                <div className="sticky top-0 w-full px-2 py-2 border-b border-b-muted bg-white">
+                  <Input
+                    className="border-none focus:ring-0 focus-visible:ring-0 md:text-base shadow-none"
+                    placeholder="검색어 입력"
+                    value={featureKeyword}
+                    onChange={(e) => setFeatureKeyword(e.target.value)}
+                  />
+                </div>
+
+                <div className="Flex flex-col grow space-y-2 py-5 px-3">
+                  {/* Selected Features Display */}
+                  <div className="text-xs font-bold text-muted-foreground px-2">선택된 기능들 ({selectedFeaturesCount})</div>
+                  <div className="w-full flex flex-wrap gap-2 px-2">
+                    {project.custom_features?.map((val, i) => {
+                      const feature = filteredCategorizedFeatures.flatMap((category) => category.items).find((item) => item.title === val.feature);
+
+                      return feature ? (
+                        <div
+                          key={i}
+                          className="relative pl-2 pr-2 py-1 bg-muted text-xs font-bold flex space-x-1 shrink-0 items-center rounded-sm overflow-hidden"
+                        >
+                          <p>
+                            {feature.icon}&nbsp;&nbsp;{feature.title}
+                          </p>
+                          <div className="group flex items-center">
+                            <button onClick={() => handleSelectedFeatureRemove(feature.title)}>
+                              <XIcon className="!size-3 hover:cursor-pointer" />
+                            </button>
+                            <div className="absolute inset-0 transition-colors group-hover:bg-black/5 pointer-events-none" />
+                          </div>
+                        </div>
+                      ) : null;
+                    })}
+                  </div>
+
+                  {/* Category Filter */}
+                  <div className="text-xs font-bold text-muted-foreground pt-4 px-2">
+                    {featureCategory === "" ? `모든 기능들 (${totalFeaturesCount})` : `${featureCategory} (${totalFeaturesCount})`}
+                  </div>
+                  <DragScrollContainer className="flex space-x-2 px-2">
+                    <button
+                      className={cn(
+                        "py-1 rounded-sm px-2 text-sm font-bold shrink-0",
+                        featureCategory === "" ? "text-white bg-blue-400" : "text-black border border-gray-200"
+                      )}
+                      onClick={() => setFeatureCategory("")}
+                    >
+                      전체
+                    </button>
+                    {filteredCategorizedFeatures.map((category) => (
+                      <button
+                        key={category.title}
+                        className={cn(
+                          "py-1 rounded-sm px-2 text-sm font-bold shrink-0",
+                          featureCategory === category.title ? "text-white bg-blue-400" : "text-black border border-gray-200"
+                        )}
+                        onClick={() => setFeatureCategory(category.title)}
+                      >
+                        {category.title}
+                      </button>
+                    ))}
+                  </DragScrollContainer>
+
+                  {/* Feature List */}
+                  <div className="w-full flex flex-col space-y-1 mt-4">
+                    {filteredFeatures.map((category) =>
+                      category.items.map((val, i) => {
+                        const isActive = project.custom_features?.some((f) => f.feature === val.title) || false;
+
+                        return (
+                          <FeatureItem
+                            key={category.title + i}
+                            feature={val}
+                            isActive={isActive}
+                            onToggle={() => handleFeatureToggle(val.title)}
+                            categoryTitle={category.title}
+                            index={i}
+                          />
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Technology Stack Section */}
+          <TechnologyStackSection project={project} />
+        </>
+      )}
     </div>
   );
 }

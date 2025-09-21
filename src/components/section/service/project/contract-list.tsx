@@ -90,6 +90,23 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
         </div>
       )}
 
+      {contracts.length === 0 && !isLoading && (
+        <div className="flex flex-col w-full">
+          <div className="h-44 flex flex-col justify-center space-y-4 items-center w-full rounded-sm bg-gradient-to-b from-blue-50 via-indigo-50 to-blue-50 px-8 mb-1 text-sm select-none">
+            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-xl">
+              <FileCheck className="w-8 h-8 text-blue-500" />
+            </div>
+            <div className="text-center space-y-1">
+              <p className="text-sm font-medium text-gray-700">아직 계약서가 없습니다</p>
+            </div>
+          </div>
+          <div className="flex flex-col space-y-2 pt-4 pb-2 text-center">
+            <div className="text-base font-semibold">계약서 관리</div>
+            <div className="text-sm font-medium text-muted-foreground">프로젝트 계약이 진행되면 이곳에서 계약을 처리할 수 있어요.</div>
+          </div>
+        </div>
+      )}
+
       <section className="space-y-3">
         {contracts.map((contract) => (
           <div
@@ -165,23 +182,6 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
           </div>
         ))}
       </section>
-
-      {contracts.length === 0 && !isLoading && (
-        <div className="flex flex-col w-full">
-          <div className="h-44 flex flex-col justify-center space-y-4 items-center w-full rounded-lg bg-gradient-to-b from-blue-50 via-indigo-50 to-blue-50 px-8 mb-1 text-sm select-none">
-            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-sm">
-              <FileCheck className="w-8 h-8 text-blue-500" />
-            </div>
-            <div className="text-center space-y-1">
-              <p className="text-sm font-medium text-gray-700">아직 계약서가 없습니다</p>
-            </div>
-          </div>
-          <div className="flex flex-col space-y-2 pt-4 pb-2 text-center">
-            <div className="text-base font-semibold">계약서 관리</div>
-            <div className="text-sm font-medium text-muted-foreground">프로젝트 계약이 진행되면 이곳에서 계약을 처리할 수 있어요.</div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

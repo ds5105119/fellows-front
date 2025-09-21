@@ -38,8 +38,8 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
     formState: { errors },
   } = form;
 
-  const project_method = useWatch({ name: "custom_project_method", control });
-  const custom_features = useWatch({ name: "custom_features", control });
+  const projectMethod = useWatch({ name: "custom_project_method", control });
+  const customFeatures = useWatch({ name: "custom_features", control });
 
   const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
 
@@ -78,7 +78,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
 
   // 3. 데이터 변경 -> UI 동기화 (외부 데이터 주입 반영)
   useEffect(() => {
-    const features = custom_features || [];
+    const features = customFeatures || [];
 
     // custom_features를 기반으로 openMap이 가져야 할 이상적인 상태를 계산
     const idealOpenMap = categorizedFeatures.reduce((acc, category) => {
@@ -90,11 +90,11 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
     if (JSON.stringify(openMap) !== JSON.stringify(idealOpenMap)) {
       setOpenMap(idealOpenMap);
     }
-  }, [custom_features]);
+  }, [customFeatures]);
 
   return (
     <>
-      {project_method === "code" && (
+      {projectMethod === "code" && (
         <FormField
           control={control}
           name="custom_features"
@@ -195,7 +195,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
           </FormItem>
         )}
       />
-      {project_method === "code" && (
+      {projectMethod === "code" && (
         <FormField
           control={control}
           name="custom_preferred_tech_stacks"
