@@ -108,7 +108,7 @@ export function GanttChart({
     };
 
     traverse(treeData);
-    return result;
+    return result.filter((res) => dayjs(res.exp_start_date) >= dateRange.start && dayjs(res.exp_end_date) <= dateRange.end);
   }, [treeData, expandedTasks]);
 
   const calculateDateRange = (start?: Dayjs, end?: Dayjs) => {
@@ -231,7 +231,7 @@ export function GanttChart({
             </div>
           </div>
 
-          <EmptyState hasTasks={hasTasks} hasTaskIsLoading={hasTaskIsLoading ?? true} isLoading={isLoading ?? true} tasksLength={tasks.length} />
+          <EmptyState hasTasks={hasTasks} hasTaskIsLoading={hasTaskIsLoading ?? true} isLoading={isLoading ?? true} tasksLength={visibleTasks.length} />
 
           {/* Tasks */}
           <div className="divide-y">

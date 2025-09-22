@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { ZapIcon } from "lucide-react"
-import DynamicFcIcon from "@/components/resource/dynamicfcicon"
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { ZapIcon } from "lucide-react";
+import DynamicFcIcon from "@/components/resource/dynamicfcicon";
 
 interface EmptyStateProps {
-  hasTasks: boolean
-  hasTaskIsLoading: boolean
-  isLoading: boolean
-  tasksLength: number
+  hasTasks: boolean;
+  hasTaskIsLoading: boolean;
+  isLoading: boolean;
+  tasksLength: number;
 }
 
 export function EmptyState({ hasTasks, hasTaskIsLoading, isLoading, tasksLength }: EmptyStateProps) {
@@ -39,7 +39,7 @@ export function EmptyState({ hasTasks, hasTaskIsLoading, isLoading, tasksLength 
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   // There is not Tasks with Filters
@@ -52,8 +52,8 @@ export function EmptyState({ hasTasks, hasTaskIsLoading, isLoading, tasksLength 
           <div>조건을 변경하여 다시 시도해주세요.</div>
         </div>
       </div>
-    )
+    );
   }
 
-  return null
+  return null;
 }

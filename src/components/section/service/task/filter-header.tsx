@@ -331,6 +331,7 @@ export function FilterHeader({
                             <CommandGroup>
                               {overviewProjects
                                 .filter((i) => (projectId ? !projectId.includes(i.project_name) : true))
+                                .filter((i) => i.custom_project_status !== "draft")
                                 .map((val, idx) => {
                                   return (
                                     <CommandItem
@@ -374,6 +375,7 @@ export function FilterHeader({
                               </div>
                             );
                           })}
+                          {(!projectId || projectId.length === 0) && <div className="text-sm text-center py-2">선택된 프로젝트가 없습니다.</div>}
                         </div>
                       </div>
                     </div>
