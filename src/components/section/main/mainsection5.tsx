@@ -17,15 +17,16 @@ export default async function MainSection5() {
       </div>
 
       <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
-        <div className="col-span-1 bg-muted aspect-square rounded-3xl">
-          <InView
-            variants={{
-              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
-              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
-            }}
-            viewOptions={{ margin: "0px 0px 100px 0px" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
+        {" "}
+        <InView
+          variants={{
+            hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+            visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+          }}
+          viewOptions={{ margin: "0px 0px 100px 0px" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          <div className="col-span-1 bg-muted aspect-square rounded-3xl">
             <div className="w-full h-full px-6 md:px-10 pt-6 md:pt-10 flex flex-col justify-between overflow-hidden relative">
               <div className="flex flex-col space-y-1.5 z-50 w-full shrink-0">
                 <div className="flex flex-col space-y-2">
@@ -45,17 +46,17 @@ export default async function MainSection5() {
                 </div>
               </div>
             </div>
-          </InView>
-        </div>
-        <div className="col-span-1 bg-muted aspect-square rounded-3xl">
-          <InView
-            variants={{
-              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
-              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
-            }}
-            viewOptions={{ margin: "0px 0px 100px 0px" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
+          </div>
+        </InView>
+        <InView
+          variants={{
+            hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+            visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+          }}
+          viewOptions={{ margin: "0px 0px 100px 0px" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          <div className="col-span-1 bg-muted aspect-square rounded-3xl">
             <div className="w-full h-full px-6 md:px-10 pt-6 md:pt-10 flex flex-col justify-between overflow-hidden relative">
               <div className="flex flex-col space-y-1.5 z-50 w-full shrink-0">
                 <div className="flex flex-col space-y-2">
@@ -71,17 +72,17 @@ export default async function MainSection5() {
                 </div>
               </div>
             </div>
-          </InView>
-        </div>
-        <div className="col-span-1 bg-muted aspect-square rounded-3xl">
-          <InView
-            variants={{
-              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
-              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
-            }}
-            viewOptions={{ margin: "0px 0px 100px 0px" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
+          </div>
+        </InView>
+        <InView
+          variants={{
+            hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+            visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+          }}
+          viewOptions={{ margin: "0px 0px 100px 0px" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          <div className="col-span-1 bg-muted aspect-square rounded-3xl">
             <div className="w-full h-full px-6 md:px-10 pt-6 md:pt-10 flex flex-col justify-between overflow-hidden relative">
               <div className="flex flex-col space-y-1.5 z-50 w-full shrink-0">
                 <div className="flex flex-col space-y-2">
@@ -101,8 +102,8 @@ export default async function MainSection5() {
                 </div>
               </div>
             </div>
-          </InView>
-        </div>
+          </div>
+        </InView>
       </div>
     </div>
   );
