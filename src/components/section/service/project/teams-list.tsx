@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Session } from "next-auth";
+import { SWRResponse } from "swr";
+import { useRouter } from "next/navigation";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { useUsers } from "@/hooks/fetch/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,8 +25,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { inviteProjectGroup, updateProjectGroup } from "@/hooks/fetch/project";
-import { Session } from "next-auth";
-import { SWRResponse } from "swr";
 
 // Helper to map level to role and badge color
 const getRoleDetails = (level: number) => {
@@ -43,6 +44,7 @@ const getRoleDetails = (level: number) => {
 
 export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<UserERPNextProject>; session: Session }) {
   const { data: project, mutate } = projectSwr;
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -65,10 +67,6 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
       await inviteProjectGroup(project?.project_name || "", email.trim());
       setEmail("");
       setIsDialogOpen(false);
-      // 성공 메시지나 토스트를 여기에 추가할 수 있습니다
-    } catch (error) {
-      console.error("초대 실패:", error);
-      // 에러 메시지나 토스트를 여기에 추가할 수 있습니다
     } finally {
       setIsInviting(false);
       mutate();
@@ -76,11 +74,16 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
   };
 
   const handleDelete = async (sub: string) => {
+    const ok = sub === session.sub ? window.confirm("프로젝트에서 나가시겠습니까?") : window.confirm("정말로 삭제하시겠습니까?");
+    if (!ok) return;
+
     updateProjectGroup(
       project?.project_name || "",
-      teamMembers.filter((member) => member.member != sub)
+      teamMembers.filter((member) => member.member !== sub)
     );
     mutate();
+
+    if (sub === session.sub) router.push("/service/project");
   };
 
   const handleLevelChange = (memberId: string, newLevel: number) => {
@@ -151,7 +154,7 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
 
       <section className="space-y-2">
         {users?.map((user, idx) => {
-          const teamMember = teamMembers[idx];
+          const teamMember = teamMembers.find((team) => team.member === user.sub);
           if (!teamMember) return null;
 
           const role = getRoleDetails(teamMember.level);
@@ -159,7 +162,7 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
           const userPicture = user.picture?.[0];
           const isAdmin = teamMember.level == 0;
 
-          return canEdit ? (
+          return canEdit || teamMember.member === session.sub ? (
             <div
               key={teamMember.member}
               className="grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-sm pl-3 pr-4 py-2 text-sm font-medium hover:bg-zinc-100 transiton-colors duration-200"
@@ -180,13 +183,16 @@ export function TeamsList({ projectSwr, session }: { projectSwr: SWRResponse<Use
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuLabel>팀원 관리</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuRadioGroup value={`${teamMember.level}`} onValueChange={(value) => handleLevelChange(teamMember.member, Number(value))}>
-                      <DropdownMenuRadioItem value="0">소유자</DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="1">관리자</DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="2">읽기 및 쓰기</DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="3">읽기</DropdownMenuRadioItem>
-                    </DropdownMenuRadioGroup>
+                    {canEdit && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup value={`${teamMember.level}`} onValueChange={(value) => handleLevelChange(teamMember.member, Number(value))}>
+                          <DropdownMenuRadioItem value="1">관리자</DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="2">읽기 및 쓰기</DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="3">읽기</DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </>
+                    )}
                     {!isAdmin && (
                       <>
                         <DropdownMenuSeparator />

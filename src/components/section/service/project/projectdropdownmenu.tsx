@@ -77,7 +77,7 @@ const ProjectDropdownMenu = ({
         </DropdownMenuItem>
 
         <DropdownMenuItem className="flex items-center space-x-2 font-medium" asChild>
-          <Link href={`/service/project/${project.project_name}`}>
+          <Link href={`/service/project/${project.project_name}/teams`}>
             <UserPlus className="size-4" />
             <span>팀원 추가</span>
           </Link>

@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthConfig } from "next-auth";
+import NextAuth from "next-auth";
 import Keycloak from "next-auth/providers/keycloak";
 import { JWT } from "next-auth/jwt";
 import { jwtDecode } from "jwt-decode";
