@@ -119,13 +119,15 @@ export default function ProjectEstimator({ projectSwr, project }: Props) {
               </TableRow>
               <TableRow>
                 <TableCell className="w-2/5 font-medium bg-muted">VAT 10%</TableCell>
-                <TableCell className="w-3/5 text-right">{((projectSwr.data?.estimated_costing ?? 0) * 0.1).toLocaleString()} 원</TableCell>
+                <TableCell className="w-3/5 text-right">{Math.round((projectSwr.data?.estimated_costing ?? 0) * 0.1).toLocaleString()} 원</TableCell>
               </TableRow>
             </TableBody>
             <TableFooter>
               <TableRow>
                 <TableCell className="w-2/5 bg-black text-white">Total</TableCell>
-                <TableCell className="w-3/5 text-right bg-black text-white">{((projectSwr.data?.estimated_costing ?? 0) * 1.1).toLocaleString()} 원</TableCell>
+                <TableCell className="w-3/5 text-right bg-black text-white">
+                  {Math.round((projectSwr.data?.estimated_costing ?? 0) * 1.1).toLocaleString()} 원
+                </TableCell>
               </TableRow>
             </TableFooter>
           </Table>

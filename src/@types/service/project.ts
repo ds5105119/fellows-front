@@ -130,7 +130,7 @@ export const createERPNextProjectSchema = z.object({
   custom_project_summary: z.string(),
   custom_readiness_level: z.string(),
   custom_project_method: projectMethodEnum.optional(),
-  custom_nocode_platform: noCodePlatformEnum.optional(),
+  custom_nocode_platform: noCodePlatformEnum.nullable().optional(),
 
   expected_start_date: z.string().optional().nullable(),
   expected_end_date: z.string().optional().nullable(),
@@ -375,7 +375,7 @@ export const projectInfoEstimateResponseSchema = z.object({
   custom_readiness_level: z.string(),
   custom_platforms: z.array(platformEnum),
   custom_project_method: projectMethodEnum,
-  custom_nocode_platform: noCodePlatformEnum,
+  custom_nocode_platform: noCodePlatformEnum.nullable(),
 });
 export type ProjectInfoEstimateResponse = z.infer<typeof projectInfoEstimateResponseSchema>;
 

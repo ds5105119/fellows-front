@@ -10,6 +10,7 @@ import { categorizedFeatures } from "@/components/resource/project";
 import { Input } from "@/components/ui/input";
 import DragScrollContainer from "@/components/ui/dragscrollcontainer";
 import { cn } from "@/lib/utils";
+import TagInput from "@/components/form/taginput";
 
 interface ProjectDetailsProps {
   project: UserERPNextProject;
@@ -29,7 +30,7 @@ function ContractAmountSection({ project, toggle, setToggle }: { project: UserER
     );
   }
 
-  const displayAmount = toggle ? project.estimated_costing * 1.1 : project.estimated_costing;
+  const displayAmount = toggle ? Math.round(project.estimated_costing * 1.1) : project.estimated_costing;
   const taxStatus = toggle ? "포함" : "별도";
   const toggleButtonText = toggle ? "부가세 미포함 금액으로 변경" : "부가세 포함된 금액으로 변경";
 
@@ -67,6 +68,33 @@ function ProjectDescriptionSection({ project, setEditedProject }: { project: Use
         />
       ) : (
         <div className="rounded-xs bg-zinc-50 border px-2.5 py-2 text-sm">{project.custom_project_summary ?? ""}</div>
+      )}
+    </div>
+  );
+}
+
+function ProjectPagesSection({ project, setEditedProject }: { project: UserERPNextProject; setEditedProject: (project: UserERPNextProject) => void }) {
+  const isDraft = project.custom_project_status === "draft";
+
+  const handlePagesChange = (value: number) => {
+    setEditedProject({ ...project, custom_content_pages: value });
+  };
+
+  return (
+    <div className="w-full flex flex-col space-y-2">
+      <div className="text-sm font-semibold">페이지 수</div>
+      {isDraft ? (
+        <Input
+          type="number"
+          min="0"
+          max="200"
+          placeholder="예상 페이지 수를 적어주세요."
+          value={project.custom_content_pages ?? ""}
+          onChange={(e) => handlePagesChange(Number(e.target.value))}
+          className="rounded-xs shadow-none"
+        />
+      ) : (
+        <div className="rounded-xs bg-zinc-50 border px-2.5 py-2 text-sm">{project.custom_content_pages ?? ""}</div>
       )}
     </div>
   );
@@ -137,16 +165,28 @@ function FeatureItem({
   );
 }
 
-function TechnologyStackSection({ project }: { project: UserERPNextProject }) {
+function TechnologyStackSection({ project, setEditedProject }: { project: UserERPNextProject; setEditedProject: (project: UserERPNextProject) => void }) {
   const isDraft = project.custom_project_status === "draft";
   const sectionTitle = isDraft ? "희망 사용기술" : "계약 사용기술";
-  const hasStacks = project.custom_preferred_tech_stacks && project.custom_preferred_tech_stacks.length > 0;
+  const hasStacks = !!project.custom_preferred_tech_stacks && project.custom_preferred_tech_stacks.length > 0;
+
+  const handleStackChange = (value: string[]) => {
+    setEditedProject({ ...project, custom_preferred_tech_stacks: value.map((v) => ({ doctype: "", stack: v })) });
+  };
 
   return (
     <div className="w-full flex flex-col space-y-1.5">
       <div className="text-sm font-semibold">{sectionTitle}</div>
       <div className="flex flex-wrap gap-2 mt-1">
-        {hasStacks ? (
+        {isDraft ? (
+          <TagInput
+            value={hasStacks && project.custom_preferred_tech_stacks ? project.custom_preferred_tech_stacks.map((stack) => stack.stack) : []}
+            onChange={handleStackChange}
+            placeholder={hasStacks ? "⌫ 키로 지울 수 있어요." : "쉼표(,)로 구분하여 입력해주세요. (얘시: Next.js)"}
+            showUnderLine={false}
+            className="border rounded-xs w-full min-h-0 py-2 px-2"
+          />
+        ) : hasStacks ? (
           project.custom_preferred_tech_stacks!.map((val, i) => (
             <div key={i} className="px-2 py-1 rounded-sm bg-muted text-xs font-bold">
               {val.stack}
@@ -230,6 +270,8 @@ export function ProjectDetails({ project, setEditedProject }: ProjectDetailsProp
 
       {/* Project Description Section */}
       <ProjectDescriptionSection project={project} setEditedProject={setEditedProject} />
+
+      <ProjectPagesSection project={project} setEditedProject={setEditedProject} />
 
       {project.custom_project_method === "code" && (
         <>
@@ -354,7 +396,7 @@ export function ProjectDetails({ project, setEditedProject }: ProjectDetailsProp
           </Dialog>
 
           {/* Technology Stack Section */}
-          <TechnologyStackSection project={project} />
+          <TechnologyStackSection project={project} setEditedProject={setEditedProject} />
         </>
       )}
     </div>

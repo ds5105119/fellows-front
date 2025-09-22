@@ -6,15 +6,20 @@ import { X } from "lucide-react";
 import { toast } from "sonner";
 import { motion, useAnimation } from "framer-motion";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export default function TagInput({
   value,
   onChange,
   placeholder = "쉼표(,)로 구분",
+  className,
+  showUnderLine = true,
 }: {
   value: string[];
   onChange: (val: string[]) => void;
   placeholder?: string;
+  className?: string;
+  showUnderLine?: boolean;
 }) {
   const [input, setInput] = useState("");
   const [focused, setFocused] = useState(false);
@@ -63,7 +68,7 @@ export default function TagInput({
   };
 
   return (
-    <motion.div animate={controls} className="relative flex flex-wrap items-center gap-1 border-0 min-h-12">
+    <motion.div animate={controls} className={cn("relative flex flex-wrap items-center gap-1 border-0 min-h-12", className)}>
       {value.map((tag, i) => (
         <Badge key={i} variant="secondary" className="flex items-center gap-1 font-bold bg-blue-500/15 max-w-[150px] overflow-hidden">
           <p className="truncate whitespace-nowrap" title={tag}>
@@ -99,16 +104,19 @@ export default function TagInput({
         }}
       />
 
-      {/* 회색 기본 밑줄 */}
-      <span className="pointer-events-none absolute left-0 bottom-0 block h-0.5 w-full bg-gray-200" />
-
-      {/* 파란색 애니메이션 밑줄 */}
-      <motion.span
-        className="pointer-events-none absolute left-0 bottom-0 h-0.5 w-full bg-blue-500"
-        style={{ scaleX: 0, originX: 0 }} // origin-left
-        animate={{ scaleX: focused ? 1 : 0 }}
-        transition={{ type: "spring", stiffness: 260, damping: 30, mass: 0.6, duration: 0.2 }}
-      />
+      {showUnderLine && (
+        <>
+          {/* 회색 기본 밑줄 */}
+          <span className="pointer-events-none absolute left-0 bottom-0 block h-0.5 w-full bg-gray-200" />
+          {/* 파란색 애니메이션 밑줄 */}
+          <motion.span
+            className="pointer-events-none absolute left-0 bottom-0 h-0.5 w-full bg-blue-500"
+            style={{ scaleX: 0, originX: 0 }} // origin-left
+            animate={{ scaleX: focused ? 1 : 0 }}
+            transition={{ type: "spring", stiffness: 260, damping: 30, mass: 0.6, duration: 0.2 }}
+          />
+        </>
+      )}
     </motion.div>
   );
 }
