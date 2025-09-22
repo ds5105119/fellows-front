@@ -59,11 +59,11 @@ const features = [
     ),
   },
   {
-    name: "더 적은 예산으로 만드는\n높은 수준의 결과물",
+    name: "글로벌 개발 협업으로\n25% 이상 저렴한 가격",
     description: (
       <div className="flex items-center space-x-2">
         <BadgeCheckIcon className="size-4 md:size-5 text-emerald-500" strokeWidth={3} />
-        <div>다양한 개발 영역</div>
+        <div>더 적은 예산, 높은 퀄리티</div>
         <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
       </div>
     ),

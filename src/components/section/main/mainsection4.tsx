@@ -1,366 +1,750 @@
 "use client";
 
-import { useEffect, useState, useRef, useLayoutEffect } from "react";
+import { type ReactNode, useEffect, useState, useRef } from "react";
+import type React from "react";
+import { cn } from "@/lib/utils";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import Autoplay from "embla-carousel-autoplay";
+import { MeshGradientComponent } from "@/components/resource/meshgradient";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import TextHighlighter from "@/components/fancy/text/text-highlighter";
-import { Cursor } from "@/components/ui/cursor";
+import { AspectRatio } from "@radix-ui/react-aspect-ratio";
+import { Crown, Shield, Edit3, UserPlus, XIcon, PlusIcon } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { AnimatePresence, motion, useAnimation, useInView } from "framer-motion";
+import { useLenis } from "lenis/react";
+import { Button } from "@/components/ui/button";
 
-function calculateScale(width: number): number {
-  if (width > 1536) return 1;
-  return 0.4 + (width / 1536) * 0.6;
-}
+const featuresData = [
+  {
+    title: "차트와 대시보드",
+    description: "프로젝트 진행 상황을 한 곳에서 확인할 수 있습니다",
+    header: (
+      <>
+        <p className="text-foreground text-base font-bold">차트와 대시보드</p>
+        <p className="text-foreground leading-normal">
+          프로젝트 진행 상황을
+          <br />한 곳에서 확인할 수 있습니다
+        </p>
+      </>
+    ),
+    carouselChildren: (
+      <div className="absolute inset-0">
+        <div className="w-[180%] absolute top-36 xl:top-40 left-2 xl:left-4">
+          <AspectRatio ratio={931 / 790} className="w-full">
+            <Image src="/service_dashboard.png" alt="대시보드 케러셀 이미지" fill />
+          </AspectRatio>
+        </div>
+      </div>
+    ),
+    background: undefined,
+    details: [
+      "실시간 프로젝트 진행률 추적",
+      "시각적 차트와 그래프로 데이터 분석",
+      "커스터마이징 가능한 대시보드 레이아웃",
+      "팀 성과 지표 및 KPI 모니터링",
+      "자동 리포트 생성 및 내보내기 기능",
+    ],
+    dialogChildren: (
+      <div className="w-full flex flex-col space-y-6 md:space-y-12">
+        <div className="relative w-full pt-10 md:pt-20 bg-zinc-100 rounded-3xl overflow-hidden flex flex-col space-y-6">
+          <div className="text-xl lg:text-2xl xl:text-3xl font-bold px-8 sm:px-20 md:px-30 lg:px-32 xl:px-34 break-keep tracking-tight leading-tight">
+            프로젝트 주제별, 유형별 체계적인 관리
+            <span className="text-muted-foreground">
+              도 Fellows SaaS에서. 예정, 진행중이거나 지연된 테스크 관리부터 프로젝트 유형 별 관리까지 대시보드에서 모두 한 번에 가능합니다.
+            </span>
+          </div>
 
-const fixedIcons = [
-  { id: "google-drive", alt: "Google Drive", x: 6, y: 15, size: 120, delay: 0.1, src: "/main-section-4-3.jpg" },
-  { id: "box", alt: "Box", x: 67, y: 8, size: 144, delay: 0.2, src: "/main-section-4-2.jpg" },
-  { id: "canva", alt: "Canva", x: 32, y: 25, size: 112, delay: 0.3, src: "/main-section-4-4.jpg" },
-  { id: "figma", alt: "Figma", x: 57, y: 35, size: 115, delay: 0.4, src: "/main-section-4-8.jpg" },
-  { id: "notion", alt: "Notion", x: 10, y: 60, size: 115, delay: 0.5, src: "/main-section-4-5.jpg" },
-  { id: "word", alt: "Microsoft Word", x: 35, y: 50, size: 88, delay: 0.6, src: "/main-section-4-7.jpg" },
-  { id: "excel", alt: "Excel", x: 55, y: 70, size: 112, delay: 0.8, src: "/main-section-4-6.jpg" },
-  { id: "powerpoint", alt: "PowerPoint", x: 80, y: 60, size: 88, delay: 1.0, src: "/main-section-4-1.jpg" },
-] as const;
+          <div className="w-[calc(100%-2rem)] sm:w-[calc(100%-5rem)] md:w-[calc(100%-7.5rem)] lg:w-[calc(100%-8rem)] xl:w-[calc(100%-8.5rem)] ml-8 sm:ml-20 md:ml-30 lg:ml-32 xl:ml-34">
+            <AspectRatio ratio={2055 / 1034}>
+              <div />
+            </AspectRatio>
+          </div>
 
-export default function MainSection4() {
-  const [scale, setScale] = useState(1.0);
-  const [showDetail, setShowDetail] = useState(0);
+          <div className="absolute left-8 sm:left-20 md:left-30 lg:left-32 xl:left-34 bottom-0 w-[calc(100%-2rem)] sm:w-[calc(100%-5rem)] md:w-[calc(100%-7.5rem)] lg:w-[calc(100%-8rem)] xl:w-[calc(100%-8.5rem)]">
+            <AspectRatio ratio={2055 / 1034}>
+              <Image alt="케러셀 내부 다이얼로그 이미지" src="/section-3-dialog-1-1.png" className="h-full w-auto object-contain" fill />
+            </AspectRatio>
+          </div>
+        </div>
 
-  // Added refs for the two clickable containers
-  const leftContainerRef = useRef<HTMLDivElement | null>(null);
-  const rightContainerRef = useRef<HTMLDivElement | null>(null);
+        <div className="relative w-full pt-10 md:pt-20 bg-zinc-100 rounded-3xl overflow-hidden flex flex-col space-y-6">
+          <div className="text-xl lg:text-2xl xl:text-3xl font-bold px-8 sm:px-20 md:px-30 lg:px-32 xl:px-34 break-keep tracking-tight leading-tight">
+            차트와 대시보드.&nbsp;
+            <span className="text-muted-foreground">
+              대시보드의 다양한 차트를 통해 프로젝트의 실시간 상황을 빠르게 파악해보세요. 진행 중인 프로젝트와 결제 전인 계약서 등에 빠르게 접근할 수 있습니다.
+            </span>
+          </div>
 
-  const transition = { type: "spring", duration: 1, delay: 0.4, bounce: 0 } as const;
-  const highlightClass = "rounded-[0.3em] px-px";
-  const highlightColor = "#F2AD91";
-  const inViewOptions = { once: true, initial: true, amount: 0.1 };
+          <div className="w-[calc(100%-4rem)] sm:w-[calc(100%-8rem)] md:w-[calc(100%-12rem)] lg:w-[calc(100%-16rem)] xl:w-[calc(100%-20rem)] mr-16 sm:mr-32 md:mr-48 lg:mr-64 xl:mr-80 mb-8 sm:mb-11 md:mb-14 lg:mb-17 xl:mb-20">
+            <AspectRatio ratio={2675 / 2155}>
+              <Image alt="케러셀 내부 다이얼로그 이미지" src="/section-3-dialog-1-3.png" className="h-full w-auto object-contain" fill />
+            </AspectRatio>
+          </div>
+        </div>
 
-  useEffect(() => {
-    const handleResize = () => {
-      setScale(calculateScale(window.innerWidth));
-    };
+        <div className="relative w-full pt-10 md:pt-20 bg-zinc-100 rounded-3xl overflow-hidden flex flex-col space-y-6 md:space-y-8">
+          <div className="text-xl lg:text-2xl xl:text-3xl font-bold px-8 sm:px-20 md:px-30 lg:px-32 xl:px-34 break-keep tracking-tight leading-tight">
+            간단한 설정.&nbsp;
+            <span className="text-muted-foreground">
+              &apos;튜토리얼&apos;을 이용하면 프로젝트를 만들고 프로젝트의 진행 상황을 추적하는 방법에 대해 손쉽게 배울 수 있습니다.
+            </span>
+          </div>
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+          <div className="w-[calc(100%-4rem)] sm:w-[calc(100%-10rem)] md:w-[calc(100%-15rem)] lg:w-[calc(100%-16rem)] xl:w-[calc(100%-17rem)] ml-8 sm:ml-20 md:ml-30 lg:ml-32 xl:ml-34 mb-8 sm:mb-11 md:mb-14 lg:mb-17 xl:mb-20">
+            <AspectRatio ratio={2441 / 1126}>
+              <Image alt="케러셀 내부 다이얼로그 이미지" src="/section-3-dialog-1-2.png" className="h-full w-auto object-contain" fill />
+            </AspectRatio>
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "실시간 태스크 관리",
+    description: "진행 중인 작업 현황을 실시간으로 전달해드려요",
+    header: (
+      <>
+        <p className="text-foreground text-base font-bold">실시간 태스크 관리</p>
+        <p className="text-foreground leading-normal">
+          진행 중인 작업 현황을
+          <br />
+          실시간으로 전달해드려요
+        </p>
+      </>
+    ),
+    background: "bg-gradient-to-t from-blue-400/80 via-blue-400/70 to-indigo-400/80",
+    carouselChildren: (
+      <div className="absolute inset-0">
+        <div className="w-[280%] absolute top-36 xl:top-40 left-6 xl:left-8">
+          <AspectRatio ratio={1143 / 595} className="w-full">
+            <Image src="/service-task.png" alt="대시보드 케러셀 이미지" className="rounded-md object-cover border border-zinc-300" fill />
+          </AspectRatio>
+        </div>
+      </div>
+    ),
+    details: ["실시간 작업 상태 업데이트", "팀원별 작업 할당 및 추적", "우선순위 기반 태스크 정렬", "마감일 알림 및 리마인더", "작업 히스토리 및 로그 관리"],
+    dialogChildren: null,
+  },
+  {
+    title: "비즈니스 페이지도 매장 쇼핑몰도",
+    description: "어떤 프로젝트든 부담 없이 계획하세요",
+    header: (
+      <>
+        <p className="text-foreground text-base font-bold">비즈니스 페이지도 매장 쇼핑몰도</p>
+        <p className="text-foreground leading-normal">
+          어떤 프로젝트든
+          <br />
+          부담 없이 계획하세요
+        </p>
+      </>
+    ),
+    background: (
+      <div className="absolute inset-0 -z-10">
+        <Image src="/service-carousel-background.jpg" alt="대시보드 케러셀 이미지" fill className="object-cover" />
+      </div>
+    ),
+    carouselChildren: (
+      <div className="absolute inset-0">
+        <div className="w-[100%] absolute top-36 xl:top-40 left-6 xl:left-8">
+          <AspectRatio ratio={9 / 16} className="w-full">
+            <Image src="/service-carousel-main.jpg" alt="대시보드 케러셀 이미지" fill className="rounded-md object-cover border border-zinc-300" />
+          </AspectRatio>
+        </div>
+      </div>
+    ),
+    details: [
+      "다양한 프로젝트 템플릿 제공",
+      "비즈니스 페이지 및 쇼핑몰 구축 지원",
+      "반응형 디자인 자동 적용",
+      "SEO 최적화 도구 내장",
+      "결제 시스템 및 주문 관리 통합",
+    ],
+    dialogChildren: null,
+  },
+  {
+    title: "AI 보고서 작성",
+    description: "담당 매니저 + AI 레포트까지 간단하게 작업 현황을 파악하세요",
+    header: (
+      <>
+        <p className="text-background text-base font-bold">AI 보고서 작성</p>
+        <p className="text-background leading-normal">
+          담당 매니저 + AI 레포트까지
+          <br />
+          간단하게 작업 현황을 파악하세요
+        </p>
+      </>
+    ),
+    background: "bg-gradient-to-t from-emerald-500/80 via-emerald-500/70 to-teal-500/80",
+    carouselChildren: (
+      <div className="absolute inset-0">
+        <div className="w-full absolute top-36 xl:top-40 left-6 xl:left-8">
+          <AspectRatio ratio={575 / 870} className="w-full">
+            <Image src="/service-report.png" alt="대시보드 케러셀 이미지" className="rounded-md object-cover border border-zinc-300" fill />
+          </AspectRatio>
+        </div>
+      </div>
+    ),
+    details: ["AI 기반 자동 보고서 생성", "프로젝트 진행 상황 분석", "성과 예측 및 리스크 분석", "맞춤형 인사이트 제공", "다양한 형식의 보고서 출력"],
+    dialogChildren: null,
+  },
+  {
+    title: "커다란 프로젝트라면",
+    description: "팀원과 함께 체계적으로 관리하세요",
+    header: (
+      <>
+        <p className="text-background text-base font-bold">커다란 프로젝트라면</p>
+        <p className="text-background leading-normal">
+          팀원과 함께
+          <br />
+          체계적으로 관리하세요
+        </p>
+      </>
+    ),
+    background: (
+      <div className="absolute inset-0">
+        <MeshGradientComponent className="opacity-100" colors={["#be73ff", "rgb(255, 90, 214)", "#ff2323", "#ff9849"]} />
+      </div>
+    ),
+    carouselChildren: <TeamMembersSection />,
+    details: ["팀원 역할 및 권한 관리", "실시간 협업 도구", "팀 커뮤니케이션 허브", "프로젝트 단계별 워크플로우", "팀 성과 분석 및 피드백"],
+    dialogChildren: null,
+  },
+];
 
-  // Added useEffect for handling outside clicks
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
+function TeamMembersSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, {
+    once: true,
+    margin: "-50px",
+    amount: 0.2,
+  });
 
-      // Check if click is outside both containers
-      if (leftContainerRef.current && rightContainerRef.current && !leftContainerRef.current.contains(target) && !rightContainerRef.current.contains(target)) {
-        setShowDetail(0);
-      }
-    };
+  const [visibleMembers, setVisibleMembers] = useState(0);
+  const buttonControls = useAnimation();
 
-    // Add event listener to document
-    document.addEventListener("mousedown", handleClickOutside);
+  // 팀원 데이터
+  const teamMembers = [
+    {
+      id: "owner",
+      name: "김재현 (나)",
+      email: "kim@company.com",
+      avatar: "/teams-avatar-1.png",
+      fallback: "김",
+      role: "소유자",
+      icon: Crown,
+      iconColor: "text-yellow-600",
+      badgeVariant: "destructive" as const,
+    },
+    {
+      id: "admin",
+      name: "이태영",
+      email: "lee@company.com",
+      avatar: "/teams-avatar-2.png",
+      fallback: "이",
+      role: "관리자",
+      icon: Shield,
+      iconColor: "text-blue-600",
+      badgeVariant: "secondary" as const,
+    },
+    {
+      id: "editor",
+      name: "박소희",
+      email: "park@company.com",
+      avatar: "/teams-avatar-3.png",
+      fallback: "박",
+      role: "편집/읽기",
+      icon: Edit3,
+      iconColor: "text-green-600",
+      badgeVariant: "default" as const,
+    },
+    {
+      id: "reader",
+      name: "최민수",
+      email: "choi@company.com",
+      avatar: "/teams-avatar-1.png",
+      fallback: "최",
+      role: "읽기",
+      icon: Edit3,
+      iconColor: "text-gray-600",
+      badgeVariant: "outline" as const,
+    },
+  ];
 
-    // Cleanup event listener
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  // 팀원 추가 애니메이션 함수
+  const startTeamAnimation = () => {
+    // 처음에는 소유자만 표시
+    setVisibleMembers(1);
 
-  useLayoutEffect(() => {
-    if (!rightContainerRef.current || !leftContainerRef.current) return;
-
-    let raf = 0;
-    const applyHeight = (h: number) => {
-      leftContainerRef.current!.style.height = `${h}px`;
-      leftContainerRef.current!.style.minHeight = `${h}px`;
-    };
-
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const h = Math.round(entry.contentRect.height);
-        cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(() => applyHeight(h));
-      }
+    // 0.8초 후부터 0.6초 간격으로 팀원 추가
+    const timers = teamMembers.slice(1).map((_, index) => {
+      return setTimeout(() => {
+        setVisibleMembers((prev) => prev + 1);
+      }, 800 + index * 600);
     });
 
-    const initialH = Math.round(rightContainerRef.current.getBoundingClientRect().height || 0);
-    if (initialH) applyHeight(initialH);
+    return timers;
+  };
 
-    ro.observe(rightContainerRef.current);
+  // 무한 반복 애니메이션
+  useEffect(() => {
+    if (isInView) {
+      // 첫 번째 애니메이션 시작
+      let timers = startTeamAnimation();
 
-    const onWin = () => {
-      if (!rightContainerRef.current) return;
-      const h = Math.round(rightContainerRef.current.getBoundingClientRect().height || 0);
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => applyHeight(h));
-    };
+      // 1분(60초)마다 애니메이션 반복
+      const infiniteInterval = setInterval(() => {
+        // 기존 타이머들 정리
+        timers.forEach((timer) => clearTimeout(timer));
 
-    window.addEventListener("resize", onWin);
+        // 팀원 수를 0으로 리셋 (모든 팀원 사라짐)
+        setVisibleMembers(0);
 
+        // 0.5초 후 새로운 애니메이션 시작
+        setTimeout(() => {
+          timers = startTeamAnimation();
+        }, 500);
+      }, 20000);
+
+      return () => {
+        // 컴포넌트 언마운트 시 모든 타이머 정리
+        timers.forEach((timer) => clearTimeout(timer));
+        clearInterval(infiniteInterval);
+      };
+    }
+  }, [isInView]);
+
+  // 팀원이 추가될 때마다 버튼 누르는 애니메이션
+  useEffect(() => {
+    if (visibleMembers > 1) {
+      // 팀원이 추가될 때마다 버튼 누르는 효과
+      buttonControls.start({
+        scale: [1, 0.9, 1],
+        transition: {
+          duration: 0.2,
+          ease: "easeInOut",
+        },
+      });
+    }
+  }, [visibleMembers, buttonControls]);
+
+  // 멤버 카드 애니메이션
+  const memberVariants = {
+    hidden: {
+      opacity: 0,
+      y: 100,
+      scale: 0.8,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring" as const,
+        stiffness: 200,
+        damping: 20,
+        duration: 0.8,
+      },
+    },
+  };
+
+  // 기존 멤버들이 위로 밀려나는 애니메이션
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  return (
+    <div className="absolute inset-0" ref={ref}>
+      {/* 팀원 목록 컨테이너 */}
+      <div className="absolute bottom-4 left-4 right-4">
+        <motion.div className="space-y-3" variants={containerVariants} initial="hidden" animate="visible">
+          <AnimatePresence mode="sync">
+            {teamMembers.slice(0, visibleMembers).map((member, index) => {
+              const IconComponent = member.icon;
+              return (
+                <motion.div
+                  key={member.id}
+                  className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20"
+                  variants={memberVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit={{
+                    opacity: 0,
+                    y: -50,
+                    scale: 0.9,
+                    transition: {
+                      duration: 0.3,
+                    },
+                  }}
+                  layout
+                  layoutId={member.id}
+                  style={{
+                    zIndex: teamMembers.length - index,
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src={member.avatar || "/placeholder.svg"} />
+                        <AvatarFallback>{member.fallback}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium text-gray-800">{member.name}</p>
+                        <p className="text-xs text-gray-600">{member.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <IconComponent className={`w-3 h-3 ${member.iconColor}`} />
+                      <Badge variant={member.badgeVariant} className="text-xs">
+                        {member.role}
+                      </Badge>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+
+          {/* 팀원 초대 버튼 - 고정 위치, 팀원 추가시마다 누르는 효과 */}
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+            <motion.div
+              className="flex items-center justify-center space-x-2 text-emerald-700 cursor-pointer"
+              animate={buttonControls}
+              whileHover={{
+                scale: 1.02,
+                transition: { type: "spring", stiffness: 400, damping: 10 },
+              }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <UserPlus className="w-4 h-4" />
+              <span className="text-sm font-medium">새 팀원 초대하기</span>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+const Cell = ({
+  header,
+  children,
+  background,
+  onClick,
+  index,
+}: {
+  header?: ReactNode;
+  children?: ReactNode;
+  background?: ReactNode | string;
+  onClick?: (index: number) => void;
+  index: number;
+}) => {
+  return (
+    <CarouselItem className="basis-[96%] md:basis-[54%] lg:basis-[32%] xl:basis-[27%]">
+      <div
+        className={cn(
+          "aspect-[9/16] relative w-full rounded-3xl overflow-hidden select-none border border-zinc-100",
+          typeof background === "string" && background,
+          typeof background === "undefined" && "bg-muted"
+        )}
+        onClick={() => onClick && index !== undefined && onClick(index)}
+      >
+        <div className="w-full h-full flex items-end justify-center"></div>
+        <div className="absolute top-6 left-6 right-6 md:top-8 md:left-8 md:right-8 flex flex-col space-y-1.5">
+          <div className="flex flex-col space-y-1.5 text-xl xl:text-2xl font-extrabold tracking-normal">{header}</div>
+        </div>
+        {children}
+        {typeof background !== "string" && typeof background !== "undefined" && background}
+        {featuresData[index].dialogChildren && (
+          <Button variant="ghost" size="icon" className="absolute bottom-5 right-5 focus-visible:ring-0 rounded-full bg-zinc-800 hover:bg-zinc-700">
+            <PlusIcon className="size-5 text-zinc-50" strokeWidth={3} />
+          </Button>
+        )}
+      </div>
+    </CarouselItem>
+  );
+};
+
+export default function MainSection4() {
+  const lenis = useLenis();
+
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+
+  const [selectedFeature, setSelectedFeature] = useState<number | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // 스와이프 관련 상태
+  const [isDragging, setIsDragging] = useState(false); // 마우스 드래그 상태
+  const [isTouching, setIsTouching] = useState(false); // 터치 상태
+  const [startX, setStartX] = useState(0);
+  const [initialSlideIndex, setInitialSlideIndex] = useState(0);
+  const [accumulatedSteps, setAccumulatedSteps] = useState(0); // 누적된 스텝 수
+  const indicatorRef = useRef<HTMLDivElement>(null);
+
+  const threshold = 30;
+
+  const handleFeatureClick = (index: number) => {
+    if (featuresData[index].dialogChildren) {
+      setSelectedFeature(index);
+      setIsDialogOpen(true);
+      lenis?.stop();
+    }
+  };
+
+  // 공통 시작 핸들러
+  const handleStart = (clientX: number) => {
+    setStartX(clientX);
+    setInitialSlideIndex(current);
+    setAccumulatedSteps(0);
+  };
+
+  // 공통 이동 핸들러
+  const handleMove = (clientX: number) => {
+    if (!isDragging && !isTouching) return;
+
+    const deltaX = clientX - startX;
+    // 현재 드래그 거리를 기반으로 스텝 계산 (방향 포함)
+    const currentSteps =
+      deltaX < 0
+        ? -Math.floor(Math.abs(deltaX) / threshold) // 왼쪽: 음수
+        : Math.floor(deltaX / threshold); // 오른쪽: 양수
+
+    // 스텝이 변경되었을 때만 슬라이드 이동
+    if (currentSteps !== accumulatedSteps) {
+      const targetIndex = initialSlideIndex + currentSteps;
+
+      // 경계 체크
+      const clampedIndex = Math.max(0, Math.min(count - 1, targetIndex));
+
+      if (clampedIndex !== current) {
+        api?.scrollTo(clampedIndex);
+      }
+
+      // 누적 스텝 업데이트
+      setAccumulatedSteps(currentSteps);
+    }
+  };
+
+  // 공통 종료 핸들러
+  const handleEnd = () => {
+    setIsDragging(false);
+    setIsTouching(false);
+    setStartX(0);
+    setAccumulatedSteps(0);
+  };
+
+  // 마우스 이벤트
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    handleStart(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    handleMove(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    handleEnd();
+  };
+
+  // 터치 이벤트
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault(); // 기본 터치 동작 방지
+    setIsTouching(true);
+    handleStart(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault(); // 스크롤 방지
+    handleMove(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault(); // 기본 터치 동작 방지
+    handleEnd();
+  };
+
+  useEffect(() => {
+    if (!isDialogOpen) {
+      lenis?.start();
+    }
+  }, [isDialogOpen, lenis]);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api, setCount, setCurrent]);
+
+  // 전역 마우스 이벤트 리스너
+  useEffect(() => {
+    if (isDragging) {
+      const handleGlobalMouseMove = (e: MouseEvent) => {
+        handleMove(e.clientX);
+      };
+
+      const handleGlobalMouseUp = () => {
+        handleEnd();
+      };
+
+      document.addEventListener("mousemove", handleGlobalMouseMove);
+      document.addEventListener("mouseup", handleGlobalMouseUp);
+
+      return () => {
+        document.removeEventListener("mousemove", handleGlobalMouseMove);
+        document.removeEventListener("mouseup", handleGlobalMouseUp);
+      };
+    }
+  }, [isDragging, startX, current, count, api, initialSlideIndex, accumulatedSteps]);
+
+  // 터치 중일 때만 body 스크롤 방지
+  useEffect(() => {
+    if (isTouching) {
+      // 스크롤 방지
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+      lenis?.stop();
+    } else {
+      // 스크롤 복원
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+      lenis?.start();
+    }
+
+    // 컴포넌트 언마운트 시 정리
     return () => {
-      ro.disconnect();
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", onWin);
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+      lenis?.start();
     };
-  }, []);
+  }, [isTouching]);
 
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-2">
-      <div className="col-span-full px-4 flex flex-col space-y-4 md:space-y-6 pb-12 lg:pb-16">
-        <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">한 번 맡겨도 제대로 된 곳에서 맡기세요</h1>
+      <div className="col-span-full flex flex-col space-y-4 md:space-y-6 px-8 lg:px-16 xl:px-36 w-full pb-12 lg:pb-16">
+        <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">Fellows SaaS를 사용하면 외주가 쉬워집니다.</h1>
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
           <h4 className="text-base md:text-lg font-semibold text-foreground">
-            글로벌 개발 파트너사, 디자인 하우스 등<br />
-            100명 이상의 전문가들과 협력하고 있습니다.
+            무료로 제공되는 Fellows SaaS를 사용하여
+            <br />
+            정확하게 일이 이루어지고 있는지 파악해보세요.
           </h4>
         </div>
       </div>
 
-      {/* Left Section */}
-      <div
-        ref={leftContainerRef}
-        className="relative col-span-1 md:mr-4 mb-10 md:mb-0 cursor-none"
-        onClick={() => (showDetail == 1 ? setShowDetail(0) : setShowDetail(1))}
+      <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        className="col-span-full w-full pl-4 lg:pl-16 xl:pl-36"
+        setApi={setApi}
+        plugins={[
+          Autoplay({
+            delay: 60000,
+          }),
+        ]}
       >
-        <div className="w-full h-full">
-          <Cursor
-            attachToParent
-            variants={{
-              initial: { scale: 0.3, opacity: 0 },
-              animate: { scale: 1, opacity: 1 },
-              exit: { scale: 0.3, opacity: 0 },
-            }}
-            springConfig={{
-              bounce: 0.001,
-            }}
-            transition={{
-              ease: "easeInOut",
-              duration: 0.15,
-            }}
-            className="hidden md:block"
-          >
-            <motion.div
-              animate={{
-                width: showDetail != 1 ? 80 : 16,
-                height: showDetail != 1 ? 80 : 16,
-              }}
-              className="flex items-center justify-center rounded-[40px] bg-gray-500/40 backdrop-blur-md dark:bg-gray-300/40"
-            >
-              <AnimatePresence>
-                {showDetail != 1 ? (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.6 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.6 }}
-                    className="inline-flex w-full items-center justify-center"
-                  >
-                    <div className="inline-flex items-center text-sm text-white dark:text-black">Click</div>
-                  </motion.div>
-                ) : null}
-              </AnimatePresence>
-            </motion.div>
-          </Cursor>
-          <AnimatePresence>
-            {showDetail == 1 && (
-              <motion.div
-                className="absolute top-0 left-0 w-full h-full rounded-3xl flex flex-col items-center justify-center overflow-hidden bg-zinc-800 z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="max-w-md mx-auto px-8 p-0 text-white">
-                  <h1 className="text-2xl md:text-4xl font-medium mb-6 md:mb-12 font-calendas tracking-tight">Fellows Teams</h1>
+        <CarouselContent className="w-full !overflow-visible" style={{ overflow: "visible" }}>
+          {featuresData.map((feature, index) => (
+            <Cell key={index} onClick={handleFeatureClick} index={index} header={feature.header} background={feature.background}>
+              {feature.carouselChildren}
+            </Cell>
+          ))}
+        </CarouselContent>
 
-                  <div className="text text-xs md:text-sm lg:text-base leading-normal space-y-4">
-                    <p>
-                      Fellows는 단순한 외주 개발사가 아니라, 글로벌
-                      <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                        마케팅·기술 전문가 네트워크
-                      </TextHighlighter>
-                      와 협력하여 프로젝트를 진행합니다. GTM 전략, SEO 최적화, Google Ads(GAD), Meta Ads(CPAS), Google Analytics(GA4)까지 아우르는
-                      <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                        엔드투엔드 디지털 역량
-                      </TextHighlighter>
-                      을 제공합니다.
-                    </p>
-
-                    <p className="hidden xl:inline-block">
-                      고객은 단순한 개발을 넘어, 서비스 론칭 이후의 성장 전략까지 함께 설계할 수 있습니다. 프로젝트 관리, 퍼포먼스 마케팅, 데이터 분석을 통합
-                      지원하여
-                      <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                        스타트업과 기업이 더 빠르고 확실하게 시장에서 자리 잡도록 돕습니다.
-                      </TextHighlighter>
-                    </p>
-
-                    <p className="whitespace-break-spaces">
-                      디자인이 필요할 경우, 국내 최고 수준의 디자인 하우스와 협업하여
-                      <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                        세심하고 전략적인 UI/UX 경험
-                      </TextHighlighter>
-                      을 제공합니다. 단순히 보기 좋은 화면이 아닌, 실제 사용자 전환율을 높이는 설계와 다양한 인터랙션을 구현합니다.
-                    </p>
-
-                    <p>
-                      글로벌 전문가 네트워크, 고급 디자인 역량, 데이터 기반 마케팅 전략까지 갖춘 Fellows는 단순 개발 대행을 넘어,
-                      <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                        아이디어를 시장에서 성공시키는 전 과정을 지원합니다.
-                      </TextHighlighter>
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
+        {/* Navigation Controls */}
+        <div className="pl-2 pr-6 lg:pr-18 xl:pr-38 flex justify-between items-center mt-5">
+          <div
+            ref={indicatorRef}
+            className={cn(
+              "flex p-1.5 rounded-full group h-fit w-fit relative overflow-hidden select-none",
+              isDragging || isTouching ? "cursor-grabbing" : "cursor-grab"
             )}
-          </AnimatePresence>
-          <div className="w-full h-full rounded-3xl flex flex-col items-center justify-center overflow-hidden relative bg-white -z-10">
-            <div className="pt-6 px-6 md:pt-10 md:px-10 flex flex-col space-y-1.5 z-50 w-full">
-              <div className="flex flex-col space-y-2">
-                <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/Team</p>
-                <p className="text-xl md:text-2xl font-extrabold tracking-normal text-black leading-normal">
-                  고도몰과 같은 노코드 솔루션부터
-                  <br />
-                  크로스 플랫폼 앱 개발까지
-                </p>
+            style={{ touchAction: "pan-x" }} // X축 터치만 허용
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {[...Array(count).keys()].map((index) => (
+              <div className="h-3 w-6 flex items-center justify-center cursor-pointer" key={index}>
+                <button
+                  onClick={() => api?.scrollTo(index)}
+                  className={cn("w-2 h-2 rounded-full hover:scale-130 transition-all duration-300", index === current ? "bg-zinc-500" : "bg-zinc-300")}
+                />
               </div>
-            </div>
-            <div className="grow w-full relative">
-              {fixedIcons.map((icon, idx) => (
-                <motion.div
-                  key={idx}
-                  className="absolute select-none"
-                  style={{ left: `${icon.x}%`, top: `${icon.y}%` }}
-                  animate={{
-                    y: [0, Math.random() * 10 - 5, Math.random() * 10 - 5, 0],
-                    x: [0, Math.random() * 10 - 5, Math.random() * 10 - 5, 0],
-                  }}
-                  transition={{
-                    x: { duration: 5, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse", ease: "easeInOut" },
-                    y: { duration: 5, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse", ease: "easeInOut" },
-                  }}
-                  whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-                >
-                  <Image
-                    src={icon.src || "/placeholder.svg"}
-                    alt={icon.alt}
-                    width={icon.size}
-                    height={icon.size}
-                    className="rounded-lg md:rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.12)] shrink-0 object-cover"
-                    style={{
-                      width: `${icon.size * scale}px`,
-                      height: `${icon.size * scale}px`,
-                    }}
-                  />
-                </motion.div>
-              ))}
-            </div>
+            ))}
+            <div
+              className={cn(
+                "absolute inset-0 transition-colors duration-300 -z-10",
+                isDragging || isTouching ? "bg-zinc-300/50" : "group-hover:bg-zinc-300/50"
+              )}
+            />
+          </div>
+
+          <div className="flex space-x-2">
+            <CarouselPrevious className="relative translate-y-0 left-0 size-11 bg-black/5 backdrop-blur-sm border-0" />
+            <CarouselNext className="relative translate-y-0 right-0 size-11 bg-black/5 backdrop-blur-sm border-0" />
           </div>
         </div>
-      </div>
+      </Carousel>
 
-      {/* Right Section (Refactored) */}
-      <div className="relative col-span-1 md:ml-4 mb-10 md:mb-0 cursor-none" onClick={() => (showDetail == 2 ? setShowDetail(0) : setShowDetail(2))}>
-        <div className="w-full h-fit" ref={rightContainerRef}>
-          <Cursor
-            attachToParent
-            variants={{
-              initial: { scale: 0.3, opacity: 0 },
-              animate: { scale: 1, opacity: 1 },
-              exit: { scale: 0.3, opacity: 0 },
-            }}
-            springConfig={{
-              bounce: 0.001,
-            }}
-            transition={{
-              ease: "easeInOut",
-              duration: 0.15,
-            }}
-            className="hidden md:block"
-          >
-            <motion.div
-              animate={{
-                width: showDetail != 2 ? 80 : 16,
-                height: showDetail != 2 ? 80 : 16,
-              }}
-              className="flex items-center justify-center rounded-[40px] bg-gray-500/40 backdrop-blur-md dark:bg-gray-300/40"
-            >
-              <AnimatePresence>
-                {showDetail != 2 ? (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.6 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.6 }}
-                    className="inline-flex w-full items-center justify-center"
-                  >
-                    <div className="inline-flex items-center text-sm text-white dark:text-black">Click</div>
-                  </motion.div>
-                ) : null}
-              </AnimatePresence>
-            </motion.div>
-          </Cursor>
-          <AnimatePresence>
-            {showDetail == 2 && (
-              <motion.div
-                className="absolute top-0 left-0 w-full h-full rounded-3xl flex flex-col items-center justify-center overflow-hidden bg-zinc-800 z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="max-w-md mx-auto px-8 p-0 text-white">
-                  <h1 className="text-2xl md:text-4xl font-medium mb-6 md:mb-12 font-calendas tracking-tight">Cost Efficient</h1>
-
-                  <div className="text text-xs md:text-sm lg:text-base leading-normal space-y-4">
-                    <p>
-                      개발은 코드와 노코드 모두를 지원하며, 다국적 개발 파트너사와 협력하여 진행됩니다. 국내 SI 대비
-                      <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                        25~30% 비용 절감
-                      </TextHighlighter>
-                      이 가능하며, 프로젝트 관리, 견적, 전자 계약, 테스크 관리, 인보이스까지 자체 SaaS 플랫폼을 통해 모든 과정을 한 곳에서 투명하게 확인하고
-                      관리할 수 있습니다.
-                    </p>
-
-                    <p className="hidden xl:inline-block">
-                      반복되는 미팅이나 견적 요청 없이, 고객은 원하는 만큼 프로젝트를 조정할 수 있으며, AI가 제공하는 예상 견적과 기능 추천으로
-                      <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                        의사결정이 훨씬 쉬워집니다.
-                      </TextHighlighter>
-                      이렇게 우리는 스타트업이 보다 빠르고 효율적으로 개발을 진행할 수 있도록 돕습니다.
-                    </p>
-
-                    <p>
-                      글로벌 전문가와 고급 디자인 역량, AI 기반 프로젝트 분석과 추천, 자체 SaaS를 통한 투명한 관리까지 갖춘 Fellows는 단순 개발 대행을 넘어,
-                      고객이 생각하는 아이디어를 코드와 노코드 개발을 아우르는 글로벌 전문가 풀로,&nbsp;
-                      <TextHighlighter className={highlightClass} transition={transition} highlightColor={highlightColor} useInViewOptions={inViewOptions}>
-                        비용과 시간 모두를 절감하며 최고의 결과를 제공합니다.
-                      </TextHighlighter>
-                    </p>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent
+          data-lenis-prevent
+          className="bg-white !w-full md:!w-[calc(100%-2rem)] !max-w-7xl !top-full !translate-y-[-100%] md:!top-1/2 md:!translate-y-[-50%] h-[calc(100%-2.5rem)] md:h-[calc(100%-3rem)] !rounded-b-none !rounded-t-2xl md:!rounded-2xl !overflow-y-auto !border-0 !shadow-3xl p-0"
+          overlayClassName="backdrop-blur-sm"
+          showCloseButton={false}
+        >
+          {selectedFeature !== null && (
+            <>
+              <DialogHeader className="sr-only">
+                <DialogTitle className="text-xl font-bold">{featuresData[selectedFeature].title}</DialogTitle>
+                <DialogDescription className="text-base text-muted-foreground">{featuresData[selectedFeature].description}</DialogDescription>
+              </DialogHeader>
+              <div className="h-full w-full">
+                <div className="sticky top-0 w-full px-5 py-5 font-bold grid grid-cols-2 items-center z-50">
+                  <div className="h-full flex items-center justify-start"></div>
+                  <div className="h-full flex items-center justify-end">
+                    <DialogClose asChild>
+                      <Button variant="ghost" size="icon" className="focus-visible:ring-0 rounded-full bg-zinc-800 hover:bg-zinc-700">
+                        <XIcon className="size-5 text-zinc-50" strokeWidth={3} />
+                      </Button>
+                    </DialogClose>
                   </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          <div className="w-full h-fit px-6 md:px-10 py-6 md:py-10 rounded-3xl flex flex-col overflow-hidden relative bg-white -z-10">
-            <div className="flex flex-col space-y-1.5 z-50 w-full shrink-0">
-              <div className="flex flex-col space-y-2">
-                <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/Cost</p>
-                <p className="text-xl md:text-2xl font-extrabold tracking-normal text-black leading-normal">
-                  결국 필요한 개발자,
-                  <br />
-                  해외 개발자를 통해 30% 낮은 가격으로
-                </p>
-              </div>
-            </div>
 
-            <div className="pt-3 md:pt-5 grow w-full relative flex items-center justify-center">
-              <div className="w-full h-fit">
-                <AspectRatio ratio={698 / 645}>
-                  <Image src="/main-section-4-2-1.jpg" alt="메인 섹션 4 이미지" fill className="object-contain" />
-                </AspectRatio>
+                <div className="h-full px-4 md:px-18 z-0">
+                  <div className="flex flex-col space-y-3 text-2xl xl:text-5xl font-extrabold w-3/4">
+                    <p className="text-foreground text-base font-bold break-keep">{featuresData[selectedFeature].title}</p>
+                    <p className="text-foreground leading-tight break-keep">{featuresData[selectedFeature].description}</p>
+                  </div>
+                  <div className="flex mt-12 md:mt-18">{featuresData[selectedFeature].dialogChildren}</div>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import MainSection7 from "@/components/section/main/mainsection7";
 import MainQnaSection from "@/components/section/main/mainqnasection";
 import MainContactSection from "@/components/section/main/maincontactsection";
 import MainInquerySection from "@/components/section/main/maininquerysection";
+import MainSection5 from "@/components/section/main/mainsection5";
 
 export const metadata: Metadata = {
   title: "Fellows | 펠로우즈",
@@ -67,7 +68,7 @@ export default async function Page() {
         </div>
 
         <div className="col-span-full relative" id="primary">
-          <div className="col-span-full py-10 pt-16 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto relative">
+          <div className="col-span-full py-16 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto relative">
             <InView
               variants={{
                 hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
@@ -77,10 +78,24 @@ export default async function Page() {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               once
             >
-              <MainSection4 />
+              <MainSection3 />
             </InView>
           </div>
           <InViewBackground className="bg-zinc-100" />
+        </div>
+
+        <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+          <InView
+            variants={{
+              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+            }}
+            viewOptions={{ margin: "0px 0px 100px 0px" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            once
+          >
+            <MainSection5 />
+          </InView>
         </div>
 
         <div className="col-span-full py-10 lg:py-24" id="secondary">
@@ -93,7 +108,7 @@ export default async function Page() {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             once
           >
-            <MainSection3 />
+            <MainSection4 />
           </InView>
         </div>
 

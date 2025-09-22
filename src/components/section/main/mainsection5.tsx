@@ -1,95 +1,80 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { MeshGradientComponent } from "@/components/resource/meshgradient";
+import Image from "next/image";
 
-export default async function MainSection1() {
+export default async function MainSection5() {
   return (
-    <div className="relative grid grid-cols-1 lg:grid-cols-12">
-      <div className="col-span-full">
-        <div className="relative w-full hidden md:block">
-          {/* Base image */}
-          <AspectRatio ratio={3146 / 1332} className="relative">
-            <MeshGradientComponent colors={["rgb(255, 255, 255)", "rgb(66, 39, 188)", "rgb(184, 168, 255)", "rgb(71, 42, 198)"]} />
-          </AspectRatio>
-
-          {/* Filter image layered above */}
-          <div className="absolute inset-0 z-10 pointer-events-none">
-            <AspectRatio ratio={3146 / 1332} className="hidden md:block">
-              <img src="/hero-desktop-filter.svg" alt="Filter" className="object-cover w-full h-full" />
-            </AspectRatio>
-          </div>
-
-          {/* CTA */}
-          <div className="absolute inset-0 flex z-20 items-center justify-center">
-            <div className="w-[100%] h-[100%] flex flex-col gap-3 text-end items-center justify-center">
-              <h1 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">Web, App 개발</h1>
-              <h1 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">
-                <span className="font-black">Fellows℠</span>에서 앞서나가세요
-              </h1>
-
-              <h4 className="scroll-m-20 text-lg font-semibold leading-tight text-muted ml-1 md:mt-2">
-                최대 40% 더 적은 비용으로 주목받는 페이지를 만들어보세요.<span className="text-[#e64646] font-black">*</span>
-              </h4>
-
-              <div className="space-x-4 mt-3 flex">
-                <Button size="lg" className="px-16 h-16 text-lg rounded-xl bg-black" asChild>
-                  <Link href="/service/dashboard">시작하기</Link>
-                </Button>
-                <Button size="lg" variant="secondary" className="px-16 h-16 text-lg rounded-xl">
-                  가격 및 플랜
-                </Button>
-              </div>
-            </div>
-          </div>
+    <div className="w-full">
+      <div className="w-full px-4 flex flex-col space-y-4 md:space-y-6 pb-12 lg:pb-16">
+        <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">Fellows의 개발 프로세스</h1>
+        <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
+          <h4 className="text-base md:text-lg font-semibold text-foreground">
+            외주 시작에서 퍼블리싱 후 유지보수까지,
+            <br />
+            Fellows 하나면 끝.
+          </h4>
         </div>
+      </div>
 
-        <div className="relative w-full block md:hidden">
-          {/* Base image */}
-          <AspectRatio ratio={987 / 1040} className="relative">
-            <MeshGradientComponent colors={["rgb(255, 255, 255)", "rgb(66, 39, 188)", "rgb(184, 168, 255)", "rgb(71, 42, 198)"]} />
-          </AspectRatio>
-
-          {/* Filter image layered above */}
-          <div className="absolute -inset-[1px] z-20 pointer-events-none">
-            <AspectRatio ratio={987 / 1040} className="block md:hidden">
-              <img src="/hero-mobile-filter.svg" alt="Filter" className="object-cover w-full h-full" />
-            </AspectRatio>
-          </div>
-
-          {/* CTA */}
-          <div className="absolute inset-0 flex z-10 items-center justify-center">
-            <div className="w-[85%] h-[100%] flex flex-col gap-3 text-end items-end justify-end">
-              <div className="flex flex-col w-full mb-7">
-                <h1 className="text-3xl font-extrabold tracking-normal text-background hidden">Web, App 개발</h1>
-                <h1 className="text-3xl font-extrabold tracking-normal text-background">
-                  <span className="font-black">Fellows℠</span>에서 앞서나가세요
-                </h1>
-
-                <h4 className="scroll-m-20 text-sm font-semibold leading-tight text-muted ml-1 mt-2">
-                  제작부터 관리까지 최대 40% 더 적은 비용으로
+      <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
+        <div className="col-span-1 bg-muted aspect-square rounded-3xl">
+          <div className="w-full h-full px-6 md:px-10 pt-6 md:pt-10 flex flex-col justify-between overflow-hidden relative">
+            <div className="flex flex-col space-y-1.5 z-50 w-full shrink-0">
+              <div className="flex flex-col space-y-2">
+                <p className="text-xl md:text-2xl font-extrabold tracking-normal text-black leading-normal">
+                  Fellows를 통해
                   <br />
-                  주목받는 페이지를 만들어보세요.<span className="text-[#e64646] font-black">*</span>
-                </h4>
+                  원스톱으로 견적에서 계약까지
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-3 md:pt-5 grow w-full relative flex items-end justify-center">
+              <div className="w-full h-fit">
+                <AspectRatio ratio={600 / 448}>
+                  <Image src="/section-5-1.png" alt="메인 섹션 5 이미지" fill className="object-contain" />
+                </AspectRatio>
               </div>
             </div>
           </div>
         </div>
-      </div>
+        <div className="col-span-1 bg-muted aspect-square rounded-3xl">
+          <div className="w-full h-full px-6 md:px-10 pt-6 md:pt-10 flex flex-col justify-between overflow-hidden relative">
+            <div className="flex flex-col space-y-1.5 z-50 w-full shrink-0">
+              <div className="flex flex-col space-y-2">
+                <p className="text-xl md:text-2xl font-extrabold tracking-normal text-black leading-normal">디자인 및 개발 착수 </p>
+              </div>
+            </div>
 
-      <div className="col-span-full flex flex-col space-y-2 pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
-        <div>
-          <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
+            <div className="pt-3 md:pt-5 grow w-full relative flex items-end justify-center">
+              <div className="w-full h-fit">
+                <AspectRatio ratio={600 / 448}>
+                  <Image src="/section-5-1.png" alt="메인 섹션 5 이미지" fill className="object-contain" />
+                </AspectRatio>
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <span className="text-[#e64646] font-black">**</span> 서비스는 7월 22일부터 정식 제공됩니다
-        </div>
-      </div>
+        <div className="col-span-1 bg-muted aspect-square rounded-3xl">
+          <div className="w-full h-full px-6 md:px-10 pt-6 md:pt-10 flex flex-col justify-between overflow-hidden relative">
+            <div className="flex flex-col space-y-1.5 z-50 w-full shrink-0">
+              <div className="flex flex-col space-y-2">
+                <p className="text-xl md:text-2xl font-extrabold tracking-normal text-black leading-normal">
+                  퍼블리싱 및 유지보수까지,
+                  <br />
+                  Fellows가 든든하게 책임집니다
+                </p>
+              </div>
+            </div>
 
-      <div className="col-span-full w-full flex z-20 md:hidden pt-4">
-        <Button size="lg" className="w-full px-16 h-[3.5rem] text-lg font-semibold rounded-2xl bg-black active:bg-black" asChild>
-          <Link href="/service/dashboard">시작하기</Link>
-        </Button>
+            <div className="pt-3 md:pt-5 grow w-full relative flex items-end justify-center">
+              <div className="w-full h-fit">
+                <AspectRatio ratio={600 / 448}>
+                  <Image src="/section-5-1.png" alt="메인 섹션 5 이미지" fill className="object-contain" />
+                </AspectRatio>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
