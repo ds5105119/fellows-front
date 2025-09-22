@@ -348,6 +348,11 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   //  Show content immediately even if editedProject is not ready
   const displayProject = editedProject || projectSwr.data;
 
+  // 에러 상태 (404)
+  if (projectSwr.error) {
+    return <Project404 onClose={onClose} onRetry={handleRetry} />;
+  }
+
   if (!displayProject) {
     return <ProjectLoading />;
   }
@@ -355,11 +360,6 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   //  Show loading only for initial load, not for every render
   if (projectSwr.isLoading && !projectSwr.data) {
     return <ProjectLoading />;
-  }
-
-  // 에러 상태 (404)
-  if (projectSwr.error) {
-    return <Project404 onClose={onClose} onRetry={handleRetry} />;
   }
 
   return (
