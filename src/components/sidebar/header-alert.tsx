@@ -8,7 +8,6 @@ import dayjs from "@/lib/dayjs";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, useInView } from "framer-motion";
 import { BellIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 function AlertItem({ alert, onDelete, onOpen }: { alert: AlertDto; onDelete: (alert: AlertDto) => Promise<void>; onOpen: (alert: AlertDto) => void }) {
@@ -131,7 +130,6 @@ function AlertItem({ alert, onDelete, onOpen }: { alert: AlertDto; onDelete: (al
 
 export default function HeaderAlert() {
   const alertSwr = useAlerts(50);
-  const router = useRouter();
 
   // 데이터 처리
   const alerts = alertSwr.data?.flatMap((issue) => issue.items) ?? [];
@@ -162,7 +160,7 @@ export default function HeaderAlert() {
   };
 
   const handleOpenAlert = (alert: AlertDto) => {
-    router.push(alert.link);
+    window.location.href = alert.link;
   };
 
   return (
