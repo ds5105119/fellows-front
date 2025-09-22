@@ -47,8 +47,8 @@ export default async function MainSection5() {
 
             <div className="pt-3 md:pt-5 grow w-full relative flex items-end justify-center">
               <div className="w-full h-fit">
-                <AspectRatio ratio={600 / 448}>
-                  <Image src="/section-5-1.png" alt="메인 섹션 5 이미지" fill className="object-contain" />
+                <AspectRatio ratio={600 / 490}>
+                  <Image src="/section-5-2.png" alt="메인 섹션 5 이미지" fill className="object-contain" />
                 </AspectRatio>
               </div>
             </div>
