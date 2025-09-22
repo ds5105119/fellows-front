@@ -124,7 +124,6 @@ export const ExternalUserAttributesSchema = z.object({
 export const ExternalUsersAttributesSchema = z.array(ExternalUserAttributesSchema);
 
 export const UpdateUserAttributesSchema = z.object({
-  sub: z.string(),
   bio: z.array(z.string()).optional().nullable(),
   birthdate: z.array(z.string()).optional().nullable(),
   country: z.array(z.string()).optional().nullable(),
