@@ -286,7 +286,7 @@ export function ProjectStatus({
                       <div className="text-xs font-semibold text-muted-foreground">공급자</div>
                       <div className="text-base font-bold text-black">Fellows</div>
                       <div className="text-xs font-semibold text-muted-foreground">회사명: IIH</div>
-                      <div className="text-xs font-semibold text-muted-foreground">주소: 서울특별시 강남구 역삼동 123-456</div>
+                      <div className="text-xs font-semibold text-muted-foreground">주소: 서울시 강남구 영동대로 602, 6층</div>
                       <div className="flex w-full items-center justify-between pr-4 md:pr-12">
                         <div className="text-xs font-semibold text-muted-foreground">대표자: 김동현</div>
                         <div className="relative text-xs font-bold text-muted-foreground">
@@ -312,8 +312,14 @@ export function ProjectStatus({
                       <div className="text-xs font-semibold text-muted-foreground">수신자</div>
                       <div className="text-base font-bold text-black">{session.user.name}</div>
                       <div className="text-xs font-semibold text-muted-foreground">이메일: {session.user.email}</div>
+                      <div className="text-xs font-semibold text-muted-foreground">전화번호: {session.user.phoneNumber ?? "등록된 전화번호가 없습니다"}</div>
                       <div className="text-xs font-semibold text-muted-foreground">
-                        주소: {session.user.address.street_address + " " + session.user.address.sub_locality}
+                        주소:{" "}
+                        {session.user.address.street_address
+                          ? session.user.address.sub_locality
+                            ? session.user.address.street_address + " " + session.user.address.sub_locality
+                            : session.user.address.street_address
+                          : "등록된 주소가 없습니다"}
                       </div>
                     </div>
                   </div>

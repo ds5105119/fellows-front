@@ -16,7 +16,9 @@ export function CustomerInfo({ projectSwr, session }: { projectSwr: SWRResponse<
   return (
     <div className="w-full flex flex-col relative">
       <div className="w-full flex items-center justify-between border-b px-6 py-1 bg-white">
-        <div className="text-sm font-medium">계약자 정보가 연동되었어요</div>
+        <div className="text-sm font-medium">
+          {customer?.name && customer?.email && customer.phoneNumber ? "계약자 정보가 연동되었어요" : "계약자 정보를 입력해주세요"}
+        </div>
         <Button size="icon" variant="ghost" className="!p-1">
           <WorkflowIcon className="!size-5 text-gray-500" />
         </Button>

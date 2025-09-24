@@ -1,14 +1,17 @@
 "use client";
-import type { Session } from "next-auth";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { usePathname } from "next/navigation";
+import type { Session } from "next-auth";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
 import Flattabs from "@/components/ui/flattabs";
-import { useProject, updateProject, acceptInviteProjectGroup } from "@/hooks/fetch/project";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
+import { useProject, updateProject, acceptInviteProjectGroup, useProjectCustomer } from "@/hooks/fetch/project";
 import { updateERPNextProjectSchema, type UserERPNextProject } from "@/@types/service/project";
 import { cn } from "@/lib/utils";
 import { CustomerInfo } from "./customer-info";
+import { EnvironmentInfo } from "./environment-info";
 import { FilesList } from "./files-list";
 import { TeamsList } from "./teams-list";
 import { ProjectHeader } from "./project-header";
@@ -17,12 +20,10 @@ import { ProjectStatus } from "./project-status";
 import { ProjectDetails } from "./project-details";
 import { ProjectActions } from "./project-actions";
 import { ProjectNotices } from "./project-notices";
-import dayjs from "dayjs";
 import { ContractList } from "./contract-list";
 import { ContractSheet } from "../contract/contract-sheet";
-import { usePathname } from "next/navigation";
+import dayjs from "dayjs";
 import type { UserERPNextContract } from "@/@types/service/contract";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import ProjectDetailSheetHeader from "./projectdetailsheet-header";
 
 interface ProjectDetailSheetProps {
@@ -90,6 +91,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
 
   // State 관리
   const projectSwr = useProject(project_id);
+
   const [editedProject, setEditedProject] = useState<UserERPNextProject | undefined>();
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [autosave, setAutosave] = useState<boolean>(false);
@@ -98,6 +100,10 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const [activeTab2, setActiveTab2] = useState<number>(0);
   const [level, setLevel] = useState<number>(5);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const displayProject = editedProject || projectSwr.data;
+
+  const customerSwr = useProjectCustomer(displayProject?.project_name ?? null);
+  const customer = customerSwr.data;
 
   const [selectedContract, setSelectedContract] = useState<UserERPNextContract | undefined>(undefined);
   const [contractSheetOpen, setContractSheetOpen] = useState(false);
@@ -202,7 +208,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
 
   const tabs1 = useMemo(
     () => [
-      projectSwr.data?.customer ? (
+      customer?.name && customer?.email && customer.phoneNumber ? (
         <div className="flex space-x-1.5 items-center" key="customer-ok">
           <span>계약자</span>
           <div className="size-2.5 rounded-full bg-emerald-500" />
@@ -214,8 +220,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         </div>
       ),
       <div className="flex space-x-1.5 items-center" key="company-ok">
-        <span>회사</span>
-        <div className="size-2.5 rounded-full bg-emerald-500" />
+        <span>프로젝트 환경</span>
       </div>,
     ],
     [projectSwr.data?.customer]
@@ -345,9 +350,6 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     }
   }, [projectSwr.data?.custom_team, session.sub]);
 
-  //  Show content immediately even if editedProject is not ready
-  const displayProject = editedProject || projectSwr.data;
-
   // 에러 상태 (404)
   if (projectSwr.error) {
     return <Project404 onClose={onClose} onRetry={handleRetry} />;
@@ -415,11 +417,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             {/* 탭 콘텐츠 */}
             <div className="w-full bg-muted">
               {activeTab1 === 0 && <CustomerInfo projectSwr={projectSwr} session={session} />}
-              {activeTab1 === 1 && (
-                <div className="px-6 py-4">
-                  <p className="text-gray-600">문서 관련 내용이 여기에 표시됩니다.</p>
-                </div>
-              )}
+              {activeTab1 === 1 && <EnvironmentInfo projectSwr={projectSwr} />}
             </div>
           </div>
           <div className="w-full h-full hidden md:block overflow-hidden">
@@ -449,11 +447,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
           {/* 탭 콘텐츠 */}
           <div className="w-full bg-muted">
             {activeTab1 === 0 && <CustomerInfo projectSwr={projectSwr} session={session} />}
-            {activeTab1 === 1 && (
-              <div className="px-6 py-4">
-                <p className="text-gray-600">문서 관련 내용이 여기에 표시됩니다.</p>
-              </div>
-            )}
+            {activeTab1 === 1 && <EnvironmentInfo projectSwr={projectSwr} />}
           </div>
 
           {/* 모바일 탭 */}

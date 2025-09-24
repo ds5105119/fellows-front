@@ -87,6 +87,10 @@ export const userERPNextProjectSchema = z.object({
   actual_time: z.number().optional().nullable(),
   customer: z.string().optional().nullable(),
 
+  custom_environment_domain: z.string().optional().nullable(),
+  custom_environment_id: z.string().optional().nullable(),
+  custom_environment_password: z.string().optional().nullable(),
+
   custom_project_title: z.string().optional().nullable(),
   custom_project_summary: z.string().optional().nullable(),
   custom_project_status: customProjectStatusEnum.optional().nullable().default("draft"),
