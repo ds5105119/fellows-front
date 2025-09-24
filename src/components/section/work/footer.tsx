@@ -76,7 +76,7 @@ export default function Footer() {
           </div>
 
           <div className="self-stretch justify-start text-neutral-500 text-xs md:text-xs font-normal leading-none text-center">
-            IIH | 대표이사: 김동현 | 주소: 서울시 강남구 영동대로 602, 6층 | 사업자등록번호: 000-00-00000
+            IIH | 대표이사: 김동현 | 주소: 서울시 강남구 영동대로 602, 6층 | 사업자등록번호: 665-04-03651
           </div>
         </div>
       </div>
