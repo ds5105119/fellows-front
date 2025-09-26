@@ -81,6 +81,40 @@ export const updateUser = async (data: UpdateUserAttributes) => {
   });
 };
 
+export const updatePhoneRequest = async (phoneNumber: string) => {
+  const session = await auth();
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data/phone`, {
+    method: "POST",
+    body: JSON.stringify({ phone_number: phoneNumber }),
+    headers: {
+      "Content-Type": "application/json",
+      ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+    },
+    redirect: "follow",
+    credentials: "include",
+  });
+
+  return response.status;
+};
+
+export const updatePhoneVerify = async (phoneNumber: string, otp: string) => {
+  const session = await auth();
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data/phone/verify`, {
+    method: "POST",
+    body: JSON.stringify({ phone_number: phoneNumber, otp: otp }),
+    headers: {
+      "Content-Type": "application/json",
+      ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+    },
+    redirect: "follow",
+    credentials: "include",
+  });
+
+  return response.status;
+};
+
 export const updateEmailRequest = async (email: string) => {
   const session = await auth();
 

@@ -37,13 +37,6 @@ export default function SettingsSidebar() {
           description: "이름, 사진, 소개 편집",
         },
         {
-          id: "business",
-          label: "비즈니스 관리",
-          href: "/service/settings/data/business",
-          icon: Building2,
-          description: "계정 공개 범위 설정",
-        },
-        {
           id: "security",
           label: "보안 설정",
           href: "/service/settings/security",

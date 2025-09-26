@@ -134,8 +134,6 @@ export const UpdateUserAttributesSchema = z.object({
   locality: z.array(z.string()).optional().nullable(),
   location: z.array(z.string()).optional().nullable(),
   name: z.array(z.string()).optional().nullable(),
-  phoneNumber: z.array(z.string()).optional().nullable(),
-  phoneNumberVerified: z.array(z.string()).optional().nullable(),
   picture: z.array(z.string()).optional().nullable(),
   postal_code: z.array(z.string()).optional().nullable(),
   region: z.array(z.string()).optional().nullable(),
