@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { cn } from "@/lib/utils";
 import { XIcon, Download } from "lucide-react";
 import type { Session } from "next-auth";
 import { updateContracts } from "@/hooks/fetch/contract";
-import dayjs from "@/lib/dayjs";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import type { UserERPNextContract } from "@/@types/service/contract";
@@ -13,9 +13,9 @@ import SelectLogo from "@/components/resource/selectlogo";
 import SignatureCanvas from "react-signature-canvas";
 import Image from "next/image";
 import generatePDF, { Margin } from "react-to-pdf";
-import { cn } from "@/lib/utils";
 import { useProjectCustomer } from "@/hooks/fetch/project";
 import { toast } from "sonner";
+import dayjs from "@/lib/dayjs";
 
 interface ContractSheetProps {
   contract: UserERPNextContract | undefined;
@@ -137,97 +137,150 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
           </div>
         </div>
 
-        <hr className="border-gray-200" />
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col w-full">
+            <div className="font-bold pb-1">소프트웨어 공급 계약서</div>
+            <hr className="border-black" />
 
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 w-full md:justify-between mb-1 md:mb-0">
-            <div className="relative flex md:w-1/2 flex-col space-y-2">
-              <div className="text-xs font-semibold text-muted-foreground">공급자</div>
-              <div className="text-base font-bold text-black">Fellows</div>
-              <div className="text-xs font-semibold text-muted-foreground">회사명: IIH</div>
-              <div className="text-xs font-semibold text-muted-foreground">주소: 서울시 강남구 영동대로 602, 6층</div>
-              <div className="text-xs font-semibold text-muted-foreground">대표자: 김동현</div>
-            </div>
-            <hr className="block md:hidden border-gray-200" />
-            <div className="flex md:w-1/2 flex-col space-y-2 mt-1 md:mt-0">
-              <div className="text-xs font-semibold text-muted-foreground">수신자</div>
-              <div className="text-base font-bold text-black">{customer?.name}</div>
-              <div className="text-xs font-semibold text-muted-foreground">이메일: {customer?.email}</div>
-              <div className="text-xs font-semibold text-muted-foreground">전화번호: {customer?.phoneNumber ?? "전화번호 등록이 필요합니다."}</div>
-              <div className="text-xs font-semibold text-muted-foreground">
-                주소: {customer?.street && customer?.sub_locality ? customer?.street + " " + customer?.sub_locality : "주소 등록이 필요합니다."}
-              </div>
-            </div>
-          </div>
-
-          <hr className="border-gray-200" />
-
-          <div className="w-full flex">
-            <div className="flex flex-col w-1/2 space-y-2">
-              <div className="text-sm font-semibold">계약 시작일</div>
-              <div className="text-base font-bold">{contract?.start_date ? dayjs(contract.start_date).format("YYYY년 M월 D일") : "미정"}</div>
-            </div>
-            <div className="flex flex-col w-1/2 space-y-2">
-              <div className="text-sm font-semibold">계약 종료일</div>
-              <div className="text-base font-bold">{contract?.end_date ? dayjs(contract.end_date).format("YYYY년 M월 D일") : "미정"}</div>
-            </div>
-          </div>
-
-          {contract?.custom_subscribe == false && (
-            <>
-              <div className="w-full flex">
-                <div className="flex flex-col space-y-2">
-                  <div className="text-sm font-semibold">총 개발 비용</div>
-                  <div className="text-base font-bold">
-                    {contract?.custom_fee ? `${formatCurrency(contract.custom_fee)} ` : "미정"}
-                    {contract?.custom_fee && (
-                      <span className="text-sm font-medium text-muted-foreground">{`(부가세 포함 ${formatCurrency(contract.custom_fee * 1.1)})`}</span>
-                    )}
-                  </div>
+            <div className="grid gap-2 grid-cols-12">
+              <div className="col-span-2 flex items-end text-xs font-medium">공급자 정보</div>
+              <div className="col-span-10 grid grid-cols-9 bg-muted items-end divide-y">
+                <div className="col-span-full md:col-span-3 text-sm pt-2">
+                  <span className="text-xs font-semibold mr-1">회사명</span>
+                  IIH
                 </div>
-              </div>
-
-              {(() => {
-                const payments = calculatePayments(contract);
-
-                return (
-                  <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 w-full md:justify-between mb-1 md:mb-0">
-                    <div className="flex flex-col md:w-1/2 space-y-2">
-                      <div className="text-sm font-semibold">개발 계약 선금</div>
-                      <div className="text-base font-bold">
-                        {formatCurrency(payments.downPaymentAmount)}{" "}
-                        <span className="text-sm font-medium text-muted-foreground">{`(부가세 포함 ${formatCurrency(payments.downPaymentAmount * 1.1)}, ${
-                          payments.downPaymentRate
-                        }%)`}</span>
-                      </div>
-                      <div className="text-base font-bold">{contract.start_date ? dayjs(contract.start_date).format("YYYY년 M월 D일") : "계약 체결일"}</div>
-                    </div>
-                    <div className="flex flex-col md:w-1/2 space-y-2">
-                      <div className="text-sm font-semibold">개발 계약 잔금</div>
-                      <div className="text-base font-bold">
-                        {formatCurrency(payments.balanceAmount)}{" "}
-                        <span className="text-sm font-medium text-muted-foreground">{`(부가세 포함 ${formatCurrency(payments.balanceAmount * 1.1)} ${
-                          payments.balanceRate
-                        }%)`}</span>
-                      </div>
-                      <div className="text-base font-bold">{contract.end_date ? dayjs(contract.end_date).format("YYYY년 M월 D일") : "프로젝트 완료일"}</div>
-                    </div>
-                  </div>
-                );
-              })()}
-            </>
-          )}
-
-          {contract?.custom_subscribe == true && (
-            <div className="w-full flex">
-              <div className="flex flex-col space-y-2">
-                <div className="text-sm font-semibold">하자보수 비용</div>
-                <div className="text-base font-bold">
-                  월 {contract.custom_maintenance ? `${formatCurrency(contract.custom_maintenance)} (부가세별도)` : "미정"}
+                <div className="col-span-full md:col-span-3 text-sm pt-2">
+                  <span className="text-xs font-semibold mr-1">대표자명</span>
+                  김동현
+                </div>
+                <div className="col-span-full md:col-span-3 text-sm pt-2">
+                  <span className="text-xs font-semibold mr-1">이메일</span>
+                  contact@iihus.com
+                </div>
+                <div className="col-span-full md:col-span-9 text-sm pt-2">
+                  <span className="text-xs font-semibold mr-1">주소</span>
+                  서울특별시 강남구 영동대로 602, 6층 z344호(삼성동, 삼성동 미켈란 107)
                 </div>
               </div>
             </div>
-          )}
+
+            <hr className="border-black" />
+
+            <div className="grid gap-2 grid-cols-12">
+              <div className="col-span-2 flex items-end text-xs font-medium">수신자 정보</div>
+              <div className="col-span-10 grid grid-cols-9 bg-muted items-end divide-y">
+                <div className="col-span-full md:col-span-3 text-sm pt-2">
+                  <span className="text-xs font-semibold mr-1">성명</span>
+                  {customer?.name}
+                </div>
+                <div className="col-span-full md:col-span-3 text-sm pt-2">
+                  <span className="text-xs font-semibold mr-1">생년월일</span>
+                  {customer?.birthdate}
+                </div>
+                <div className="col-span-full md:col-span-3 text-sm pt-2">
+                  <span className="text-xs font-semibold mr-1">휴대전화번호</span>
+                  {customer?.phoneNumber}
+                </div>
+                <div className="col-span-full md:col-span-3 text-sm pt-2">
+                  <span className="text-xs font-semibold mr-1">이메일</span>
+                  {customer?.email}
+                </div>
+                <div className="col-span-full md:col-span-3 text-sm pt-2">
+                  <span className="text-xs font-semibold mr-1">성별</span>
+                  {customer?.gender ? (customer?.gender[0] === "male" ? "남" : "여") : "등록되지 않음"}
+                </div>
+                <div className="col-span-full md:col-span-full text-sm pt-2">
+                  <span className="text-xs font-semibold mr-1">주소</span>
+                  {customer?.street ? (customer.sub_locality ? customer?.street + " " + customer.sub_locality : customer?.street) : "등록된 주소가 없습니다"}
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-black" />
+
+            <div className="grid gap-2 grid-cols-12">
+              <div className="col-span-2 flex items-end text-xs font-medium">계약 기간</div>
+              <div className="col-span-10 grid grid-cols-9 bg-muted items-end divide-y">
+                <div className="col-span-full md:col-span-9 text-sm pt-2">
+                  <span className="text-xs font-semibold mr-1">계약 시작일</span>
+                  {contract?.start_date ? dayjs(contract.start_date).format("YYYY년 M월 D일") : "미정"}
+                </div>
+                <div className="col-span-full md:col-span-9 text-sm pt-2">
+                  <span className="text-xs font-semibold mr-1">계약 종료일</span>
+                  {contract?.end_date ? dayjs(contract.end_date).format("YYYY년 M월 D일") : "미정"}
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-black" />
+
+            <div className="grid gap-2 grid-cols-12">
+              <div className="col-span-2 flex items-end text-xs font-medium">계약 비용</div>
+              {contract?.custom_subscribe == false && (
+                <div className="col-span-10 grid grid-cols-9 bg-muted items-end divide-y">
+                  <div className="col-span-full md:col-span-9 text-sm pt-2">
+                    <span className="text-xs font-semibold mr-1">계약금액</span>
+                    {contract?.custom_fee ? formatCurrency(contract.custom_fee * 1.1) : "미정"}
+                  </div>
+                  <div className="col-span-full md:col-span-9 text-sm pt-2">
+                    <span className="text-xs font-semibold mr-1">공급가액</span>
+                    {contract?.custom_fee ? formatCurrency(contract.custom_fee) : "미정"}
+                  </div>
+                  <div className="col-span-full md:col-span-9 text-sm pt-2">
+                    <span className="text-xs font-semibold mr-1">부가가치세</span>
+                    {contract?.custom_fee ? formatCurrency(contract.custom_fee * 0.1) : "미정"}
+                  </div>
+
+                  {(() => {
+                    const payments = calculatePayments(contract);
+
+                    return (
+                      <>
+                        <div className="col-span-full md:col-span-3 text-sm pt-2">
+                          <span className="text-xs font-semibold mr-1">선급금 지급비율</span>
+                          {payments.downPaymentRate}%
+                        </div>
+                        <div className="col-span-full md:col-span-6 text-sm pt-2">
+                          <span className="text-xs font-semibold mr-1">선급금 지급금액</span>
+                          {formatCurrency(payments.downPaymentAmount * 1.1)}
+                        </div>
+                        <div className="col-span-full md:col-span-full text-sm pt-2">
+                          <span className="text-xs font-semibold mr-1">선급금 지급기한</span>
+                          {contract.start_date ? dayjs(contract.start_date).format("YYYY년 M월 D일") : "계약 체결일"}
+                        </div>
+
+                        <div className="col-span-full md:col-span-3 text-sm pt-2">
+                          <span className="text-xs font-semibold mr-1">잔금 지급비율</span>
+                          {payments.balanceRate}%
+                        </div>
+                        <div className="col-span-full md:col-span-6 text-sm pt-2">
+                          <span className="text-xs font-semibold mr-1">잔금 지급금액</span>
+                          {formatCurrency(payments.balanceAmount * 1.1)}
+                        </div>
+                        <div className="col-span-full md:col-span-full text-sm pt-2">
+                          <span className="text-xs font-semibold mr-1">잔금 지급기한</span>
+                          {contract.start_date ? dayjs(contract.end_date).format("YYYY년 M월 D일") : "계약 체결일"}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+
+              {contract?.custom_subscribe == true && (
+                <div className="col-span-10 grid grid-cols-9 bg-muted items-end divide-y">
+                  <div className="flex flex-col space-y-2">
+                    <div className="text-sm font-semibold">하자보수 비용</div>
+                    <div className="text-base font-bold">
+                      월 {contract.custom_maintenance ? `${formatCurrency(contract.custom_maintenance)} (부가세별도)` : "미정"}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <hr className="border-black" />
+          </div>
 
           <div className="w-full flex">
             <div className="flex flex-col space-y-2">
@@ -235,25 +288,61 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
               <div className="text-base font-bold">1/1000 (단, 상호 사전 합의하여 변경할 수 있다.)</div>
             </div>
           </div>
-
           <div className="w-full flex">
             <div className="flex flex-col space-y-2">
               <div className="text-sm font-semibold">계약이행보증금</div>
               <div className="text-base font-bold">해당없음</div>
             </div>
           </div>
-
           <div className="w-full flex">
             <div className="flex flex-col space-y-2">
               <div className="text-sm font-semibold">계약이행보증보험</div>
               <div className="text-base font-bold">해당없음</div>
             </div>
           </div>
-
           <div className="w-full flex">
             <div className="flex flex-col space-y-2">
               <div className="text-sm font-semibold">특약사항</div>
               <div className="text-base font-bold"> {contract?.contract_terms ? <>{parse(contract?.contract_terms)}</> : "별도 특약사항 없음"}</div>
+            </div>
+          </div>
+
+          <div className="text-xs text-center">
+            {customer?.name} 와(과) 공급자 Fellows는 붙임에 의하여 위에 대한 계약을 체결하고 신의에 따라 성실히 계약상의 의무를 이행할 것을 확약하며 본 계약을
+            증명하기 위해 계약서 2부를 작성 기명 날인하여 {customer?.name} 와(과) 공급자가 각각 1부씩 보관한다.
+          </div>
+          <div className="w-full text-center">
+            <div className="text-sm font-semibold">{contract?.signed_on ? dayjs(contract.signed_on).format("LL") : dayjs().format("LL")}</div>
+          </div>
+          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 w-full md:justify-between mb-1 md:mb-0">
+            <div className="flex md:w-1/2 flex-col space-y-2 mt-1 md:mt-0">
+              <div className="text-base font-bold">수신자</div>
+              <div className="relative text-xs font-normal">
+                <div className="w-1/2">성명: {customer?.name}</div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">(인)</div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">
+                  {sign && <Image src={sign} alt="Fellows Stamp" width={100} height={100} className="shrink-0" unoptimized style={{ maxWidth: "none" }} />}
+                </div>
+              </div>
+              <div className="text-xs font-normal">이메일: {customer?.email}</div>
+              <div className="text-xs font-normal">전화번호: {customer?.phoneNumber ?? "전화번호 등록이 필요합니다."}</div>
+              <div className="text-xs font-normal">
+                주소: {customer?.street && customer?.sub_locality ? customer?.street + " " + customer?.sub_locality : "주소 등록이 필요합니다."}
+              </div>
+            </div>
+            <hr className="block md:hidden border-gray-200" />
+            <div className="relative flex md:w-1/2 flex-col space-y-2">
+              <div className="text-base font-bold">공급자</div>
+              <div className="relative text-xs font-normal flex">
+                <div className="w-1/2">대표자: 김동현</div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">(인)</div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">
+                  <Image src="/fellows/stamp.png" alt="Fellows Stamp" width={50} height={50} className="shrink-0" unoptimized style={{ maxWidth: "none" }} />
+                </div>
+              </div>
+              <div className="text-xs font-normal">회사명: IIH</div>
+              <div className="text-xs font-normal">주소: 서울특별시 강남구 영동대로 602, 6층 z344호(삼성동, 삼성동 미켈란 107)</div>
+              <div className="text-xs font-normal">사업자 등록번호: 665-04-03651</div>
             </div>
           </div>
         </div>
@@ -295,47 +384,6 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
           <div className="text-xs font-semibold text-muted-foreground">
             <div className="text-base font-bold text-foreground mb-1">제7조 (용역결과의 귀속)</div>이 용역의 결과물은 수신자의 소유로 하며, 용역완료와 동시에
             수신자에게 제출하여야 한다.
-          </div>
-          <div className="text-xs font-semibold text-muted-foreground">
-            <div className="text-base font-bold text-foreground mb-1">참고사항</div>
-            {customer?.name} 와(과) 공급자 Fellows는 붙임에 의하여 위에 대한 계약을 체결하고 신의에 따라 성실히 계약상의 의무를 이행할 것을 확약하며 본 계약을
-            증명하기 위해 계약서 2부를 작성 기명 날인하여 {customer?.name} 와(과) 공급자가 각각 1부씩 보관한다.
-          </div>
-        </div>
-
-        <div className="flex w-full justify-end text-sm font-bold">{dayjs(contract?.modified).format("LL")}</div>
-
-        <div className="w-full flex flex-col mt-5 space-y-6">
-          <div className="text-sm font-bold">
-            <span className="font-normal">공급자</span>&nbsp;&nbsp;&nbsp;&nbsp;IIH, Fellows℠&nbsp;&nbsp;&nbsp;&nbsp;대표 김 동
-            현&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <span className="relative font-medium text-muted-foreground">
-              (인)
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">
-                <Image src="/fellows/stamp.png" alt="Fellows Stamp" width={50} height={50} className="shrink-0" unoptimized style={{ maxWidth: "none" }} />
-              </div>
-            </span>
-          </div>
-
-          <div className="text-sm font-bold">
-            <span className="font-normal">수신자</span>&nbsp;&nbsp;&nbsp;&nbsp;{customer?.name}
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <span className="relative font-medium text-muted-foreground">
-              (서명)
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">
-                {sign && (
-                  <Image
-                    src={sign || "/placeholder.svg"}
-                    alt="Fellows Stamp"
-                    width={100}
-                    height={100}
-                    className="shrink-0"
-                    unoptimized
-                    style={{ maxWidth: "none" }}
-                  />
-                )}
-              </div>
-            </span>
           </div>
         </div>
       </div>
