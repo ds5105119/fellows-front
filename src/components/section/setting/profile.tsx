@@ -127,14 +127,16 @@ export default function UserProfile({ session }: { session: Session }) {
       geoLocation.location.response.documents.length > 0
     ) {
       setAddressSearching(false);
-      setValue("sub_locality", [geoLocation.location.response.documents[0].road_address.building_name]);
-      setValue("street", [
-        geoLocation.location.response.documents[0].road_address.road_name + " " + geoLocation.location.response.documents[0].road_address.main_building_no,
-      ]);
-      setValue("postal_code", [geoLocation.location.response.documents[0].road_address.zone_no]);
-      setValue("region", [geoLocation.location.response.documents[0].road_address.region_1depth_name]);
-      setValue("locality", [geoLocation.location.response.documents[0].road_address.region_2depth_name]);
-      setValue("country", ["대한민국"]);
+      setValue("sub_locality", [geoLocation.location.response.documents[0].road_address.building_name], { shouldDirty: true });
+      setValue(
+        "street",
+        [geoLocation.location.response.documents[0].road_address.road_name + " " + geoLocation.location.response.documents[0].road_address.main_building_no],
+        { shouldDirty: true }
+      );
+      setValue("postal_code", [geoLocation.location.response.documents[0].road_address.zone_no], { shouldDirty: true });
+      setValue("region", [geoLocation.location.response.documents[0].road_address.region_1depth_name], { shouldDirty: true });
+      setValue("locality", [geoLocation.location.response.documents[0].road_address.region_2depth_name], { shouldDirty: true });
+      setValue("country", ["대한민국"], { shouldDirty: true });
     }
   }, [geoLocation.location]);
 
@@ -202,19 +204,33 @@ export default function UserProfile({ session }: { session: Session }) {
                   <div className="text-xs md:text-sm text-muted-foreground font-semibold">@{session.user.username}</div>
                 </div>
               </motion.div>
-
-              {/* Profile Header */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="w-full flex items-center gap-3">
-                <Button type="button" size="sm" className="shadow-none grow transition-colors duration-200" asChild>
-                  <Link href="/service/settings/profile/phone">전화번호 변경</Link>
-                </Button>
-                <Button type="button" size="sm" className="shadow-none grow transition-colors duration-200" asChild>
-                  <Link href="/service/settings/profile/phone">닉네임 변경</Link>
-                </Button>
-              </motion.div>
             </div>
 
             <h2 className="text-xl font-semibold text-gray-900">개인정보</h2>
+
+            <div className="w-full flex flex-col gap-2">
+              <div className="text-sm font-medium text-gray-600">전화번호</div>
+              <div className="flex space-x-2 w-full">
+                <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-9 flex items-center md:text-sm rounded-md px-3 py-1 text-base">
+                  {session.user.phone_number}
+                </div>
+                <Button className="h-9 shadow-none" asChild>
+                  <Link href="/service/settings/profile/phone">변경</Link>
+                </Button>
+              </div>
+            </div>
+
+            <div className="w-full flex flex-col gap-2">
+              <div className="text-sm font-medium text-gray-600">ID</div>
+              <div className="flex space-x-2 w-full">
+                <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-9 flex items-center md:text-sm rounded-md px-3 py-1 text-base">
+                  {session.user.username}
+                </div>
+                <Button className="h-9 shadow-none" asChild>
+                  <Link href="/service/settings/profile/email">변경</Link>
+                </Button>
+              </div>
+            </div>
 
             <div className="w-full flex flex-col gap-2">
               <div className="text-sm font-medium text-gray-600">이메일</div>
