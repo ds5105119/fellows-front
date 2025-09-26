@@ -71,10 +71,10 @@ export default function PhoneUpdateRequest() {
   // OTP 인증
   const handleVerifyOtp = async (completedOtp: string) => {
     setIsLoading(true);
-    const rawPhone = updatePhone.replace(/\D/g, ""); // 숫자만 추출
+    const rawPhone = updatePhone.replace(/\D/g, "");
 
     try {
-      const status = await updatePhoneVerify(rawPhone, completedOtp); // <-- 숫자만 보내기
+      const status = await updatePhoneVerify(rawPhone, completedOtp);
 
       if (status === 200) {
         toast.success("휴대폰 번호가 성공적으로 변경되었습니다!");

@@ -312,7 +312,7 @@ export function ProjectStatus({
                       <div className="text-xs font-semibold text-muted-foreground">수신자</div>
                       <div className="text-base font-bold text-black">{session.user.name}</div>
                       <div className="text-xs font-semibold text-muted-foreground">이메일: {session.user.email}</div>
-                      <div className="text-xs font-semibold text-muted-foreground">전화번호: {session.user.phoneNumber ?? "등록된 전화번호가 없습니다"}</div>
+                      <div className="text-xs font-semibold text-muted-foreground">전화번호: {session.user.phone_number ?? "등록된 전화번호가 없습니다"}</div>
                       <div className="text-xs font-semibold text-muted-foreground">
                         주소:{" "}
                         {session.user.address.street_address

@@ -205,11 +205,11 @@ export default function UserProfile({ session }: { session: Session }) {
 
               {/* Profile Header */}
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="w-full flex items-center gap-3">
-                <Button type="button" size="sm" className="shadow-none grow transition-colors duration-200">
+                <Button type="button" size="sm" className="shadow-none grow transition-colors duration-200" asChild>
                   <Link href="/service/settings/profile/phone">전화번호 변경</Link>
                 </Button>
-                <Button type="button" size="sm" className="shadow-none grow transition-colors duration-200">
-                  닉네임 변경
+                <Button type="button" size="sm" className="shadow-none grow transition-colors duration-200" asChild>
+                  <Link href="/service/settings/profile/phone">닉네임 변경</Link>
                 </Button>
               </motion.div>
             </div>

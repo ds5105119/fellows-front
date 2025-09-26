@@ -11,7 +11,7 @@ declare module "next-auth" {
     username: string;
     name: string;
     bio: string;
-    phoneNumber: string;
+    phone_number: string;
     birthdate: string;
     email_verified: boolean;
     address: {
@@ -52,7 +52,7 @@ declare module "next-auth/jwt" {
     email: string;
     username: string;
     name: string;
-    phoneNumber: string;
+    phone_number: string;
     bio: string;
     birthdate: string;
     email_verified: boolean;
@@ -161,8 +161,6 @@ export const {
 
       // 세션 업데이트 처리
       if (trigger === "update" && session) {
-        console.log("씨발");
-
         try {
           return await refreshAccessToken(token);
         } catch {
@@ -189,7 +187,7 @@ export const {
       session.user.name = token.name;
       session.user.bio = token.bio;
       session.user.link = token.link;
-      session.user.phoneNumber = token.phoneNumber;
+      session.user.phone_number = token.phone_number;
       session.user.birthdate = token.birthdate;
       session.user.email_verified = token.email_verified;
       session.user.userData = userData.parse(JSON.parse(token.userData || "{}"));
