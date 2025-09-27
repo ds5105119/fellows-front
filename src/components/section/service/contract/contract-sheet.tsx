@@ -16,14 +16,19 @@ import generatePDF, { Margin } from "react-to-pdf";
 import { useProjectCustomer } from "@/hooks/fetch/project";
 import { toast } from "sonner";
 import dayjs from "@/lib/dayjs";
+import { contractStatus } from "@/components/resource/project";
+import { SWRInfiniteResponse } from "swr/infinite";
+import { SWRResponse } from "swr";
 
 interface ContractSheetProps {
   contract: UserERPNextContract | undefined;
+  contractSwr?: SWRResponse<UserERPNextContract>;
+  contractsSwr: SWRInfiniteResponse<{ items: UserERPNextContract[] }>;
   session: Session;
   setOpenSheet: (open: boolean) => void;
 }
 
-export function ContractSheet({ contract, session, setOpenSheet }: ContractSheetProps) {
+export function ContractSheet({ contract, contractSwr, contractsSwr, session, setOpenSheet }: ContractSheetProps) {
   const targetRef = useRef<HTMLDivElement>(null);
 
   const [isSigned, setIsSigned] = useState<boolean>(false);
@@ -87,6 +92,8 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
         toast.message("사인을 저장하는데 실패했습니다.");
       } finally {
         setIsSaving(false);
+        contractsSwr.mutate();
+        contractSwr?.mutate();
       }
     }
   };
@@ -123,17 +130,7 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
           </div>
           <div className="mt-1">
             <span className="text-sm font-bold">계약상태. </span>
-            <span className="text-sm font-medium">
-              {contract?.docstatus === 0
-                ? contract?.is_signed
-                  ? "결제 대기"
-                  : "사인 전"
-                : contract?.docstatus === 1 && contract?.is_signed
-                ? "진행 중"
-                : contract?.docstatus === 2
-                ? "취소됨"
-                : "취소됨"}
-            </span>
+            <span className="text-sm font-medium">{contract?.custom_contract_status ? contractStatus[contract.custom_contract_status].title : "비활성"}</span>
           </div>
         </div>
 
@@ -318,9 +315,9 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
             <div className="flex md:w-1/2 flex-col space-y-2 mt-1 md:mt-0">
               <div className="text-base font-bold">수신자</div>
               <div className="relative text-xs font-normal">
-                <div className="w-1/2">성명: {customer?.name}</div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">(인)</div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">
+                <div className="w-full">성명: {customer?.name}</div>
+                <div className="absolute top-1/2 left-2/3 -translate-x-1/2 -translate-y-1/2 select-none">(인)</div>
+                <div className="absolute top-1/2 left-2/3 -translate-x-1/2 -translate-y-1/2 select-none">
                   {sign && <Image src={sign} alt="Fellows Stamp" width={100} height={100} className="shrink-0" unoptimized style={{ maxWidth: "none" }} />}
                 </div>
               </div>
@@ -334,9 +331,9 @@ export function ContractSheet({ contract, session, setOpenSheet }: ContractSheet
             <div className="relative flex md:w-1/2 flex-col space-y-2">
               <div className="text-base font-bold">공급자</div>
               <div className="relative text-xs font-normal flex">
-                <div className="w-1/2">대표자: 김동현</div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">(인)</div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none">
+                <div className="w-full">대표자: 김동현</div>
+                <div className="absolute top-1/2 left-2/3 -translate-x-1/2 -translate-y-1/2 select-none">(인)</div>
+                <div className="absolute top-1/2 left-2/3 -translate-x-1/2 -translate-y-1/2 select-none">
                   <Image src="/fellows/stamp.png" alt="Fellows Stamp" width={50} height={50} className="shrink-0" unoptimized style={{ maxWidth: "none" }} />
                 </div>
               </div>

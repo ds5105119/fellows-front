@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import dayjs from "@/lib/dayjs";
 import generatePDF, { Margin } from "react-to-pdf";
-import type { UserERPNextContract } from "@/@types/service/contract";
+import type { CustomContractStatus, UserERPNextContract } from "@/@types/service/contract";
 import type { SWRInfiniteResponse } from "swr/infinite";
 import { useUsers } from "@/hooks/fetch/user";
 import { useProjectOverView } from "@/hooks/fetch/project";
 import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from "@tanstack/react-table";
 import type { ProjectAdminUserAttributes } from "@/@types/accounts/userdata";
 import type { OverviewERPNextProject } from "@/@types/service/project";
+import { contractStatus } from "@/components/resource/project";
 
 interface ContractListProps {
   contractsSwr: SWRInfiniteResponse<{ items: UserERPNextContract[] }>;
@@ -27,6 +28,7 @@ type Contract = {
   custom_subscribe: boolean;
   custom_fee: number;
   custom_maintenance: number;
+  custom_contract_status: CustomContractStatus;
   modified: Date;
   start_date: string;
   end_date: string;
@@ -118,6 +120,7 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
         custom_subscribe: contract.custom_subscribe ?? false,
         custom_fee: contract.custom_fee ?? 0,
         custom_maintenance: contract.custom_maintenance ?? 0,
+        custom_contract_status: contract.custom_contract_status,
         modified: contract.modified ? new Date(contract.modified) : new Date(),
         start_date: contract.start_date ?? "0000-00-00",
         end_date: contract.end_date ?? "0000-00-00",
@@ -144,26 +147,10 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
           <div
             className={cn(
               "flex items-center justify-center px-1.5 py-0.5 rounded-sm border h-fit w-fit text-xs font-medium",
-              contract.docstatus === 0
-                ? contract.is_signed
-                  ? "bg-blue-50 border-blue-300 text-blue-500"
-                  : "bg-zinc-50 border-zinc-300 text-zinc-500"
-                : contract.docstatus === 1 && contract.is_signed
-                ? "bg-emerald-50 border-emerald-300 text-emerald-500"
-                : contract.docstatus === 2
-                ? "bg-red-50 border-red-300 text-red-500"
-                : "bg-red-50 border-red-300 text-red-500"
+              contractStatus[contract.custom_contract_status].badgeClassName
             )}
           >
-            {contract.docstatus === 0
-              ? contract.is_signed
-                ? "결제 대기"
-                : "사인 전"
-              : contract.docstatus === 1 && contract.is_signed
-              ? "진행 중"
-              : contract.docstatus === 2
-              ? "취소됨"
-              : "취소됨"}
+            {contractStatus[contract.custom_contract_status].title}
           </div>
         );
       },

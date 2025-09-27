@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Camera, Loader2, X } from "lucide-react";
-import { updateUser } from "@/hooks/fetch/server/user";
+import { updateUser, deletePhone } from "@/hooks/fetch/server/user";
 import { UpdateUserAttributesSchema, type UpdateUserAttributes } from "@/@types/accounts/userdata";
 import { getPresignedPutUrl, removeFile, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
 import DaumPostcodeEmbed from "react-daum-postcode";
@@ -119,6 +119,15 @@ export default function UserProfile({ session }: { session: Session }) {
     { value: "female", label: "여성" },
   ];
 
+  const handleDeletePhone = async () => {
+    const ok = window.confirm("등록된 전화번호를 삭제하시겠습니까?");
+
+    if (ok) {
+      deletePhone();
+      await fetch("/api/user/update");
+    }
+  };
+
   useEffect(() => {
     if (
       geoLocation.location.loaded &&
@@ -214,6 +223,9 @@ export default function UserProfile({ session }: { session: Session }) {
                 <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-9 flex items-center md:text-sm rounded-md px-3 py-1 text-base">
                   {session.user.phone_number}
                 </div>
+                <Button className="h-9 shadow-none" onClick={handleDeletePhone}>
+                  삭제
+                </Button>
                 <Button className="h-9 shadow-none" asChild>
                   <Link href="/service/settings/profile/phone">변경</Link>
                 </Button>

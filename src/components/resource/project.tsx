@@ -619,3 +619,30 @@ export const statusConfig = {
     text: "취소됨",
   },
 };
+
+export const contractStatus = {
+  Unsigned: {
+    title: "사인 전",
+    badgeClassName: "bg-zinc-50 border-zinc-300 text-zinc-500",
+  },
+  Signed: {
+    title: "사인됨",
+    badgeClassName: "bg-blue-50 border-blue-300 text-blue-600",
+  },
+  Payment: {
+    title: "결제 대기",
+    badgeClassName: "bg-amber-50 border-amber-300 text-amber-600",
+  },
+  Active: {
+    title: "진행중",
+    badgeClassName: "bg-green-50 border-green-300 text-green-600",
+  },
+  Complete: {
+    title: "완료",
+    badgeClassName: "bg-emerald-50 border-emerald-300 text-emerald-600",
+  },
+  Inactive: {
+    title: "취소됨",
+    badgeClassName: "bg-red-50 border-red-300 text-red-600",
+  },
+};

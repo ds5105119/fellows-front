@@ -115,6 +115,22 @@ export const updatePhoneVerify = async (phoneNumber: string, otp: string) => {
   return response.status;
 };
 
+export const deletePhone = async () => {
+  const session = await auth();
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_USER_URL}/data/phone`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+    },
+    redirect: "follow",
+    credentials: "include",
+  });
+
+  return response.status;
+};
+
 export const updateEmailRequest = async (email: string) => {
   const session = await auth();
 

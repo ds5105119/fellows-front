@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+export const customContractStatus = z.enum(["Unsigned", "Signed", "Payment", "Active", "Complete", "Inactive"]);
+export type CustomContractStatus = z.infer<typeof customContractStatus>;
+
 export const userERPNextContractSchema = z.object({
   name: z.string(),
   owner: z.string(),
@@ -39,6 +42,7 @@ export const userERPNextContractSchema = z.object({
   status: z.string().nullable().optional(),
   start_date: z.string().date().nullable().optional(),
   end_date: z.string().date().nullable().optional(),
+  custom_contract_status: customContractStatus,
   custom_subscribe: z.boolean().nullable().optional(),
   custom_fee: z.number().int().nullable().optional(),
   custom_down_payment: z.number().nullable().optional(),

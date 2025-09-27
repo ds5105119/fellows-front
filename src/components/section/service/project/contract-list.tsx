@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef } from "react";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { Info, Download, FileCheck, Loader2 } from "lucide-react";
 import type { SWRResponse } from "swr";
-import { useContracts } from "@/hooks/fetch/contract";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -13,20 +12,23 @@ import generatePDF, { Margin } from "react-to-pdf";
 import type { UserERPNextContract } from "@/@types/service/contract";
 import { useProjectCustomer } from "@/hooks/fetch/project";
 import { Session } from "next-auth";
+import { SWRInfiniteResponse } from "swr/infinite";
+import { contractStatus } from "@/components/resource/project";
 
 interface ContractListProps {
   projectSwr: SWRResponse<UserERPNextProject>;
+  contractsSwr: SWRInfiniteResponse<{ items: UserERPNextContract[] }>;
   selectedContract?: UserERPNextContract;
   onContractSelect: (contract: UserERPNextContract) => void;
   initialContractName?: string;
   session: Session;
 }
 
-export function ContractList({ projectSwr, selectedContract, onContractSelect, initialContractName, session }: ContractListProps) {
+export function ContractList({ projectSwr, contractsSwr, selectedContract, onContractSelect, initialContractName, session }: ContractListProps) {
   const { data: project } = projectSwr;
   const project_id = project?.project_name ?? "";
-  const { data: contractsSwr, isLoading } = useContracts({ project_id });
-  const contracts = contractsSwr?.flatMap((page) => page.items) ?? [];
+  const { data: rawContracts, isLoading } = contractsSwr;
+  const contracts = rawContracts?.flatMap((page) => page.items) ?? [];
   const hasAutoSelected = useRef(false);
   const customerSwr = useProjectCustomer(project?.project_name ?? null);
   const customer = customerSwr.data;
@@ -116,15 +118,7 @@ export function ContractList({ projectSwr, selectedContract, onContractSelect, i
           >
             <div className="flex flex-col">
               <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                {contract.docstatus === 0
-                  ? contract.is_signed
-                    ? "결제 대기"
-                    : "사인 전"
-                  : contract.docstatus === 1 && contract.is_signed
-                  ? "진행 중"
-                  : contract.docstatus === 2
-                  ? "취소됨"
-                  : "취소됨"}
+                {contractStatus[contract.custom_contract_status].title}
               </h3>
               <h3 className="text-sm font-medium text-gray-900 transition-colors pt-2 pb-1">
                 {contract.custom_name || "계약서"} - {!contract.custom_subscribe ? `회차 정산형` : `정기 결제형`}

@@ -25,6 +25,7 @@ import { ContractSheet } from "../contract/contract-sheet";
 import dayjs from "dayjs";
 import type { UserERPNextContract } from "@/@types/service/contract";
 import ProjectDetailSheetHeader from "./projectdetailsheet-header";
+import { useContracts } from "@/hooks/fetch/contract";
 
 interface ProjectDetailSheetProps {
   project_id: string;
@@ -105,6 +106,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const customerSwr = useProjectCustomer(displayProject?.project_name ?? null);
   const customer = customerSwr.data;
 
+  const contractsSwr = useContracts({ project_id });
   const [selectedContract, setSelectedContract] = useState<UserERPNextContract | undefined>(undefined);
   const [contractSheetOpen, setContractSheetOpen] = useState(false);
 
@@ -429,6 +431,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
               {activeTab2 === 1 && (
                 <ContractList
                   session={session}
+                  contractsSwr={contractsSwr}
                   projectSwr={projectSwr}
                   selectedContract={selectedContract}
                   onContractSelect={handleContractSelect}
@@ -476,6 +479,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
             {activeMobileTab === 2 && (
               <ContractList
                 session={session}
+                contractsSwr={contractsSwr}
                 projectSwr={projectSwr}
                 selectedContract={selectedContract}
                 onContractSelect={handleContractSelect}
@@ -502,6 +506,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
           </SheetHeader>
           <ContractSheet
             contract={selectedContract}
+            contractsSwr={contractsSwr}
             session={session}
             setOpenSheet={(open: boolean) => {
               if (!open) {

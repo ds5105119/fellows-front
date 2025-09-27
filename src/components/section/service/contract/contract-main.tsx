@@ -30,7 +30,7 @@ export default function ContractMain({ session }: { session: Session }) {
     docstatus: filters.type === "0" ? undefined : filters.type === "1" || filters.type === "2" ? 0 : filters.type === "3" ? 1 : 2,
     is_signed: filters.type === "0" ? undefined : filters.type === "1" ? false : filters.type === "2" ? true : filters.type === "3" ? true : undefined,
   });
-  const { data: contractFromUrl } = useContract(contract_id);
+  const contractSwr = useContract(contract_id);
 
   const onContractSelect = (contract: UserERPNextContract) => {
     setSelectedContract(contract);
@@ -48,11 +48,11 @@ export default function ContractMain({ session }: { session: Session }) {
   };
 
   useEffect(() => {
-    if (contractFromUrl && contract_id) {
-      setSelectedContract(contractFromUrl);
+    if (contractSwr.data) {
+      setSelectedContract(contractSwr.data);
       setContractSheetOpen(true);
     }
-  }, [contractFromUrl, contract_id]);
+  }, [contractSwr.data]);
 
   return (
     <div className="w-full h-full">
@@ -66,7 +66,13 @@ export default function ContractMain({ session }: { session: Session }) {
           <SheetHeader className="sr-only">
             <SheetTitle>계약서</SheetTitle>
           </SheetHeader>
-          <ContractSheet contract={selectedContract} session={session} setOpenSheet={handleContractSheetClose} />
+          <ContractSheet
+            contract={selectedContract}
+            contractSwr={contractSwr}
+            contractsSwr={contractsSwr}
+            session={session}
+            setOpenSheet={handleContractSheetClose}
+          />
           <SheetDescription className="sr-only" />
         </SheetContent>
       </Sheet>
