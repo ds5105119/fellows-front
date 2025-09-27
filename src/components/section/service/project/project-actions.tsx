@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import type { UserERPNextProject } from "@/@types/service/project";
-import { cancelSubmitProject, submitProject } from "@/hooks/fetch/project";
+import { cancelSubmitProject, submitProject, useProjectCustomer } from "@/hooks/fetch/project";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import DatePicker from "./datepicker";
 import { Separator } from "@/components/ui/separator";
@@ -11,6 +11,7 @@ import Image from "next/image";
 import { useQuoteSlots } from "@/hooks/fetch/project";
 import dayjs from "@/lib/dayjs";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface ProjectActionsProps {
   project: UserERPNextProject;
@@ -28,6 +29,9 @@ export function ProjectActions({ project }: ProjectActionsProps) {
   const availabilityData = swr.data || [];
   const availabilityMap = new Map(availabilityData.map((item) => [item.date, item.remaining]));
   const unAvailable = availabilityData.filter((data) => data.remaining !== 0).length == 0;
+
+  const customerSwr = useProjectCustomer(project?.project_name ?? null);
+  const customer = customerSwr.data;
 
   const getAvailability = (date: Date) => {
     const dateString = dayjs(date).format("YYYY-MM-DD");
@@ -120,7 +124,22 @@ export function ProjectActions({ project }: ProjectActionsProps) {
     }
   };
 
+  if (!customer) return null;
+
   if (project.custom_project_status !== "draft" && project.custom_project_status !== "process:1") return null;
+
+  if (!(customer.name && customer.birthdate && customer.email && customer.street && customer.sub_locality && customer.gender && customer.phoneNumber)) {
+    return (
+      <div className="sticky bottom-0 flex flex-col z-30 w-full">
+        <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
+        <div className="w-full flex pb-4 pt-3 px-4 bg-background">
+          <Button size="lg" className="w-full px-16 h-[3.5rem] rounded-2xl text-lg font-semibold bg-blue-200 hover:bg-blue-300 text-blue-500" asChild>
+            <Link href="/service/settings/profile">의뢰 전 필수 정보 추가하러 가기</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="sticky bottom-0 flex flex-col z-30 w-full">

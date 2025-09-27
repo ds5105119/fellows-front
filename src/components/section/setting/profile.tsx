@@ -214,11 +214,11 @@ export default function UserProfile({ session }: { session: Session }) {
                 </div>
               </motion.div>
             </div>
-
             <h2 className="text-xl font-semibold text-gray-900">개인정보</h2>
-
             <div className="w-full flex flex-col gap-2">
-              <div className="text-sm font-medium text-gray-600">전화번호</div>
+              <div className="text-sm font-medium text-gray-600">
+                전화번호 <span className="text-xs font-bold text-black">(필수)</span>
+              </div>
               <div className="flex space-x-2 w-full">
                 <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-9 flex items-center md:text-sm rounded-md px-3 py-1 text-base">
                   {session.user.phone_number}
@@ -231,9 +231,10 @@ export default function UserProfile({ session }: { session: Session }) {
                 </Button>
               </div>
             </div>
-
             <div className="w-full flex flex-col gap-2">
-              <div className="text-sm font-medium text-gray-600">ID</div>
+              <div className="text-sm font-medium text-gray-600">
+                ID <span className="text-xs font-bold text-black">(필수)</span>
+              </div>
               <div className="flex space-x-2 w-full">
                 <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-9 flex items-center md:text-sm rounded-md px-3 py-1 text-base">
                   {session.user.username}
@@ -243,9 +244,10 @@ export default function UserProfile({ session }: { session: Session }) {
                 </Button>
               </div>
             </div>
-
             <div className="w-full flex flex-col gap-2">
-              <div className="text-sm font-medium text-gray-600">이메일</div>
+              <div className="text-sm font-medium text-gray-600">
+                이메일 <span className="text-xs font-bold text-black">(필수)</span>
+              </div>
               <div className="flex space-x-2 w-full">
                 <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-9 flex items-center md:text-sm rounded-md px-3 py-1 text-base">
                   {session.user.email}
@@ -255,35 +257,15 @@ export default function UserProfile({ session }: { session: Session }) {
                 </Button>
               </div>
             </div>
-
-            <FormField
-              control={form.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-600">소개</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      value={field.value?.[0] || ""}
-                      onChange={(e) => field.onChange([e.target.value])}
-                      placeholder="자신에 대해 알려주세요..."
-                      maxLength={100}
-                      className="min-h-[80px] resize-none shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
-                      disabled={isSubmitting}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               <FormField
                 control={form.control}
                 name="birthdate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">생년월일</FormLabel>
+                    <FormLabel className="text-sm font-medium text-gray-600 gap-1">
+                      생년월일 <span className="text-xs font-bold text-black">(필수)</span>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         value={field.value?.[0] || ""}
@@ -303,7 +285,9 @@ export default function UserProfile({ session }: { session: Session }) {
                 name="gender"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-600">성별</FormLabel>
+                    <FormLabel className="text-sm font-medium text-gray-600 gap-1">
+                      성별 <span className="text-xs font-bold text-black">(필수)</span>
+                    </FormLabel>
                     <Select onValueChange={(value) => field.onChange([value])} value={field.value?.[0] || ""} disabled={isSubmitting}>
                       <FormControl>
                         <SelectTrigger className="w-full shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200">
@@ -328,7 +312,9 @@ export default function UserProfile({ session }: { session: Session }) {
           {/* Address Information */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-8">
             <div className="w-full flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">주소</h2>
+              <h2 className="text-xl font-semibold text-gray-900">
+                주소 <span className="text-xs font-bold text-black">(필수)</span>
+              </h2>
               <div className="flex items-center space-x-2">
                 <button
                   type="button"
@@ -488,8 +474,31 @@ export default function UserProfile({ session }: { session: Session }) {
           {/* Links */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-8">
             <div className="w-full flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">링크</h2>
+              <h2 className="text-xl font-semibold text-gray-900">기타 정보</h2>
+            </div>
 
+            <FormField
+              control={form.control}
+              name="bio"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-600">소개</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      value={field.value?.[0] || ""}
+                      onChange={(e) => field.onChange([e.target.value])}
+                      placeholder="자신에 대해 알려주세요..."
+                      maxLength={100}
+                      className="min-h-[80px] resize-none shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
+                      disabled={isSubmitting}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="w-full flex items-center justify-end">
               <button
                 type="button"
                 className="px-2 py-1 rounded-md border border-zinc-200 bg-zinc-50 flex items-center text-xs font-bold"
