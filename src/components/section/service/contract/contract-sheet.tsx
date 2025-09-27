@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { XIcon, Download } from "lucide-react";
 import type { Session } from "next-auth";
-import { updateContracts } from "@/hooks/fetch/contract";
+import { updateContract } from "@/hooks/fetch/contract";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import type { UserERPNextContract } from "@/@types/service/contract";
@@ -28,7 +28,9 @@ interface ContractSheetProps {
   setOpenSheet: (open: boolean) => void;
 }
 
-export function ContractSheet({ contract, contractSwr, contractsSwr, session, setOpenSheet }: ContractSheetProps) {
+export function ContractSheet({ contract: _contract, contractSwr, contractsSwr, session, setOpenSheet }: ContractSheetProps) {
+  const contract = contractSwr?.data ?? _contract;
+
   const targetRef = useRef<HTMLDivElement>(null);
 
   const [isSigned, setIsSigned] = useState<boolean>(false);
@@ -79,7 +81,7 @@ export function ContractSheet({ contract, contractSwr, contractsSwr, session, se
         const signatureData = sigCanvas.current.toDataURL();
         setSign(signatureData);
 
-        await updateContracts(contract.name, {
+        await updateContract(contract.name, {
           is_signed: true,
           signee_company: signatureData,
           signed_on: dayjs().utc().format("YYYY-MM-DD HH:mm:ss"),
@@ -96,6 +98,16 @@ export function ContractSheet({ contract, contractSwr, contractsSwr, session, se
         contractSwr?.mutate();
       }
     }
+  };
+
+  const paymentContract = async () => {
+    if (contract) {
+      await updateContract(contract.name, { custom_contract_status: "Payment" });
+      toast.info("카카오톡 메시지로 결제 계좌 정보를 보내드렸어요!");
+    }
+
+    contractsSwr.mutate();
+    contractSwr?.mutate();
   };
 
   useEffect(() => {
@@ -389,7 +401,7 @@ export function ContractSheet({ contract, contractSwr, contractsSwr, session, se
         <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />
 
         <div className="w-full flex justify-between space-x-4 pb-4 pt-3 bg-background">
-          {contract?.docstatus === 0 && customer?.email == session.user.email && (
+          {(contract?.custom_contract_status === "Unsigned" || contract?.custom_contract_status === "Signed") && customer?.email == session.user.email && (
             <Dialog open={signDialogOpen} onOpenChange={setSignDialogOpen}>
               <DialogTrigger asChild>
                 {contract.is_signed ? (
@@ -460,8 +472,8 @@ export function ContractSheet({ contract, contractSwr, contractsSwr, session, se
               </DialogContent>
             </Dialog>
           )}
-          {contract?.docstatus === 0 && contract.is_signed && customer?.email == session.user.email && (
-            <Button type="button" className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold">
+          {contract?.custom_contract_status === "Signed" && customer?.email == session.user.email && (
+            <Button type="button" className="flex-1 w-1/2 h-[3.5rem] rounded-2xl text-base md:text-lg font-semibold" onClick={paymentContract}>
               결제하기
             </Button>
           )}

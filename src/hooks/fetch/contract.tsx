@@ -93,8 +93,8 @@ export const useContract = (contract_id?: string, options: SWRConfiguration<User
   return useSWRImmutable(contract_id ? url : null, async (url: string) => userERPNextContractSchema.parse(await fetcher(url)), options);
 };
 
-export const updateContracts = async (name: string, data: UpdateERPNextContract) => {
-  const response = await fetch(`/api/service/project/contract/${name}`, {
+export const updateContract = async (contract_id: string, data: UpdateERPNextContract) => {
+  const response = await fetch(`/api/service/project/contract/${contract_id}`, {
     method: "PUT",
     body: JSON.stringify(data),
   });

@@ -66,6 +66,7 @@ export const updateERPNextContractSchema = z.object({
   signee_company: z.string().nullable().optional(),
   ip_address: z.string().nullable().optional(),
   is_signed: z.boolean().nullable().optional(),
+  custom_contract_status: customContractStatus.nullable().optional(),
 });
 
 export type UpdateERPNextContract = z.infer<typeof updateERPNextContractSchema>;
