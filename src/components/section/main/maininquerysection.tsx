@@ -1,70 +1,67 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { createPortal } from "react-dom";
-import { signIn, useSession } from "next-auth/react";
-import { ArrowRight, Loader2 } from "lucide-react";
+import type React from "react";
 
+import { useRef, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import VariableFontHoverByLetter from "@/components/fancy/text/variable-font-hover-by-letter";
 import AnimatedUnderlineTextarea from "@/components/ui/animatedunderlinetextarea";
-import { getEstimateInfo } from "@/hooks/fetch/server/project";
+import { toast } from "sonner";
+import AnimatedUnderlineInput from "@/components/ui/animatedunderlineinput";
 
 export default function MainInquerySection() {
-  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: sessionHook, status } = useSession();
-  const session = sessionHook ?? null;
-  const isAuthed = !!session || status === "authenticated";
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const [submitting, setSubmitting] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+    if (isSubmitting) return;
 
-  const handleFormSubmit = async (formData: FormData) => {
-    const description = formData.get("description")?.toString().trim();
-    if (!description) return;
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get("name")?.toString().trim(),
+      company: formData.get("company")?.toString().trim(),
+      level: formData.get("level")?.toString().trim(),
+      budget: formData.get("budget")?.toString().trim(),
+      email: formData.get("email")?.toString().trim(),
+      phone: formData.get("phone")?.toString().trim(),
+      description: formData.get("description")?.toString().trim(),
+    };
 
-    if (!isAuthed) {
-      const encoded = encodeURIComponent(description);
-      signIn("keycloak", { callbackUrl: `/inquery?description=${encoded}` });
+    // Validation
+    if (!data.name || !data.email || !data.budget || !data.description) {
+      toast("성함, 이메일, 전화번호, 메시지는 필수 입력 항목입니다.");
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      toast("이메일 형식이 올바르지 않습니다");
       return;
     }
 
     try {
-      setSubmitting(true);
-      const state = await getEstimateInfo(description);
+      const response = await fetch("https://api.fellows.my/api/contact/homepage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-      if (state?.success) {
-        sessionStorage.setItem(
-          "project_info",
-          JSON.stringify({
-            description: state.description,
-            info: state.info,
-          })
-        );
-        router.push(`/service/project/new?from=session`);
-      } else {
-        setSubmitting(false);
+      if (!response.ok) {
+        throw new Error("Failed to submit form");
       }
-    } catch (err) {
-      console.error("Manual submit failed:", err);
-      setSubmitting(false);
+
+      toast.info("문의가 접수되었습니다 🥳");
+    } catch (error) {
+      toast.info("오류가 발생했습니다 🤔");
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  if (submitting) {
-    return createPortal(
-      <div className="fixed inset-0 z-[9999] bg-white dark:bg-black flex items-center justify-center p-4">
-        <div className="text-center space-y-8">
-          <div className="space-y-2">
-            <Loader2 className="w-6 h-6 animate-spin text-gray-400 mx-auto" />
-            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">분석 중</p>
-          </div>
-        </div>
-      </div>,
-      document.body
-    );
-  }
 
   return (
     <div className="w-full px-4">
@@ -76,30 +73,85 @@ export default function MainInquerySection() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-6">
-        <AnimatedUnderlineTextarea
-          ref={textareaRef}
-          name="description"
-          className="!text-base md:!text-2xl min-h-[6em] md:min-h-[8em]"
-          placeholder="자유롭게 메시지를 작성해주세요."
-        />
-        <button
-          onClick={() => {
-            const fd = new FormData();
-            fd.append("description", textareaRef.current?.value ?? "");
-            handleFormSubmit(fd);
-          }}
-          className="w-fit flex items-center justify-center gap-1.5 text-2xl font-light rounded-full bg-white"
-        >
-          <ArrowRight strokeWidth={1} size={32} />
-          <VariableFontHoverByLetter
-            label="Send"
-            staggerDuration={0.03}
-            fromFontVariationSettings="'wght' 400, 'slnt' 0"
-            toFontVariationSettings="'wght' 900, 'slnt' -10"
-          />
-        </button>
-      </div>
+
+      <form ref={formRef} onSubmit={handleFormSubmit}>
+        <div className="grid grid-cols-2 gap-6 md:gap-10">
+          <div className="col-span-1 flex flex-col space-y-1">
+            <div className="text-sm md:text-base font-bold">
+              성함<span className="text-destructive">*</span>
+            </div>
+            <AnimatedUnderlineInput name="name" className="!text-base md:!text-2xl min-h-[1.4em] md:min-h-[2em]" placeholder="성함을 입력해주세요." required />
+          </div>
+
+          <div className="col-span-1 flex flex-col space-y-1">
+            <div className="text-sm md:text-base font-bold">회사명</div>
+            <AnimatedUnderlineInput name="company" className="!text-base md:!text-2xl min-h-[1.4em] md:min-h-[2em]" placeholder="회사명을 입력해주세요." />
+          </div>
+
+          <div className="col-span-1 flex flex-col space-y-1">
+            <div className="text-sm md:text-base font-bold">직급</div>
+            <AnimatedUnderlineInput name="level" className="!text-base md:!text-2xl min-h-[1.4em] md:min-h-[2em]" placeholder="직급을 입력해주세요." />
+          </div>
+
+          <div className="col-span-1 flex flex-col space-y-1">
+            <div className="text-sm md:text-base font-bold">
+              예산(만원)<span className="text-destructive">*</span>
+            </div>
+            <AnimatedUnderlineInput
+              name="budget"
+              className="!text-base md:!text-2xl min-h-[1.4em] md:min-h-[2em]"
+              placeholder="예산을 입력해주세요."
+              required
+            />
+          </div>
+
+          <div className="col-span-1 flex flex-col space-y-1">
+            <div className="text-sm md:text-base font-bold">
+              이메일<span className="text-destructive">*</span>
+            </div>
+            <AnimatedUnderlineInput
+              name="email"
+              type="email"
+              className="!text-base md:!text-2xl min-h-[1.4em] md:min-h-[2em]"
+              placeholder="이메일을 입력해주세요."
+              required
+            />
+          </div>
+
+          <div className="col-span-1 flex flex-col space-y-1">
+            <div className="text-sm md:text-base font-bold">전화번호</div>
+            <AnimatedUnderlineInput
+              name="phone"
+              type="tel"
+              className="!text-base md:!text-2xl min-h-[1.4em] md:min-h-[2em]"
+              placeholder="전화번호를 입력해주세요."
+            />
+          </div>
+
+          <div className="col-span-full flex flex-col space-y-1">
+            <div className="text-sm md:text-base font-bold">
+              메시지<span className="text-destructive">*</span>
+            </div>
+            <AnimatedUnderlineTextarea
+              name="description"
+              containerClassName="col-span-full"
+              className="!text-base md:!text-2xl min-h-[6em] md:min-h-[8em]"
+              placeholder="자유롭게 메시지를 작성해주세요."
+              required
+            />
+          </div>
+
+          <button type="submit" disabled={isSubmitting} className="w-fit flex items-center justify-start gap-1.5 text-2xl font-light">
+            <ArrowRight strokeWidth={1} size={32} />
+            <VariableFontHoverByLetter
+              label={isSubmitting ? "Sending..." : "Send"}
+              staggerDuration={0.03}
+              fromFontVariationSettings="'wght' 400, 'slnt' 0"
+              toFontVariationSettings="'wght' 900, 'slnt' -10"
+            />
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

@@ -128,7 +128,7 @@ export function ProjectActions({ project }: ProjectActionsProps) {
 
   if (project.custom_project_status !== "draft" && project.custom_project_status !== "process:1") return null;
 
-  if (!(customer.name && customer.birthdate && customer.email && customer.street && customer.sub_locality && customer.gender && customer.phoneNumber)) {
+  if (!(customer.name && customer.birthdate && customer.email && customer.gender && customer.phoneNumber)) {
     return (
       <div className="sticky bottom-0 flex flex-col z-30 w-full">
         <div className="w-full h-4 bg-gradient-to-t from-background to-transparent" />

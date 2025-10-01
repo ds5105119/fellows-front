@@ -5,6 +5,7 @@ import ClientLocaleInit from "@/lib/clientlocaleinit";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleTagManager } from "@next/third-parties/google";
+import Toaster from "@/components/ui/toaster";
 import MainHeader from "@/components/header/mainheader";
 import Footer from "@/components/footer/footer";
 import "../globals.css";
@@ -91,6 +92,8 @@ export default async function RootLayout({
             <Footer />
           </div>
         </LenisProvider>
+
+        <Toaster />
       </body>
     </html>
   );
