@@ -84,16 +84,6 @@ export default function MainInquerySection() {
           </div>
 
           <div className="col-span-1 flex flex-col space-y-1">
-            <div className="text-sm md:text-base font-bold">회사명</div>
-            <AnimatedUnderlineInput name="company" className="!text-base md:!text-2xl min-h-[1.4em] md:min-h-[2em]" placeholder="회사명을 입력해주세요." />
-          </div>
-
-          <div className="col-span-1 flex flex-col space-y-1">
-            <div className="text-sm md:text-base font-bold">직급</div>
-            <AnimatedUnderlineInput name="level" className="!text-base md:!text-2xl min-h-[1.4em] md:min-h-[2em]" placeholder="직급을 입력해주세요." />
-          </div>
-
-          <div className="col-span-1 flex flex-col space-y-1">
             <div className="text-sm md:text-base font-bold">
               예산(만원)<span className="text-destructive">*</span>
             </div>
@@ -103,6 +93,16 @@ export default function MainInquerySection() {
               placeholder="예산을 입력해주세요."
               required
             />
+          </div>
+
+          <div className="col-span-1 flex flex-col space-y-1">
+            <div className="text-sm md:text-base font-bold">회사명</div>
+            <AnimatedUnderlineInput name="company" className="!text-base md:!text-2xl min-h-[1.4em] md:min-h-[2em]" placeholder="회사명을 입력해주세요." />
+          </div>
+
+          <div className="col-span-1 flex flex-col space-y-1">
+            <div className="text-sm md:text-base font-bold">직급</div>
+            <AnimatedUnderlineInput name="level" className="!text-base md:!text-2xl min-h-[1.4em] md:min-h-[2em]" placeholder="직급을 입력해주세요." />
           </div>
 
           <div className="col-span-full md:col-span-1 flex flex-col space-y-1">
