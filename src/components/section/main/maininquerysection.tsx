@@ -105,7 +105,7 @@ export default function MainInquerySection() {
             />
           </div>
 
-          <div className="col-span-1 flex flex-col space-y-1">
+          <div className="col-span-full md:col-span-1 flex flex-col space-y-1">
             <div className="text-sm md:text-base font-bold">
               이메일<span className="text-destructive">*</span>
             </div>
@@ -118,7 +118,7 @@ export default function MainInquerySection() {
             />
           </div>
 
-          <div className="col-span-1 flex flex-col space-y-1">
+          <div className="col-span-full md:col-span-1 flex flex-col space-y-1">
             <div className="text-sm md:text-base font-bold">전화번호</div>
             <AnimatedUnderlineInput
               name="phone"
