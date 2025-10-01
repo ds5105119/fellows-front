@@ -91,7 +91,11 @@ const useGeolocation = () => {
         message: "Geolocation not supported",
       });
     }
-    navigator.geolocation.getCurrentPosition(onSuccess, onError);
+    navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+    });
   };
 
   return { get, location };
