@@ -14,6 +14,7 @@ export default function MainInquerySection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    setIsSubmitting(true);
     e.preventDefault();
 
     if (isSubmitting) return;
@@ -89,6 +90,7 @@ export default function MainInquerySection() {
             </div>
             <AnimatedUnderlineInput
               name="budget"
+              type="number"
               className="!text-base md:!text-2xl min-h-[1.4em] md:min-h-[2em]"
               placeholder="예산을 입력해주세요."
               required
@@ -141,7 +143,11 @@ export default function MainInquerySection() {
             />
           </div>
 
-          <button type="submit" disabled={isSubmitting} className="w-fit flex items-center justify-start gap-1.5 text-2xl font-light">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-fit flex items-center justify-start gap-1.5 text-2xl font-light disabled:text-muted-foreground"
+          >
             <ArrowRight strokeWidth={1} size={32} />
             <VariableFontHoverByLetter
               label={isSubmitting ? "Sending..." : "Send"}
