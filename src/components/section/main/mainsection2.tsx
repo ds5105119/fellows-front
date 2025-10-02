@@ -37,7 +37,7 @@ const marqueeContents = [
 
 const features = [
   {
-    name: "한눈에 투명하게 외주 상황 알아보기",
+    name: "로그인하여 투명하게 외주 상황 알아보기",
     description: (
       <div className="flex items-center space-x-2">
         <ZapIcon className="size-4 md:size-5 text-blue-500" strokeWidth={3} fill="currentColor" />

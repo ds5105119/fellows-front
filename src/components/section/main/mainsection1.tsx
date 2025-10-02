@@ -29,7 +29,7 @@ export default async function MainSection1() {
               </h2>
 
               <h4 className="scroll-m-20 text-lg font-semibold leading-normal text-muted ml-1 md:mt-1.5">
-                쇼피파이, 아임웹, React, 앱 개발까지
+                AI 견적, 쇼피파이, React, 앱 개발까지
                 <br />
                 최소 30% 더 적은 비용으로 외주를 진행하세요.<span className="text-[#e64646] font-black">*</span>
               </h4>
@@ -57,7 +57,7 @@ export default async function MainSection1() {
                   </h1>
 
                   <h4 className="scroll-m-20 text-sm font-semibold leading-tight text-muted ml-1 mt-2">
-                    쇼피파이, 아임웹, React, 앱 개발까지,
+                    AI 견적, 쇼피파이, React, 앱 개발까지,
                     <br />
                     최소 30% 더 적은 비용으로 외주를 진행하세요.<span className="text-[#e64646] font-black">*</span>
                   </h4>
