@@ -67,7 +67,7 @@ export default async function Page() {
           </InView>
         </div>
 
-        <div className="col-span-full relative" id="primary">
+        <div className="col-span-full relative" id="price">
           <div className="col-span-full py-16 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto relative">
             <InView
               variants={{
@@ -84,7 +84,7 @@ export default async function Page() {
           <InViewBackground className="bg-zinc-100" />
         </div>
 
-        <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+        <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="document">
           <InView
             variants={{
               hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
@@ -98,7 +98,7 @@ export default async function Page() {
           </InView>
         </div>
 
-        <div className="col-span-full py-10 lg:py-24" id="secondary">
+        <div className="col-span-full py-10 lg:py-24" id="saas">
           <InView
             variants={{
               hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
@@ -112,7 +112,7 @@ export default async function Page() {
           </InView>
         </div>
 
-        <div className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="quaternary">
+        <div className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="ai">
           <InView
             variants={{
               hidden: { opacity: 0, y: 100, filter: "blur(4px)" },

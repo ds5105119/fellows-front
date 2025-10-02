@@ -37,7 +37,7 @@ const marqueeContents = [
 
 const features = [
   {
-    name: "한눈에 체계적인 프로젝트 관리 가능",
+    name: "한눈에 투명하게 외주 상황 알아보기",
     description: (
       <div className="flex items-center space-x-2">
         <ZapIcon className="size-4 md:size-5 text-blue-500" strokeWidth={3} fill="currentColor" />
@@ -45,7 +45,7 @@ const features = [
         <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
       </div>
     ),
-    href: "#secondary",
+    href: "#saas",
     cta: "더 알아보기",
     className: "col-span-full md:col-span-4 bg-sky-50 transition-colors duration-300 ease-in-out",
     background: (
@@ -59,7 +59,7 @@ const features = [
     ),
   },
   {
-    name: "글로벌 개발 협업으로\n25% 이상 저렴한 가격",
+    name: "타사 대비\n25% 이상 저렴한 가격",
     description: (
       <div className="flex items-center space-x-2">
         <BadgeCheckIcon className="size-4 md:size-5 text-emerald-500" strokeWidth={3} />
@@ -67,7 +67,7 @@ const features = [
         <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
       </div>
     ),
-    href: "#primary",
+    href: "#price",
     cta: "더 알아보기",
     className: "col-span-full md:col-span-2 bg-sky-50 transition-colors duration-300 ease-in-out",
     background: (
@@ -96,7 +96,7 @@ const features = [
     ),
   },
   {
-    name: "견적서부터 보고서까지\n자유로운 전자 문서 생성",
+    name: "견적서부터 보고서까지\n전자 문서로 편리하게",
     description: (
       <div className="flex items-center space-x-2">
         <CopyPlus className="size-4 md:size-5 text-orange-500" strokeWidth={3} />
@@ -105,7 +105,7 @@ const features = [
       </div>
     ),
     className: "col-span-full md:col-span-2 bg-sky-50 transition-colors duration-300 ease-in-out",
-    href: "#quaternary",
+    href: "#document",
     cta: "더 알아보기",
     background: (
       <div className="grow w-full relative flex items-center justify-center px-6 md:px-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
@@ -118,7 +118,7 @@ const features = [
     ),
   },
   {
-    name: `6000↑ 데이터를 학습한 AI로\n3분만에 AI 견적서 작성`,
+    name: `6000↑ 데이터를 학습한 AI로\n3분만에 무료 AI 견적서 작성`,
     description: (
       <div className="flex items-center">
         <div className="md:block hidden">
@@ -131,7 +131,7 @@ const features = [
         <ChevronRight className="size-4 md:size-5 ml-2 text-gray-700 md:hidden" />
       </div>
     ),
-    href: "#",
+    href: "#ai",
     cta: "더 알아보기",
     className: "col-span-full md:col-span-4 bg-sky-50 transition-colors duration-300 ease-in-out",
     background: (

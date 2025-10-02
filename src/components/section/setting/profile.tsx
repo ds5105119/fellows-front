@@ -223,9 +223,6 @@ export default function UserProfile({ session }: { session: Session }) {
                 <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-9 flex items-center md:text-sm rounded-md px-3 py-1 text-base">
                   {session.user.phone_number}
                 </div>
-                <Button className="h-9 shadow-none" onClick={handleDeletePhone}>
-                  삭제
-                </Button>
                 <Button className="h-9 shadow-none" asChild>
                   <Link href="/service/settings/profile/phone">변경</Link>
                 </Button>

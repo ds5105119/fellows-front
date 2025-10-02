@@ -48,7 +48,7 @@ export const DesktopCTAButton = () => {
                   className="px-6 py-3 h-full text-white hover:bg-white/10 transition-all duration-200 text-center font-medium border-b border-zinc-600/30 last:border-b-0 hover:text-zinc-100 flex items-center justify-center"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Fellows SaaS
+                  대시보드
                 </Link>
               </motion.div>
 
@@ -135,7 +135,7 @@ export const MobileCTAButton = () => {
                   className="block px-4 py-4 text-gray-800 hover:bg-gray-50 transition-colors text-center font-medium border-r last:border-r-0 border-gray-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Fellows SaaS
+                  대시보드
                 </Link>
               </motion.div>
 
