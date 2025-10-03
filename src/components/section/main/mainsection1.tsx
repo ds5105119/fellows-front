@@ -1,7 +1,8 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { DesktopCTAButton, MobileCTAButton } from "./mainsection1ctabutton";
+import { MobileCTAButton } from "./mainsection1ctabutton";
 
 export default async function MainSection1() {
   return (
@@ -35,9 +36,11 @@ export default async function MainSection1() {
               </h4>
 
               <div className="space-x-4 mt-3 flex">
-                <DesktopCTAButton />
-                <Button size="lg" variant="secondary" className="px-16 h-16 text-lg rounded-xl">
-                  가격 및 플랜
+                <Button size="lg" className="px-16 h-16 text-lg rounded-xl bg-black hover:bg-black/80" asChild>
+                  <Link href="#inquery">지금 문의하기</Link>
+                </Button>
+                <Button size="lg" variant="secondary" className="px-16 h-16 text-lg rounded-xl" asChild>
+                  <Link href="/service/dashboard">대시보드</Link>
                 </Button>
               </div>
             </div>
@@ -77,9 +80,6 @@ export default async function MainSection1() {
       <div className="col-span-full flex flex-col space-y-2 pt-4 px-6 md:px-12 text-xs md:text-sm text-right text-muted-foreground font-light">
         <div>
           <span className="text-[#e64646] font-black">*</span> 글로벌 웹 에이전시를 통해 낮은 개발 가격 제공
-        </div>
-        <div>
-          <span className="text-[#e64646] font-black">**</span> 서비스는 9월 22일부터 정식 제공됩니다
         </div>
       </div>
 

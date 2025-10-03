@@ -104,7 +104,6 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const displayProject = editedProject || projectSwr.data;
 
   const customerSwr = useProjectCustomer(displayProject?.project_name ?? null);
-  const customer = customerSwr.data;
 
   const contractsSwr = useContracts({ project_id });
   const [selectedContract, setSelectedContract] = useState<UserERPNextContract | undefined>(undefined);
@@ -210,7 +209,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
 
   const tabs1 = useMemo(
     () => [
-      customer?.name && customer?.email && customer.phoneNumber ? (
+      customerSwr.data?.name && customerSwr.data?.email && customerSwr.data?.phoneNumber ? (
         <div className="flex space-x-1.5 items-center" key="customer-ok">
           <span>계약자</span>
           <div className="size-2.5 rounded-full bg-emerald-500" />
@@ -225,7 +224,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         <span>프로젝트 환경</span>
       </div>,
     ],
-    [projectSwr.data?.customer]
+    [projectSwr.data?.customer, customerSwr.data]
   );
 
   const tabs2 = useMemo(

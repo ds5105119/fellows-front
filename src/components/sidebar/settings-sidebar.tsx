@@ -5,7 +5,7 @@ import Link from "next/link";
 import SettingHeader from "@/components/header/settingheader";
 
 import { signOut } from "next-auth/react";
-import { User, Bell, CreditCard, Shield, Smartphone, Download, Building2, LogOut, ChevronRight } from "lucide-react";
+import { User, Bell, Smartphone, Building2, LogOut, ChevronRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -37,11 +37,11 @@ export default function SettingsSidebar() {
           description: "이름, 사진, 소개 편집",
         },
         {
-          id: "security",
-          label: "보안 설정",
-          href: "/service/settings/security",
-          icon: Shield,
-          description: "비밀번호 및 2단계 인증",
+          id: "company",
+          label: "비즈니스 정보",
+          href: "/service/settings/company",
+          icon: Building2,
+          description: "세금계산서 정보 등록",
         },
       ],
     },
@@ -61,25 +61,6 @@ export default function SettingsSidebar() {
           href: "/service/settings/devices",
           icon: Smartphone,
           description: "로그인된 기기 관리",
-        },
-      ],
-    },
-    {
-      title: "결제",
-      items: [
-        {
-          id: "billing",
-          label: "청구 정보",
-          href: "/service/settings/billing",
-          icon: CreditCard,
-          description: "결제 수단 및 요금제",
-        },
-        {
-          id: "downloads",
-          label: "다운로드",
-          href: "/service/settings/downloads",
-          icon: Download,
-          description: "내 데이터 다운로드",
         },
       ],
     },

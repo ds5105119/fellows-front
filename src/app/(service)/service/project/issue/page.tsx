@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import { auth, signIn } from "@/auth";
 import { SessionProvider } from "next-auth/react";
 import IssuesPage from "@/components/section/service/issue/issue-main";
-import IssueNavigation from "@/components/section/service/issue/issue-navigation";
 
 export const metadata: Metadata = {
   title: "프로젝트 - Fellows",
@@ -16,7 +15,6 @@ export default async function Page() {
   return (
     <SessionProvider session={session}>
       <div className="shrink-0 w-full h-full flex flex-col">
-        <IssueNavigation />
         <IssuesPage session={session} />
       </div>
     </SessionProvider>

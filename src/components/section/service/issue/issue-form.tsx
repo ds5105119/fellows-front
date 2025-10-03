@@ -140,8 +140,10 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, isLoading
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button variant="outline" role="combobox" className={cn("w-[200px] justify-between", !field.value && "text-muted-foreground")}>
-                              {field.value ? overviewProjects.find((p) => p.project_name === field.value)?.custom_project_title : "프로젝트를 선택하세요"}
-                              <ChevronDownIcon className="opacity-50" />
+                              <span className="truncate flex-1 text-left">
+                                {field.value ? overviewProjects.find((p) => p.project_name === field.value)?.custom_project_title : "프로젝트를 선택하세요"}
+                              </span>
+                              <ChevronDownIcon className="ml-2 shrink-0 opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>

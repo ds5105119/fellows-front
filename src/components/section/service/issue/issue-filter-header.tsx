@@ -149,7 +149,7 @@ export function IssueFilterHeader({ filters, setFilters, keywordText, overviewPr
   };
 
   return (
-    <div className="sticky z-30 top-24 md:top-32 bg-background flex flex-col gap-3 w-full py-3 px-6 xl:px-3 border-b border-b-sidebar-border">
+    <div className="sticky top-25 md:top-29 xl:top-16 bg-background flex flex-col gap-3 w-full py-3 px-4 xl:px-3 border-b border-b-sidebar-border">
       <div className="flex flex-col lg:flex-row gap-3">
         <div className="flex flex-row justify-between gap-3 flex-1">
           <div className="flex flex-col sm:flex-row flex-1 gap-2">
@@ -166,8 +166,8 @@ export function IssueFilterHeader({ filters, setFilters, keywordText, overviewPr
             </div>
           </div>
           <div className="flex gap-2 flex-0">
-            <Button onClick={onCreateClick} className="bg-blue-600 hover:bg-blue-700 h-8 px-6 sm:ml-auto">
-              <Plus className="w-4 h-4 sm:mr-2" />
+            <Button onClick={onCreateClick} className="bg-blue-500/15 hover:bg-blue-500/25 text-blue-500 h-8 px-6 sm:ml-auto">
+              <Plus className="w-4 h-4" />
               <span className="hidden sm:inline-block">새 이슈 등록</span>
             </Button>
           </div>

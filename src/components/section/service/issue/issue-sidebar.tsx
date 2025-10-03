@@ -101,8 +101,8 @@ export default function IssueSidebar({ session, project, setProject, overviewPro
   return (
     <>
       {/* Desktop / xl+ left sidebar */}
-      <aside className="hidden xl:flex flex-col shrink-0 min-w-72 w-72 h-full p-4 border-r">
-        <div className="sticky top-28 md:top-36 w-full">
+      <aside className="hidden xl:flex flex-col shrink-0 min-w-72 w-72 h-full px-4 py-3 border-r">
+        <div className="sticky top-16 w-full">
           <div className="flex justify-between items-center">
             <h2 className="text-sm font-semibold">이슈</h2>
             <div />
@@ -118,8 +118,8 @@ export default function IssueSidebar({ session, project, setProject, overviewPro
       </aside>
 
       {/* Mobile / lg and below: top bar + fixed sliding panel below it */}
-      <div className="xl:hidden w-full border-b relative">
-        <div ref={headerRef} className="flex items-center justify-between px-6 py-3">
+      <div className="xl:hidden z-10 w-full border-b border-b-sidebar-border sticky top-12 md:top-16 bg-background">
+        <div ref={headerRef} className="flex items-center justify-between px-4 h-13">
           <Button
             type="button"
             variant="secondary"
@@ -153,7 +153,7 @@ export default function IssueSidebar({ session, project, setProject, overviewPro
                   <span className="sr-only">메뉴 열기</span>
                 </motion.span>
               )}
-            </AnimatePresence>{" "}
+            </AnimatePresence>
             필터
           </Button>
 

@@ -39,8 +39,8 @@ export default function NavButtonGroup({ session, ...props }: NavButtonGroupProp
         <motion.div
           key="nav-button-group"
           initial={false}
-          animate={{ x: isVisible ? -170 : 0 }}
-          exit={{ opacity: 1, x: 170 }}
+          animate={{ x: isVisible ? -180 : 0 }}
+          exit={{ opacity: 1, x: 180 }}
           transition={{ type: "spring", duration: 0.5 }}
           className="flex space-x-7 font-bold"
         >
@@ -63,19 +63,19 @@ export default function NavButtonGroup({ session, ...props }: NavButtonGroupProp
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 16 }}
             transition={{ type: "tween", duration: 0.2, ease: "easeInOut" }}
-            className="absolute right-2.5 px-5 inset-y-2 font-bold text-white bg-black rounded-full flex items-center justify-center hover:bg-neutral-700"
+            className="absolute right-2.5 pl-4.5 pr-5 inset-y-2 font-bold text-white bg-black rounded-full flex items-center justify-center hover:bg-neutral-700"
             style={{ cursor: "pointer" }}
           >
             {session?.user ? (
-              <Link href="/service/dashboard" className="flex w-full h-full items-center">
-                지금 바로 시작하기
+              <Link href="/service/project/new" className="flex w-full h-full items-center">
+                ✨ AI 견적 받아보기
               </Link>
             ) : (
               <button
                 onClick={() => (session?.user ? signOut() : signIn("keycloak", { redirectTo: "/service/project/new" }))}
                 className="flex w-full h-full items-center"
               >
-                지금 바로 시작하기
+                ✨ AI 견적 받아보기
               </button>
             )}
           </motion.span>

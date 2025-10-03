@@ -42,7 +42,7 @@ export function CustomerInfo({ projectSwr, session }: { projectSwr: SWRResponse<
           ) : (
             <div className="text-sm font-bold">{customer.name}</div>
           )}
-          {!customer?.name ? (
+          {!customer?.email ? (
             customer?.email == session.user.email ? (
               <Link href="/service/settings/profile" className="flex items-center select-none space-x-0.5">
                 <p className="text-sm font-bold text-blue-500">이메일을 등록해주세요</p>

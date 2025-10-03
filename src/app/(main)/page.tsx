@@ -53,7 +53,7 @@ export default async function Page() {
           <MainSection1 />
         </div>
 
-        <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+        <div className="col-span-full py-10 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
           <InView
             variants={{
               hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
