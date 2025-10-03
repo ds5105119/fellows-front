@@ -23,16 +23,19 @@ export default function ProjectEstimator({ projectSwr, project }: Props) {
   const prevStatusRef = useRef<boolean | undefined>(undefined);
 
   const { markdown, isLoading, startEstimate } = useEstimateProject(project.project_name);
-  const status = useEstimateProjectStatus(project.project_name);
+  const status = useEstimateProjectStatus(project.project_name, {
+    refreshInterval: 5000,
+  });
 
   useEffect(() => {
     if (status.data && !markdown) {
       setShowThinkingUI(true);
     } else if (!status.data && prevStatusRef.current === true) {
       setShowThinkingUI(false);
-      status.mutate();
-      projectSwr.mutate();
     }
+
+    status.mutate();
+    projectSwr.mutate();
 
     prevStatusRef.current = status.data;
   }, [status.data, markdown, isLoading, project.project_name]);

@@ -202,9 +202,9 @@ export default function MainSection3() {
               <div className="flex flex-col space-y-2">
                 <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/Team</p>
                 <p className="text-xl md:text-2xl font-extrabold tracking-normal text-black leading-normal">
-                  고도몰과 같은 노코드 솔루션부터
+                  쇼피파이부터 크로스 플랫폼 앱 개발까지
                   <br />
-                  크로스 플랫폼 앱 개발까지
+                  전문 인력이 책임집니다.
                 </p>
               </div>
             </div>
@@ -327,9 +327,9 @@ export default function MainSection3() {
               <div className="flex flex-col space-y-2">
                 <p className="text-xl md:text-2xl font-extrabold tracking-normal text-emerald-500">/Cost</p>
                 <p className="text-xl md:text-2xl font-extrabold tracking-normal text-black leading-normal">
-                  결국 필요한 개발자,
+                  결국 필요한 개발, 글로벌 협업으로
                   <br />
-                  해외 개발자를 통해 30% 낮은 가격으로
+                  25% 이상 비용 절감 효과.
                 </p>
               </div>
             </div>
