@@ -30,18 +30,18 @@ export default function UserProfile({ session }: { session: Session }) {
   const form = useForm<UpdateUserAttributes>({
     resolver: zodResolver(UpdateUserAttributesSchema),
     defaultValues: {
-      name: [session.user.name],
-      bio: [session.user.bio],
-      birthdate: [session.user.birthdate],
-      gender: [session.user.gender],
-      link: session.user.link,
-      picture: [session.user.image ?? undefined],
-      street: [session.user.address.street_address],
-      locality: [session.user.address.locality],
-      region: [session.user.address.region],
-      postal_code: [session.user.address.postal_code],
-      country: [session.user.address.country],
-      sub_locality: [session.user.address.sub_locality],
+      name: session.user.name ? [session.user.name] : undefined,
+      bio: session.user.bio ? [session.user.bio] : undefined,
+      birthdate: session.user.birthdate ? [session.user.birthdate] : undefined,
+      gender: session.user.gender ? [session.user.gender] : undefined,
+      link: session.user.link ? session.user.link : undefined,
+      picture: session.user.image ? [session.user.image] : undefined,
+      street: session.user.address.street_address ? [session.user.address.street_address] : undefined,
+      locality: session.user.address.locality ? [session.user.address.locality] : undefined,
+      region: session.user.address.region ? [session.user.address.region] : undefined,
+      postal_code: session.user.address.postal_code ? [session.user.address.postal_code] : undefined,
+      country: session.user.address.country ? [session.user.address.country] : undefined,
+      sub_locality: session.user.address.sub_locality ? [session.user.address.sub_locality] : undefined,
     },
   });
 
@@ -210,7 +210,7 @@ export default function UserProfile({ session }: { session: Session }) {
                       </FormItem>
                     )}
                   />
-                  <div className="text-xs md:text-sm text-muted-foreground font-semibold">@{session.user.username}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground font-semibold">{session.user.email}</div>
                 </div>
               </motion.div>
             </div>
@@ -225,19 +225,6 @@ export default function UserProfile({ session }: { session: Session }) {
                 </div>
                 <Button className="h-9 shadow-none" asChild>
                   <Link href="/service/settings/profile/phone">변경</Link>
-                </Button>
-              </div>
-            </div>
-            <div className="w-full flex flex-col gap-2">
-              <div className="text-sm font-medium text-gray-600">
-                ID <span className="text-xs font-bold text-black">(필수)</span>
-              </div>
-              <div className="flex space-x-2 w-full">
-                <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-9 flex items-center md:text-sm rounded-md px-3 py-1 text-base">
-                  {session.user.username}
-                </div>
-                <Button className="h-9 shadow-none" asChild>
-                  <Link href="/service/settings/profile/email">변경</Link>
                 </Button>
               </div>
             </div>

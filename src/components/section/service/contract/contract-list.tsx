@@ -64,19 +64,16 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
     [partyNames, uniquePartyNames, customersSwr.data]
   );
 
-  const handleContractClick = useCallback(
-    (clickedContract: Contract) => {
-      if (clickedContract.name === selectedContract?.name) {
-        return;
-      }
+  const handleContractClick = (clickedContract: Contract) => {
+    if (clickedContract.name === selectedContract?.name) {
+      return;
+    }
 
-      const selected = contractMap.get(clickedContract.name);
-      if (selected) {
-        onContractSelect(selected);
-      }
-    },
-    [contracts, onContractSelect, selectedContract]
-  );
+    const selected = contractMap.get(clickedContract.name);
+    if (selected) {
+      onContractSelect(selected);
+    }
+  };
 
   const downloadContractPDF = useCallback(
     (contractName: string, custom_name: string, modified: Date) => {

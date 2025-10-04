@@ -97,7 +97,7 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, tasksSwr,
                   <FormItem>
                     <FormLabel>제목 *</FormLabel>
                     <FormControl>
-                      <Input placeholder="이슈 제목을 입력하세요" {...field} />
+                      <Input placeholder="이슈 제목을 입력하세요" className="focus-visible:ring-0" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -270,7 +270,7 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, tasksSwr,
                   <FormItem>
                     <FormLabel>설명 *</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="이슈에 대한 자세한 설명을 입력하세요" className="min-h-[120px]" {...field} />
+                      <Textarea placeholder="이슈에 대한 자세한 설명을 입력하세요" className="min-h-[120px] focus-visible:ring-0" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
