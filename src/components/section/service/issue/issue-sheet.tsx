@@ -66,7 +66,7 @@ export default function IssueSheet({ issue }: { issue: Issue }) {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6 p-6 overflow-y-auto h-full">
       {/* Header Section */}
       <div className="space-y-3">
         <div className="flex items-start justify-between gap-4">

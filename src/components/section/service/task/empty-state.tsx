@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { ZapIcon } from "lucide-react";
+import { FilterIcon, ZapIcon } from "lucide-react";
 import DynamicFcIcon from "@/components/resource/dynamicfcicon";
 
 interface EmptyStateProps {
@@ -45,12 +45,12 @@ export function EmptyState({ hasTasks, hasTaskIsLoading, isLoading, tasksLength 
   // There is not Tasks with Filters
   if (hasTasks && !hasTaskIsLoading && !isLoading && tasksLength === 0) {
     return (
-      <div className="flex justify-center items-center py-24 border-b border-b-sidebar-border">
-        <div className="w-84 md:w-[512px] flex flex-col justify-center items-center space-y-4 text-center text-sm">
-          <DynamicFcIcon name="FcQuestions" className="size-10" />
-          <div className="text-2xl font-bold">조회된 항목이 없어요</div>
-          <div>조건을 변경하여 다시 시도해주세요.</div>
+      <div className="py-16 text-center border-b border-b-sidebar-border">
+        <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+          <FilterIcon className="w-8 h-8 text-gray-400" />
         </div>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">조회된 항목이 없어요</h3>
+        <p className="text-gray-500">필터 조건을 변경하여 다시 시도해보세요</p>
       </div>
     );
   }

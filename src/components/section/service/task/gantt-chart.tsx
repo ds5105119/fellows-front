@@ -108,7 +108,7 @@ export function GanttChart({
     };
 
     traverse(treeData);
-    return result.filter((res) => dayjs(res.exp_start_date) >= dateRange.start && dayjs(res.exp_end_date) <= dateRange.end);
+    return result.filter((res) => dayjs(res.exp_end_date) >= dateRange.start && dayjs(res.exp_start_date) <= dateRange.end);
   }, [treeData, expandedTasks]);
 
   const calculateDateRange = (start?: Dayjs, end?: Dayjs) => {

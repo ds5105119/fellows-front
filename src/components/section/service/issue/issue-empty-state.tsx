@@ -20,7 +20,7 @@ export function IssueEmptyState({ hasIssue, hasIssueLoading, isLoading, issuesLe
           <Search className="w-8 h-8 text-gray-400" />
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">등록된 이슈가 없습니다</h3>
-        <p className="text-gray-500 mb-6">새로운 이슈를 등록해보세요</p>
+        <p className="text-gray-500 mb-6">문의사항이 있다면 새로운 이슈를 등록해보세요</p>
         <Button asChild>
           <Link href="#" onClick={(e) => e.preventDefault()}>
             <Plus className="w-4 h-4 mr-2" />새 이슈 등록
