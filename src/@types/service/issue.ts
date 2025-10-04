@@ -38,6 +38,7 @@ export const IssueSchema = z.object({
   avg_response_time: z.number().nullable(),
   project: z.string().nullable(),
   company: z.string().nullable(),
+  custom_task: z.string().nullable().optional(),
 });
 
 export const IssueListResponseSchema = z.object({

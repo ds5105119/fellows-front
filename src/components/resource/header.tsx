@@ -19,11 +19,11 @@ export const headerData = {
         { title: "보고서", url: "/service/project/task/report", icon: "FcNews" },
       ],
     },
-    { title: "이슈", url: "/service/project/issue", icon: "FcTreeStructure" },
+    { title: "문의하기", url: "/service/project/issue", icon: "FcTreeStructure" },
     { title: "구독", url: "/service/subscript", icon: "FcConferenceCall" },
   ],
   navSecondary: [
     { title: "설정", url: "/service/settings", icon: "FcSettings" },
-    { title: "고객센터", url: "/service/help", icon: "FcOnlineSupport" },
+    { title: "고객센터", url: "mailto:contact@iihus.com", icon: "FcOnlineSupport" },
   ],
 };

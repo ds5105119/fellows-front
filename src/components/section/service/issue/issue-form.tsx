@@ -81,9 +81,20 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, tasksSwr,
     }
   }, [isReachingEnd, isTasksLoading, isReachedEnd]);
 
+  useEffect(() => {
+    if (issue) {
+      if (issue.subject) form.setValue("subject", issue.subject);
+      if (issue.project) form.setValue("project", issue.project);
+      if (issue.priority) form.setValue("priority", issue.priority);
+      if (issue.custom_task) form.setValue("custom_task", issue.custom_task);
+      if (issue.issue_type) form.setValue("issue_type", issue.issue_type);
+      if (issue.description) form.setValue("description", issue.description);
+    }
+  }, [issue]);
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent showCloseButton={false} className="sm:max-w-[600px] max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEdit ? "이슈 수정" : "새 이슈 등록"}</DialogTitle>
         </DialogHeader>
@@ -104,7 +115,7 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, tasksSwr,
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="project"
@@ -196,7 +207,7 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, tasksSwr,
                             <FormControl>
                               <Button variant="outline" role="combobox" className={cn("w-[200px] justify-between", !field.value && "text-muted-foreground")}>
                                 <span className="truncate flex-1 text-left">
-                                  {field.value ? tasks.find((t) => t.name == field.value)?.name ?? "이름을 찾을 수 없음" : "테스크클 선택하세요"}
+                                  {field.value ? tasks.find((t) => t.name == field.value)?.name ?? "이름을 찾을 수 없음" : "테스크를 선택하세요"}
                                 </span>
                                 <ChevronDownIcon className="ml-2 shrink-0 opacity-50" />
                               </Button>
@@ -204,7 +215,7 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, tasksSwr,
                           </PopoverTrigger>
                           <PopoverContent className="w-[200px] p-0">
                             <Command>
-                              <CommandInput placeholder="프로젝트 검색..." className="h-9" />
+                              <CommandInput placeholder="테스크 검색..." className="h-9" />
                               <CommandList>
                                 <CommandEmpty>
                                   문의할 테스크를
@@ -217,8 +228,8 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, tasksSwr,
                                     .filter((task) => (project ? task.project == project : true))
                                     .map((task) => (
                                       <CommandItem
-                                        value={task.name}
                                         key={task.name}
+                                        value={task.name + " " + task.subject}
                                         onSelect={() => {
                                           form.setValue("custom_task", task.name);
                                         }}

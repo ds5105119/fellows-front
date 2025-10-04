@@ -47,23 +47,19 @@ export function NavGroup({ name, items, showHelp, ...props }: NavGroupProps) {
 
   // Helper function to check if a path matches a navigation item exactly
   const isExactMatch = (pathname: string, navUrl: string): boolean => {
+    // 외부 링크(mailto:, http:, https:)는 항상 false
+    if (/^(mailto:|https?:)/.test(navUrl)) return false;
     return pathname === navUrl || pathname === navUrl + "/";
   };
 
-  // Helper function to check if a path is under a parent route (supports deep nesting)
   const isUnderParentRoute = (pathname: string, parentUrl: string, siblingUrls: string[] = []): boolean => {
-    // If pathname exactly matches any sibling, it's not under parent
+    if (/^(mailto:|https?:)/.test(parentUrl)) return false; // 외부 링크 예외
     for (const siblingUrl of siblingUrls) {
-      if (isExactMatch(pathname, siblingUrl)) {
-        return false;
-      }
+      if (isExactMatch(pathname, siblingUrl)) return false;
     }
-
-    // Check if pathname starts with parent URL (supports any depth)
     if (pathname.startsWith(parentUrl + "/") && pathname !== parentUrl && pathname !== parentUrl + "/") {
       return true;
     }
-
     return false;
   };
 
@@ -162,10 +158,12 @@ export function NavGroup({ name, items, showHelp, ...props }: NavGroupProps) {
   };
 
   const handleItemClick = (url: string) => {
+    if (/^(mailto:|https?:)/.test(url)) return; // 외부 링크는 active 설정 안 함
     setActiveItem(url);
   };
 
   const handleSubItemClick = (url: string) => {
+    if (/^(mailto:|https?:)/.test(url)) return; // 외부 링크는 active 설정 안 함
     setActiveItem(url);
   };
 
