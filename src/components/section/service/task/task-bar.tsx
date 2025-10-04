@@ -6,10 +6,11 @@ import dayjs from "@/lib/dayjs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { Button } from "@/components/ui/button";
-import { FilePenLine, ClockIcon, ArrowRight, RectangleEllipsis } from "lucide-react";
+import { FilePenLine, ClockIcon, ArrowRight, RectangleEllipsis, FolderIcon } from "lucide-react";
 import type { ERPNextTaskForUser } from "@/@types/service/project";
 import type { DateRange } from "./gantt-chart";
 import Link from "next/link";
+import { useProjectOverView } from "@/hooks/fetch/project";
 
 interface TaskBarProps {
   task: ERPNextTaskForUser;
@@ -17,7 +18,8 @@ interface TaskBarProps {
 }
 
 export function TaskBar({ task, dateRange }: TaskBarProps) {
-  console.log(task);
+  const overviewProjectSwr = useProjectOverView();
+
   const barStyle = useMemo(() => {
     if (!task.exp_start_date || !task.exp_end_date) return null;
 
@@ -118,6 +120,16 @@ export function TaskBar({ task, dateRange }: TaskBarProps) {
             <div className="flex flex-col space-y-1">
               <div className="text-sm font-bold">{task.subject}</div>
               <div className="text-xs font-normal">{task.description}</div>
+            </div>
+          </div>
+          <div className="flex space-x-3">
+            <FolderIcon className="!size-4 mt-[1.5px] shrink-0" />
+            <div className="flex flex-col space-y-1">
+              <div className="text-sm font-bold">프로젝트명</div>
+              <div className="text-xs font-normal">
+                {overviewProjectSwr.data?.items.flatMap((item) => item).find((project) => project.project_name === task.project)?.custom_project_title ??
+                  "프로젝트가 정해지지 않았거나 아직 등록되지 않았어요."}
+              </div>
             </div>
           </div>
           <div className="flex space-x-3 w-full">

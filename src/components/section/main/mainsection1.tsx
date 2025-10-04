@@ -83,7 +83,7 @@ export default async function MainSection1() {
         </div>
       </div>
 
-      <div className="col-span-full w-full flex z-20 md:hidden pt-4">
+      <div className="col-span-full w-full flex z-20 md:hidden pt-8">
         <MobileCTAButton />
       </div>
     </div>

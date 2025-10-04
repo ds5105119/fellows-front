@@ -155,7 +155,11 @@ export function TreeTable({ expand = false, showControl = true }: { expand?: boo
               )}
               {!hasChildren && <div className="w-6" />}
               <div className="flex items-center justify-start gap-3 min-w-0">
-                {task.color && <div className="w-3 h-3 rounded-full" style={{ backgroundColor: task.color }} />}
+                {task.color ? (
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: task.color }} />
+                ) : (
+                  <div className="w-3 h-3 rounded-full bg-muted-foreground" />
+                )}
                 <div className="min-w-0">
                   <div className="text-start font-medium text-sm text-gray-900 break-words line-clamp-2">{task.subject}</div>
                   <div className="text-xs text-gray-500 font-mono">{task.name}</div>

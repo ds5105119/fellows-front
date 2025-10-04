@@ -32,7 +32,11 @@ export function GanttTaskRow({ task, dateRange, expandedTasks, onToggleExpansion
 
           <div className="min-w-0 w-full flex-1 hidden md:block">
             <div className="w-full flex items-center space-x-1.5">
-              {task.color && <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: task.color }} />}
+              {task.color ? (
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: task.color }} />
+              ) : (
+                <div className="w-3 h-3 rounded-full bg-muted-foreground" />
+              )}
               <div className="font-medium text-sm text-gray-900 truncate">{task.subject}</div>
             </div>
             <div className="flex items-center gap-2 mt-1">
