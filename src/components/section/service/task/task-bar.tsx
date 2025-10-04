@@ -111,7 +111,7 @@ export function TaskBar({ task, dateRange }: TaskBarProps) {
           </div>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="drop-shadow-2xl p-0 rounded-xl">
+      <PopoverContent className="drop-shadow-2xl p-0 rounded-xl md:w-[342px]">
         <div className="p-4 flex flex-col space-y-4">
           <div className="flex space-x-3">
             <FilePenLine className="!size-4 mt-[1.5px] shrink-0" />
@@ -123,7 +123,7 @@ export function TaskBar({ task, dateRange }: TaskBarProps) {
           <div className="flex space-x-3 w-full">
             <ClockIcon className="!size-4 shrink-0" />
             <div className="flex flex-col space-y-1 w-full">
-              <div className="flex justify-between items-center w-full">
+              <div className="flex space-x-2 items-center">
                 <div className="text-xs font-semibold">{dayjs(task.exp_start_date).format("LL")}</div>
                 <ArrowRight className="!size-3.5 text-zinc-400" />
                 <div className="text-xs font-semibold">{dayjs(task.exp_end_date).format("LL")}</div>
@@ -143,12 +143,16 @@ export function TaskBar({ task, dateRange }: TaskBarProps) {
         </div>
         <hr />
         <div className="px-2 py-2 flex justify-between">
-          <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-muted-foreground w-fit" asChild>
-            <Link href={`/service/project/${task.project}`}>프로젝트로 이동</Link>
-          </Button>
-
+          <div className="flex items-center space-x-1">
+            <Button variant="ghost" size="sm" className="text-zinc-600 hover:text-zinc-900 w-fit px-2" asChild>
+              <Link href={`/service/project/${task.project}`}>프로젝트로 이동</Link>
+            </Button>
+            <Button variant="ghost" size="sm" className="text-zinc-600 hover:text-zinc-900 w-fit px-2" asChild>
+              <Link href={`/service/project/${task.project}`}>이슈 생성</Link>
+            </Button>
+          </div>
           <PopoverClose asChild>
-            <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-muted-foreground w-fit">
+            <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-500 w-fit">
               확인
             </Button>
           </PopoverClose>

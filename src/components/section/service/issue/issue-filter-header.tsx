@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, Plus, X } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useCallback } from "react";
 import type { IssueFilters } from "@/hooks/fetch/issue";
 import { MultiSelect } from "./multi-select";
 import DatePicker from "../task/datepicker";
@@ -22,77 +20,6 @@ interface IssueFilterHeaderProps {
 }
 
 export function IssueFilterHeader({ filters, setFilters, keywordText, overviewProjects, setKeywordText, onCreateClick }: IssueFilterHeaderProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  // URL 쿼리 파라미터 업데이트
-  const updateUrlParams = useCallback(
-    (newFilters: IssueFilters, newKeyword: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-
-      // 기존 파라미터 제거
-      params.delete("issue_type");
-      params.delete("status");
-      params.delete("start");
-      params.delete("end");
-      params.delete("keyword");
-
-      // 새로운 파라미터 추가
-      if (newFilters.issue_type && newFilters.issue_type.length > 0) {
-        newFilters.issue_type.forEach((type) => params.append("issue_type", type));
-      }
-
-      if (newFilters.status && newFilters.status.length > 0) {
-        newFilters.status.forEach((status) => params.append("status", status));
-      }
-
-      if (newFilters.start) {
-        params.set("start", newFilters.start);
-      }
-
-      if (newFilters.end) {
-        params.set("end", newFilters.end);
-      }
-
-      if (newKeyword.trim()) {
-        params.set("keyword", newKeyword);
-      }
-
-      const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
-      router.replace(newUrl, { scroll: false });
-    },
-    [searchParams, router]
-  );
-
-  // URL에서 초기 상태 읽어오기
-  useEffect(() => {
-    const urlIssueType = searchParams.getAll("issue_type");
-    const urlStatus = searchParams.getAll("status");
-    const urlStart = searchParams.get("start") || "";
-    const urlEnd = searchParams.get("end") || "";
-    const urlKeyword = searchParams.get("keyword") || "";
-
-    const newFilters: IssueFilters = {};
-
-    if (urlIssueType.length > 0) newFilters.issue_type = urlIssueType;
-    if (urlStatus.length > 0) newFilters.status = urlStatus;
-    if (urlStart) newFilters.start = urlStart;
-    if (urlEnd) newFilters.end = urlEnd;
-
-    if (Object.keys(newFilters).length > 0) {
-      setFilters(newFilters);
-    }
-
-    if (urlKeyword !== keywordText) {
-      setKeywordText(urlKeyword);
-    }
-  }, []);
-
-  // 상태 변경 시 URL 업데이트
-  useEffect(() => {
-    updateUrlParams(filters, keywordText);
-  }, [filters, keywordText, updateUrlParams]);
-
   const handleMultiSelectChange = (key: keyof IssueFilters, value: string[]) => {
     setFilters({ ...filters, [key]: value.length > 0 ? value : undefined });
   };
@@ -262,7 +189,7 @@ export function IssueFilterHeader({ filters, setFilters, keywordText, overviewPr
                 variant="ghost"
                 size="sm"
                 className="h-4 w-4 p-0 hover:bg-destructive/10 hover:text-destructive-foreground"
-                onClick={() => clearFilter("issue_type")}
+                onClick={() => clearMultiSelectFilter("issue_type", type)}
               >
                 <X className="h-2.5 w-2.5" />
               </Button>

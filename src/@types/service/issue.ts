@@ -50,6 +50,7 @@ export const CreateIssueSchema = z.object({
   priority: z.string().optional(),
   issue_type: IssueTypeEnum,
   description: z.string().min(1, "설명을 입력해주세요"),
+  custom_task: z.string().optional(),
 });
 
 export const UpdateIssueSchema = z.object({
@@ -58,6 +59,7 @@ export const UpdateIssueSchema = z.object({
   priority: z.string().optional(),
   issue_type: IssueTypeEnum.optional(),
   description: z.string().optional(),
+  custom_task: z.string().optional(),
 });
 
 export type Issue = z.infer<typeof IssueSchema>;

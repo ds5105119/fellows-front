@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type Issue, type CreateIssueData, type UpdateIssueData, CreateIssueSchema } from "@/@types/service/issue";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,10 @@ import { cn } from "@/lib/utils";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Session } from "next-auth";
+import { SWRInfiniteResponse } from "swr/infinite";
+import { ERPNextTaskForUser } from "@/@types/service/project";
+import { useEffect, useRef } from "react";
+import { useInView } from "framer-motion";
 
 interface IssueFormProps {
   session: Session;
@@ -22,14 +26,25 @@ interface IssueFormProps {
   onClose: () => void;
   onSubmit: (data: CreateIssueData | UpdateIssueData) => Promise<void>;
   issue?: Issue | null;
+  tasksSwr: SWRInfiniteResponse<{ items: ERPNextTaskForUser[] }>;
   isLoading?: boolean;
 }
 
-export function IssueForm({ session, isOpen, onClose, onSubmit, issue, isLoading = false }: IssueFormProps) {
+export function IssueForm({ session, isOpen, onClose, onSubmit, issue, tasksSwr, isLoading = false }: IssueFormProps) {
   const isEdit = !!issue;
 
   const projectsOverview = useProjectOverView();
   const overviewProjects = projectsOverview?.data?.items || [];
+
+  const tasks = tasksSwr.data?.flatMap((task) => task.items) ?? [];
+  const isReachedEnd = tasksSwr.data && tasksSwr.data.length > 0 && tasksSwr.data[tasksSwr.data.length - 1].items.length === 0;
+  const isTasksLoading =
+    !isReachedEnd && (tasksSwr.isLoading || (tasksSwr.data && tasksSwr.size > 0 && typeof tasksSwr.data[tasksSwr.size - 1] === "undefined"));
+  const infinitRef = useRef<HTMLDivElement>(null);
+  const isReachingEnd = useInView(infinitRef, {
+    once: false,
+    margin: "-50px 0px -50px 0px",
+  });
 
   const form = useForm<CreateIssueData>({
     resolver: zodResolver(CreateIssueSchema),
@@ -42,6 +57,8 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, isLoading
     },
     mode: "onTouched",
   });
+
+  const project = useWatch({ name: "project", control: form.control });
 
   const handleSubmit = async (data: CreateIssueData) => {
     try {
@@ -57,6 +74,12 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, isLoading
     form.reset();
     onClose();
   };
+
+  useEffect(() => {
+    if (isReachingEnd && !isTasksLoading && !isReachedEnd) {
+      tasksSwr.setSize((s) => s + 1);
+    }
+  }, [isReachingEnd, isTasksLoading, isReachedEnd]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -84,6 +107,62 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, isLoading
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
+                  name="project"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>프로젝트 *</FormLabel>
+                      <FormControl>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button variant="outline" role="combobox" className={cn("w-[200px] justify-between", !field.value && "text-muted-foreground")}>
+                                <span className="truncate flex-1 text-left">
+                                  {field.value ? overviewProjects.find((p) => p.project_name === field.value)?.custom_project_title : "프로젝트를 선택하세요"}
+                                </span>
+                                <ChevronDownIcon className="ml-2 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[200px] p-0">
+                            <Command>
+                              <CommandInput placeholder="프로젝트 검색..." className="h-9" />
+                              <CommandList>
+                                <CommandEmpty>
+                                  문의할 프로젝트를
+                                  <br />
+                                  찾을 수 없어요
+                                </CommandEmpty>
+                                <CommandGroup>
+                                  {overviewProjects
+                                    .filter((project) =>
+                                      project.custom_team.filter((member) => member.member == session.sub).some((member) => member.level < 3)
+                                    )
+                                    .filter((project) => project.custom_project_status !== "draft")
+                                    .map((p) => (
+                                      <CommandItem
+                                        value={p.project_name}
+                                        key={p.project_name}
+                                        onSelect={() => {
+                                          form.setValue("project", p.project_name);
+                                        }}
+                                      >
+                                        {p.custom_project_title}
+                                        <Check className={cn("ml-auto", p.project_name === field.value ? "opacity-100" : "opacity-0")} />
+                                      </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="issue_type"
                   render={({ field }) => (
                     <FormItem>
@@ -100,6 +179,61 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, isLoading
                           <SelectItem value="ETC">기타</SelectItem>
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="custom_task"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>테스크</FormLabel>
+                      <FormControl>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button variant="outline" role="combobox" className={cn("w-[200px] justify-between", !field.value && "text-muted-foreground")}>
+                                <span className="truncate flex-1 text-left">
+                                  {field.value ? tasks.find((t) => t.name == field.value)?.name ?? "이름을 찾을 수 없음" : "테스크클 선택하세요"}
+                                </span>
+                                <ChevronDownIcon className="ml-2 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[200px] p-0">
+                            <Command>
+                              <CommandInput placeholder="프로젝트 검색..." className="h-9" />
+                              <CommandList>
+                                <CommandEmpty>
+                                  문의할 테스크를
+                                  <br />
+                                  찾을 수 없어요
+                                </CommandEmpty>
+                                <CommandGroup>
+                                  {tasks
+                                    .filter((task) => task.status !== "Template" && task.status !== "Cancelled" && task.status !== "Pending Review")
+                                    .filter((task) => (project ? task.project == project : true))
+                                    .map((task) => (
+                                      <CommandItem
+                                        value={task.name}
+                                        key={task.name}
+                                        onSelect={() => {
+                                          form.setValue("custom_task", task.name);
+                                        }}
+                                      >
+                                        {task.subject}
+                                        <Check className={cn("ml-auto", task.name === field.value ? "opacity-100" : "opacity-0")} />
+                                      </CommandItem>
+                                    ))}
+                                  {tasks.length > 0 && <div className="col-span-full" ref={infinitRef} />}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -128,60 +262,6 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, isLoading
                   )}
                 />
               </div>
-
-              <FormField
-                control={form.control}
-                name="project"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>프로젝트 *</FormLabel>
-                    <FormControl>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button variant="outline" role="combobox" className={cn("w-[200px] justify-between", !field.value && "text-muted-foreground")}>
-                              <span className="truncate flex-1 text-left">
-                                {field.value ? overviewProjects.find((p) => p.project_name === field.value)?.custom_project_title : "프로젝트를 선택하세요"}
-                              </span>
-                              <ChevronDownIcon className="ml-2 shrink-0 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[200px] p-0">
-                          <Command>
-                            <CommandInput placeholder="프로젝트 검색..." className="h-9" />
-                            <CommandList>
-                              <CommandEmpty>
-                                문의할 프로젝트를
-                                <br />
-                                찾을 수 없어요
-                              </CommandEmpty>
-                              <CommandGroup>
-                                {overviewProjects
-                                  .filter((project) => project.custom_team.filter((member) => member.member == session.sub).some((member) => member.level < 3))
-                                  .filter((project) => project.custom_project_status !== "draft")
-                                  .map((p) => (
-                                    <CommandItem
-                                      value={p.project_name}
-                                      key={p.project_name}
-                                      onSelect={() => {
-                                        form.setValue("project", p.project_name);
-                                      }}
-                                    >
-                                      {p.custom_project_title}
-                                      <Check className={cn("ml-auto", p.project_name === field.value ? "opacity-100" : "opacity-0")} />
-                                    </CommandItem>
-                                  ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               <FormField
                 control={form.control}

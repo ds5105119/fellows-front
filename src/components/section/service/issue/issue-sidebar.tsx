@@ -102,7 +102,7 @@ export default function IssueSidebar({ session, project, setProject, overviewPro
     <>
       {/* Desktop / xl+ left sidebar */}
       <aside className="hidden xl:flex flex-col shrink-0 min-w-72 w-72 h-full px-4 py-3 border-r">
-        <div className="sticky top-16 w-full">
+        <div className="sticky top-19 w-full">
           <div className="flex justify-between items-center">
             <h2 className="text-sm font-semibold">이슈</h2>
             <div />

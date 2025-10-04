@@ -79,23 +79,8 @@ const getTypeLabel = (type: IssueType | null) => {
 
 export function IssueItem({ issue, overviewProjects, onEditClick, onDeleteClick }: IssueItemProps) {
   return (
-    <div className="flex items-center justify-between py-4 px-6 hover:bg-gray-50 transition-colors group">
+    <div className="flex items-center space-x-2 py-4 px-6 hover:bg-gray-50 transition-colors group">
       <div className="flex items-center gap-4 flex-1 min-w-0">
-        {/* 상태 인디케이터 */}
-        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-          <div
-            className={`w-3 h-3 rounded-full ${
-              issue.status?.toLowerCase() === "open"
-                ? "bg-green-500"
-                : issue.status?.toLowerCase() === "working"
-                ? "bg-blue-500"
-                : issue.status?.toLowerCase() === "completed"
-                ? "bg-gray-400"
-                : "bg-gray-300"
-            }`}
-          />
-        </div>
-
         {/* 제목과 부제목 */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -121,22 +106,20 @@ export function IssueItem({ issue, overviewProjects, onEditClick, onDeleteClick 
         </div>
 
         {/* 배지들 - 태블릿 이상에서 표시 */}
-        <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+        <div className="hidden md:flex items-center gap-2 flex-shrink-0">
           {issue.issue_type && <Badge className={`text-xs ${getIssueTypeColor(issue.issue_type)}`}>{getTypeLabel(issue.issue_type)}</Badge>}
           {issue.priority && <Badge className={`text-xs ${getPriorityColor(issue.priority)}`}>{issue.priority}</Badge>}
         </div>
 
         {/* 상태 - 데스크톱에서 표시 */}
-        <div className="hidden md:block flex-shrink-0">
-          {issue.status && <Badge className={`text-xs ${getStatusColor(issue.status)}`}>{issue.status}</Badge>}
-        </div>
+        <div className="block flex-shrink-0">{issue.status && <Badge className={`text-xs ${getStatusColor(issue.status)}`}>{issue.status}</Badge>}</div>
       </div>
 
       {/* 액션 메뉴 */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="w-8 h-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 hover:bg-gray-100">
-            <MoreHorizontal className="w-4 h-4" />
+          <Button variant="ghost" size="sm" className="w-8 h-8 p-0 flex-shrink-0 hover:bg-gray-200">
+            <MoreHorizontal className="w-4 h-4 !text-black" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
