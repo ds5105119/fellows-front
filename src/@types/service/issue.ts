@@ -36,6 +36,18 @@ export const IssueSchema = z.object({
   on_hold_since: z.string().datetime().nullable(),
   total_hold_time: z.number().nullable(),
   avg_response_time: z.number().nullable(),
+  opening_date: z
+    .string()
+    .transform((v, ctx) => {
+      const d = new Date(v.replace(" ", "T"));
+      if (isNaN(d.getTime())) {
+        ctx.addIssue({ code: "custom", message: "Invalid datetime" });
+        return z.NEVER;
+      }
+      return d;
+    })
+    .nullable()
+    .optional(),
   project: z.string().nullable(),
   company: z.string().nullable(),
   custom_task: z.string().nullable().optional(),

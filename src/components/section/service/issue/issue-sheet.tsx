@@ -4,6 +4,7 @@ import { Calendar, Clock, User, AlertCircle, Mail } from "lucide-react";
 import dayjs from "@/lib/dayjs";
 import { useProject } from "@/hooks/fetch/project";
 import { useUsers } from "@/hooks/fetch/user";
+import { STATUS_MAPPING } from "@/components/resource/project";
 
 export default function IssueSheet({ issue }: { issue: Issue }) {
   const { data: project, isLoading: projectLoading } = useProject(issue.project ?? null);
@@ -100,23 +101,20 @@ export default function IssueSheet({ issue }: { issue: Issue }) {
           {projectLoading ? (
             <p className="text-xs text-muted-foreground">로딩 중...</p>
           ) : project ? (
-            <div className="flex items-center gap-3">
-              {project.custom_emoji && <span className="text-2xl">{project.custom_emoji}</span>}
+            <div className="flex items-center gap-4">
               <div className="space-y-1 min-w-0 flex-1">
-                <p className="text-sm font-medium truncate">{project.project_name}</p>
-                {project.custom_project_title && <p className="text-xs text-muted-foreground truncate">{project.custom_project_title}</p>}
-                <div className="flex items-center gap-2 flex-wrap">
-                  {project.status && (
-                    <Badge variant="outline" className="text-xs">
-                      {project.status}
-                    </Badge>
-                  )}
-                  {project.custom_project_status && (
-                    <Badge variant="secondary" className="text-xs">
-                      {project.custom_project_status}
-                    </Badge>
-                  )}
-                </div>
+                {project.custom_project_title && (
+                  <p className="text-sm font-medium truncate">
+                    {project.custom_emoji && `${project.custom_emoji} `}
+                    {project.custom_project_title}
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground truncate">{project.project_name}</p>
+                {project.custom_project_status && (
+                  <Badge variant="secondary" className="text-xs">
+                    {STATUS_MAPPING[project.custom_project_status]}
+                  </Badge>
+                )}
               </div>
             </div>
           ) : (
@@ -177,6 +175,16 @@ export default function IssueSheet({ issue }: { issue: Issue }) {
               <p className="text-xs font-medium">{formatDate(issue.modified)}</p>
             </div>
           </div>
+
+          {issue.opening_date && (
+            <div className="flex items-start gap-2">
+              <Clock className="mt-0.5 size-3.5 text-muted-foreground shrink-0" />
+              <div className="space-y-0.5 min-w-0">
+                <p className="text-xs text-muted-foreground">열람 날짜</p>
+                <p className="text-xs font-medium">{dayjs(issue.opening_date).format("LL")}</p>
+              </div>
+            </div>
+          )}
 
           {issue.response_by && (
             <div className="flex items-start gap-2">
