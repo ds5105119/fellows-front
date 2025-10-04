@@ -12,6 +12,7 @@ import { OverviewERPNextProject } from "@/@types/service/project";
 interface IssueItemProps {
   issue: Issue;
   overviewProjects: OverviewERPNextProject[];
+  setSelectedIssue: (issue: Issue) => void;
   onEditClick: (issue: Issue) => void;
   onDeleteClick: (issue: Issue) => void;
 }
@@ -77,9 +78,9 @@ const getTypeLabel = (type: IssueType | null) => {
   }
 };
 
-export function IssueItem({ issue, overviewProjects, onEditClick, onDeleteClick }: IssueItemProps) {
+export function IssueItem({ issue, overviewProjects, setSelectedIssue, onEditClick, onDeleteClick }: IssueItemProps) {
   return (
-    <div className="flex items-center space-x-2 py-4 px-6 hover:bg-gray-50 transition-colors group">
+    <div className="flex items-center space-x-2 py-4 px-6 hover:bg-gray-50 transition-colors group" onClick={() => setSelectedIssue(issue)}>
       <div className="flex items-center gap-4 flex-1 min-w-0">
         {/* 제목과 부제목 */}
         <div className="flex-1 min-w-0">

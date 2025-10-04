@@ -28,7 +28,7 @@ import ProjectDetailSheetHeader from "./projectdetailsheet-header";
 import { useContracts } from "@/hooks/fetch/contract";
 
 interface ProjectDetailSheetProps {
-  project_id: string;
+  project_id?: string;
   onClose: () => void;
   session: Session;
 }
@@ -91,7 +91,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const pathname = usePathname();
 
   // State 관리
-  const projectSwr = useProject(project_id);
+  const projectSwr = useProject(project_id ?? null);
 
   const [editedProject, setEditedProject] = useState<UserERPNextProject | undefined>();
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
@@ -243,7 +243,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   );
 
   const handleUpdateProject = useCallback(async () => {
-    if (!editable || !editedProject) return;
+    if (!editable || !editedProject || !project_id) return;
 
     setIsUpdating(true);
     try {
@@ -261,6 +261,8 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   }, [projectSwr]);
 
   const acceptInvite = useCallback(async () => {
+    if (!project_id) return;
+
     try {
       await acceptInviteProjectGroup(project_id);
       await projectSwr.mutate();

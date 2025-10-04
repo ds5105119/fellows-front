@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useInView } from "framer-motion";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { createIssue, updateIssue, deleteIssue, type IssueFilters, useIssues } from "@/hooks/fetch/issue";
 import type { Issue, CreateIssueData, UpdateIssueData } from "@/@types/service/issue";
 import { IssueFilterHeader } from "./issue-filter-header";
@@ -11,12 +12,13 @@ import { IssueForm } from "./issue-form";
 import { IssueDeleteDialog } from "./issue-delete-dialog";
 import { IssueEmptyState } from "./issue-empty-state";
 import { IssueSkeleton } from "./issue-skeleton";
+import IssueSidebar from "./issue-sidebar";
+import IssueSheet from "./issue-sheet";
 import { toast } from "sonner";
 import useThrottle from "@/lib/useThrottle";
 import { Session } from "next-auth";
 import dayjs from "@/lib/dayjs";
 import { useProjectOverView, useTasks } from "@/hooks/fetch/project";
-import IssueSidebar from "./issue-sidebar";
 
 export default function IssueMain({ session }: { session: Session }) {
   const router = useRouter();
@@ -25,6 +27,7 @@ export default function IssueMain({ session }: { session: Session }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+  const [selectedForEditIssue, setSelectedForEditIssue] = useState<Issue | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filters, setFilters] = useState<IssueFilters>({
     start: dayjs(new Date()).subtract(1, "year").format("YYYY-MM-DD"),
@@ -58,25 +61,31 @@ export default function IssueMain({ session }: { session: Session }) {
 
   // 이벤트 핸들러들
   const handleCreateClick = () => {
-    setSelectedIssue(null);
+    setSelectedForEditIssue(null);
     setIsFormOpen(true);
   };
 
   const handleEditClick = (issue: Issue) => {
-    setSelectedIssue(issue);
+    setSelectedForEditIssue(issue);
     setIsFormOpen(true);
   };
 
   const handleDeleteClick = (issue: Issue) => {
-    setSelectedIssue(issue);
+    setSelectedForEditIssue(issue);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleSheetOpenChange = (open: boolean) => {
+    if (!open) {
+      setSelectedIssue(null);
+    }
   };
 
   const handleFormSubmit = async (data: CreateIssueData | UpdateIssueData) => {
     setIsSubmitting(true);
     try {
-      if (selectedIssue) {
-        await updateIssue(selectedIssue.name, data as UpdateIssueData);
+      if (selectedForEditIssue) {
+        await updateIssue(selectedForEditIssue.name, data as UpdateIssueData);
         toast.success("이슈가 성공적으로 수정되었습니다.");
       } else {
         await createIssue(data as CreateIssueData);
@@ -85,17 +94,17 @@ export default function IssueMain({ session }: { session: Session }) {
       IssueSwr.mutate();
       setIsFormOpen(false);
     } catch {
-      toast.error(selectedIssue ? "이슈 수정에 실패했습니다." : "이슈 등록에 실패했습니다.");
+      toast.error(selectedForEditIssue ? "이슈 수정에 실패했습니다." : "이슈 등록에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDeleteConfirm = async () => {
-    if (!selectedIssue) return;
+    if (!selectedForEditIssue) return;
     setIsSubmitting(true);
     try {
-      await deleteIssue(selectedIssue.name);
+      await deleteIssue(selectedForEditIssue.name);
       toast.success("이슈가 성공적으로 삭제되었습니다.");
       IssueSwr.mutate();
       setIsDeleteDialogOpen(false);
@@ -209,7 +218,13 @@ export default function IssueMain({ session }: { session: Session }) {
         <div className="bg-white border-b border-gray-200">
           <IssueEmptyState hasIssue={hasIssue} hasIssueLoading={hasIssueLoading} isLoading={isLoading} issuesLength={issues.length} />
 
-          <IssueList issues={issues} onEditClick={handleEditClick} onDeleteClick={handleDeleteClick} overviewProjects={overviewProjects} />
+          <IssueList
+            issues={issues}
+            setSelectedIssue={setSelectedIssue}
+            onEditClick={handleEditClick}
+            onDeleteClick={handleDeleteClick}
+            overviewProjects={overviewProjects}
+          />
 
           {isLoading && <IssueSkeleton count={2} />}
 
@@ -217,25 +232,33 @@ export default function IssueMain({ session }: { session: Session }) {
 
           {issues.length > 0 && <div className="px-4 py-3 border-t border-gray-100 text-sm text-gray-500 bg-gray-50">총 {issues.length}개의 이슈</div>}
         </div>
-
-        <IssueForm
-          session={session}
-          isOpen={isFormOpen}
-          onClose={() => setIsFormOpen(false)}
-          onSubmit={handleFormSubmit}
-          issue={selectedIssue}
-          tasksSwr={TasksSwr}
-          isLoading={isSubmitting}
-        />
-
-        <IssueDeleteDialog
-          isOpen={isDeleteDialogOpen}
-          onClose={() => setIsDeleteDialogOpen(false)}
-          onConfirm={handleDeleteConfirm}
-          issue={selectedIssue}
-          isLoading={isSubmitting}
-        />
       </div>
+
+      <IssueForm
+        session={session}
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSubmit={handleFormSubmit}
+        issue={selectedForEditIssue}
+        tasksSwr={TasksSwr}
+        isLoading={isSubmitting}
+      />
+      <IssueDeleteDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        issue={selectedForEditIssue}
+        isLoading={isSubmitting}
+      />
+      <Sheet open={!!selectedIssue} onOpenChange={handleSheetOpenChange}>
+        <SheetContent className="overflow-hidden h-full w-full sm:max-w-full md:w-2/5 md:min-w-[728px] [&>button:first-of-type]:hidden gap-0 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:outline-none focus:border-none">
+          <SheetHeader className="sr-only">
+            <SheetTitle>프로젝트 상세</SheetTitle>
+          </SheetHeader>
+          {selectedIssue && <IssueSheet issue={selectedIssue} />}
+          <SheetDescription className="sr-only" />
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

@@ -288,7 +288,7 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
           <SheetHeader className="sr-only">
             <SheetTitle>프로젝트 상세</SheetTitle>
           </SheetHeader>
-          {projectId && <ProjectDetailSheet project_id={projectId} onClose={() => handleSheetOpenChange(false)} session={session} />}
+          <ProjectDetailSheet project_id={projectId ?? ""} onClose={() => handleSheetOpenChange(false)} session={session} />
           <SheetDescription className="sr-only" />
         </SheetContent>
       </Sheet>
