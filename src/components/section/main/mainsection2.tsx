@@ -37,7 +37,7 @@ const marqueeContents = [
 
 const features = [
   {
-    name: "로그인하여 투명하게 외주 상황 알아보기",
+    name: "실시간으로 외주 상황을 파악해보세요",
     description: (
       <div className="flex items-center space-x-2">
         <ZapIcon className="size-4 md:size-5 text-blue-500" strokeWidth={3} fill="currentColor" />
@@ -63,7 +63,7 @@ const features = [
     description: (
       <div className="flex items-center space-x-2">
         <BadgeCheckIcon className="size-4 md:size-5 text-emerald-500" strokeWidth={3} />
-        <div>더 적은 예산, 높은 퀄리티</div>
+        <div>예산은 줄이고 퀄리티는 높게</div>
         <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
       </div>
     ),

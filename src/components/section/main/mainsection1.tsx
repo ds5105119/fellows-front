@@ -24,15 +24,17 @@ export default async function MainSection1() {
           {/* CTA */}
           <div className="absolute inset-0 flex z-20 items-center justify-center">
             <div className="w-[87%] h-[80%] flex flex-col gap-3 text-end items-end justify-end">
-              <h2 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">외주 개발</h2>
               <h2 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">
-                <span className="font-black">Fellows℠</span>에서 시작하세요
+                <span className="font-black">Fellows℠</span>
+              </h2>
+              <h2 className="text-4xl xl:text-7xl font-extrabold tracking-normal text-background">
+                <span className="font-black">가장 합리적인 개발 외주 파트너</span>
               </h2>
 
               <h4 className="scroll-m-20 text-lg font-semibold leading-normal text-muted ml-1 md:mt-1.5">
                 AI 견적, 쇼피파이, React, 앱 개발까지
                 <br />
-                최소 30% 더 적은 비용으로 외주를 진행하세요.<span className="text-[#e64646] font-black">*</span>
+                최소 25% 더 적은 비용으로 외주를 진행하세요.<span className="text-[#e64646] font-black">*</span>
               </h4>
 
               <div className="space-x-4 mt-3 flex">
@@ -54,15 +56,15 @@ export default async function MainSection1() {
             <div className="absolute inset-0 flex z-10 items-center justify-center">
               <div className="w-[85%] h-[100%] flex flex-col gap-3 text-end items-end justify-end">
                 <div className="flex flex-col w-full mb-7">
-                  <h1 className="text-3xl font-extrabold tracking-normal text-background hidden">Web, App 개발</h1>
-                  <h1 className="text-3xl font-extrabold tracking-normal text-background">
-                    <span className="font-black">Fellows℠</span>에서 앞서나가세요
+                  <h1 className="text-3xl font-extrabold tracking-normal text-background hidden">
+                    <span className="font-black">Fellows℠</span>
                   </h1>
+                  <h1 className="text-3xl font-extrabold tracking-normal text-background">가장 합리적인 개발 외주 파트너</h1>
 
                   <h4 className="scroll-m-20 text-sm font-semibold leading-tight text-muted ml-1 mt-2">
                     AI 견적, 쇼피파이, React, 앱 개발까지,
                     <br />
-                    최소 30% 더 적은 비용으로 외주를 진행하세요.<span className="text-[#e64646] font-black">*</span>
+                    최소 25% 더 적은 비용으로 외주를 진행하세요.<span className="text-[#e64646] font-black">*</span>
                   </h4>
                 </div>
               </div>
