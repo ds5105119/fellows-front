@@ -255,7 +255,7 @@ export default function IssueMain({ session }: { session: Session }) {
           <SheetHeader className="sr-only">
             <SheetTitle>프로젝트 상세</SheetTitle>
           </SheetHeader>
-          {selectedIssue && <IssueSheet issue={selectedIssue} />}
+          {selectedIssue && <IssueSheet issue={selectedIssue} onClose={() => setSelectedIssue(null)} />}
           <SheetDescription className="sr-only" />
         </SheetContent>
       </Sheet>
