@@ -108,6 +108,8 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const contractsSwr = useContracts({ project_id });
   const [selectedContract, setSelectedContract] = useState<UserERPNextContract | undefined>(undefined);
   const [contractSheetOpen, setContractSheetOpen] = useState(false);
+  const contractSheetClosingRef = useRef(false);
+  const contractSheetCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const initialContractName = useMemo(() => {
     const pathSegments = pathname.split("/");
@@ -273,6 +275,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
 
   const handleContractSelect = useCallback(
     (contract: UserERPNextContract) => {
+      if (contractSheetClosingRef.current) return;
       setSelectedContract(contract);
       setContractSheetOpen(true);
 
@@ -301,6 +304,10 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   );
 
   const handleContractSheetClose = useCallback(() => {
+    contractSheetClosingRef.current = true;
+    if (contractSheetCloseTimeoutRef.current) {
+      clearTimeout(contractSheetCloseTimeoutRef.current);
+    }
     setContractSheetOpen(false);
     setSelectedContract(undefined);
 
@@ -312,7 +319,21 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
       const newPath = pathSegments.slice(0, contractsIndex + 1).join("/");
       window.history.replaceState(null, "", newPath);
     }
+
+    contractSheetCloseTimeoutRef.current = setTimeout(() => {
+      contractSheetClosingRef.current = false;
+      contractSheetCloseTimeoutRef.current = null;
+    }, 200);
   }, [pathname]);
+
+  useEffect(() => {
+    return () => {
+      if (contractSheetCloseTimeoutRef.current) {
+        clearTimeout(contractSheetCloseTimeoutRef.current);
+        contractSheetCloseTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   //  Simplified project data sync
   useEffect(() => {

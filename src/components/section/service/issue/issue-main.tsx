@@ -66,6 +66,7 @@ export default function IssueMain({ session }: { session: Session }) {
   };
 
   const handleEditClick = (issue: Issue) => {
+    setSelectedIssue(null);
     setSelectedForEditIssue(issue);
     setIsFormOpen(true);
   };
@@ -93,6 +94,7 @@ export default function IssueMain({ session }: { session: Session }) {
       }
       IssueSwr.mutate();
       setIsFormOpen(false);
+      setSelectedForEditIssue(null);
     } catch {
       toast.error(selectedForEditIssue ? "이슈 수정에 실패했습니다." : "이슈 등록에 실패했습니다.");
     } finally {
@@ -237,7 +239,10 @@ export default function IssueMain({ session }: { session: Session }) {
       <IssueForm
         session={session}
         isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
+        onClose={() => {
+          setIsFormOpen(false);
+          setSelectedForEditIssue(null);
+        }}
         onSubmit={handleFormSubmit}
         issue={selectedForEditIssue}
         tasksSwr={TasksSwr}
@@ -255,7 +260,7 @@ export default function IssueMain({ session }: { session: Session }) {
           <SheetHeader className="sr-only">
             <SheetTitle>프로젝트 상세</SheetTitle>
           </SheetHeader>
-          {selectedIssue && <IssueSheet issue={selectedIssue} onClose={() => setSelectedIssue(null)} />}
+          {selectedIssue && <IssueSheet issue={selectedIssue} onClose={() => setSelectedIssue(null)} onEdit={handleEditClick} />}
           <SheetDescription className="sr-only" />
         </SheetContent>
       </Sheet>

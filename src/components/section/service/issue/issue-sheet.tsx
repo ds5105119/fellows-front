@@ -1,6 +1,6 @@
 import type { Issue } from "@/@types/service/issue";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, ArrowLeft, FileText, Copy } from "lucide-react";
+import { User, Mail, ArrowLeft, FileText, Copy, Edit } from "lucide-react";
 import dayjs from "@/lib/dayjs";
 import { useProject } from "@/hooks/fetch/project";
 import { useUsers } from "@/hooks/fetch/user";
@@ -8,7 +8,7 @@ import { STATUS_MAPPING } from "@/components/resource/project";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-export default function IssueSheet({ issue, onClose }: { issue: Issue; onClose: () => void }) {
+export default function IssueSheet({ issue, onClose, onEdit }: { issue: Issue; onClose: () => void; onEdit: (issue: Issue) => void }) {
   const { data: project, isLoading: projectLoading } = useProject(issue.project ?? null);
   const { data: customer, isLoading: customerLoading } = useUsers([issue.customer]);
 
@@ -25,6 +25,19 @@ export default function IssueSheet({ issue, onClose }: { issue: Issue; onClose: 
             onClick={onClose}
           >
             <ArrowLeft className="!size-5" />
+          </Button>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="font-semibold rounded-sm border-gray-200 shadow-none bg-transparent"
+            type="button"
+            onClick={() => onEdit(issue)}
+          >
+            <Edit className="mr-2 !size-4" />
+            이슈 수정
           </Button>
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import type { Issue, IssueType } from "@/@types/service/issue";
+import type { MouseEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal, Edit, Trash2, Building, Clock } from "lucide-react";
@@ -79,8 +80,28 @@ const getTypeLabel = (type: IssueType | null) => {
 };
 
 export function IssueItem({ issue, overviewProjects, setSelectedIssue, onEditClick, onDeleteClick }: IssueItemProps) {
+  const handleRowClick = (event: MouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement | null;
+    if (target?.closest("[data-issue-item-action]")) return;
+    setSelectedIssue(issue);
+  };
+
+  const handleEditClick = (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    onEditClick(issue);
+  };
+
+  const handleDeleteClick = (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    onDeleteClick(issue);
+  };
+
+  const handleTriggerClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+  };
+
   return (
-    <div className="flex items-center space-x-2 py-4 px-6 hover:bg-gray-50 transition-colors group" onClick={() => setSelectedIssue(issue)}>
+    <div className="flex items-center space-x-2 py-4 px-6 hover:bg-gray-50 transition-colors group" onClick={handleRowClick}>
       <div className="flex items-center gap-4 flex-1 min-w-0">
         {/* 제목과 부제목 */}
         <div className="flex-1 min-w-0">
@@ -119,16 +140,22 @@ export function IssueItem({ issue, overviewProjects, setSelectedIssue, onEditCli
       {/* 액션 메뉴 */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="w-8 h-8 p-0 flex-shrink-0 hover:bg-gray-200">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-8 h-8 p-0 flex-shrink-0 hover:bg-gray-200"
+            data-issue-item-action
+            onClick={handleTriggerClick}
+          >
             <MoreHorizontal className="w-4 h-4 !text-black" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => onEditClick(issue)}>
+        <DropdownMenuContent align="end" data-issue-item-action>
+          <DropdownMenuItem data-issue-item-action onClick={handleEditClick}>
             <Edit className="w-4 h-4 mr-2" />
             수정
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onDeleteClick(issue)} className="text-red-600">
+          <DropdownMenuItem data-issue-item-action onClick={handleDeleteClick} className="text-red-600">
             <Trash2 className="w-4 h-4 mr-2" />
             삭제
           </DropdownMenuItem>

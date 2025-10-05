@@ -63,7 +63,14 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, tasksSwr,
   const handleSubmit = async (data: CreateIssueData) => {
     try {
       await onSubmit(data);
-      form.reset();
+      form.reset({
+        subject: "",
+        project: "",
+        priority: "",
+        issue_type: undefined,
+        description: "",
+        custom_task: undefined,
+      });
       onClose();
     } catch (error) {
       console.error("Failed to submit issue:", error);
@@ -71,7 +78,14 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, tasksSwr,
   };
 
   const handleClose = () => {
-    form.reset();
+    form.reset({
+      subject: "",
+      project: "",
+      priority: "",
+      issue_type: undefined,
+      description: "",
+      custom_task: undefined,
+    });
     onClose();
   };
 
@@ -82,15 +96,28 @@ export function IssueForm({ session, isOpen, onClose, onSubmit, issue, tasksSwr,
   }, [isReachingEnd, isTasksLoading, isReachedEnd]);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     if (issue) {
-      if (issue.subject) form.setValue("subject", issue.subject);
-      if (issue.project) form.setValue("project", issue.project);
-      if (issue.priority) form.setValue("priority", issue.priority);
-      if (issue.custom_task) form.setValue("custom_task", issue.custom_task);
-      if (issue.issue_type) form.setValue("issue_type", issue.issue_type);
-      if (issue.description) form.setValue("description", issue.description);
+      form.reset({
+        subject: issue.subject ?? "",
+        project: issue.project ?? "",
+        priority: issue.priority ?? "",
+        issue_type: issue.issue_type ?? undefined,
+        description: issue.description ?? "",
+        custom_task: issue.custom_task ?? undefined,
+      });
+    } else {
+      form.reset({
+        subject: "",
+        project: "",
+        priority: "",
+        issue_type: undefined,
+        description: "",
+        custom_task: undefined,
+      });
     }
-  }, [issue]);
+  }, [issue, form, isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
