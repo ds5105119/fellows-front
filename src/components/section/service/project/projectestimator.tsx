@@ -1,75 +1,78 @@
 "use client";
 
-import { TableCaption } from "@/components/ui/table";
-
+import { TableCaption, Table, TableBody, TableCell, TableFooter, TableRow } from "@/components/ui/table";
 import BreathingSparkles from "@/components/resource/breathingsparkles";
 import MarkdownPreview from "@/components/ui/markdownpreview";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import type { UserERPNextProject } from "@/@types/service/project";
 import { useEstimateProject, useEstimateProjectStatus } from "@/hooks/fetch/project";
 import { SWRResponse } from "swr";
-import { Table, TableBody, TableCell, TableFooter, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { TextShimmer } from "@/components/resource/text-shimmer";
 
 interface Props {
   projectSwr: SWRResponse<UserERPNextProject>;
   project: UserERPNextProject;
+  openSheet: boolean;
 }
 
-export default function ProjectEstimator({ projectSwr, project }: Props) {
+export default function ProjectEstimator({ projectSwr, project, openSheet }: Props) {
   const [lastGeneratedEstimate, setLastGeneratedEstimate] = useState("");
   const [showThinkingUI, setShowThinkingUI] = useState(false);
-  const prevStatusRef = useRef<boolean | undefined>(undefined);
 
   const { markdown, isLoading, startEstimate } = useEstimateProject(project.project_name);
-  const status = useEstimateProjectStatus(project.project_name, {
-    refreshInterval: 5000,
-  });
+  const status = useEstimateProjectStatus(project.project_name, { refreshInterval: 4000 });
 
+  const prevStatus = useRef<boolean | undefined>(undefined);
+
+  // ✅ 통합 상태: 실제 "생각 중" 여부를 명확히 정의
+  const isThinking = useMemo(() => {
+    // SSE가 살아있다면 그걸 신뢰
+    if (isLoading) return true;
+    // SSE가 죽었지만 서버가 아직 처리 중이면 status.data를 신뢰
+    if (status.data) return true;
+    return false;
+  }, [isLoading, status.data]);
+
+  // ✅ 상태에 따라 Thinking UI 제어
   useEffect(() => {
-    if (status.data && !markdown) {
-      setShowThinkingUI(true);
-    } else if (!status.data && prevStatusRef.current === true) {
-      setShowThinkingUI(false);
-    }
+    setShowThinkingUI(isThinking);
+  }, [isThinking]);
 
-    status.mutate();
-    projectSwr.mutate();
-
-    prevStatusRef.current = status.data;
-  }, [status.data, markdown, isLoading, project.project_name]);
-
+  // ✅ SSE 이벤트가 끝나면 (markdown 도착 시) projectSwr 업데이트
   useEffect(() => {
-    setLastGeneratedEstimate(markdown);
-
     if (markdown) {
-      setShowThinkingUI(false);
-    }
-
-    if (!isLoading) {
-      setShowThinkingUI(false);
-      status.mutate();
+      setLastGeneratedEstimate(markdown);
       projectSwr.mutate();
+      status.mutate(); // 최신 상태 동기화
     }
-  }, [markdown, isLoading]);
+  }, [markdown]);
 
+  // ✅ 탭 재진입 / status 변경 감지 시 (SSE가 끊긴 경우 포함)
+  useEffect(() => {
+    if (openSheet && prevStatus.current !== status.data) {
+      projectSwr.mutate();
+      prevStatus.current = status.data;
+    }
+  }, [openSheet, status.data]);
+
+  // ✅ 견적 시작 핸들러
   const handleStartEstimate = async () => {
     setShowThinkingUI(true);
     setLastGeneratedEstimate("");
-    startEstimate();
+    await startEstimate();
   };
 
-  // 현재 표시할 견적 결정
+  // ✅ 현재 표시할 견적 결정
   const currentEstimate = showThinkingUI ? "" : lastGeneratedEstimate || project.custom_ai_estimate;
 
   const hasExistingEstimate = Boolean(project.custom_ai_estimate || lastGeneratedEstimate);
   const showEstimateContent = Boolean(currentEstimate);
-  const showPricingTable = showEstimateContent && !isLoading;
+  const showPricingTable = showEstimateContent && !isThinking;
 
   const getButtonText = () => {
-    if (showThinkingUI && !markdown) return "견적 작성중이에요";
-    if (showThinkingUI && markdown) return "견적 생성중이에요";
+    if (isThinking && !markdown) return "견적 작성 중이에요";
+    if (isThinking && markdown) return "견적 생성 중이에요";
     if (!hasExistingEstimate) return "AI 견적 작성하기";
     return "견적 다시 작성하기";
   };
@@ -80,7 +83,7 @@ export default function ProjectEstimator({ projectSwr, project }: Props) {
         <h2 className="text-2xl font-bold">AI 견적</h2>
         <Button
           onClick={handleStartEstimate}
-          disabled={isLoading || showThinkingUI}
+          disabled={isThinking}
           className="flex items-center space-x-2 text-white text-sm font-medium bg-black hover:bg-zinc-700 disabled:bg-zinc-500 transition-colors rounded-md duration-200 h-8 md:h-9 px-3"
         >
           <BreathingSparkles size={18} />
@@ -90,12 +93,12 @@ export default function ProjectEstimator({ projectSwr, project }: Props) {
 
       {/* Thinking UI */}
       {showThinkingUI && (
-        <TextShimmer className="text-sm relativ">견적서를 생성하는 중입니다. 1분 정도 걸릴 수 있으니 견적서가 준비되면 다시 확인해 주세요 • • •</TextShimmer>
+        <TextShimmer className="text-sm">견적서를 생성하는 중입니다. 1분 정도 걸릴 수 있으니 견적서가 준비되면 다시 확인해 주세요 • • •</TextShimmer>
       )}
 
       {/* 견적 내용 표시 */}
       {showEstimateContent && (
-        <MarkdownPreview loading={isLoading && !showThinkingUI} className="!prose-sm mb-12">
+        <MarkdownPreview loading={isThinking && !markdown} className="!prose-sm mb-12">
           {currentEstimate}
         </MarkdownPreview>
       )}

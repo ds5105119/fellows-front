@@ -326,7 +326,7 @@ export function ProjectStatus({
 
                   <hr className="border-gray-200" />
 
-                  {openSheet && <ProjectEstimator projectSwr={projectSwr} project={project} />}
+                  {openSheet && <ProjectEstimator projectSwr={projectSwr} project={project} openSheet={openSheet} />}
                 </div>
               </div>
             </div>
