@@ -21,43 +21,35 @@ type Props = {
 };
 
 export default function ReportSheet({ project, date, dailyReport, onClose }: Props) {
-  // Refs
   const targetRef = useRef<HTMLDivElement>(null);
-
-  // Local state
   const [reportId, setReportId] = useState<string | undefined>();
+  const [showThinkingUI, setShowThinkingUI] = useState(false);
+  const prevStatusRef = useRef<boolean | undefined>(undefined);
 
-  // Data fetching hooks
+  // ----- Report fetch -----
   const dailyReportData = useDailyReport(dailyReport ? { project_id: project.project_name, date } : undefined);
   const monthlyReportData = useMonthlyReport(!dailyReport ? { project_id: project.project_name, date } : undefined);
   const report = dailyReport ? dailyReportData : monthlyReportData;
-  const aiReport = useReportAISummary(reportId);
 
-  // Data resolution (AI summary, falling back to base report)
+  // ----- AI Summary -----
+  const aiReport = useReportAISummary(reportId);
+  const aiStatus = useReportAISummaryStatus(report.data?.report.name, { refreshInterval: 4000 });
+
+  const isBaseLoading = report.isLoading && !report.data;
+  const isAiBusy = aiReport.isLoading || aiStatus.data;
+
+  // ----- Derived Data -----
   const reportDoc: ERPNextReport | undefined = aiReport.data?.report ?? report.data?.report;
   const tasks: ERPNextTaskForUser[] = aiReport.data?.tasks ?? report.data?.tasks ?? [];
   const timesheets: ERPNextTimeSheetForUser[] = aiReport.data?.timesheets ?? report.data?.timesheets ?? [];
 
-  // Loading state
-  const aiReportStatus = useReportAISummaryStatus(report.data?.report.name);
-  const isBaseLoading = report.isLoading && !report.data;
-  const isAiBusy = aiReportStatus.data;
-
-  // Derived values
-  const totalHours = useMemo(
-    () =>
-      timesheets.reduce((acc, t) => {
-        const h = typeof t.total_hours === "number" ? t.total_hours : 0;
-        return acc + h;
-      }, 0),
-    [timesheets]
-  );
+  const totalHours = useMemo(() => timesheets.reduce((acc, t) => acc + (typeof t.total_hours === "number" ? t.total_hours : 0), 0), [timesheets]);
 
   const title = dailyReport ? "일일 리포트" : "월간 리포트";
   const aiButtonLabel = reportDoc?.summary ? "요약 다시 생성하기" : "AI 요약 생성";
   const createdAtText = reportDoc?.creation && dayjs(reportDoc.creation).isValid() ? `${dayjs(reportDoc.creation).format("YY.MM.DD HH시 mm분")} 생성` : "";
 
-  // Group tasks by status
+  // ----- Grouped tasks -----
   const groupedTasks = useMemo(() => {
     const map = new Map<string, ERPNextTaskForUser[]>();
     for (const t of tasks) {
@@ -68,31 +60,41 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
     return Array.from(map.entries());
   }, [tasks]);
 
-  // Actions
+  // ----- Actions -----
   const fetchAIReport = useCallback(() => {
-    if (!reportId) {
-      setReportId(reportDoc?.name);
-      aiReport.mutate(undefined, { revalidate: true });
-    } else {
-      aiReport.mutate(undefined, { revalidate: true });
-    }
-    setTimeout(() => {
-      aiReportStatus.mutate(undefined, { revalidate: true });
-    }, 200);
-  }, [aiReport, reportDoc?.name, reportId]);
+    if (!reportDoc?.name) return;
+    setReportId(reportDoc.name);
+    setShowThinkingUI(true);
+    aiReport.mutate(undefined, { revalidate: true });
+    setTimeout(() => aiStatus.mutate(undefined, { revalidate: true }), 200);
+  }, [aiReport, aiStatus, reportDoc?.name]);
 
   const downloadPDF = useCallback(() => {
     generatePDF(targetRef, {
       method: "save",
-      filename: `${project.custom_project_title} 일일 레포트 - ${dayjs(reportDoc?.end_date).format("YYYY-MM-DD")}`,
+      filename: `${project.custom_project_title} 리포트 - ${dayjs(reportDoc?.end_date).format("YYYY-MM-DD")}`,
       resolution: 5,
       page: { margin: Margin.MEDIUM },
     });
   }, [project.custom_project_title, reportDoc?.end_date]);
 
+  // ----- SSE + Status Sync -----
   useEffect(() => {
-    aiReportStatus.mutate(undefined, { revalidate: true });
-  }, [aiReport.isLoading]);
+    // SSE 중이라면 Thinking UI 표시
+    if (isAiBusy && !aiReport.data?.report?.summary) {
+      setShowThinkingUI(true);
+    } else {
+      setShowThinkingUI(false);
+    }
+
+    // 상태 복구: SSE 연결이 끊겼다가 돌아온 경우
+    if (prevStatusRef.current && !isAiBusy) {
+      aiStatus.mutate(undefined);
+      aiReport.mutate(undefined);
+    }
+
+    prevStatusRef.current = isAiBusy;
+  }, [isAiBusy, aiReport.data?.report?.summary]);
 
   return (
     <div className="w-full">
@@ -310,7 +312,7 @@ export default function ReportSheet({ project, date, dailyReport, onClose }: Pro
             </div>
 
             <div className="rounded-md border border-zinc-200 px-4 py-3 ">
-              {isBaseLoading || isAiBusy ? (
+              {showThinkingUI ? (
                 <SummarySkeleton />
               ) : (
                 <p className="text-sm text-zinc-700 leading-relaxed whitespace-pre-wrap">
