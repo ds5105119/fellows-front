@@ -6,7 +6,7 @@ import { useProjectOverView } from "@/hooks/fetch/project";
 import { cn } from "@/lib/utils";
 import { useContracts } from "@/hooks/fetch/contract";
 import dayjs from "@/lib/dayjs";
-import { useUsers } from "@/hooks/fetch/user";
+import { contractStatus } from "@/components/resource/project";
 import { Session } from "next-auth";
 import { FileCheck } from "lucide-react";
 
@@ -14,7 +14,7 @@ export function ContractOverview({ session }: { session: Session }) {
   const router = useRouter();
 
   const projectOverviewSwr = useProjectOverView();
-  const contractsSwr = useContracts({ docstatus: 0 }, { initialSize: 5 });
+  const contractsSwr = useContracts({ docstatus: 0, size: 10 });
 
   const projects = useMemo(() => projectOverviewSwr.data?.items ?? [], [projectOverviewSwr.data]);
   const contracts = useMemo(
@@ -60,26 +60,10 @@ export function ContractOverview({ session }: { session: Session }) {
                   <div
                     className={cn(
                       "flex items-center justify-center px-1.5 py-0.5 rounded-sm border h-fit w-fit",
-                      contract.docstatus === 0
-                        ? contract.is_signed
-                          ? "bg-blue-50 border-blue-300 text-blue-500"
-                          : "bg-zinc-50 border-zinc-300 text-zinc-500"
-                        : contract.docstatus === 1 && contract.is_signed
-                        ? "bg-emerald-50 border-emerald-300 text-emerald-500"
-                        : contract.docstatus === 2
-                        ? "bg-red-50 border-red-300 text-red-500"
-                        : "bg-red-50 border-red-300 text-red-500"
+                      contractStatus[contract.custom_contract_status].badgeClassName
                     )}
                   >
-                    {contract.docstatus === 0
-                      ? contract.is_signed
-                        ? "결제 대기"
-                        : "사인 전"
-                      : contract.docstatus === 1 && contract.is_signed
-                      ? "진행 중"
-                      : contract.docstatus === 2
-                      ? "취소됨"
-                      : "취소됨"}
+                    {contractStatus[contract.custom_contract_status].title}
                   </div>
                 </td>
                 <td className="px-2 lg:px-5 py-3 text-gray-700">
