@@ -45,25 +45,6 @@ export default function SettingsSidebar() {
         },
       ],
     },
-    {
-      title: "알림",
-      items: [
-        {
-          id: "notifications",
-          label: "알림 설정",
-          href: "/service/settings/notifications",
-          icon: Bell,
-          description: "푸시, 이메일 알림 관리",
-        },
-        {
-          id: "devices",
-          label: "연결된 기기",
-          href: "/service/settings/devices",
-          icon: Smartphone,
-          description: "로그인된 기기 관리",
-        },
-      ],
-    },
   ];
 
   return (
