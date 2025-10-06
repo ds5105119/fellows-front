@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Camera, Loader2, X } from "lucide-react";
-import { updateUser, deletePhone } from "@/hooks/fetch/server/user";
+import { updateUser } from "@/hooks/fetch/server/user";
 import { UpdateUserAttributesSchema, type UpdateUserAttributes } from "@/@types/accounts/userdata";
 import { getPresignedPutUrl, removeFile, uploadFileToPresignedUrl } from "@/hooks/fetch/presigned";
 import DaumPostcodeEmbed from "react-daum-postcode";
