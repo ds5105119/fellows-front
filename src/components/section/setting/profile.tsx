@@ -21,6 +21,12 @@ import DaumPostcodeEmbed from "react-daum-postcode";
 import useGeolocation from "@/lib/geolocation";
 import Link from "next/link";
 
+const inputBaseClasses =
+  "h-12 rounded-2xl bg-muted/80 px-4 !text-base font-medium shadow-none border-none focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors duration-200";
+const textareaBaseClasses =
+  "rounded-2xl bg-muted/80 px-4 py-3 text-base font-medium shadow-none border-none focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors duration-200";
+const buttonBaseClasses = "h-12 rounded-2xl bg-muted/80 px-4 text-base font-medium shadow-none border-none transition-colors duration-200";
+
 export default function UserProfile({ session }: { session: Session }) {
   const router = useRouter();
   const geoLocation = useGeolocation();
@@ -119,15 +125,6 @@ export default function UserProfile({ session }: { session: Session }) {
     { value: "female", label: "여성" },
   ];
 
-  const handleDeletePhone = async () => {
-    const ok = window.confirm("등록된 전화번호를 삭제하시겠습니까?");
-
-    if (ok) {
-      deletePhone();
-      await fetch("/api/user/update");
-    }
-  };
-
   useEffect(() => {
     if (
       geoLocation.location.loaded &&
@@ -220,10 +217,10 @@ export default function UserProfile({ session }: { session: Session }) {
                 전화번호 <span className="text-xs font-bold text-black">(필수)</span>
               </div>
               <div className="flex space-x-2 w-full">
-                <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-9 flex items-center md:text-sm rounded-md px-3 py-1 text-base">
+                <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-12 flex items-center rounded-2xl px-4 py-1 text-base font-medium">
                   {session.user.phone_number}
                 </div>
-                <Button className="h-9 shadow-none" asChild>
+                <Button className="h-12 rounded-2xl px-6 text-base font-medium w-auto" asChild>
                   <Link href="/service/settings/profile/phone">변경</Link>
                 </Button>
               </div>
@@ -233,10 +230,10 @@ export default function UserProfile({ session }: { session: Session }) {
                 이메일 <span className="text-xs font-bold text-black">(필수)</span>
               </div>
               <div className="flex space-x-2 w-full">
-                <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-9 flex items-center md:text-sm rounded-md px-3 py-1 text-base">
+                <div className="shadow-none border-none w-full focus-visible:ring-0 bg-muted  hover:bg-zinc-200 transition-colors duration-200 h-12 flex items-center rounded-2xl px-4 py-1 text-base font-medium">
                   {session.user.email}
                 </div>
-                <Button className="h-9 shadow-none" asChild>
+                <Button className="h-12 rounded-2xl px-6 text-base font-medium w-auto" asChild>
                   <Link href="/service/settings/profile/email">변경</Link>
                 </Button>
               </div>
@@ -256,7 +253,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         type="date"
                         disabled={isSubmitting}
-                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
+                        className={cn(inputBaseClasses, "w-full")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -274,7 +271,7 @@ export default function UserProfile({ session }: { session: Session }) {
                     </FormLabel>
                     <Select onValueChange={(value) => field.onChange([value])} value={field.value?.[0] || ""} disabled={isSubmitting}>
                       <FormControl>
-                        <SelectTrigger className="w-full shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200">
+                        <SelectTrigger className={cn(inputBaseClasses, "!h-12 w-full justify-between text-left")}>
                           <SelectValue placeholder="성별을 선택하세요" />
                         </SelectTrigger>
                       </FormControl>
@@ -299,7 +296,7 @@ export default function UserProfile({ session }: { session: Session }) {
               <h2 className="text-xl font-semibold text-gray-900">
                 주소 <span className="text-xs font-bold text-black">(필수)</span>
               </h2>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
                   className="px-2 py-1 rounded-md border border-zinc-200 bg-zinc-50 flex items-center text-xs font-bold"
@@ -348,7 +345,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="도로명 주소"
                         disabled={isSubmitting}
-                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
+                        className={cn(inputBaseClasses, "w-full")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -367,7 +364,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="상세 주소"
                         disabled={isSubmitting}
-                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
+                        className={cn(inputBaseClasses, "w-full")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -386,7 +383,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="도시"
                         disabled={isSubmitting}
-                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
+                        className={cn(inputBaseClasses, "w-full")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -405,7 +402,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="주/지역"
                         disabled={isSubmitting}
-                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
+                        className={cn(inputBaseClasses, "w-full")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -425,7 +422,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="우편번호"
                         disabled={isSubmitting}
-                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
+                        className={cn(inputBaseClasses, "w-full")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -445,7 +442,7 @@ export default function UserProfile({ session }: { session: Session }) {
                         onChange={(e) => field.onChange([e.target.value])}
                         placeholder="국가"
                         disabled={isSubmitting}
-                        className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
+                        className={cn(inputBaseClasses, "w-full")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -473,7 +470,7 @@ export default function UserProfile({ session }: { session: Session }) {
                       onChange={(e) => field.onChange([e.target.value])}
                       placeholder="자신에 대해 알려주세요..."
                       maxLength={100}
-                      className="min-h-[80px] resize-none shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
+                      className={cn(textareaBaseClasses, "min-h-[80px] resize-none")}
                       disabled={isSubmitting}
                     />
                   </FormControl>
@@ -508,16 +505,15 @@ export default function UserProfile({ session }: { session: Session }) {
                               onChange={(e) => updateLink(index, e.target.value)}
                               placeholder="https://example.com"
                               disabled={isSubmitting}
-                              className="shadow-none border-none focus-visible:ring-0 bg-muted hover:bg-zinc-200 transition-colors duration-200"
+                              className={cn(inputBaseClasses, "w-full")}
                             />
                           </div>
                           <Button
                             onClick={() => removeLink(index)}
                             variant="ghost"
-                            size="sm"
                             type="button"
                             disabled={isSubmitting}
-                            className="hover:bg-red-50 hover:text-red-600"
+                            className={cn(buttonBaseClasses, "w-auto justify-center text-red-600 hover:text-red-600 hover:bg-red-100/60")}
                           >
                             <X className="h-4 w-4" />
                           </Button>

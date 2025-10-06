@@ -58,7 +58,7 @@ export default async function RootLayout({
               <SettingsSidebar />
               <div className="flex flex-col h-full grow overflow-y-auto">
                 <SettingHeader />
-                <main className="w-full break-keep">{children}</main>
+                <main className="w-full h-full break-keep">{children}</main>
               </div>
             </div>
           </SidebarInset>

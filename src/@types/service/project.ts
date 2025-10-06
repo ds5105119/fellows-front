@@ -364,6 +364,45 @@ export const erpNextFilesResponseSchema = z.object({
 });
 export type ERPNextFilesResponse = z.infer<typeof erpNextFilesResponseSchema>;
 
+// --- Customer Models ---
+
+export const ERPNextCustomerType = z.enum(["Company", "Individual", "Partnership"]);
+
+export const ERPNextCustomerSchema = z.object({
+  name: z.string(),
+  creation: z.string().transform((v, ctx) => {
+    const d = new Date(v.replace(" ", "T"));
+    if (isNaN(d.getTime())) {
+      ctx.addIssue({ code: "custom", message: "Invalid datetime" });
+      return z.NEVER;
+    }
+    return d;
+  }),
+  modified: z.string().transform((v, ctx) => {
+    const d = new Date(v.replace(" ", "T"));
+    if (isNaN(d.getTime())) {
+      ctx.addIssue({ code: "custom", message: "Invalid datetime" });
+      return z.NEVER;
+    }
+    return d;
+  }),
+  customer_name: z.string(),
+  customer_type: ERPNextCustomerType,
+  custom_username: z.string(),
+  is_internal_customer: z.number(),
+  language: z.string(),
+  email_id: z.string().email(),
+  tax_id: z.string().nullable().optional(),
+});
+export type ERPNextCustomer = z.infer<typeof ERPNextCustomerSchema>;
+
+export const UpdateERPNextCustomerSchema = z.object({
+  customer_type: ERPNextCustomerType.optional().nullable(),
+  language: z.string().optional().nullable(),
+  tax_id: z.string().optional().nullable(),
+});
+export type UpdateERPNextCustomer = z.infer<typeof UpdateERPNextCustomerSchema>;
+
 // --- Estimate Models ---
 
 export const projectFeatureEstimateRequestSchema = z.object({

@@ -28,6 +28,9 @@ import {
   quoteSlotsSchema,
   ERPNextProjectTeam,
   projectInfoEstimateResponseSchema,
+  UpdateERPNextCustomer,
+  ERPNextCustomerSchema,
+  ERPNextCustomer,
 } from "@/@types/service/project";
 import dayjs from "@/lib/dayjs";
 import { signIn } from "next-auth/react";
@@ -323,6 +326,39 @@ export const useTasks = (params: ERPNextTasksRequest, options: SWRInfiniteConfig
     focusThrottleInterval: 60000,
     ...options,
   });
+};
+
+// =================================================================
+// CUSTOMER API
+// =================================================================
+
+export const useCustomer = (): SWRResponse<ERPNextCustomer> => {
+  const url = `${API_BASE_URL}/customer`;
+  return useSWR(
+    url,
+    async (url: string) => {
+      try {
+        return ERPNextCustomerSchema.parse(await fetcher(url));
+      } catch (error) {
+        throw error;
+      }
+    },
+    { shouldRetryOnError: false }
+  );
+};
+export const updateCustomer = async (payload: UpdateERPNextCustomer): Promise<ERPNextCustomer> => {
+  const response = await fetch(`${API_BASE_URL}/customer`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    toast.error("프로젝트 업데이트 중 오류가 발생했습니다.");
+    throw new Error("Failed to update project");
+  }
+  const responseData = await response.json();
+  return ERPNextCustomerSchema.parse(responseData);
 };
 
 // =================================================================

@@ -110,8 +110,9 @@ export default function MainSection3() {
         <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">한 번 맡겨도 제대로 된 곳에서 맡기세요</h1>
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
           <h4 className="text-base md:text-lg font-semibold text-foreground">
-            글로벌 개발 파트너사, 디자인 하우스 등<br />
-            100명 이상의 전문가들과 협력하고 있습니다.
+            글로벌 개발 파트너사, 디자인 하우스와 협업으로
+            <br />
+            기획부터 디자인, 개발까지 업계 최고 수준의 전문가가 제품의 완성도를 높입니다.
           </h4>
         </div>
       </div>
