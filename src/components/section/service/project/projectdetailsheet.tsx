@@ -29,8 +29,9 @@ import { useContracts } from "@/hooks/fetch/contract";
 
 interface ProjectDetailSheetProps {
   project_id?: string;
-  onClose: () => void;
+  onClose: () => void | Promise<void>;
   session: Session;
+  registerBeforeClose?: (handler: (() => Promise<boolean>) | null) => void;
 }
 
 interface Project404Props {
@@ -87,7 +88,7 @@ function ProjectLoading() {
   );
 }
 
-export default function ProjectDetailSheet({ project_id, onClose, session }: ProjectDetailSheetProps) {
+export default function ProjectDetailSheet({ project_id, onClose, session, registerBeforeClose }: ProjectDetailSheetProps) {
   const pathname = usePathname();
 
   // State 관리
@@ -101,6 +102,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
   const [activeTab2, setActiveTab2] = useState<number>(0);
   const [level, setLevel] = useState<number>(5);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const updatePromiseRef = useRef<Promise<boolean> | null>(null);
   const displayProject = editedProject || projectSwr.data;
 
   const customerSwr = useProjectCustomer(displayProject?.project_name ?? null);
@@ -244,19 +246,67 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     []
   );
 
-  const handleUpdateProject = useCallback(async () => {
-    if (!editable || !editedProject || !project_id) return;
+  const hasUnsavedChanges = useMemo(() => {
+    if (!editable || !projectSwr.data || !editedProject) return false;
 
-    setIsUpdating(true);
     try {
-      await updateProject(project_id, updateERPNextProjectSchema.parse(editedProject));
-      await projectSwr.mutate();
+      return JSON.stringify(projectSwr.data) !== JSON.stringify(editedProject);
     } catch {
-      toast.error("프로젝트 저장에 실패했습니다.");
-    } finally {
-      setIsUpdating(false);
+      return true;
     }
-  }, [editable, editedProject, project_id, projectSwr]);
+  }, [editable, projectSwr.data, editedProject]);
+
+  const handleUpdateProject = useCallback(async (): Promise<boolean> => {
+    if (!editable || !editedProject || !project_id) return !hasUnsavedChanges;
+    if (!hasUnsavedChanges) return true;
+
+    if (updatePromiseRef.current) {
+      return updatePromiseRef.current;
+    }
+
+    const updatePromise = (async () => {
+      setIsUpdating(true);
+      try {
+        await updateProject(project_id, updateERPNextProjectSchema.parse(editedProject));
+        await projectSwr.mutate();
+        return true;
+      } catch {
+        toast.error("프로젝트 저장에 실패했습니다.");
+        return false;
+      } finally {
+        setIsUpdating(false);
+        updatePromiseRef.current = null;
+      }
+    })();
+
+    updatePromiseRef.current = updatePromise;
+    return updatePromise;
+  }, [editable, editedProject, project_id, projectSwr, hasUnsavedChanges]);
+
+  const ensureSavedBeforeClose = useCallback(async () => {
+    if (updatePromiseRef.current) {
+      return updatePromiseRef.current;
+    }
+
+    if (!editable) {
+      return true;
+    }
+
+    if (!hasUnsavedChanges) {
+      return true;
+    }
+
+    return handleUpdateProject();
+  }, [editable, handleUpdateProject, hasUnsavedChanges]);
+
+  useEffect(() => {
+    if (!registerBeforeClose) return;
+
+    registerBeforeClose(ensureSavedBeforeClose);
+    return () => {
+      registerBeforeClose(null);
+    };
+  }, [registerBeforeClose, ensureSavedBeforeClose]);
 
   const handleRetry = useCallback(() => {
     projectSwr.mutate();
@@ -349,13 +399,8 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
     }
 
     intervalRef.current = setInterval(() => {
-      const original = JSON.stringify(projectSwr.data);
-      const current = JSON.stringify(editedProject);
-
-      if (original !== current && !isUpdating) {
-        handleUpdateProject().catch(() => {
-          toast.error("자동 저장에 실패했습니다.");
-        });
+      if (hasUnsavedChanges && !isUpdating) {
+        void handleUpdateProject();
       }
     }, 60000);
 
@@ -364,7 +409,7 @@ export default function ProjectDetailSheet({ project_id, onClose, session }: Pro
         clearInterval(intervalRef.current);
       }
     };
-  }, [autosave, editable, projectSwr.data, editedProject, isUpdating, handleUpdateProject]);
+  }, [autosave, editable, projectSwr.data, editedProject, isUpdating, handleUpdateProject, hasUnsavedChanges]);
 
   //  Simplified level calculation
   useEffect(() => {

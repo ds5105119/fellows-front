@@ -123,6 +123,7 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
   const [processCount, setProcessCount] = useState<number>(0);
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [projectId, setProjectId] = useState(project_id);
+  const beforeCloseHandlerRef = useRef<(() => Promise<boolean>) | null>(null);
 
   const keyword = useThrottle(inputText, 1000);
   const router = useRouter();
@@ -139,16 +140,33 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
     [router]
   );
 
-  //  Optimized sheet close handler
+  const registerBeforeClose = useCallback((handler: (() => Promise<boolean>) | null) => {
+    beforeCloseHandlerRef.current = handler;
+  }, []);
+
+  const closeSheet = useCallback(() => {
+    window.history.pushState(null, "", "/service/project");
+    setProjectId(undefined);
+  }, []);
+
+  const attemptCloseSheet = useCallback(async () => {
+    if (beforeCloseHandlerRef.current) {
+      const shouldClose = await beforeCloseHandlerRef.current();
+      if (!shouldClose) {
+        return;
+      }
+    }
+
+    closeSheet();
+  }, [closeSheet]);
+
   const handleSheetOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        window.history.pushState(null, "", "/service/project");
-        setProjectId(undefined);
-        // router.push("/service/project", { scroll: false });
+        void attemptCloseSheet();
       }
     },
-    [router]
+    [attemptCloseSheet]
   );
 
   //  Memoized process count change handler
@@ -288,7 +306,12 @@ export default function ProjectMainSection({ session, project_id }: ProjectMainS
           <SheetHeader className="sr-only">
             <SheetTitle>프로젝트 상세</SheetTitle>
           </SheetHeader>
-          <ProjectDetailSheet project_id={projectId ?? ""} onClose={() => handleSheetOpenChange(false)} session={session} />
+          <ProjectDetailSheet
+            project_id={projectId ?? ""}
+            onClose={attemptCloseSheet}
+            session={session}
+            registerBeforeClose={registerBeforeClose}
+          />
           <SheetDescription className="sr-only" />
         </SheetContent>
       </Sheet>
