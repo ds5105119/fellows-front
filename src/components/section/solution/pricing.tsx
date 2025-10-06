@@ -135,7 +135,10 @@ export function Pricing() {
         <div className="flex items-center justify-between px-4 md:px-0">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 flex items-center space-x-2 md:space-x-4">
             <p>솔루션</p>
-            <AnimatedText textClassName="text-4xl md:text-5xl lg:text-6xl" />
+            <div className="relative">
+              <div className="transition-all duration-300 ease-out text-amber-500">❉</div>
+              <div className="absolute inset-0 blur-xl opacity-50 -z-10 text-amber-500 scale-110 select-none">❉</div>
+            </div>
           </h1>
 
           <div className="flex items-center space-x-4">

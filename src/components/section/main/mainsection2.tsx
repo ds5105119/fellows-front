@@ -37,6 +37,55 @@ const marqueeContents = [
 
 const features = [
   {
+    name: "견적서부터 보고서까지\n전자 문서로 편리하게",
+    description: (
+      <div className="flex items-center space-x-2">
+        <CopyPlus className="size-4 md:size-5 text-orange-500" strokeWidth={3} />
+        <div>필수 부가 기능</div>
+        <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
+      </div>
+    ),
+    className: "col-span-full md:col-span-2 bg-sky-50 transition-colors duration-300 ease-in-out",
+    href: "#document",
+    cta: "더 알아보기",
+    background: (
+      <div className="grow w-full relative flex items-center justify-center px-6 md:px-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
+        <div className="w-full h-fit">
+          <AspectRatio ratio={727 / 888}>
+            <Image src="/bento4.png" alt="Image" fill className="object-contain" />
+          </AspectRatio>
+        </div>
+      </div>
+    ),
+  },
+  {
+    name: `6000↑ 데이터를 학습한 AI로\n3분만에 무료 AI 견적서 작성`,
+    description: (
+      <div className="flex items-center">
+        <div className="md:block hidden">
+          <BreathingSparkles />
+        </div>
+        <div className="md:hidden block">
+          <BreathingSparkles size={20} />
+        </div>
+        <div className="ml-2">AI 예상 견적 확인하기</div>
+        <ChevronRight className="size-4 md:size-5 ml-2 text-gray-700 md:hidden" />
+      </div>
+    ),
+    href: "#ai",
+    cta: "더 알아보기",
+    className: "col-span-full md:col-span-4 bg-sky-50 transition-colors duration-300 ease-in-out",
+    background: (
+      <div className="grow w-full relative flex items-center justify-center px-6 md:px-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
+        <div className="w-full h-fit">
+          <AspectRatio ratio={2 / 1}>
+            <Image src="/bento2.png" alt="Image" fill className="object-contain" />
+          </AspectRatio>
+        </div>
+      </div>
+    ),
+  },
+  {
     name: "실시간으로 외주 상황을 파악해보세요",
     description: (
       <div className="flex items-center space-x-2">
@@ -92,55 +141,6 @@ const features = [
             </figure>
           ))}
         </Marquee>
-      </div>
-    ),
-  },
-  {
-    name: "견적서부터 보고서까지\n전자 문서로 편리하게",
-    description: (
-      <div className="flex items-center space-x-2">
-        <CopyPlus className="size-4 md:size-5 text-orange-500" strokeWidth={3} />
-        <div>필수 부가 기능</div>
-        <ChevronRight className="size-4 md:size-5 text-gray-700 md:hidden" />
-      </div>
-    ),
-    className: "col-span-full md:col-span-2 bg-sky-50 transition-colors duration-300 ease-in-out",
-    href: "#document",
-    cta: "더 알아보기",
-    background: (
-      <div className="grow w-full relative flex items-center justify-center px-6 md:px-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
-        <div className="w-full h-fit">
-          <AspectRatio ratio={727 / 888}>
-            <Image src="/bento4.png" alt="Image" fill className="object-contain" />
-          </AspectRatio>
-        </div>
-      </div>
-    ),
-  },
-  {
-    name: `6000↑ 데이터를 학습한 AI로\n3분만에 무료 AI 견적서 작성`,
-    description: (
-      <div className="flex items-center">
-        <div className="md:block hidden">
-          <BreathingSparkles />
-        </div>
-        <div className="md:hidden block">
-          <BreathingSparkles size={20} />
-        </div>
-        <div className="ml-2">AI 예상 견적 확인하기</div>
-        <ChevronRight className="size-4 md:size-5 ml-2 text-gray-700 md:hidden" />
-      </div>
-    ),
-    href: "#ai",
-    cta: "더 알아보기",
-    className: "col-span-full md:col-span-4 bg-sky-50 transition-colors duration-300 ease-in-out",
-    background: (
-      <div className="grow w-full relative flex items-center justify-center px-6 md:px-10 [mask-image:linear-gradient(to_top,transparent_0%,#000_30%)]">
-        <div className="w-full h-fit">
-          <AspectRatio ratio={2 / 1}>
-            <Image src="/bento2.png" alt="Image" fill className="object-contain" />
-          </AspectRatio>
-        </div>
       </div>
     ),
   },

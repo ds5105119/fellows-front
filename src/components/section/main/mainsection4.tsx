@@ -637,7 +637,7 @@ export default function MainSection4() {
 
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-2">
-      <div className="col-span-full flex flex-col space-y-4 md:space-y-6 px-8 lg:px-16 xl:px-36 w-full pb-12 lg:pb-16">
+      <div className="col-span-full flex flex-col space-y-4 md:space-y-6 px-8 lg:px-20 xl:px-40 w-full pb-12 lg:pb-16">
         <h1 className="text-3xl md:text-5xl font-extrabold tracking-normal text-foreground">Fellows SaaS를 사용하면 외주가 쉬워집니다.</h1>
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:items-end md:justify-between">
           <h4 className="text-base md:text-lg font-semibold text-foreground">
