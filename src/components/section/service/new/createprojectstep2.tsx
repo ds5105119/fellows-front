@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { FormField, FormItem, FormMessage, FormLabel, FormControl } from "@/components/ui/form";
 import { FeatureItemWithTooltip } from "@/components/form/featureitemwithtooltip";
@@ -14,10 +14,14 @@ import DatePicker from "@/components/section/service/new/datepicker";
 import dayjs from "@/lib/dayjs";
 import { SwitchIndicator } from "@/components/ui/switch-indicator";
 import { cn } from "@/lib/utils";
-import { Info } from "lucide-react";
+import { Info, Paperclip, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface CreateProjectFormStep2Props {
   form: UseFormReturn<CreateERPNextProject>;
+  pendingFiles: File[];
+  setPendingFiles: Dispatch<SetStateAction<File[]>>;
 }
 
 const areFeaturesEqual = (
@@ -31,7 +35,7 @@ const areFeaturesEqual = (
   return a.every((f) => setB.has(f.feature));
 };
 
-export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2Props) {
+export default function CreateProjectFormStep2({ form, pendingFiles, setPendingFiles }: CreateProjectFormStep2Props) {
   const {
     control,
     setValue,
@@ -43,6 +47,7 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
   const customFeatures = useWatch({ name: "custom_features", control });
 
   const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 1. 사용자 인터랙션: UI 상태인 openMap만 직접 변경
   const toggleCategory = (categoryTitle: string) => {
@@ -92,6 +97,73 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
       setOpenMap(idealOpenMap);
     }
   }, [customFeatures]);
+
+  const MAX_FILES = 20;
+  const MAX_SIZE = 30 * 1024 * 1024;
+
+  const remainingSlots = useMemo(() => Math.max(0, MAX_FILES - pendingFiles.length), [pendingFiles.length]);
+
+  const fileKey = useCallback((file: File) => `${file.name}-${file.size}-${file.lastModified}`, []);
+
+  const formatSize = useCallback((size: number) => {
+    if (size >= 1024 * 1024) return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+    if (size >= 1024) return `${(size / 1024).toFixed(1)} KB`;
+    return `${size} B`;
+  }, []);
+
+  const handleFilesSelected = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files ?? []);
+      if (!files.length) return;
+
+      const existingKeys = new Set(pendingFiles.map(fileKey));
+      const addedKeys = new Set<string>();
+      const accepted: File[] = [];
+      const oversized: string[] = [];
+      const duplicated: string[] = [];
+
+      for (const file of files) {
+        const key = fileKey(file);
+        if (file.size > MAX_SIZE) {
+          oversized.push(file.name);
+          continue;
+        }
+        if (existingKeys.has(key) || addedKeys.has(key)) {
+          duplicated.push(file.name);
+          continue;
+        }
+        if (accepted.length + pendingFiles.length >= MAX_FILES) {
+          toast.warning(`파일은 최대 ${MAX_FILES}개까지 첨부할 수 있어요.`);
+          break;
+        }
+        accepted.push(file);
+        addedKeys.add(key);
+      }
+
+      if (accepted.length) {
+        setPendingFiles((prev) => [...prev, ...accepted]);
+      }
+
+      if (oversized.length) {
+        toast.error(`${oversized.join(", ")} (은)는 30MB를 초과해요.`);
+      }
+      if (duplicated.length) {
+        toast.info(`${duplicated.join(", ")} (은)는 이미 추가된 파일이에요.`);
+      }
+
+      e.target.value = "";
+    },
+    [MAX_FILES, MAX_SIZE, fileKey, pendingFiles, setPendingFiles]
+  );
+
+  const handleRemoveFile = useCallback(
+    (index: number) => {
+      setPendingFiles((prev) => prev.filter((_, i) => i !== index));
+    },
+    [setPendingFiles]
+  );
+
+  const totalSize = useMemo(() => pendingFiles.reduce((acc, file) => acc + file.size, 0), [pendingFiles]);
 
   return (
     <>
@@ -245,12 +317,49 @@ export default function CreateProjectFormStep2({ form }: CreateProjectFormStep2P
       <CreateProjectStep2MaintenanceField form={form} />
 
       <div className="w-full flex flex-col space-y-4">
-        <div className="flex space-x-1 text-muted-foreground">
-          <div className="pt-[1.4px]">
-            <Info className="!size-3.5" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Paperclip className="!size-4 text-blue-500" />
+            <p className="text-sm font-semibold">프로젝트 파일 첨부</p>
           </div>
-          <p className="text-xs break-keep">파일 첨부는 프로젝트를 만든 뒤 부터 가능해요.</p>
+          <span className="text-xs text-muted-foreground">
+            {pendingFiles.length}/{MAX_FILES} • 총 {formatSize(totalSize)}
+          </span>
         </div>
+
+        <div className="rounded-2xl px-6 py-5 bg-gray-100 hover:bg-gray-200">
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <p className="text-sm font-medium">30MB 이하 파일을 최대 {MAX_FILES}개까지 추가할 수 있어요.</p>
+              <p className="text-xs text-muted-foreground">디자인 시안, 참고 문서 등을 먼저 전달하면 더 빠르게 도와드릴 수 있어요.</p>
+            </div>
+            <Button type="button" className="rounded-2xl px-4" onClick={() => fileInputRef.current?.click()} disabled={remainingSlots <= 0}>
+              파일 선택하기
+            </Button>
+          </div>
+          <input ref={fileInputRef} type="file" multiple className="sr-only" onChange={handleFilesSelected} />
+        </div>
+
+        {pendingFiles.length > 0 ? (
+          <div className="space-y-2">
+            {pendingFiles.map((file, index) => (
+              <div key={fileKey(file)} className="flex items-center justify-between rounded-2xl bg-gray-100 px-6 py-5">
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">{file.name}</span>
+                  <span className="text-xs text-muted-foreground">{formatSize(file.size)}</span>
+                </div>
+                <Button type="button" variant="ghost" size="icon" className="rounded-xl" onClick={() => handleRemoveFile(index)}>
+                  <Trash2 className="!size-4 text-red-500" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 rounded-2xl bg-muted px-4 py-3 text-xs text-muted-foreground">
+            <Info className="!size-3.5" />
+            <p>추가할 파일이 없다면 이 단계는 건너뛰어도 괜찮아요.</p>
+          </div>
+        )}
       </div>
     </>
   );

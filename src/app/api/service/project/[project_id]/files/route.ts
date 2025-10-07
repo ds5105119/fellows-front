@@ -1,6 +1,44 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
+const DEFAULT_FILE_ERROR_MESSAGE = "Failed to persist file metadata";
+const DEFAULT_FILE_SUCCESS_BODY = { message: "File Created successfully" } as const;
+
+const extractErrorMessage = (raw: string | null): string => {
+  if (!raw) {
+    return DEFAULT_FILE_ERROR_MESSAGE;
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (typeof parsed?.message === "string" && parsed.message.trim()) {
+      return parsed.message;
+    }
+    if (typeof parsed?.detail === "string" && parsed.detail.trim()) {
+      return parsed.detail;
+    }
+    if (typeof parsed === "string" && parsed.trim()) {
+      return parsed;
+    }
+
+    return JSON.stringify(parsed);
+  } catch {
+    return raw;
+  }
+};
+
+const parseSuccessBody = (raw: string | null): unknown => {
+  if (!raw) {
+    return DEFAULT_FILE_SUCCESS_BODY;
+  }
+
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return { message: raw };
+  }
+};
+
 export async function GET(request: Request, { params }: { params: Promise<{ project_id: string }> }) {
   // 요청 정보
   const session = await auth();
@@ -48,7 +86,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
   const url = `${process.env.NEXT_PUBLIC_PROJECT_URL}/${project_id}/files`;
 
   try {
-    await fetch(url, {
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -58,11 +96,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ pro
       redirect: "follow",
       credentials: "include",
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      const errorMessage = extractErrorMessage(errorText);
+
+      console.error("Upstream file creation failed:", errorMessage);
+      return NextResponse.json({ error: errorMessage }, { status: response.status });
+    }
+
+    const dataText = await response.text();
+    return NextResponse.json(parseSuccessBody(dataText));
   } catch (error) {
     console.error("API error:", error);
 
     return NextResponse.json({ error: "Failed to fetch project data" }, { status: 500 });
   }
-
-  return NextResponse.json({ message: "File Created successfully" });
 }

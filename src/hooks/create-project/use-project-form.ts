@@ -7,15 +7,27 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { createProject } from "@/hooks/fetch/project";
+import { createFile, createProject } from "@/hooks/fetch/project";
 import { stepsMeta } from "@/components/resource/project";
-import { type CreateERPNextProject, createERPNextProjectSchema, ProjectInfoEstimateResponse } from "@/@types/service/project";
+import {
+  type CreateERPNextProject,
+  createERPNextProjectSchema,
+  ProjectInfoEstimateResponse,
+  erpNextFileSchema,
+  type ERPNextFile,
+} from "@/@types/service/project";
+import { getSSECPresignedPutUrl, uploadFileToSSECPresignedUrl } from "@/hooks/fetch/presigned";
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const isFulfilled = <T>(result: PromiseSettledResult<T>): result is PromiseFulfilledResult<T> => result.status === "fulfilled";
+const isRejected = <T>(result: PromiseSettledResult<T>): result is PromiseRejectedResult => result.status === "rejected";
 
 export function useProjectForm(description?: string, info?: ProjectInfoEstimateResponse) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isStepping, setIsStepping] = useState(false);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 
   const form = useForm<CreateERPNextProject>({
     resolver: zodResolver(createERPNextProjectSchema),
@@ -146,8 +158,75 @@ export function useProjectForm(description?: string, info?: ProjectInfoEstimateR
         const project = await createProject(values);
         if (!project) throw new Error("Project creation failed");
 
-        toast.success("프로젝트 정보가 성공적으로 저장되었습니다.");
+        const persistFileMetadata = async (
+          projectName: string,
+          payload: Omit<ERPNextFile, "creation" | "modified"> & Record<string, unknown>,
+          attempt = 0
+        ): Promise<void> => {
+          try {
+            await createFile({ projectId: projectName, filePayload: payload });
+          } catch (metadataError) {
+            if (attempt >= 2) {
+              throw metadataError;
+            }
+            await persistFileMetadata(projectName, payload, attempt + 1);
+          }
+        };
+
+        const uploadResults = pendingFiles.length
+          ? await Promise.allSettled(
+              pendingFiles.map(async (file, index) => {
+                try {
+                  const presigned = await getSSECPresignedPutUrl("project", project.custom_project_title ?? "None");
+                  const baseFileRecord = erpNextFileSchema.parse({
+                    file_name: file.name,
+                    key: presigned.key,
+                    algorithm: "AES256",
+                    sse_key: presigned.sse_key,
+                    uploader: "user",
+                    project: project.project_name,
+                  });
+
+                  await uploadFileToSSECPresignedUrl({ file, presigned });
+                  const fileRecord = {
+                    ...baseFileRecord,
+                    file_size: file.size,
+                    content_type: file.type || undefined,
+                    attached_to_doctype: "Project",
+                    attached_to_name: project.project_name,
+                    folder: "Home/Attachments",
+                    is_private: 1,
+                  };
+
+                  await persistFileMetadata(project.project_name, fileRecord);
+                  return { index, name: file.name };
+                } catch (error) {
+                  console.error(`File upload error (${file.name}):`, error);
+                  throw { index, name: file.name, error };
+                }
+              })
+            )
+          : [];
+
+        const successfulResults = uploadResults.filter(isFulfilled).map((result) => result.value);
+        const failedResults = uploadResults.filter(isRejected).map((result) => result.reason as { index: number; name: string });
+
+        if (failedResults.length > 0) {
+          const failedFileNames = failedResults.map((item, idx) => item?.name ?? `파일 ${idx + 1}`);
+          toast.error(`다음 파일은 업로드에 실패했어요: ${failedFileNames.join(", ")}`);
+        }
+
+        if (successfulResults.length > 0) {
+          toast.success(`${successfulResults.length}개의 파일이 업로드되었습니다.`);
+        }
+
+        if (pendingFiles.length === 0 || successfulResults.length > 0) {
+          toast.success("프로젝트 정보가 성공적으로 저장되었습니다.");
+        }
+
         reset();
+        const failedIndexSet = new Set(failedResults.map((result) => result.index));
+        setPendingFiles(failedIndexSet.size > 0 ? pendingFiles.filter((_, idx) => failedIndexSet.has(idx)) : []);
 
         router.push(`/service/project/${project.project_name}`);
         router.refresh();
@@ -158,7 +237,7 @@ export function useProjectForm(description?: string, info?: ProjectInfoEstimateR
         setIsLoading(false);
       }
     },
-    [isStepping, trigger, router, reset]
+    [isStepping, trigger, router, reset, pendingFiles]
   );
 
   // 제출 버튼 클릭 핸들러
@@ -186,5 +265,7 @@ export function useProjectForm(description?: string, info?: ProjectInfoEstimateR
     handlePrev,
     handleSubmitClick,
     onSubmit,
+    pendingFiles,
+    setPendingFiles,
   };
 }

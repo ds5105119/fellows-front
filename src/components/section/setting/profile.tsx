@@ -470,7 +470,7 @@ export default function UserProfile({ session }: { session: Session }) {
                       onChange={(e) => field.onChange([e.target.value])}
                       placeholder="자신에 대해 알려주세요..."
                       maxLength={100}
-                      className={cn(textareaBaseClasses, "min-h-[80px] resize-none")}
+                      className={cn(textareaBaseClasses, "!text-base min-h-[80px] resize-none")}
                       disabled={isSubmitting}
                     />
                   </FormControl>
@@ -498,7 +498,7 @@ export default function UserProfile({ session }: { session: Session }) {
                   <FormControl>
                     <div className="space-y-2">
                       {field.value?.map((link, index) => (
-                        <div key={index} className="flex items-center gap-3">
+                        <div key={index} className="flex items-center space-x-2">
                           <div className="flex-1">
                             <Input
                               value={link}
@@ -513,7 +513,7 @@ export default function UserProfile({ session }: { session: Session }) {
                             variant="ghost"
                             type="button"
                             disabled={isSubmitting}
-                            className={cn(buttonBaseClasses, "w-auto justify-center text-red-600 hover:text-red-600 hover:bg-red-100/60")}
+                            className={cn(buttonBaseClasses, "w-auto px-6 justify-center text-red-600 hover:text-red-600 hover:bg-red-100/60")}
                           >
                             <X className="h-4 w-4" />
                           </Button>

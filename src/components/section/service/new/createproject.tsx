@@ -39,8 +39,21 @@ export default function CreateProject() {
     }
   }, [searchParams]);
 
-  const { form, currentStep, totalSteps, currentStepMeta, isLoading, isStepping, isNextDisabled, isSubmitDisabled, handleNext, handlePrev, handleSubmitClick } =
-    useProjectForm(description, info);
+  const {
+    form,
+    currentStep,
+    totalSteps,
+    currentStepMeta,
+    isLoading,
+    isStepping,
+    isNextDisabled,
+    isSubmitDisabled,
+    handleNext,
+    handlePrev,
+    handleSubmitClick,
+    pendingFiles,
+    setPendingFiles,
+  } = useProjectForm(description, info);
   const project_method = useWatch({ name: "custom_project_method", control: form.control });
 
   const { isSuccess, isRecommending, handleRecommend } = useFeatureRecommendation(form);
@@ -183,7 +196,7 @@ export default function CreateProject() {
           <Form {...form}>
             <form className="flex flex-col gap-6">
               {currentStep === 1 && <CreateProjectFormStep1 form={form} />}
-              {currentStep === 2 && <CreateProjectFormStep2 form={form} />}
+              {currentStep === 2 && <CreateProjectFormStep2 form={form} pendingFiles={pendingFiles} setPendingFiles={setPendingFiles} />}
             </form>
           </Form>
 

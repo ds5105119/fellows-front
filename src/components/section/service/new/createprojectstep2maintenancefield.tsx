@@ -155,9 +155,6 @@ function MaintenanceForm({ form, onSubscribe, onCancel }: { form: UseFormReturn<
           <div className="flex items-center space-x-2 text-sm">
             <span>서버 운영 및 관리</span>
           </div>
-          <div className="flex items-center space-x-2 text-sm">
-            <span>월 30시간 개발 크레딧 제공(익월까지 유효)</span>
-          </div>
         </div>
       </div>
 

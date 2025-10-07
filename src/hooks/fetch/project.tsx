@@ -231,12 +231,24 @@ export const cancelSubmitProject = async (projectId: string): Promise<void> => {
 // =================================================================
 
 // --- CREATE ---
-export const createFile = async ({ projectId, filePayload }: { projectId: string; filePayload: Omit<ERPNextFile, "creation" | "modified"> }) => {
-  await fetch(`${API_BASE_URL}/${projectId}/files`, {
+export const createFile = async ({
+  projectId,
+  filePayload,
+}: {
+  projectId: string;
+  filePayload: Omit<ERPNextFile, "creation" | "modified"> & Record<string, unknown>;
+}) => {
+  const response = await fetch(`${API_BASE_URL}/${projectId}/files`, {
     method: "POST", // API 라우터에 따라 PUT 사용
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(filePayload),
   });
+
+  if (!response.ok) {
+    throw new Error("Failed to persist file metadata");
+  }
+
+  return response;
 };
 
 // --- READ (Single) ---
