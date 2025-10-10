@@ -88,6 +88,14 @@ export default async function MainSection1() {
       <div className="col-span-full w-full flex z-20 md:hidden pt-10">
         <MobileCTAButton />
       </div>
+
+      <div className="col-span-full grid grid-cols-2 md:grid-cols-5 px-8 max-w-3xl w-full mx-auto justify-items-center items-center mt-20 md:mt-24 gap-y-6">
+        <Image src="/logo-section-1.png" alt="인도네시아 국장" width="64" height="64" className="" />
+        <Image src="/logo-section-3.png" alt="Nose 로고" width="64" height="64" className="" />
+        <Image src="/logo-section-2.svg" alt="하이네켄 로고" width="100" height="100" className="" />
+        <Image src="/logo-section-4.png" alt="100 Plus 로고" width="64" height="64" className="" />
+        <Image src="/logo-section-5.png" alt="Korea Wallpaper 로고" width="64" height="64" className="hidden md:block" />
+      </div>
     </div>
   );
 }

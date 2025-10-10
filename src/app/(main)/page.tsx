@@ -1,9 +1,8 @@
 import { Metadata } from "next";
-import { SessionProvider } from "next-auth/react";
 
 import { InView } from "@/components/ui/in-view";
-import InViewBackground from "@/components/resource/inviewbackground";
 
+import InViewBackground from "@/components/resource/inviewbackground";
 import MainSection1 from "@/components/section/main/mainsection1";
 import MainSection2 from "@/components/section/main/mainsection2";
 import MainSection3 from "@/components/section/main/mainsection3";
@@ -48,12 +47,40 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <div className="grid grid-cols-4 lg:grid-cols-12 mb-4 md:mb-24">
-      <SessionProvider>
-        <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 w-full relative">
-          <MainSection1 />
-        </div>
+      <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 w-full relative">
+        <MainSection1 />
+      </div>
 
-        <div className="col-span-full py-10 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+      <div className="col-span-full py-10 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto">
+        <InView
+          variants={{
+            hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+            visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+          }}
+          viewOptions={{ margin: "0px 0px 100px 0px" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          once
+        >
+          <MainSection2 />
+        </InView>
+      </div>
+
+      <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="document">
+        <InView
+          variants={{
+            hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+            visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+          }}
+          viewOptions={{ margin: "0px 0px 100px 0px" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          once
+        >
+          <MainSection5 />
+        </InView>
+      </div>
+
+      <div className="col-span-full relative" id="price">
+        <div className="col-span-full py-16 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto relative">
           <InView
             variants={{
               hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
@@ -63,111 +90,81 @@ export default async function Page() {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             once
           >
-            <MainSection2 />
+            <MainSection3 />
           </InView>
         </div>
+        <InViewBackground className="bg-zinc-100" />
+      </div>
 
-        <div className="col-span-full py-10 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="document">
-          <InView
-            variants={{
-              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
-              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
-            }}
-            viewOptions={{ margin: "0px 0px 100px 0px" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            once
-          >
-            <MainSection5 />
-          </InView>
-        </div>
+      <div className="col-span-full py-10 lg:py-24" id="saas">
+        <InView
+          variants={{
+            hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+            visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+          }}
+          viewOptions={{ margin: "0px 0px 100px 0px" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          once
+        >
+          <MainSection4 />
+        </InView>
+      </div>
 
-        <div className="col-span-full relative" id="price">
-          <div className="col-span-full py-16 lg:py-24 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto relative">
-            <InView
-              variants={{
-                hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
-                visible: { opacity: 1, y: 0, filter: "blur(0px)" },
-              }}
-              viewOptions={{ margin: "0px 0px 100px 0px" }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              once
-            >
-              <MainSection3 />
-            </InView>
-          </div>
-          <InViewBackground className="bg-zinc-100" />
-        </div>
+      <div className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="ai">
+        <InView
+          variants={{
+            hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+            visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+          }}
+          viewOptions={{ margin: "0px 0px 100px 0px" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          once
+        >
+          <MainSection7 />
+        </InView>
+      </div>
 
-        <div className="col-span-full py-10 lg:py-24" id="saas">
-          <InView
-            variants={{
-              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
-              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
-            }}
-            viewOptions={{ margin: "0px 0px 100px 0px" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            once
-          >
-            <MainSection4 />
-          </InView>
-        </div>
+      <div className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="qna">
+        <InView
+          variants={{
+            hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+            visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+          }}
+          viewOptions={{ margin: "0px 0px 100px 0px" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          once
+        >
+          <MainQnaSection />
+        </InView>
+      </div>
 
-        <div className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="ai">
-          <InView
-            variants={{
-              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
-              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
-            }}
-            viewOptions={{ margin: "0px 0px 100px 0px" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            once
-          >
-            <MainSection7 />
-          </InView>
-        </div>
+      <div className="col-span-full pt-10 lg:pt-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="contact">
+        <InView
+          variants={{
+            hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+            visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+          }}
+          viewOptions={{ margin: "0px 0px 100px 0px" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          once
+        >
+          <MainContactSection />
+        </InView>
+      </div>
 
-        <div className="col-span-full py-10 lg:py-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="qna">
-          <InView
-            variants={{
-              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
-              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
-            }}
-            viewOptions={{ margin: "0px 0px 100px 0px" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            once
-          >
-            <MainQnaSection />
-          </InView>
-        </div>
-
-        <div className="col-span-full pt-10 lg:pt-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="contact">
-          <InView
-            variants={{
-              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
-              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
-            }}
-            viewOptions={{ margin: "0px 0px 100px 0px" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            once
-          >
-            <MainContactSection />
-          </InView>
-        </div>
-
-        <div className="col-span-full pt-20 pb-10 lg:pt-26 lg:pb-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="inquery">
-          <InView
-            variants={{
-              hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
-              visible: { opacity: 1, y: 0, filter: "blur(0px)" },
-            }}
-            viewOptions={{ margin: "0px 0px 100px 0px" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            once
-          >
-            <MainInquerySection />
-          </InView>
-        </div>
-      </SessionProvider>
+      <div className="col-span-full pt-20 pb-10 lg:pt-26 lg:pb-16 px-4 lg:px-16 xl:px-36 w-full lg:mx-auto" id="inquery">
+        <InView
+          variants={{
+            hidden: { opacity: 0, y: 100, filter: "blur(4px)" },
+            visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+          }}
+          viewOptions={{ margin: "0px 0px 100px 0px" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          once
+        >
+          <MainInquerySection />
+        </InView>
+      </div>
     </div>
   );
 }
