@@ -77,7 +77,7 @@ export default async function RootLayout({
       <ClientLocaleInit />
       <GoogleTagManager gtmId="GTM-W3M5P7KT" />
 
-      <body className={`${pretendard.className} ${satoshi.className} h-screen overflow-y-auto selection:bg-blue-400 selection:text-white`}>
+      <body className={`${pretendard.className} ${satoshi.className} h-screen overflow-y-auto overflow-x-hidden selection:bg-blue-400 selection:text-white`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
