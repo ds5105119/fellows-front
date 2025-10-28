@@ -35,7 +35,7 @@ export default async function Home() {
   return (
     <>
       <Navbar />
-      <div className="grid grid-cols-4 lg:grid-cols-12 bg-[#F1F1F1]">
+      <div className="grid grid-cols-4 lg:grid-cols-12 bg-[#FFFFFF]">
         <div className="col-span-full w-full">
           <WorkMain2 />
         </div>

@@ -208,7 +208,7 @@ export default function Navbar() {
         >
           <nav className="flex items-center justify-start space-x-6">
             {menuItems.map((item, index) => (
-              <a key={index} href={item.href} className="text-white text-sm md:text-2xl font-semibold select-none">
+              <a key={index} href={item.href} className="text-white text-sm md:text-2xl font-light select-none">
                 <LetterSwapForward label={item.label} reverse={true} />
               </a>
             ))}
@@ -283,7 +283,7 @@ export default function Navbar() {
                       <a
                         href={item.href}
                         onClick={closeMobileMenu}
-                        className="block py-2 text-3xl font-semibold text-gray-900 hover:text-gray-600 transition-colors"
+                        className="block py-2 text-3xl font-light text-gray-900 hover:text-gray-600 transition-colors"
                       >
                         {item.label}
                       </a>

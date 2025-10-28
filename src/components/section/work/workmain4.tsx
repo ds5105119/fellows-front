@@ -154,7 +154,7 @@ export default function WorkMain4() {
 
   return (
     <div className="flex flex-col" ref={containerRef}>
-      <section className="w-full h-48 bg-[#F1F1F1] relative"></section>
+      <section className="w-full h-48 bg-[#FFFFFF] relative"></section>
 
       <section className="w-full h-dvh bg-zinc-900 relative z-20" ref={sectionBRef}>
         <div className="absolute top-0 left-0 w-full -z-10 -translate-y-1/2">
