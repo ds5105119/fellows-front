@@ -12,6 +12,7 @@ export default function Navbar() {
 
   // ===== 데스크톱 로고 =====
   const desktopLogoRef = useRef<HTMLImageElement | null>(null);
+  const mobileLogoRef = useRef<HTMLImageElement | null>(null);
   const desktopMinHeight = 80;
   const [vh, setVh] = useState(0);
 
@@ -47,6 +48,38 @@ export default function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    const measureAndSet = () => {
+      const el = mobileLogoRef.current;
+      if (!el) return;
+
+      const vw = window.innerWidth;
+      const targetWidth = vw - 32;
+
+      const BASE = 64;
+      el.style.width = BASE + "px";
+      const rect = el.getBoundingClientRect();
+      const realWidth = rect.width || 1;
+
+      const ratio = targetWidth / realWidth;
+      const nextFontSize = BASE * ratio;
+
+      el.style.width = `${nextFontSize}px`;
+    };
+
+    measureAndSet();
+    window.addEventListener("resize", measureAndSet);
+
+    const el = mobileLogoRef.current;
+    const ro = el ? new ResizeObserver(measureAndSet) : null;
+    if (el && ro) ro.observe(el);
+
+    return () => {
+      window.removeEventListener("resize", measureAndSet);
+      ro?.disconnect();
+    };
+  }, []);
+
   // ===== 스크롤로 위로만 나가게 =====
   useEffect(() => {
     const f = () => setVh(window.innerHeight);
@@ -61,7 +94,7 @@ export default function Navbar() {
   const logoTranslateY = useTransform(scrollY, [0, vh], [0, -vh], { clamp: true });
 
   // 모바일용 height 미리 만들어
-  const mobileHeaderHeight = useTransform(scrollY, [0, (vh || 600) * 0.9 - 48], [(vh || 600) * 0.9, 48], { clamp: true });
+  const mobileHeaderHeight = useTransform(scrollY, [0, (vh || 600) - 48], [vh || 600, 48], { clamp: true });
 
   // ===== 모바일 메뉴 =====
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -147,9 +180,17 @@ export default function Navbar() {
       {/* 모바일 */}
       <motion.header className="fixed w-full z-[100] block md:hidden mix-blend-difference" style={{ height: mobileHeaderHeight }}>
         <div className="relative h-full w-full">
-          <h1 className="absolute font-black whitespace-nowrap mx-4 block md:hidden bottom-0 text-white" style={{ fontSize: "14vw", lineHeight: 1 }}>
-            Fellows
-          </h1>
+          <motion.img
+            ref={mobileLogoRef}
+            src="/fellows/logo-text-2.svg"
+            className="invert absolute block md:hidden font-black pointer-events-auto h-auto text-black select-none"
+            style={{
+              bottom: 48,
+              left: 16,
+              translateY: logoTranslateY,
+              whiteSpace: "nowrap",
+            }}
+          />
           <div className="absolute top-2 right-3 flex md:hidden">
             <button onClick={toggleMobileMenu} className="p-2 text-white">
               <AlignLeft size={24} />

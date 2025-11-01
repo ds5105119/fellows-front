@@ -61,7 +61,7 @@ export default function WorkMain2() {
           </div>
         </div>
 
-        <div className="mx-5 mt-2">
+        <div className="mx-4 px-1 mt-2">
           <div className="text-sm font-light">
             <p>Sulwhasoo, Amorepacific</p>
             <p>Shopify 구축</p>
