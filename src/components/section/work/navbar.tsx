@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, AnimatePresence, type Easing } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, type Easing, useSpring } from "framer-motion";
 import { AlignLeft, X } from "lucide-react";
 import { useLenis } from "lenis/react";
 import LetterSwapForward from "@/components/fancy/text/letter-swap-forward-anim";
@@ -92,6 +92,7 @@ export default function Navbar() {
   const headerHeightPx = useTransform(headerHeight, (v) => `${v}px`);
 
   const logoTranslateY = useTransform(scrollY, [0, vh], [0, -vh], { clamp: true });
+  const mobileLogoTranslateY = useSpring(logoTranslateY);
 
   // 모바일용 height 미리 만들어
   const mobileHeaderHeight = useTransform(scrollY, [0, (vh || 600) - 48], [vh || 600, 48], { clamp: true });
@@ -187,7 +188,7 @@ export default function Navbar() {
             style={{
               bottom: 48,
               left: 16,
-              translateY: logoTranslateY,
+              translateY: mobileLogoTranslateY,
               whiteSpace: "nowrap",
             }}
           />
