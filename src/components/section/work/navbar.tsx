@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useLayoutEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence, type Easing } from "framer-motion";
 import { AlignLeft, X } from "lucide-react";
 import { useLenis } from "lenis/react";
@@ -8,258 +8,167 @@ import LetterSwapForward from "@/components/fancy/text/letter-swap-forward-anim"
 
 export default function Navbar() {
   const lenis = useLenis();
-  const targetRef = useRef<HTMLElement | null>(null);
-  const mobileTargetRef = useRef<HTMLElement | null>(null);
-  const logoDesktopRef = useRef<HTMLHeadingElement | null>(null);
-  const logoMobileRef = useRef<HTMLHeadingElement | null>(null);
   const { scrollY } = useScroll();
-  const [viewportHeight, setViewportHeight] = useState<number>(0);
-  const [maxFontSizeDesktop, setMaxFontSizeDesktop] = useState(0);
-  const [maxFontSizeMobile, setMaxFontSizeMobile] = useState(0);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  /** 🔹 뷰포트 높이를 기준으로 스크롤 범위 설정 */
-  useEffect(() => {
-    function updateHeight() {
-      document.documentElement.style.setProperty("--vh", `${window.innerHeight * 0.01}px`);
-      setViewportHeight(window.innerHeight);
-    }
-    updateHeight();
-    window.addEventListener("resize", updateHeight);
-    return () => window.removeEventListener("resize", updateHeight);
-  }, []);
-
-  /** 🔹 데스크탑 로고 최대 폰트 계산 */
-  useLayoutEffect(() => {
-    function updateDesktopFontSize() {
-      if (!logoDesktopRef.current) return;
-      const testSize = 1000;
-      logoDesktopRef.current.style.fontSize = `${testSize}px`;
-      const width = logoDesktopRef.current.getBoundingClientRect().width;
-      const newFontSize = ((window.innerWidth - 16) / width) * testSize;
-      setMaxFontSizeDesktop(newFontSize);
-      logoDesktopRef.current.style.fontSize = "";
-    }
-    updateDesktopFontSize();
-    window.addEventListener("resize", updateDesktopFontSize);
-    return () => window.removeEventListener("resize", updateDesktopFontSize);
-  }, []);
-
-  /** 🔹 모바일 로고 최대 폰트 계산 */
-  useLayoutEffect(() => {
-    function updateMobileFontSize() {
-      if (!logoMobileRef.current) return;
-      const testSize = 1000;
-      logoMobileRef.current.style.fontSize = `${testSize}px`;
-      const { width, height } = logoMobileRef.current.getBoundingClientRect();
-      const maxAllowedWidth = window.innerWidth * 0.98;
-      const maxAllowedHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--vh")) * 100 * 0.3;
-      const widthRatio = maxAllowedWidth / width;
-      const heightRatio = maxAllowedHeight / height;
-      const scaleRatio = Math.min(widthRatio, heightRatio);
-      const newFontSize = testSize * scaleRatio;
-      setMaxFontSizeMobile(newFontSize);
-      logoMobileRef.current.style.fontSize = "";
-    }
-    updateMobileFontSize();
-    window.addEventListener("resize", updateMobileFontSize);
-    return () => window.removeEventListener("resize", updateMobileFontSize);
-  }, []);
-
-  /** 🔹 px 단위 height 변환 */
-  const fullHeight = viewportHeight * 0.96;
-
+  // ===== 데스크톱 로고 =====
+  const desktopLogoRef = useRef<HTMLImageElement | null>(null);
   const desktopMinHeight = 80;
-  const desktopShrinkDistance = fullHeight - desktopMinHeight; // 줄어드는 거리(px)
-  const headerHeight = useTransform(
-    scrollY,
-    [0, desktopShrinkDistance], // ΔH px
-    [fullHeight, desktopMinHeight], // ΔH px
-    { clamp: true }
-  );
+  const [vh, setVh] = useState(0);
+
+  useEffect(() => {
+    const measureAndSet = () => {
+      const el = desktopLogoRef.current;
+      if (!el) return;
+
+      const vw = window.innerWidth;
+      const targetWidth = vw - 32;
+
+      const BASE = 64;
+      el.style.width = BASE + "px";
+      const rect = el.getBoundingClientRect();
+      const realWidth = rect.width || 1;
+
+      const ratio = targetWidth / realWidth;
+      const nextFontSize = BASE * ratio;
+
+      el.style.width = `${nextFontSize}px`;
+    };
+
+    measureAndSet();
+    window.addEventListener("resize", measureAndSet);
+
+    const el = desktopLogoRef.current;
+    const ro = el ? new ResizeObserver(measureAndSet) : null;
+    if (el && ro) ro.observe(el);
+
+    return () => {
+      window.removeEventListener("resize", measureAndSet);
+      ro?.disconnect();
+    };
+  }, []);
+
+  // ===== 스크롤로 위로만 나가게 =====
+  useEffect(() => {
+    const f = () => setVh(window.innerHeight);
+    f();
+    window.addEventListener("resize", f);
+    return () => window.removeEventListener("resize", f);
+  }, []);
+
+  const headerHeight = useTransform(scrollY, [0, vh], [vh, desktopMinHeight], { clamp: true });
   const headerHeightPx = useTransform(headerHeight, (v) => `${v}px`);
 
-  const mobileMinHeight = 48;
-  const mobileShrinkDistance = fullHeight - mobileMinHeight;
-  const mobileHeaderHeight = useTransform(
-    scrollY,
-    [0, mobileShrinkDistance], // ΔH px
-    [fullHeight, mobileMinHeight], // ΔH px
-    { clamp: true }
-  );
-  const mobileHeaderHeightPx = useTransform(mobileHeaderHeight, (v) => `${v}px`);
+  const logoTranslateY = useTransform(scrollY, [0, vh], [0, -vh], { clamp: true });
 
-  /** 🔹 폰트/위치 애니메이션 */
-  const logoFontSize = useTransform(scrollY, [0, desktopShrinkDistance], [100, (48 / maxFontSizeDesktop) * 100]);
-  const logoFontSizePercent = useTransform(logoFontSize, (v) => `${v}%`);
-  const logoTranslateY = useTransform(scrollY, [0, desktopShrinkDistance], ["0px", "-18px"]);
-  const logoLetterSpacing = useTransform(scrollY, [0, desktopShrinkDistance], ["-0.3rem", "0rem"]);
+  // 모바일용 height 미리 만들어
+  const mobileHeaderHeight = useTransform(scrollY, [0, (vh || 600) * 0.9 - 48], [(vh || 600) * 0.9, 48], { clamp: true });
 
-  const mobileLogoFontSize = useTransform(scrollY, [0, mobileShrinkDistance], [100, (24 / maxFontSizeMobile) * 100]);
-  const mobileLogoFontSizePercent = useTransform(mobileLogoFontSize, (v) => `${v}%`);
-  const mobileLogoTranslateY = useTransform(scrollY, [0, mobileShrinkDistance], ["0px", "-12px"]);
-  const mobileLogoLetterSpacing = useTransform(scrollY, [0, mobileShrinkDistance], ["-0.3rem", "0rem"]);
-
-  /** 🔹 처음엔 아래쪽 → 줄어들면 세로 중앙 정렬 */
-  const navLeft = useTransform(scrollY, [0, desktopShrinkDistance], ["1%", "50%"]);
-  const navTranslateX = useTransform(scrollY, [0, desktopShrinkDistance], ["0%", "-50%"]);
-
-  const mobileNavLeft = useTransform(scrollY, [0, mobileShrinkDistance], ["0%", "100%"]);
-  const mobileNavTranslateX = useTransform(scrollY, [0, mobileShrinkDistance], ["0%", "-100%"]);
-
-  // 모바일 메뉴 열기/닫기 함수
+  // ===== 모바일 메뉴 =====
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const toggleMobileMenu = () => {
-    if (isMobileMenuOpen) {
-      lenis?.start();
-    } else {
-      lenis?.stop();
-    }
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+    if (isMobileMenuOpen) lenis?.start();
+    else lenis?.stop();
+    setIsMobileMenuOpen((p) => !p);
   };
-
-  // 모바일 메뉴 닫기 함수
   const closeMobileMenu = () => {
     lenis?.start();
     setIsMobileMenuOpen(false);
   };
 
-  // 메뉴 아이템들
   const menuItems = [
     { label: "home", href: "/" },
     { label: "saas", href: "/service" },
     { label: "blog", href: "/blog" },
-    { label: "contact", href: "/#contact" },
   ];
 
-  // 메뉴 애니메이션 variants
   const menuVariants = {
-    closed: {
-      x: "100%",
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut" as Easing,
-      },
-    },
-    open: {
-      x: "0%",
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut" as Easing,
-      },
-    },
-    exit: {
-      x: "100%",
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut" as Easing,
-      },
-    },
+    closed: { x: "100%", transition: { duration: 0.3, ease: "easeInOut" as Easing } },
+    open: { x: "0%", transition: { duration: 0.3, ease: "easeInOut" as Easing } },
+    exit: { x: "100%", transition: { duration: 0.3, ease: "easeInOut" as Easing } },
   };
 
   const menuItemVariants = {
-    closed: {
-      y: 50,
-      opacity: 0,
-    },
+    closed: { y: 50, opacity: 0 },
     open: {
       y: 0,
       opacity: 1,
-      transition: {
-        duration: 0.2,
-        ease: "easeOut" as Easing,
-      },
+      transition: { duration: 0.2, ease: "easeOut" as Easing },
     },
   };
 
   const containerVariants = {
     closed: {},
     open: {
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
+      transition: { staggerChildren: 0.1, delayChildren: 0.2 },
     },
   };
 
   return (
     <>
-      {/* 데스크탑 */}
-      <motion.header className="fixed w-full z-50 hidden md:flex mix-blend-difference" ref={targetRef} style={{ height: headerHeightPx }}>
-        <motion.h1
-          ref={logoDesktopRef}
-          className="absolute font-black whitespace-nowrap hidden md:block select-none"
+      {/* 데스크톱 */}
+      <motion.header className="fixed w-full z-50 hidden md:flex mix-blend-difference pointer-events-none" style={{ height: headerHeightPx }}>
+        <motion.img
+          ref={desktopLogoRef}
+          src="/fellows/logo-text-2.svg"
+          className="invert absolute hidden md:block font-black pointer-events-auto h-auto text-black select-none"
           style={{
-            bottom: 0,
+            bottom: 48,
+            left: 16,
             translateY: logoTranslateY,
-            fontSize: maxFontSizeDesktop,
-            lineHeight: "1",
-            letterSpacing: logoLetterSpacing,
-            color: "white",
-            scale: logoFontSizePercent,
-            transformOrigin: "bottom left",
-            marginLeft: 16,
+            whiteSpace: "nowrap",
           }}
-        >
-          Fellows
-        </motion.h1>
-        <motion.div
-          className="absolute h-fit w-fit px-4 hidden md:flex mt-5.5 mix-blend-difference opacity-70"
-          style={{ left: navLeft, translateX: navTranslateX }}
-        >
-          <nav className="flex items-center justify-start space-x-6">
-            {menuItems.map((item, index) => (
-              <a key={index} href={item.href} className="text-white text-sm md:text-2xl font-light select-none">
-                <LetterSwapForward label={item.label} reverse={true} />
+        />
+
+        {/* 네비는 그대로 */}
+        <motion.nav className="absolute w-full top-4 flex pointer-events-auto px-4">
+          <motion.div className="text-white shrink-0 mr-64">
+            <motion.span className="font-extrabold text-lg">Fellows </motion.span>
+            <motion.span className="font-normal text-lg">works</motion.span>
+          </motion.div>
+
+          <motion.div className="flex flex-col items-start">
+            {menuItems.map((item) => (
+              <a key={item.href} href={item.href} className="text-white text-lg font-normal leading-tight select-none">
+                <LetterSwapForward label={item.label} reverse />
               </a>
             ))}
-          </nav>
-        </motion.div>
+          </motion.div>
+
+          <motion.div className="flex items-center space-x-5 px-32 select-none self-center">
+            <motion.div className="text-yellow-200 text-7xl animate-spin duration-5000 hover:duration-10000 transition-all">❋</motion.div>
+            <motion.div className="text-yellow-200 text-7xl animate-spin duration-10000 hover:duration-15000 transition-all">❖</motion.div>
+            <motion.div className="text-yellow-200 text-7xl animate-spin duration-15000 hover:duration-20000 transition-all">✥</motion.div>
+          </motion.div>
+
+          <motion.div className="text-white font-normal text-4xl self-center">Contact</motion.div>
+        </motion.nav>
       </motion.header>
 
       {/* 모바일 */}
-      <motion.header className="fixed w-full z-[100] block md:hidden mix-blend-difference" ref={mobileTargetRef} style={{ height: mobileHeaderHeightPx }}>
+      <motion.header className="fixed w-full z-[100] block md:hidden mix-blend-difference" style={{ height: mobileHeaderHeight }}>
         <div className="relative h-full w-full">
-          <motion.h1
-            ref={logoMobileRef}
-            className="absolute font-black whitespace-nowrap mx-4 block md:hidden"
-            style={{
-              bottom: 0,
-              translateY: mobileLogoTranslateY,
-              fontSize: maxFontSizeMobile,
-              lineHeight: "1",
-              letterSpacing: mobileLogoLetterSpacing,
-              color: "white",
-              scale: mobileLogoFontSizePercent,
-              transformOrigin: "bottom left",
-            }}
-          >
+          <h1 className="absolute font-black whitespace-nowrap mx-4 block md:hidden bottom-0 text-white" style={{ fontSize: "14vw", lineHeight: 1 }}>
             Fellows
-          </motion.h1>
-          <motion.div
-            className="absolute h-fit w-fit px-4 flex md:hidden mt-1 opacity-70"
-            style={{ left: mobileNavLeft, translateX: mobileNavTranslateX, color: "white" }}
-          >
-            <button onClick={toggleMobileMenu} className="p-2">
+          </h1>
+          <div className="absolute top-2 right-3 flex md:hidden">
+            <button onClick={toggleMobileMenu} className="p-2 text-white">
               <AlignLeft size={24} />
             </button>
-          </motion.div>
+          </div>
         </div>
       </motion.header>
 
-      {/* 모바일 메뉴 오버레이 */}
+      {/* 모바일 메뉴 */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
-            {/* 배경 오버레이 */}
             <motion.div
-              className="fixed inset-0 bg-black bg-opacity-50 z-[90] md:hidden"
+              className="fixed inset-0 bg-black/50 z-[90] md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeMobileMenu}
             />
-
-            {/* 메뉴 패널 */}
             <motion.div
               className="fixed top-0 right-0 w-full h-full bg-white z-[100] md:hidden"
               variants={menuVariants}
@@ -268,18 +177,16 @@ export default function Navbar() {
               exit="exit"
             >
               <div className="flex flex-col h-full">
-                {/* 헤더 */}
                 <div className="flex justify-between items-center px-4 h-12">
                   <h2 className="text-2xl font-black text-gray-900">Fellows℠</h2>
-                  <button onClick={closeMobileMenu} className="hover:bg-gray-100 rounded-full transition-colors">
+                  <button onClick={closeMobileMenu} className="hover:bg-gray-100 rounded-full transition-colors p-2">
                     <X size={24} />
                   </button>
                 </div>
 
-                {/* 메뉴 아이템들 */}
                 <motion.nav className="flex-1 flex flex-col justify-center px-6" variants={containerVariants} initial="closed" animate="open">
-                  {menuItems.map((item, index) => (
-                    <motion.div key={index} variants={menuItemVariants}>
+                  {menuItems.map((item) => (
+                    <motion.div key={item.href} variants={menuItemVariants}>
                       <a
                         href={item.href}
                         onClick={closeMobileMenu}
@@ -291,7 +198,6 @@ export default function Navbar() {
                   ))}
                 </motion.nav>
 
-                {/* 푸터 */}
                 <div className="p-6">
                   <p className="text-sm text-gray-500 text-center">© 2024 Fellows. All rights reserved.</p>
                 </div>

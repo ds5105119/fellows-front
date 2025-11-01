@@ -2,9 +2,11 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { VelocityScroll } from "@/components/magicui/scroll-based-velocity";
+import { useCursor } from "@/components/ui/cursor-controller";
 
 export default function WorkMain2() {
+  const { setCursor, resetCursor } = useCursor();
+
   const secondRef = useRef(null);
   const thirdRef = useRef(null);
 
@@ -37,6 +39,19 @@ export default function WorkMain2() {
             <img
               src="/sulwhasoo2.png"
               className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-in-out"
+              onMouseEnter={() =>
+                setCursor(
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.8, opacity: 0 }}
+                    className="px-2 py-1 rounded bg-black/80 text-white text-xs"
+                  >
+                    Click me!
+                  </motion.div>
+                )
+              }
+              onMouseLeave={resetCursor}
             ></img>
           </div>
         </div>
