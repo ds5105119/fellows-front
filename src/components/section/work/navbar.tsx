@@ -228,7 +228,6 @@ export default function Navbar() {
             <motion.span className="font-extrabold text-lg">Fellows </motion.span>
             <motion.span className="font-normal text-lg">works</motion.span>
           </motion.div>
-
           <HamburgerButton isOpen={isMobileMenuOpen} onClick={toggleMobileMenu} closedColorClass="bg-white" />
         </motion.div>
       </motion.header>
@@ -237,13 +236,13 @@ export default function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div className="fixed inset-0 z-[110] bg-white md:hidden flex flex-col" variants={menuVariants} initial="closed" animate="open" exit="exit">
-            <div className="flex items-center justify-between h-14 px-4">
-              <div className="shrink-0 text-black">
-                <span className="font-extrabold text-lg">Fellows </span>
-                <span className="font-normal text-lg">works</span>
-              </div>
+            <motion.div className="flex items-center justify-between h-14 px-4">
+              <motion.div className="shrink-0 text-black">
+                <motion.span className="font-extrabold text-lg">Fellows </motion.span>
+                <motion.span className="font-normal text-lg">works</motion.span>
+              </motion.div>
               <HamburgerButton isOpen={isMobileMenuOpen} onClick={toggleMobileMenu} closedColorClass="bg-black" />
-            </div>
+            </motion.div>
 
             <motion.nav className="flex-1 flex flex-col justify-center px-6 space-y-6" variants={containerVariants} initial="closed" animate="open">
               {mobileMenuItems.map((item) => (
@@ -259,9 +258,9 @@ export default function Navbar() {
               ))}
             </motion.nav>
 
-            <div className="p-6">
-              <p className="text-sm text-gray-500 text-center">© 2024 Fellows. All rights reserved.</p>
-            </div>
+            <motion.div className="p-6">
+              <motion.p className="text-sm text-zinc-500 text-center">© 2025 Fellows. All rights reserved.</motion.p>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
