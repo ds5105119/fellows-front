@@ -44,9 +44,11 @@ export default async function RootLayout({
 
       <body
         className={cn(GeistSans.variable, pretendard.variable, leagueGothic.variable, "overflow-x-hidden")}
-        style={{
-          ["--app-font" as any]: "var(--font-geist-sans), var(--font-pretendard), Helvetica, Arial, sans-serif",
-        }}
+        style={
+          {
+            "--app-font": "var(--font-geist-sans), var(--font-pretendard), Helvetica, Arial, sans-serif",
+          } as React.CSSProperties
+        }
       >
         <LenisProvider>
           <div className="relative overscroll-none">
