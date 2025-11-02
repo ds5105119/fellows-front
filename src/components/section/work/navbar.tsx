@@ -1,10 +1,38 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, AnimatePresence, type Easing } from "framer-motion";
-import { AlignLeft, X } from "lucide-react";
+import { AnimatePresence, motion, useScroll, useTransform, type Easing } from "framer-motion";
 import { useLenis } from "lenis/react";
 import LetterSwapForward from "@/components/fancy/text/letter-swap-forward-anim";
+
+const HamburgerButton = ({ isOpen, onClick, closedColorClass }: { isOpen: boolean; onClick: () => void; closedColorClass: string }) => {
+  const closed = closedColorClass;
+  const open = "bg-black";
+
+  const lineTransition = { duration: 0.2, ease: "easeInOut" as Easing };
+
+  return (
+    <motion.button onClick={onClick} className="flex flex-col space-y-1 p-2">
+      <motion.div
+        className={`w-[22px] h-[2px] rounded-[1px] ${isOpen ? open : closed}`}
+        style={{ transformOrigin: "center" }}
+        animate={isOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
+        transition={lineTransition}
+      />
+      <motion.div
+        className={`w-[22px] h-[2px] rounded-[1px] ${isOpen ? open : closed}`}
+        animate={isOpen ? { opacity: 0 } : { opacity: 1 }}
+        transition={lineTransition}
+      />
+      <motion.div
+        className={`w-[22px] h-[2px] rounded-[1px] ${isOpen ? open : closed}`}
+        style={{ transformOrigin: "center" }}
+        animate={isOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
+        transition={lineTransition}
+      />
+    </motion.button>
+  );
+};
 
 export default function Navbar() {
   const lenis = useLenis();
@@ -66,9 +94,13 @@ export default function Navbar() {
   // ===== 모바일 메뉴 =====
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const toggleMobileMenu = () => {
-    if (isMobileMenuOpen) lenis?.start();
-    else lenis?.stop();
-    setIsMobileMenuOpen((p) => !p);
+    if (isMobileMenuOpen) {
+      lenis?.start();
+      setIsMobileMenuOpen(false);
+    } else {
+      lenis?.stop();
+      setIsMobileMenuOpen(true);
+    }
   };
   const closeMobileMenu = () => {
     lenis?.start();
@@ -81,10 +113,17 @@ export default function Navbar() {
     { label: "blog", href: "/blog" },
   ];
 
+  const mobileMenuItems = [
+    { label: "home", href: "/" },
+    { label: "saas", href: "/service" },
+    { label: "blog", href: "/blog" },
+    { label: "contact", href: "/#contact" },
+  ];
+
   const menuVariants = {
-    closed: { x: "100%", transition: { duration: 0.3, ease: "easeInOut" as Easing } },
-    open: { x: "0%", transition: { duration: 0.3, ease: "easeInOut" as Easing } },
-    exit: { x: "100%", transition: { duration: 0.3, ease: "easeInOut" as Easing } },
+    closed: { opacity: "0%", transition: { duration: 0.3, ease: "easeInOut" as Easing } },
+    open: { opacity: "100%", transition: { duration: 0.3, ease: "easeInOut" as Easing } },
+    exit: { opacity: "0%", transition: { duration: 0.3, ease: "easeInOut" as Easing } },
   };
 
   const menuItemVariants = {
@@ -111,9 +150,9 @@ export default function Navbar() {
         style={{ translateY: logoTranslateY }}
       >
         <motion.div className="mb-4 w-full md:w-140 text-lg md:text-xl">
-          <motion.span>Your brand deserves to do more than just blend in. It should spark attention, build</motion.span>
+          <motion.span>Fellows는 디자인과 기술을 섬세하게 어루만져 경험을 빚어내고, 브랜드와 고객의 연결을 더</motion.span>
           <motion.span className="text-[#f25840]">&nbsp;❉&nbsp;</motion.span>
-          <motion.span>trust, and leave a lasting impression.</motion.span>
+          <motion.span>깊고 자연스럽게 만듭니다.</motion.span>
           <motion.span className="font-bold">&nbsp;We help you get there with design that is bold, imaginative, and distinctly human.</motion.span>
         </motion.div>
 
@@ -180,71 +219,50 @@ export default function Navbar() {
       </motion.header>
 
       {/* 모바일 */}
-      <motion.header className="fixed w-full z-[100] block md:hidden mix-blend-difference" style={{ height: mobileHeaderHeight }}>
-        <motion.div className="relative w-full flex items-center h-14 justify-between px-4">
-          {/* 1. 로고 */}
-          <motion.div className="text-white shrink-0">
+      <motion.header
+        className="fixed w-full z-[100] block md:hidden"
+        style={{ height: mobileHeaderHeight, mixBlendMode: isMobileMenuOpen ? "normal" : "difference" }}
+      >
+        <motion.div className={`relative w-full flex items-center h-14 justify-between px-4 ${isMobileMenuOpen ? "bg-white text-black" : "text-white"}`}>
+          <motion.div className="shrink-0">
             <motion.span className="font-extrabold text-lg">Fellows </motion.span>
             <motion.span className="font-normal text-lg">works</motion.span>
           </motion.div>
 
-          <motion.div className="flex md:hidden">
-            <motion.button onClick={toggleMobileMenu} className="p-2 text-white">
-              <AlignLeft size={24} />
-            </motion.button>
-          </motion.div>
+          <HamburgerButton isOpen={isMobileMenuOpen} onClick={toggleMobileMenu} closedColorClass="bg-white" />
         </motion.div>
       </motion.header>
 
       {/* 모바일 메뉴 */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <>
-            <motion.div
-              className="fixed inset-0 bg-black/50 z-[90] md:hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={closeMobileMenu}
-            />
-            <motion.div
-              className="fixed top-0 right-0 w-full h-full bg-white z-[100] md:hidden"
-              variants={menuVariants}
-              initial="closed"
-              animate="open"
-              exit="exit"
-            >
-              <motion.div className="flex flex-col h-full">
-                <motion.div className="flex justify-between items-center px-4 h-14">
-                  <motion.div className="text-black shrink-0">
-                    <motion.span className="font-extrabold text-lg">Fellows </motion.span>
-                    <motion.span className="font-normal text-lg">works</motion.span>
-                  </motion.div>
-                  <motion.button onClick={closeMobileMenu} className="hover:bg-gray-100 rounded-full transition-colors p-2">
-                    <X size={24} />
-                  </motion.button>
-                </motion.div>
+          <motion.div className="fixed inset-0 z-[110] bg-white md:hidden flex flex-col" variants={menuVariants} initial="closed" animate="open" exit="exit">
+            <div className="flex items-center justify-between h-14 px-4">
+              <div className="shrink-0 text-black">
+                <span className="font-extrabold text-lg">Fellows </span>
+                <span className="font-normal text-lg">works</span>
+              </div>
+              <HamburgerButton isOpen={isMobileMenuOpen} onClick={toggleMobileMenu} closedColorClass="bg-black" />
+            </div>
 
-                <motion.nav className="flex-1 flex flex-col justify-center px-6" variants={containerVariants} initial="closed" animate="open">
-                  {menuItems.map((item) => (
-                    <motion.div key={item.href} variants={menuItemVariants}>
-                      <motion.a
-                        href={item.href}
-                        onClick={closeMobileMenu}
-                        className="block py-2 text-3xl font-light text-gray-900 hover:text-gray-600 transition-colors"
-                      >
-                        {item.label}
-                      </motion.a>
-                    </motion.div>
-                  ))}
-                </motion.nav>
+            <motion.nav className="flex-1 flex flex-col justify-center px-6 space-y-6" variants={containerVariants} initial="closed" animate="open">
+              {mobileMenuItems.map((item) => (
+                <motion.a
+                  key={item.href}
+                  href={item.href}
+                  onClick={closeMobileMenu}
+                  variants={menuItemVariants}
+                  className="text-3xl font-light text-gray-900 hover:text-gray-600 transition-colors"
+                >
+                  {item.label}
+                </motion.a>
+              ))}
+            </motion.nav>
 
-                <motion.div className="p-6">
-                  <motion.p className="text-sm text-gray-500 text-center">© 2024 Fellows. All rights reserved.</motion.p>
-                </motion.div>
-              </motion.div>
-            </motion.div>
-          </>
+            <div className="p-6">
+              <p className="text-sm text-gray-500 text-center">© 2024 Fellows. All rights reserved.</p>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>

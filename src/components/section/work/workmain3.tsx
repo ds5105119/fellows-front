@@ -5,7 +5,6 @@ import { useLenis } from "lenis/react";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
-import Workmain3Text from "./workmain3text";
 import LetterSwapPingPong from "@/components/fancy/text/letter-swap-pingpong-anim";
 
 export default function WorkMain3() {
@@ -53,9 +52,6 @@ export default function WorkMain3() {
 
   return (
     <div className="relative w-full">
-      <div className="relative w-full px-4 overflow-hidden">
-        <Workmain3Text />
-      </div>
       <div
         ref={detailSectionRef}
         onClick={toggleMobileMenu}
