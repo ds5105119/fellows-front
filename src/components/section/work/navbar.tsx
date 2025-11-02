@@ -3,7 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useTransform, type Easing } from "framer-motion";
 import { useLenis } from "lenis/react";
+import { useCursor } from "@/components/ui/cursor-controller";
+import Link from "next/link";
 import LetterSwapForward from "@/components/fancy/text/letter-swap-forward-anim";
+import UnderlineToBackground from "@/components/fancy/text/underline-to-background";
 
 const HamburgerButton = ({ isOpen, onClick, closedColorClass }: { isOpen: boolean; onClick: () => void; closedColorClass: string }) => {
   const closed = closedColorClass;
@@ -37,6 +40,7 @@ const HamburgerButton = ({ isOpen, onClick, closedColorClass }: { isOpen: boolea
 export default function Navbar() {
   const lenis = useLenis();
   const { scrollY } = useScroll();
+  const { setCursor, resetCursor } = useCursor();
 
   // ===== 데스크톱 로고 =====
   const desktopLogoRef = useRef<SVGSVGElement | null>(null);
@@ -214,7 +218,22 @@ export default function Navbar() {
           </motion.div>
 
           {/* 4. 맨 끝 */}
-          <motion.div className="text-white font-normal text-4xl shrink-0 ml-auto self-center">Contact→</motion.div>
+          <Link
+            href="/#inquery"
+            className="relative ml-auto text-4xl self-center !cursor-none"
+            onMouseEnter={() =>
+              setCursor(
+                <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="text-4xl">
+                  👋
+                </motion.div>
+              )
+            }
+            onMouseLeave={resetCursor}
+          >
+            <UnderlineToBackground targetTextColor="#ff0000" className="font-normal text-4xl text-white !cursor-none">
+              Contact→
+            </UnderlineToBackground>
+          </Link>
         </motion.nav>
       </motion.header>
 
