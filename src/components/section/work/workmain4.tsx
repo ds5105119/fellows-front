@@ -155,7 +155,7 @@ export default function WorkMain4() {
     <div className="flex flex-col" ref={containerRef}>
       <section className="w-full h-48 bg-[#FFFFFF] relative"></section>
 
-      <section className="w-full h-dvh bg-zinc-900 relative z-20" ref={sectionBRef}>
+      <section className="w-full bg-zinc-900 relative z-20" ref={sectionBRef}>
         <div className="absolute top-0 left-0 w-full -z-10 -translate-y-1/2">
           <div className="hidden md:flex flex-row w-full">
             {desktopAnimations.map((animation, i) => (
@@ -198,6 +198,27 @@ export default function WorkMain4() {
                 }}
               />
             ))}
+          </div>
+        </div>
+
+        <div className="px-4">
+          <div
+            className="text-sm md:text-base text-white pt-16"
+            style={{ fontFamily: "var(--font-leaguegothic), var(--font-geist-sans), Helvetica, Arial, sans-serif" }}
+          >
+            ABOUT
+          </div>
+          <div
+            className="text-9xl md:text-[180px] text-white md:flex md:flex-wrap md:gap-x-4 pb-16 leading-[0.9em]"
+            style={{ fontFamily: "var(--font-leaguegothic), var(--font-geist-sans), Helvetica, Arial, sans-serif" }}
+          >
+            <span className="block md:inline">CREATING</span>
+            <span className="block md:inline">DESIGN</span>
+            <span className="block md:inline">THAT</span>
+            <span className="block md:inline">EXCITES</span>
+            <span className="block md:inline">AND</span>
+            <span className="block md:inline">MOVE</span>
+            <span className="block md:inline">PEOPLE.</span>
           </div>
         </div>
 

@@ -11,9 +11,11 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
   body {
-    font-family: var(--font-satoshi), var(--font-pretendard), Helvetica, Arial, sans-serif;
+    font-family: var(--app-font, var(--font-satoshi), var(--font-pretendard), Helvetica, Arial, sans-serif);
   }
+
   .glass {
     position: relative;
     overflow: hidden;
@@ -320,16 +322,17 @@
       background-position: 0% 50%;
     }
   }
-  --animate-pulse: pulse var(--duration) ease-out infinite
-;
+  --animate-pulse: pulse var(--duration) ease-out infinite;
   @keyframes pulse {
-  0%, 100% {
-    boxShadow: 0 0 0 0 var(--pulse-color);
+    0%,
+    100% {
+      boxshadow: 0 0 0 0 var(--pulse-color);
     }
-  50% {
-    boxShadow: 0 0 0 8px var(--pulse-color);
+    50% {
+      boxshadow: 0 0 0 8px var(--pulse-color);
     }
-  }}
+  }
+}
 
 @layer base {
   * {

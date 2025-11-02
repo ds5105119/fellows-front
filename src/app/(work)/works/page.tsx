@@ -1,6 +1,5 @@
 import Navbar from "@/components/section/work/navbar";
 import WorkMain2 from "@/components/section/work/workmain2";
-import WorkMain3 from "@/components/section/work/workmain3";
 import WorkMain4 from "@/components/section/work/workmain4";
 import { CursorProvider } from "@/components/ui/cursor-controller";
 
@@ -22,9 +21,6 @@ export default async function Home() {
         <div className="grid grid-cols-4 lg:grid-cols-12 bg-[#FFFFFF]">
           <div className="col-span-full w-full">
             <WorkMain2 />
-          </div>
-          <div className="col-span-full w-full">
-            <WorkMain3 />
           </div>
           <div className="col-span-full w-full">
             <WorkMain4 />

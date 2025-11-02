@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useScroll, useTransform, type Easing } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform, type Easing, useSpring } from "framer-motion";
 import { useLenis } from "lenis/react";
 import { useCursor } from "@/components/ui/cursor-controller";
 import Link from "next/link";
@@ -90,7 +90,7 @@ export default function Navbar() {
   const headerHeight = useTransform(scrollY, [0, vh], [vh, desktopMinHeight], { clamp: true });
   const headerHeightPx = useTransform(headerHeight, (v) => `${v}px`);
 
-  const logoTranslateY = useTransform(scrollY, [0, vh], [0, -vh * 10], { clamp: true });
+  const logoTranslateY = useSpring(useTransform(scrollY, [0, vh, vh + 80], [0, -vh, -vh - 80], { clamp: true }));
 
   // 모바일용 height 미리 만들어
   const mobileHeaderHeight = useTransform(scrollY, [0, (vh || 600) - 48], [vh || 600, 48], { clamp: true });

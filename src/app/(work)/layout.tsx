@@ -18,6 +18,13 @@ const pretendard = localFont({
   variable: "--font-pretendard",
 });
 
+const leagueGothic = localFont({
+  src: "../../fonts/LeagueGothic-Regular-VariableFont_wdth.ttf",
+  display: "swap",
+  weight: "400",
+  variable: "--font-leaguegothic",
+});
+
 export const metadata: Metadata = {
   title: "Fellows",
   description: "이메일로 회원가입하고 맞춤형 복지 정책 정보를 받아보세요.",
@@ -35,7 +42,12 @@ export default async function RootLayout({
       <ClientLocaleInit />
       <GoogleTagManager gtmId="GTM-W3M5P7KT" />
 
-      <body className={cn(pretendard.className, GeistSans.className, " overflow-x-hidden")}>
+      <body
+        className={cn(GeistSans.variable, pretendard.variable, leagueGothic.variable, "overflow-x-hidden")}
+        style={{
+          ["--app-font" as any]: "var(--font-geist-sans), var(--font-pretendard), Helvetica, Arial, sans-serif",
+        }}
+      >
         <LenisProvider>
           <div className="relative overscroll-none">
             <main className="scrollbar-hide break-keep">{children}</main>

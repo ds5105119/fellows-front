@@ -37,7 +37,7 @@ export default function WorkMain2() {
           hover:rounded-[512px]"
           >
             <img
-              src="/sulwhasoo2.png"
+              src="/sulwhasoo3.png"
               className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-in-out"
               onMouseEnter={() =>
                 setCursor(
@@ -57,7 +57,7 @@ export default function WorkMain2() {
         </div>
         <div className="mx-4 block md:hidden">
           <div className="relative w-full aspect-[4/3] overflow-hidden rounded-xl hover:rounded-[512px] transition-all duration-1000">
-            <img src="/sulwhasoo2.png" alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <img src="/sulwhasoo3.png" alt="" className="absolute inset-0 h-full w-full object-cover" />
           </div>
         </div>
 
