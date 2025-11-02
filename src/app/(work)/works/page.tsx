@@ -7,7 +7,7 @@ import { CursorProvider } from "@/components/ui/cursor-controller";
 export default async function Home() {
   const cursor = <div className="size-4 rounded-full bg-gray-500/40 backdrop-blur-md" />;
   return (
-    <div className="cursor-none relative">
+    <div className="md:cursor-none relative">
       <CursorProvider
         attachToParent
         defaultContent={cursor}
