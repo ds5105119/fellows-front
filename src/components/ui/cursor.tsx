@@ -75,7 +75,7 @@ export const Cursor: React.FC<CursorProps> = ({ children, className = "", varian
   return (
     <div
       ref={cursorRef}
-      className={`pointer-events-none z-50 ${className}`}
+      className={`pointer-events-none z-[1000] ${className}`}
       style={{
         position: attachToParent ? "absolute" : "fixed",
         left: position.x,

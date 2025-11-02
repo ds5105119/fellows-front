@@ -26,7 +26,7 @@ export default function WorkMain2() {
   const thirdMargin = useTransform(thirdSpring, [0, 1], ["400px", "300px"]);
 
   return (
-    <div className="relative w-full flex flex-col mt-[calc(96vh+4px)] md:mt-[calc(96vh+4px)]">
+    <div className="relative w-full flex flex-col mt-[calc(96svh+4px)] md:mt-[calc(96vh+4px)]">
       <div>
         <div className="mx-4 hidden md:block">
           <div
