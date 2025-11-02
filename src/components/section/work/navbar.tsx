@@ -106,7 +106,7 @@ export default function Navbar() {
   return (
     <>
       {/* 로고 */}
-      <motion.header className="fixed inset-0 z-50 pointer-events-none [isolation:isolate]">
+      <motion.header className="fixed w-full h-svh z-50 pointer-events-none [isolation:isolate]">
         <motion.svg
           ref={desktopLogoRef}
           className="pointer-events-auto absolute left-4 bottom-12 select-none"
