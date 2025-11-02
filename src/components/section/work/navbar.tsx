@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, AnimatePresence, type Easing, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, type Easing } from "framer-motion";
 import { AlignLeft, X } from "lucide-react";
 import { useLenis } from "lenis/react";
 import LetterSwapForward from "@/components/fancy/text/letter-swap-forward-anim";
@@ -111,7 +111,9 @@ export default function Navbar() {
         style={{ translateY: logoTranslateY }}
       >
         <motion.div className="mb-4 w-full md:w-140 text-lg md:text-xl">
-          <motion.span>Your brand deserves to do more than just blend in. It should spark attention, build trust, and leave a lasting impression.</motion.span>
+          <motion.span>Your brand deserves to do more than just blend in. It should spark attention, build</motion.span>
+          <motion.span className="text-[#f25840]">&nbsp;❉&nbsp;</motion.span>
+          <motion.span>trust, and leave a lasting impression.</motion.span>
           <motion.span className="font-bold">&nbsp;We help you get there with design that is bold, imaginative, and distinctly human.</motion.span>
         </motion.div>
 
@@ -212,35 +214,35 @@ export default function Navbar() {
               animate="open"
               exit="exit"
             >
-              <div className="flex flex-col h-full">
-                <div className="flex justify-between items-center px-4 h-14">
+              <motion.div className="flex flex-col h-full">
+                <motion.div className="flex justify-between items-center px-4 h-14">
                   <motion.div className="text-black shrink-0">
                     <motion.span className="font-extrabold text-lg">Fellows </motion.span>
                     <motion.span className="font-normal text-lg">works</motion.span>
                   </motion.div>
-                  <button onClick={closeMobileMenu} className="hover:bg-gray-100 rounded-full transition-colors p-2">
+                  <motion.button onClick={closeMobileMenu} className="hover:bg-gray-100 rounded-full transition-colors p-2">
                     <X size={24} />
-                  </button>
-                </div>
+                  </motion.button>
+                </motion.div>
 
                 <motion.nav className="flex-1 flex flex-col justify-center px-6" variants={containerVariants} initial="closed" animate="open">
                   {menuItems.map((item) => (
                     <motion.div key={item.href} variants={menuItemVariants}>
-                      <a
+                      <motion.a
                         href={item.href}
                         onClick={closeMobileMenu}
                         className="block py-2 text-3xl font-light text-gray-900 hover:text-gray-600 transition-colors"
                       >
                         {item.label}
-                      </a>
+                      </motion.a>
                     </motion.div>
                   ))}
                 </motion.nav>
 
-                <div className="p-6">
-                  <p className="text-sm text-gray-500 text-center">© 2024 Fellows. All rights reserved.</p>
-                </div>
-              </div>
+                <motion.div className="p-6">
+                  <motion.p className="text-sm text-gray-500 text-center">© 2024 Fellows. All rights reserved.</motion.p>
+                </motion.div>
+              </motion.div>
             </motion.div>
           </>
         )}

@@ -51,13 +51,13 @@ export default function Workmain3Text() {
   const textElements = [
     <span key="1">Fellows는</span>,
     <span key="2" className="relative inline-block h-[1.1em] md:h-[1em] aspect-[5/2] rounded-[50px] overflow-hidden md:mx-[1.5vw]">
-      <Image alt="랜덤 이미지" src="https://picsum.photos/300/200?random=2" fill className="self-center" priority />
+      <Image alt="랜덤 이미지" src="https://picsum.photos/300/200" fill className="self-center" priority />
     </span>,
     <span key="3">디자인과 기술을</span>,
     <span key="4">섬세하게 어루만져 경험을 빚어내고,</span>,
     <span key="5">브랜드와 고객의</span>,
     <span key="6" className="relative inline-block h-[1.1em] md:h-[1em] aspect-[5/2] rounded-[50px] overflow-hidden md:mx-[1.5vw]">
-      <Image alt="랜덤 이미지" src="https://picsum.photos/300/200?random=3" fill className="object-cover" priority />
+      <Image alt="랜덤 이미지" src="https://picsum.photos/300/200" fill className="object-cover" priority />
     </span>,
     <span key="7">연결을</span>,
     <span key="8">더 깊고</span>,
