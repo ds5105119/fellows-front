@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useScroll, useTransform, type Easing, useSpring } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform, type Easing } from "framer-motion";
 import { useLenis } from "lenis/react";
 import { useCursor } from "@/components/ui/cursor-controller";
 import Link from "next/link";
@@ -88,12 +88,9 @@ export default function Navbar() {
   }, []);
 
   const headerHeight = useTransform(scrollY, [0, vh], [vh, desktopMinHeight], { clamp: true });
-  const headerHeightPx = useTransform(headerHeight, (v) => `${v}px`);
-
-  const logoTranslateY = useSpring(useTransform(scrollY, [0, vh, vh + 80], [0, -vh, -vh - 80], { clamp: true }));
-
-  // 모바일용 height 미리 만들어
   const mobileHeaderHeight = useTransform(scrollY, [0, (vh || 600) - 48], [vh || 600, 48], { clamp: true });
+
+  const logoTranslateY = useTransform(scrollY, [0, vh, vh + 80], [0, -vh, -vh - 80], { clamp: true });
 
   // ===== 모바일 메뉴 =====
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -190,7 +187,7 @@ export default function Navbar() {
       </motion.div>
 
       {/* 데스크톱 */}
-      <motion.header className="fixed w-full z-50 hidden md:flex mix-blend-difference pointer-events-none" style={{ height: headerHeightPx }}>
+      <motion.header className="fixed w-full z-50 hidden md:flex mix-blend-difference pointer-events-none" style={{ height: headerHeight }}>
         <motion.nav className="absolute top-4 left-0 w-full flex gap-4 px-4 pointer-events-auto">
           {/* 1. 로고 */}
           <motion.div className="text-white shrink-0 pr-4 lg:pr-16 xl:pr-64">
