@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useScroll, useTransform, type Easing } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, type Easing } from "framer-motion";
 import { useLenis } from "lenis/react";
 import { useCursor } from "@/components/ui/cursor-controller";
 import Link from "next/link";
@@ -39,13 +39,14 @@ const HamburgerButton = ({ isOpen, onClick, closedColorClass }: { isOpen: boolea
 
 export default function Navbar() {
   const lenis = useLenis();
-  const { scrollY } = useScroll();
+  const scrollY = useMotionValue(0);
   const { setCursor, resetCursor } = useCursor();
 
   // ===== 데스크톱 로고 =====
   const desktopLogoRef = useRef<SVGSVGElement | null>(null);
-  const desktopMinHeight = 80;
   const [vh, setVh] = useState(0);
+
+  useLenis(({ scroll }) => scrollY.set(scroll));
 
   useEffect(() => {
     const measureAndSet = () => {
@@ -86,11 +87,6 @@ export default function Navbar() {
     window.addEventListener("resize", f);
     return () => window.removeEventListener("resize", f);
   }, []);
-
-  const headerHeight = useTransform(scrollY, [0, vh], [vh, desktopMinHeight], { clamp: true });
-  const mobileHeaderHeight = useTransform(scrollY, [0, (vh || 600) - 48], [vh || 600, 48], { clamp: true });
-
-  const logoTranslateY = useTransform(scrollY, [0, vh, vh + 80], [0, -vh, -vh - 80], { clamp: true });
 
   // ===== 모바일 메뉴 =====
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -147,14 +143,14 @@ export default function Navbar() {
     <>
       {/* 로고 */}
       <motion.div
-        className="fixed w-full h-svh z-50 pointer-events-none [isolation:isolate] pb-12 px-4 flex flex-col justify-end"
-        style={{ translateY: logoTranslateY }}
+        className="relative w-full h-svh z-50 pointer-events-none [isolation:isolate] pb-12 px-4 flex flex-col justify-end"
+        style={{ height: vh - 48 }}
       >
         <motion.div className="mb-4 w-full md:w-140 text-lg md:text-xl">
           <motion.span>Fellows는 디자인과 기술을 섬세하게 어루만져 경험을 빚어내고, 브랜드와 고객의 연결을 더</motion.span>
           <motion.span className="text-[#f25840]">&nbsp;❉&nbsp;</motion.span>
           <motion.span>깊고 자연스럽게 만듭니다.</motion.span>
-          <motion.span className="font-bold">&nbsp;We help you get there with design that is bold, imaginative, and distinctly human.</motion.span>
+          <motion.p className="font-bold">We help you get there with design that is bold, imaginative, and distinctly human.</motion.p>
         </motion.div>
 
         <motion.svg ref={desktopLogoRef} className="select-none" viewBox="0 0 44 9" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -187,7 +183,7 @@ export default function Navbar() {
       </motion.div>
 
       {/* 데스크톱 */}
-      <motion.header className="fixed w-full z-50 hidden md:flex mix-blend-difference pointer-events-none" style={{ height: headerHeight }}>
+      <motion.header className="fixed top-0 w-full z-50 hidden md:flex mix-blend-difference pointer-events-none">
         <motion.nav className="absolute top-4 left-0 w-full flex gap-4 px-4 pointer-events-auto">
           {/* 1. 로고 */}
           <motion.div className="text-white shrink-0 pr-4 lg:pr-16 xl:pr-64">
@@ -235,10 +231,7 @@ export default function Navbar() {
       </motion.header>
 
       {/* 모바일 */}
-      <motion.header
-        className="fixed w-full z-[100] block md:hidden"
-        style={{ height: mobileHeaderHeight, mixBlendMode: isMobileMenuOpen ? "normal" : "difference" }}
-      >
+      <motion.header className="fixed top-0 w-full z-50 block md:hidden" style={{ mixBlendMode: isMobileMenuOpen ? "normal" : "difference" }}>
         <motion.div className={`relative w-full flex items-center h-14 justify-between px-4 ${isMobileMenuOpen ? "bg-white text-black" : "text-white"}`}>
           <motion.div className="shrink-0">
             <motion.span className="font-extrabold text-lg">Fellows </motion.span>
@@ -251,7 +244,7 @@ export default function Navbar() {
       {/* 모바일 메뉴 */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div className="fixed inset-0 z-[110] bg-white md:hidden flex flex-col" variants={menuVariants} initial="closed" animate="open" exit="exit">
+          <motion.div className="fixed inset-0 z-[60] bg-white md:hidden flex flex-col" variants={menuVariants} initial="closed" animate="open" exit="exit">
             <motion.div className="flex items-center justify-between h-14 px-4">
               <motion.div className="shrink-0 text-black">
                 <motion.span className="font-extrabold text-lg">Fellows </motion.span>

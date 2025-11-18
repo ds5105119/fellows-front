@@ -8,7 +8,6 @@ export default async function Home() {
   return (
     <div className="md:cursor-none relative">
       <CursorProvider
-        attachToParent
         defaultContent={cursor}
         defaultVariants={{
           initial: { scale: 0.3, opacity: 0 },

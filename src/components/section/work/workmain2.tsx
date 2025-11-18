@@ -26,7 +26,7 @@ export default function WorkMain2() {
   const thirdMargin = useTransform(thirdSpring, [0, 1], ["100px", "0px"]);
 
   return (
-    <div className="relative w-full flex flex-col mt-[calc(96svh+4px)] md:mt-[calc(96vh+4px)]">
+    <div className="relative w-full flex flex-col">
       <div>
         <div className="mx-4 hidden md:block">
           <div
@@ -119,7 +119,7 @@ export default function WorkMain2() {
           </div>
 
           <div className="mx-1 mt-2">
-            <div className="text-sm font-light">
+            <div className="text-sm font-light text-foreground">
               <p>LANEIGE, Amorepacific</p>
               <p>Shopify 구축</p>
             </div>

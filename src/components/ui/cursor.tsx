@@ -25,15 +25,15 @@ export const Cursor: React.FC<CursorProps> = ({ children, className = "", varian
 
   useEffect(() => {
     const updateCursorPosition = (e: MouseEvent): void => {
-      let newPosition = { x: e.clientX, y: e.clientY };
+      let newPosition = { x: e.pageX, y: e.pageY };
 
       if (attachToParent && cursorRef.current) {
         const parent = cursorRef.current.parentElement;
         if (parent) {
           const parentRect = parent.getBoundingClientRect();
           newPosition = {
-            x: e.clientX - parentRect.left,
-            y: e.clientY - parentRect.top,
+            x: e.pageX - parentRect.left - window.scrollX,
+            y: e.pageY - parentRect.top - window.scrollY,
           };
         }
       }
@@ -77,7 +77,7 @@ export const Cursor: React.FC<CursorProps> = ({ children, className = "", varian
       ref={cursorRef}
       className={`pointer-events-none z-[1000] hidden md:block ${className}`}
       style={{
-        position: attachToParent ? "absolute" : "fixed",
+        position: "absolute",
         left: position.x,
         top: position.y,
         transform: "translate(-50%, -50%)",

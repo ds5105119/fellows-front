@@ -1,12 +1,14 @@
 "use client";
 
-import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform, Variants } from "framer-motion";
 import { useRef } from "react";
 import ImageTrail from "@/components/resource/imagetrail";
 
 export default function WorkMain4() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionBRef = useRef<HTMLDivElement>(null);
+
+  const textItems = ["CREATING", "DESIGN", "THAT", "EXCITES", "AND", "MOVE", "PEOPLE."];
 
   const { scrollYProgress: sectionBProgress } = useScroll({
     target: sectionBRef,
@@ -125,6 +127,29 @@ export default function WorkMain4() {
   const mobile6ScaleX = useSpring(useTransform(sectionBProgress, [mobile6Start, mobile6Start + 0.05], [1, 1]));
   const mobile6ScaleY = useSpring(useTransform(sectionBProgress, [mobile6Start, mobile6Start + 0.025, mobile6Start + 0.04], [0, 1.4, 1]));
 
+  const container: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        when: "beforeChildren",
+      },
+    },
+  };
+
+  const item: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
+  };
+
   const desktopAnimations = [
     { scaleX: desktop0ScaleX, scaleY: desktop0ScaleY },
     { scaleX: desktop1ScaleX, scaleY: desktop1ScaleY },
@@ -153,7 +178,7 @@ export default function WorkMain4() {
 
   return (
     <div className="flex flex-col" ref={containerRef}>
-      <section className="w-full h-48 bg-[#FFFFFF] relative"></section>
+      <section className="w-full h-48 bg-[#FFFFFF] relative -z-10"></section>
 
       <section className="w-full bg-zinc-900 relative z-20" ref={sectionBRef}>
         <div className="absolute top-0 left-0 w-full -z-10 -translate-y-1/2">
@@ -208,17 +233,27 @@ export default function WorkMain4() {
           >
             ABOUT
           </div>
-          <div
-            className="text-9xl md:text-[180px] text-white md:flex md:flex-wrap md:gap-x-4 pb-16 leading-[0.9em]"
+          <motion.div
+            className="text-9xl md:text-[180px] text-white md:flex md:flex-wrap md:gap-x-4 pb-2 md:pb-16 leading-[0.9em]"
             style={{ fontFamily: "var(--font-leaguegothic), var(--font-geist-sans), Helvetica, Arial, sans-serif" }}
+            variants={container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
           >
-            <span className="block md:inline">CREATING</span>
-            <span className="block md:inline">DESIGN</span>
-            <span className="block md:inline">THAT</span>
-            <span className="block md:inline">EXCITES</span>
-            <span className="block md:inline">AND</span>
-            <span className="block md:inline">MOVE</span>
-            <span className="block md:inline">PEOPLE.</span>
+            {textItems.map((word, i) => (
+              <motion.span key={i} className="block md:inline" variants={item}>
+                {word}
+              </motion.span>
+            ))}
+          </motion.div>
+
+          <div className="flex flex-col md:items-end">
+            <div className="text-white md:w-160 md:text-2xl px-1 md:px-0 md:font-medium">
+              Average brands look good. Great brands make you impossible to ignore. We build the second kind. With over a decade of experience, we help
+              businesses own their space with bold, timeless branding and websites built to convert. You focus on building the business. We’ll make sure it
+              looks like it deserves to win.
+            </div>
           </div>
         </div>
 
