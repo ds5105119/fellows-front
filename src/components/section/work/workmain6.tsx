@@ -23,7 +23,7 @@ export default function WorkMain6() {
   return (
     <div className="relative w-full py-24 md:py-0 md:h-lvh flex flex-col justify-center bg-[#E0DDD8] px-4">
       <div className="text-[5rem] md:text-[10rem] lg:text-[12rem] xl:text-[14rem] leading-none font-medium">
-        Let's Work
+        Let&apos;s Work
         <br />
         Together
       </div>

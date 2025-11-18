@@ -1,6 +1,7 @@
 "use client";
 
 import ScrollAndSwapText from "@/components/fancy/text/scroll-and-swap-text";
+import ImageTrail from "@/components/resource/imagetrail";
 
 export default function WorkMain5() {
   const names = ["Logo Animation", "Logo Design", "Visual Identity", "Web Design", "Web Development"];
@@ -19,6 +20,23 @@ export default function WorkMain5() {
             </ScrollAndSwapText>
           ))}
         </div>
+      </div>
+
+      <div className="absolute inset-0 z-50">
+        <ImageTrail
+          key="imagetrail"
+          items={[
+            "https://picsum.photos/id/287/300/300",
+            "https://picsum.photos/id/1001/300/300",
+            "https://picsum.photos/id/1025/300/300",
+            "https://picsum.photos/id/1026/300/300",
+            "https://picsum.photos/id/1027/300/300",
+            "https://picsum.photos/id/1028/300/300",
+            "https://picsum.photos/id/1029/300/300",
+            "https://picsum.photos/id/1030/300/300",
+          ]}
+          variant={1}
+        />
       </div>
     </div>
   );

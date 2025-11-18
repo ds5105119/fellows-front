@@ -1,9 +1,8 @@
 "use client";
 
-import { motion, useScroll, useSpring, useTransform, Variants } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform, Variants, MotionValue } from "framer-motion";
 import { useRef } from "react";
 import Typewriter from "@/components/fancy/text/typewriter";
-import ImageTrail from "@/components/resource/imagetrail";
 
 const sections = [
   {
@@ -26,6 +25,20 @@ const sections = [
   },
 ];
 
+function useCircleAnimations(count: number, scrollYProgress: MotionValue<number>) {
+  const middle = Math.floor(count / 2);
+
+  return Array.from({ length: count }).map((_, i) => {
+    const order = i <= middle ? i : count - 1 - i;
+    const start = (order / Math.ceil(count / 2)) * 0.7;
+
+    const scaleX = useSpring(useTransform(scrollYProgress, [start, start + 0.05], [1, 1]));
+    const scaleY = useSpring(useTransform(scrollYProgress, [start, start + 0.025, start + 0.04], [0, 1.4, 1]));
+
+    return { scaleX, scaleY };
+  });
+}
+
 export default function WorkMain4() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionBRef = useRef<HTMLDivElement>(null);
@@ -39,21 +52,9 @@ export default function WorkMain4() {
     offset: ["start end", "start start"],
   });
 
-  const createCircleAnimations = (count: number) => {
-    const middle = Math.floor(count / 2);
-
-    return Array.from({ length: count }).map((_, i) => {
-      const order = i <= middle ? i : count - 1 - i;
-      const start = (order / Math.ceil(count / 2)) * 0.7;
-      const scaleX = useSpring(useTransform(scrollYProgress, [start, start + 0.05], [1, 1]));
-      const scaleY = useSpring(useTransform(scrollYProgress, [start, start + 0.025, start + 0.04], [0, 1.4, 1]));
-
-      return { scaleX, scaleY };
-    });
-  };
-
-  const desktopAnimations = createCircleAnimations(circleCountDesktop);
-  const mobileAnimations = createCircleAnimations(circleCountMobile);
+  // Hook 규칙을 지킨 상태에서 원 애니메이션
+  const desktopAnimations = useCircleAnimations(circleCountDesktop, scrollYProgress);
+  const mobileAnimations = useCircleAnimations(circleCountMobile, scrollYProgress);
 
   const container: Variants = {
     hidden: { opacity: 0 },
@@ -75,8 +76,10 @@ export default function WorkMain4() {
   return (
     <div className="flex flex-col" ref={containerRef}>
       <section className="w-full h-48 bg-[#FFFFFF] relative -z-10"></section>
+
       <section className="w-full bg-zinc-900 relative z-20 pb-25" ref={sectionBRef}>
         <div className="absolute top-0 left-0 w-full -z-10 -translate-y-1/2">
+          {/* Desktop */}
           <div className="hidden md:flex flex-row w-full">
             {desktopAnimations.map((anim, i) => (
               <motion.div
@@ -94,6 +97,8 @@ export default function WorkMain4() {
               />
             ))}
           </div>
+
+          {/* Mobile */}
           <div className="md:hidden flex flex-row w-full">
             {mobileAnimations.map((anim, i) => (
               <motion.div
@@ -113,6 +118,7 @@ export default function WorkMain4() {
           </div>
         </div>
 
+        {/* 텍스트 */}
         <div className="px-4 pb-25">
           <div className="text-sm md:text-base text-white pt-16 font-[var(--font-leaguegothic)]">ABOUT</div>
           <motion.div
@@ -129,6 +135,7 @@ export default function WorkMain4() {
               </motion.span>
             ))}
           </motion.div>
+
           <div className="flex flex-col md:items-end px-1 md:px-0 text-white">
             <div className="md:w-160 md:text-2xl">
               위대한 브랜드는 존재만으로 시선을 끕니다. Fellows는 대담하고, 오래 남고, 전환을 만들어내는 웹사이트가 될 수 있게 세심하게 다듬습니다.
@@ -151,6 +158,7 @@ export default function WorkMain4() {
           </div>
         </div>
 
+        {/* 섹션 반복 */}
         <div className="px-4 pb-24 lg:pb-8">
           {sections.map((section, index) => (
             <motion.div
@@ -183,21 +191,6 @@ export default function WorkMain4() {
             </motion.div>
           ))}
         </div>
-
-        <ImageTrail
-          key="imagetrail"
-          items={[
-            "https://picsum.photos/id/287/300/300",
-            "https://picsum.photos/id/1001/300/300",
-            "https://picsum.photos/id/1025/300/300",
-            "https://picsum.photos/id/1026/300/300",
-            "https://picsum.photos/id/1027/300/300",
-            "https://picsum.photos/id/1028/300/300",
-            "https://picsum.photos/id/1029/300/300",
-            "https://picsum.photos/id/1030/300/300",
-          ]}
-          variant={1}
-        />
       </section>
     </div>
   );
