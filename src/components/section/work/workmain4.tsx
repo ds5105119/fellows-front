@@ -147,7 +147,7 @@ export default function WorkMain4() {
             ))}
           </motion.div>
 
-          <div className="flex flex-col md:items-end px-1 md:px-0 text-white">
+          <div className="flex flex-col md:items-end px-1 md:px-0 text-white pt-4 md:pt-12">
             <div className="md:w-160 md:text-2xl">
               위대한 브랜드는 존재만으로 시선을 끕니다. Fellows는 대담하고, 오래 남고, 전환을 만들어내는 웹사이트가 될 수 있게 세심하게 다듬습니다.
               <br />
@@ -156,6 +156,9 @@ export default function WorkMain4() {
             <div className="md:w-160 text-2xl pt-8 md:pt-16">
               <div>
                 <span>Fellows와 함께하면 더 </span>
+                <span className="block md:hidden">
+                  <br />
+                </span>
                 <Typewriter
                   text={["정확합니다.", "간단합니다.", "효과적입니다.", "창의적입니다."]}
                   speed={70}
