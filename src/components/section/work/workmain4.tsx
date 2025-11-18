@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useSpring, useTransform, Variants, MotionValue } from "framer-motion";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import Typewriter from "@/components/fancy/text/typewriter";
 
 const sections = [
@@ -25,23 +25,28 @@ const sections = [
   },
 ];
 
-function useCircleAnimations(count: number, scrollYProgress: MotionValue<number>) {
-  return useMemo(() => {
-    const middle = Math.floor(count / 2);
-    const animations = [];
+function AnimatedCircle({
+  scrollYProgress,
+  index,
+  count,
+  className,
+  style,
+}: {
+  scrollYProgress: MotionValue<number>;
+  index: number;
+  count: number;
+  className: string;
+  style: React.CSSProperties;
+}) {
+  const middle = Math.floor(count / 2);
+  const order = index <= middle ? index : count - 1 - index;
+  const start = (order / Math.ceil(count / 2)) * 0.7;
 
-    for (let i = 0; i < count; i++) {
-      const order = i <= middle ? i : count - 1 - i;
-      const start = (order / Math.ceil(count / 2)) * 0.7;
+  // 컴포넌트 최상위 레벨에서 훅을 호출하므로 규칙에 위배되지 않음
+  const scaleX = useSpring(useTransform(scrollYProgress, [start, start + 0.05], [1, 1]));
+  const scaleY = useSpring(useTransform(scrollYProgress, [start, start + 0.025, start + 0.04], [0, 1.4, 1]));
 
-      const scaleX = useSpring(useTransform(scrollYProgress, [start, start + 0.05], [1, 1]));
-      const scaleY = useSpring(useTransform(scrollYProgress, [start, start + 0.025, start + 0.04], [0, 1.4, 1]));
-
-      animations.push({ scaleX, scaleY });
-    }
-
-    return animations;
-  }, [count, scrollYProgress]);
+  return <motion.div className={className} style={{ ...style, scaleX, scaleY }} />;
 }
 
 export default function WorkMain4() {
@@ -56,10 +61,6 @@ export default function WorkMain4() {
     target: sectionBRef,
     offset: ["start end", "start start"],
   });
-
-  // Hook 규칙을 지킨 상태에서 원 애니메이션
-  const desktopAnimations = useCircleAnimations(circleCountDesktop, scrollYProgress);
-  const mobileAnimations = useCircleAnimations(circleCountMobile, scrollYProgress);
 
   const container: Variants = {
     hidden: { opacity: 0 },
@@ -86,13 +87,15 @@ export default function WorkMain4() {
         <div className="absolute top-0 left-0 w-full -z-10 -translate-y-1/2">
           {/* Desktop */}
           <div className="hidden md:flex flex-row w-full">
-            {desktopAnimations.map((anim, i) => (
-              <motion.div
+            {/* 3. Array.from을 사용해 AnimatedCircle 컴포넌트를 반복 렌더링 */}
+            {Array.from({ length: circleCountDesktop }).map((_, i) => (
+              <AnimatedCircle
                 key={i}
+                scrollYProgress={scrollYProgress}
+                index={i}
+                count={circleCountDesktop}
                 className="bg-zinc-900"
                 style={{
-                  scaleX: anim.scaleX,
-                  scaleY: anim.scaleY,
                   width: `calc(100vw / ${circleCountDesktop})`,
                   height: `calc(100vw / ${circleCountDesktop})`,
                   minWidth: 40,
@@ -105,13 +108,14 @@ export default function WorkMain4() {
 
           {/* Mobile */}
           <div className="md:hidden flex flex-row w-full">
-            {mobileAnimations.map((anim, i) => (
-              <motion.div
+            {Array.from({ length: circleCountMobile }).map((_, i) => (
+              <AnimatedCircle
                 key={i}
+                scrollYProgress={scrollYProgress}
+                index={i}
+                count={circleCountMobile}
                 className="bg-zinc-900"
                 style={{
-                  scaleX: anim.scaleX,
-                  scaleY: anim.scaleY,
                   width: `calc(100vw / ${circleCountMobile})`,
                   height: `calc(100vw / ${circleCountMobile})`,
                   minWidth: 50,
@@ -123,7 +127,7 @@ export default function WorkMain4() {
           </div>
         </div>
 
-        {/* 텍스트 */}
+        {/* 텍스트 (이하 동일) */}
         <div className="px-4 pb-25">
           <div className="text-sm md:text-base text-white pt-16 font-[var(--font-leaguegothic)]">ABOUT</div>
           <motion.div
@@ -163,7 +167,7 @@ export default function WorkMain4() {
           </div>
         </div>
 
-        {/* 섹션 반복 */}
+        {/* 섹션 반복 (이하 동일) */}
         <div className="px-4 pb-24 lg:pb-8">
           {sections.map((section, index) => (
             <motion.div
