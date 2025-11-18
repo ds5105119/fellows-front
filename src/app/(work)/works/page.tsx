@@ -1,10 +1,12 @@
 import Navbar from "@/components/section/work/navbar";
 import WorkMain2 from "@/components/section/work/workmain2";
 import WorkMain4 from "@/components/section/work/workmain4";
+import WorkMain5 from "@/components/section/work/workmain5";
 import { CursorProvider } from "@/components/ui/cursor-controller";
 
 export default async function Home() {
   const cursor = <div className="size-4 rounded-full bg-gray-500/40 backdrop-blur-md" />;
+
   return (
     <div className="md:cursor-none relative">
       <CursorProvider
@@ -23,6 +25,9 @@ export default async function Home() {
           </div>
           <div className="col-span-full w-full">
             <WorkMain4 />
+          </div>
+          <div className="col-span-full w-full">
+            <WorkMain5 />
           </div>
         </div>
       </CursorProvider>

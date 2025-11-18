@@ -3,6 +3,7 @@
 import { motion, useScroll, useSpring, useTransform, Variants } from "framer-motion";
 import { useRef } from "react";
 import ImageTrail from "@/components/resource/imagetrail";
+import Typewriter from "@/components/fancy/text/typewriter";
 
 export default function WorkMain4() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -180,7 +181,7 @@ export default function WorkMain4() {
     <div className="flex flex-col" ref={containerRef}>
       <section className="w-full h-48 bg-[#FFFFFF] relative -z-10"></section>
 
-      <section className="w-full bg-zinc-900 relative z-20" ref={sectionBRef}>
+      <section className="w-full bg-zinc-900 relative z-20 pb-25" ref={sectionBRef}>
         <div className="absolute top-0 left-0 w-full -z-10 -translate-y-1/2">
           <div className="hidden md:flex flex-row w-full">
             {desktopAnimations.map((animation, i) => (
@@ -248,11 +249,28 @@ export default function WorkMain4() {
             ))}
           </motion.div>
 
-          <div className="flex flex-col md:items-end">
-            <div className="text-white md:w-160 md:text-2xl px-1 md:px-0 md:font-medium">
-              Average brands look good. Great brands make you impossible to ignore. We build the second kind. With over a decade of experience, we help
-              businesses own their space with bold, timeless branding and websites built to convert. You focus on building the business. We’ll make sure it
-              looks like it deserves to win.
+          <div className="flex flex-col md:items-end px-1 md:px-0">
+            <div className="text-white md:w-160 md:text-2xl md:font-normal">
+              위대한 브랜드는 존재만으로 시선을 끕니다. Fellows는 대담하고, 오래 남고, 전환을 만들어내는 웹사이트가 될 수 있게 세심하게 다듬습니다.
+              <br />
+              탁월한 판단력과 몰입력을 가진 디자이너와 엔지니어들이 당신의 비즈니스가 성장에 집중할 수 있게 도와드리겠습니다.
+            </div>
+
+            <div className="md:w-160 text-2xl flex flex-row items-start justify-start font-normal overflow-hidden pt-8 md:pt-16 text-white">
+              <p className="whitespace-pre-wrap">
+                <span>{"Fellows와 함께하면 더 "}</span>
+                <span className="md:hidden">
+                  <br />
+                </span>
+                <Typewriter
+                  text={["정확합니다.", "간단합니다.", "효과적입니다.", "창의적입니다."]}
+                  speed={70}
+                  className="text-yellow-500 text-pretty"
+                  waitTime={1500}
+                  deleteSpeed={40}
+                  cursorChar={"_"}
+                />
+              </p>
             </div>
           </div>
         </div>

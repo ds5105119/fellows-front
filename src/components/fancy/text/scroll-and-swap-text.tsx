@@ -35,7 +35,7 @@ interface ScrollAndSwapTextProps {
   /**
    * Reference to the container element for scroll tracking
    */
-  containerRef: React.RefObject<HTMLElement>;
+  containerRef?: React.RefObject<HTMLElement>;
 
   /**
    * Offset configuration for when the animation should start and end relative to the scroll container. Check motion documentation for more details.
@@ -86,7 +86,7 @@ const ScrollAndSwapText = ({
 
   // Track scroll progress within the specified container and target element
   const { scrollYProgress } = useScroll({
-    container: containerRef,
+    container: containerRef?.current ? containerRef : undefined,
     target: ref,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     offset: offset as any, // framer motion doesnt export the type, so we have to cast it, sorry :/
@@ -119,7 +119,5 @@ const ScrollAndSwapText = ({
     </ElementTag>
   );
 };
-
-ScrollAndSwapText.displayName = "ScrollAndSwapText";
 
 export default ScrollAndSwapText;
