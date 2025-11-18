@@ -176,7 +176,7 @@ export const outsourcingPlans: Plan[] = [
   {
     name: "노코드 Premium",
     subtitle: "브랜드 정체성 강화",
-    price: 180,
+    price: 140,
     description: "간단한 기업 소개 페이지 등에 특화된 솔루션입니다. 메인 1페이지와 서브 4페이지까지 커스터마이즈 할 수 있습니다.",
     features: [
       { title: "브랜드 맞춤 기획 & 카피라이팅 & 맞춤형 디자인", bold: false },

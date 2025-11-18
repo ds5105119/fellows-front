@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import AnimatedText from "@/components/animation/animatedtext";
 import PlanSection from "./plansection";
 import { subscriptionPlans, shopifyPlans, outsourcingPlans, tabs } from "./data";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/motion-primitives/accordion";
