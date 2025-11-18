@@ -129,7 +129,9 @@ export default function WorkMain4() {
 
         {/* 텍스트 (이하 동일) */}
         <div className="px-4 pb-25">
-          <div className="text-sm md:text-base text-white pt-16 font-[var(--font-leaguegothic)]">ABOUT</div>
+          <div className="text-sm md:text-base text-white pt-16" style={{ fontFamily: "var(--font-leaguegothic)" }}>
+            ABOUT
+          </div>
           <motion.div
             variants={container}
             initial="hidden"
