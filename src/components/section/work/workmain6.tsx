@@ -31,7 +31,7 @@ export default function WorkMain6() {
       <div className="mt-6 md:mt-12 flex md:space-x-64">
         {/* 모바일 버전 */}
         <motion.button
-          className="relative rounded-full bg-amber-500 h-24 w-[200px] overflow-hidden block md:hidden mt-6"
+          className="relative rounded-full bg-amber-500 h-24 w-[200px] cursor-none overflow-hidden block md:hidden mt-6"
           initial="initial"
           whileHover="hover"
           variants={{
@@ -39,7 +39,7 @@ export default function WorkMain6() {
             hover: { backgroundColor: "#000000" }, // bg-black
           }}
           transition={{ type: "spring", stiffness: 90, damping: 16 }}
-          onClick={() => router.push("/#insquery")}
+          onClick={() => router.push("/#inquery")}
         >
           {/* 텍스트 */}
           <motion.div
@@ -67,7 +67,7 @@ export default function WorkMain6() {
         </motion.button>
         {/* 데스크톱 버전 */}
         <motion.button
-          className="relative rounded-full bg-amber-500 h-36 w-[350px] overflow-hidden hidden md:block mt-12"
+          className="relative rounded-full bg-amber-500 h-36 w-[350px] cursor-none overflow-hidden hidden md:block mt-12"
           initial="initial"
           whileHover="hover"
           variants={{
@@ -83,7 +83,7 @@ export default function WorkMain6() {
             )
           }
           onMouseLeave={resetCursor}
-          onClick={() => router.push("/#insquery")}
+          onClick={() => router.push("/#inquery")}
         >
           {/* 텍스트 */}
           <motion.div
