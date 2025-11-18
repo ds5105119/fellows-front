@@ -10,7 +10,7 @@ const sections = [
     number: "01",
     title: "DISCOVER",
     description:
-      "Kicking off with a discovery to learn in more detail about your brand, clients, goals, personality, services, and ethos. We want to know you and your business inside and out.",
+      "Kicking off with a discovery to learn in (more detail) about your brand, clients, goals, personality, services, ethos and more. We want to know you and your business inside and out. The goal here is to gather as much information as possible to help us understand your brand as thoroughly as possible, so there is no second-guessing. We want to know your goals, dislikes, and expectations.",
   },
   {
     number: "02",
@@ -22,7 +22,7 @@ const sections = [
     number: "03",
     title: "DELIVER",
     description:
-      "Execution of designs and implementation of web solutions that excite and move people. We ensure every pixel and interaction is crafted to perfection.",
+      "Execution of designs and implementation of web solutions that excite and move people. We ensure every pixel and interaction is crafted to perfection. Execution of designs and implementation of web solutions that excite and move people. We ensure every pixel and interaction is crafted to perfection",
   },
 ];
 
@@ -94,7 +94,6 @@ export default function WorkMain4() {
               />
             ))}
           </div>
-
           <div className="md:hidden flex flex-row w-full">
             {mobileAnimations.map((anim, i) => (
               <motion.div
@@ -116,7 +115,6 @@ export default function WorkMain4() {
 
         <div className="px-4 pb-25">
           <div className="text-sm md:text-base text-white pt-16 font-[var(--font-leaguegothic)]">ABOUT</div>
-
           <motion.div
             variants={container}
             initial="hidden"
@@ -131,7 +129,6 @@ export default function WorkMain4() {
               </motion.span>
             ))}
           </motion.div>
-
           <div className="flex flex-col md:items-end px-1 md:px-0 text-white">
             <div className="md:w-160 md:text-2xl">
               위대한 브랜드는 존재만으로 시선을 끕니다. Fellows는 대담하고, 오래 남고, 전환을 만들어내는 웹사이트가 될 수 있게 세심하게 다듬습니다.
@@ -139,7 +136,7 @@ export default function WorkMain4() {
               탁월한 판단력과 몰입력을 가진 디자이너와 엔지니어들이 당신의 비즈니스가 성장에 집중할 수 있게 도와드리겠습니다.
             </div>
             <div className="md:w-160 text-2xl pt-8 md:pt-16">
-              <p>
+              <div>
                 <span>Fellows와 함께하면 더 </span>
                 <Typewriter
                   text={["정확합니다.", "간단합니다.", "효과적입니다.", "창의적입니다."]}
@@ -149,80 +146,42 @@ export default function WorkMain4() {
                   cursorChar="_"
                   className="text-yellow-500"
                 />
-              </p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="px-4 flex flex-col space-y-24 lg:space-y-2">
-          <div className="flex flex-col lg:flex-row text-white">
+        <div className="px-4 pb-24 lg:pb-8">
+          {sections.map((section, index) => (
             <motion.div
-              className="text-9xl md:text-[180px] md:flex md:flex-wrap md:gap-x-4 pb-2 md:pb-16 leading-[0.9em]"
-              style={{ fontFamily: "var(--font-leaguegothic), var(--font-geist-sans), Helvetica, Arial, sans-serif" }}
-              variants={container}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
+              key={section.number}
+              className="sticky bg-zinc-900"
+              style={{
+                top: "20vh",
+                zIndex: index + 1,
+              }}
             >
-              <motion.span className="block md:inline" variants={item}>
-                01/
-              </motion.span>
+              <div>
+                <div className="flex flex-col lg:flex-row text-white py-10">
+                  <motion.div
+                    className="text-9xl md:text-[180px] md:flex md:flex-wrap md:gap-x-4 mb-2 md:mb-16 leading-[0.9em]"
+                    style={{ fontFamily: "var(--font-leaguegothic), var(--font-geist-sans), Helvetica, Arial, sans-serif" }}
+                    variants={container}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.3 }}
+                  >
+                    <motion.span className="block md:inline" variants={item}>
+                      {section.number}/
+                    </motion.span>
+                  </motion.div>
+
+                  <div className="flex lg:items-start lg:justify-center grow py-10 lg:py-0">{section.title}</div>
+                  <div className="lg:w-96 lg:mr-32">{section.description}</div>
+                </div>
+              </div>
             </motion.div>
-
-            <div className="flex lg:items-start lg:justify-center grow py-10 lg:py-0">DISCOVER</div>
-
-            <div className="lg:w-96 lg:mr-32">
-              Kicking off with a discovery to learn in (more detail) about your brand, clients, goals, personality, services, ethos and more. We want to know
-              you and your business inside and out. The goal here is to gather as much information as possible to help us understand your brand as thoroughly as
-              possible, so there is no second-guessing. We want to know your goals, dislikes, and expectations.
-            </div>
-          </div>
-
-          <div className="flex flex-col lg:flex-row text-white">
-            <motion.div
-              className="text-9xl md:text-[180px] md:flex md:flex-wrap md:gap-x-4 pb-2 md:pb-16 leading-[0.9em]"
-              style={{ fontFamily: "var(--font-leaguegothic), var(--font-geist-sans), Helvetica, Arial, sans-serif" }}
-              variants={container}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-            >
-              <motion.span className="block md:inline" variants={item}>
-                02/
-              </motion.span>
-            </motion.div>
-
-            <div className="flex lg:items-start lg:justify-center grow py-10 lg:py-0">DISCOVER</div>
-
-            <div className="lg:w-96 lg:mr-32">
-              Kicking off with a discovery to learn in (more detail) about your brand, clients, goals, personality, services, ethos and more. We want to know
-              you and your business inside and out. The goal here is to gather as much information as possible to help us understand your brand as thoroughly as
-              possible, so there is no second-guessing. We want to know your goals, dislikes, and expectations.
-            </div>
-          </div>
-
-          <div className="flex flex-col lg:flex-row text-white">
-            <motion.div
-              className="text-9xl md:text-[180px] md:flex md:flex-wrap md:gap-x-4 pb-2 md:pb-16 leading-[0.9em]"
-              style={{ fontFamily: "var(--font-leaguegothic), var(--font-geist-sans), Helvetica, Arial, sans-serif" }}
-              variants={container}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-            >
-              <motion.span className="block md:inline" variants={item}>
-                03/
-              </motion.span>
-            </motion.div>
-
-            <div className="flex lg:items-start lg:justify-center grow py-10 lg:py-0">DISCOVER</div>
-
-            <div className="lg:w-96 lg:mr-32">
-              Kicking off with a discovery to learn in (more detail) about your brand, clients, goals, personality, services, ethos and more. We want to know
-              you and your business inside and out. The goal here is to gather as much information as possible to help us understand your brand as thoroughly as
-              possible, so there is no second-guessing. We want to know your goals, dislikes, and expectations.
-            </div>
-          </div>
+          ))}
         </div>
 
         <ImageTrail
