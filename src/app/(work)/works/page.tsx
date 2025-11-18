@@ -2,6 +2,7 @@ import Navbar from "@/components/section/work/navbar";
 import WorkMain2 from "@/components/section/work/workmain2";
 import WorkMain4 from "@/components/section/work/workmain4";
 import WorkMain5 from "@/components/section/work/workmain5";
+import WorkMain6 from "@/components/section/work/workmain6";
 import { CursorProvider } from "@/components/ui/cursor-controller";
 
 export default async function Home() {
@@ -28,6 +29,9 @@ export default async function Home() {
           </div>
           <div className="col-span-full w-full">
             <WorkMain5 />
+          </div>
+          <div className="col-span-full w-full">
+            <WorkMain6 />
           </div>
         </div>
       </CursorProvider>

@@ -1,9 +1,96 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useRef, useState, useCallback } from "react";
+import React, { createContext, useEffect, useContext, useMemo, useRef, useState, useCallback } from "react";
 import type { ReactNode } from "react";
-import type { Variants, Transition } from "motion/react";
-import { Cursor } from "@/components/ui/cursor";
+import { motion, AnimatePresence, type Variants, type Transition } from "motion/react";
+interface CursorProps {
+  children: ReactNode;
+  className?: string;
+  variants?: Variants;
+  transition?: Transition;
+  springConfig?: {
+    bounce?: number;
+    stiffness?: number;
+    damping?: number;
+  };
+  attachToParent?: boolean;
+  onPositionChange?: (x: number, y: number) => void;
+}
+
+export const Cursor: React.FC<CursorProps> = ({ children, className = "", variants, transition, springConfig, attachToParent = false, onPositionChange }) => {
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [isVisible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const updatePosition = (e: MouseEvent) => {
+      const newPos = { x: e.clientX, y: e.clientY };
+      setPos(newPos);
+      onPositionChange?.(newPos.x, newPos.y);
+    };
+
+    const show = (e: MouseEvent) => {
+      updatePosition(e);
+      setVisible(true);
+    };
+
+    const hide = () => setVisible(false);
+
+    if (attachToParent && cursorRef.current) {
+      const parent = cursorRef.current.parentElement;
+      if (!parent) return;
+
+      parent.addEventListener("mouseenter", show);
+      parent.addEventListener("mouseleave", hide);
+      parent.addEventListener("mousemove", updatePosition);
+
+      return () => {
+        parent.removeEventListener("mouseenter", show);
+        parent.removeEventListener("mouseleave", hide);
+        parent.removeEventListener("mousemove", updatePosition);
+      };
+    }
+
+    // default: track whole document
+    document.addEventListener("mousemove", updatePosition);
+    setVisible(true);
+
+    return () => {
+      document.removeEventListener("mousemove", updatePosition);
+    };
+  }, [attachToParent, onPositionChange]);
+
+  return (
+    <div
+      ref={cursorRef}
+      className={`pointer-events-none fixed top-0 left-0 z-[1000] hidden md:block ${className}`}
+      style={{
+        transform: `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`,
+        width: 0,
+        height: 0,
+        overflow: "visible",
+      }}
+    >
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={variants}
+            transition={{
+              type: "spring",
+              ...springConfig,
+              ...transition,
+            }}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 type CursorPayload = {
   content?: ReactNode;

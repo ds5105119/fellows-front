@@ -197,7 +197,7 @@ export default function Navbar() {
             <motion.div className="flex flex-col items-start flex-1 min-w-0">
               {menuItems.map((item) => (
                 <a key={item.href} href={item.href} className="text-white text-lg leading-tight select-none">
-                  <LetterSwapForward label={item.label} reverse />
+                  <LetterSwapForward label={item.label} className="cursor-none" reverse />
                 </a>
               ))}
             </motion.div>
