@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useSpring, useTransform, Variants, MotionValue } from "framer-motion";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import Typewriter from "@/components/fancy/text/typewriter";
 
 const sections = [
@@ -26,17 +26,22 @@ const sections = [
 ];
 
 function useCircleAnimations(count: number, scrollYProgress: MotionValue<number>) {
-  const middle = Math.floor(count / 2);
+  return useMemo(() => {
+    const middle = Math.floor(count / 2);
+    const animations = [];
 
-  return Array.from({ length: count }).map((_, i) => {
-    const order = i <= middle ? i : count - 1 - i;
-    const start = (order / Math.ceil(count / 2)) * 0.7;
+    for (let i = 0; i < count; i++) {
+      const order = i <= middle ? i : count - 1 - i;
+      const start = (order / Math.ceil(count / 2)) * 0.7;
 
-    const scaleX = useSpring(useTransform(scrollYProgress, [start, start + 0.05], [1, 1]));
-    const scaleY = useSpring(useTransform(scrollYProgress, [start, start + 0.025, start + 0.04], [0, 1.4, 1]));
+      const scaleX = useSpring(useTransform(scrollYProgress, [start, start + 0.05], [1, 1]));
+      const scaleY = useSpring(useTransform(scrollYProgress, [start, start + 0.025, start + 0.04], [0, 1.4, 1]));
 
-    return { scaleX, scaleY };
-  });
+      animations.push({ scaleX, scaleY });
+    }
+
+    return animations;
+  }, [count, scrollYProgress]);
 }
 
 export default function WorkMain4() {
