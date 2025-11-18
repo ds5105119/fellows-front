@@ -156,7 +156,7 @@ export default function WorkMain4() {
             <div className="md:w-160 text-2xl pt-8 md:pt-16">
               <div>
                 <span>Fellows와 함께하면 더 </span>
-                <span className="block md:hidden">
+                <span className="inline-block md:hidden">
                   <br />
                 </span>
                 <Typewriter
