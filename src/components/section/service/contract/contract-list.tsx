@@ -238,7 +238,7 @@ export function ContractList({ contractsSwr, selectedContract, onContractSelect 
       <div className="text-sm font-bold">계약서: {contracts.length}건</div>
 
       <div className="overflow-x-auto">
-        <table className="table-fixed w-full text-sm" style={{ width: "1230px" }}>
+        <table className="table-fixed w-full text-sm">
           <thead className="sticky top-0 z-10 bg-blue-200/60 backdrop-blur supports-[backdrop-filter]:bg-blue-200/60">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b border-black/5 text-xs font-semibold tracking-wide text-blue-600 uppercase">
