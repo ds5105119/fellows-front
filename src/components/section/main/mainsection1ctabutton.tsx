@@ -115,7 +115,7 @@ export const MobileCTAButton = () => {
         className="w-full px-16 h-[3.5rem] text-lg font-semibold rounded-2xl bg-black active:bg-black"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
-        시작하기
+        무료 견적받기
       </Button>
 
       <AnimatePresence>
@@ -129,6 +129,16 @@ export const MobileCTAButton = () => {
             className={`absolute left-0 right-0 bg-white rounded-2xl border overflow-hidden ${openDirection === "down" ? "top-full" : "bottom-full"}`}
           >
             <div className="flex">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.2 }} className="flex-1">
+                <Link
+                  href="#inquery"
+                  className="block px-4 py-4 text-gray-800 hover:bg-gray-50 transition-colors text-center font-medium border-r last:border-r-0 border-gray-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  무료 견적받기
+                </Link>
+              </motion.div>
+
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0, duration: 0.2 }} className="flex-1">
                 <Link
                   href="/service/dashboard"
@@ -136,16 +146,6 @@ export const MobileCTAButton = () => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   대시보드
-                </Link>
-              </motion.div>
-
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.2 }} className="flex-1">
-                <Link
-                  href="#inquery"
-                  className="block px-4 py-4 text-gray-800 hover:bg-gray-50 transition-colors text-center font-medium border-r last:border-r-0 border-gray-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  문의하기
                 </Link>
               </motion.div>
             </div>

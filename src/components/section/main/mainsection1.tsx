@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { MobileCTAButton } from "./mainsection1ctabutton";
 
 export default async function MainSection1() {
   return (
@@ -39,7 +38,7 @@ export default async function MainSection1() {
 
               <div className="space-x-4 mt-3 flex">
                 <Button size="lg" className="px-16 h-16 text-lg rounded-xl bg-black hover:bg-black/80" asChild>
-                  <Link href="#inquery">지금 문의하기</Link>
+                  <Link href="#inquery">무료 견적받기</Link>
                 </Button>
                 <Button size="lg" variant="secondary" className="px-16 h-16 text-lg rounded-xl" asChild>
                   <Link href="/service/dashboard">대시보드</Link>
@@ -86,7 +85,12 @@ export default async function MainSection1() {
       </div>
 
       <div className="col-span-full w-full flex z-20 md:hidden pt-10">
-        <MobileCTAButton />
+        <Link
+          href="/#inquery"
+          className="w-full px-16 h-[3.5rem] text-lg font-semibold rounded-2xl flex items-center justify-center bg-black text-white active:bg-black"
+        >
+          무료 견적받기
+        </Link>
       </div>
 
       <div className="col-span-full grid grid-cols-2 md:grid-cols-5 px-8 max-w-3xl w-full mx-auto justify-items-center items-center mt-20 md:mt-24 gap-y-6">

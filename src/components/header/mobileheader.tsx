@@ -212,8 +212,8 @@ export default function MobileHeader({ session }: { session: Session | null }) {
                 }}
               >
                 {/* Login Button */}
-                <Link href="/service/dashboard" className="flex items-center gap-x-2 px-5 py-2.5 rounded-full bg-black text-white font-semibold w-fit">
-                  <span>지금 바로 시작하기 ✨</span>
+                <Link href="/service/project/new" className="flex items-center gap-x-2 px-5 py-2.5 rounded-full bg-black text-white font-semibold w-fit">
+                  <span>무료 AI 견적받기 ✨</span>
                 </Link>
               </motion.div>
             </motion.div>
