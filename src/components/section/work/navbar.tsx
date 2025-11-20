@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { AnimatePresence, motion, useMotionValue, type Easing } from "framer-motion";
 import { useLenis } from "lenis/react";
 import { useCursor } from "@/components/ui/cursor-controller";
@@ -40,7 +41,7 @@ const HamburgerButton = ({ isOpen, onClick, closedColorClass }: { isOpen: boolea
 export default function Navbar() {
   const lenis = useLenis();
   const scrollY = useMotionValue(0);
-  const { setCursor, resetCursor } = useCursor();
+  const { setCursor, resetCursor, pushCursor } = useCursor();
 
   // ===== 데스크톱 로고 =====
   const desktopLogoRef = useRef<SVGSVGElement | null>(null);
@@ -139,6 +140,101 @@ export default function Navbar() {
     },
   };
 
+  // ===== 아이콘/메뉴 영역용 "iOS pointer" 락 상태 =====
+  const [iconLock, setIconLock] = useState<{
+    rect: DOMRect;
+    padding: number;
+    id: number;
+  } | null>(null);
+
+  const iconCursorDisposeRef = useRef<(() => void) | null>(null);
+  const iconLockIdRef = useRef(0); // 락 세대 관리용
+
+  const unlockIconCursor = useCallback((id?: number) => {
+    // id가 넘어왔는데 이미 더 최신 락이 있으면 (레이스) 무시
+    if (id !== undefined && iconLockIdRef.current !== id) return;
+
+    iconCursorDisposeRef.current?.();
+    iconCursorDisposeRef.current = null;
+    setIconLock(null);
+  }, []);
+
+  // Navbar 언마운트될 때 혹시 잠겨 있으면 복구
+  useEffect(() => {
+    return () => {
+      iconCursorDisposeRef.current?.();
+      iconCursorDisposeRef.current = null;
+    };
+  }, []);
+
+  const handleIconEnter = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const padding = 3;
+
+    // 이전 커서 상태 정리
+    iconCursorDisposeRef.current?.();
+    iconCursorDisposeRef.current = null;
+
+    // 새 락 id 부여
+    const id = ++iconLockIdRef.current;
+    setIconLock({ rect, padding, id });
+
+    // 글로벌 커서 content 숨기기 (위치 추적은 유지)
+    iconCursorDisposeRef.current = pushCursor({
+      content: null,
+    });
+  };
+
+  const handleIconLeave = () => {
+    // 락 해제는 mousemove / document mouseleave 에서 처리
+  };
+
+  // 1) 창 밖(주소창 등)으로 나가면 무조건 락 해제 (해당 세대일 때만)
+  useEffect(() => {
+    if (!iconLock) return;
+
+    const { id } = iconLock;
+
+    const handleLeaveDoc = () => {
+      unlockIconCursor(id);
+    };
+
+    document.addEventListener("mouseleave", handleLeaveDoc);
+    return () => {
+      document.removeEventListener("mouseleave", handleLeaveDoc);
+    };
+  }, [iconLock, unlockIconCursor]);
+
+  // 2) 아이콘/메뉴 영역(패딩 포함)을 벗어나면 즉시 락 해제 (해당 세대만)
+  useEffect(() => {
+    if (!iconLock) return;
+
+    const { rect, padding, id } = iconLock;
+
+    const handleMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+
+      // 패딩 포함 영역
+      const minX = rect.left - padding;
+      const maxX = rect.right + padding;
+      const minY = rect.top - padding;
+      const maxY = rect.bottom + padding;
+
+      const insideX = clientX >= minX && clientX <= maxX;
+      const insideY = clientY >= minY && clientY <= maxY;
+
+      // 가로/세로 중 하나라도 벗어나면 즉시 해제
+      if (!insideX || !insideY) {
+        unlockIconCursor(id);
+      }
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    return () => {
+      window.removeEventListener("mousemove", handleMove);
+    };
+  }, [iconLock, unlockIconCursor]);
+
   return (
     <>
       {/* 로고 */}
@@ -153,6 +249,7 @@ export default function Navbar() {
           <motion.p className="font-bold">We help you get there with design that is bold, imaginative, and distinctly human.</motion.p>
         </motion.div>
 
+        {/* SVG 로고 */}
         <motion.svg ref={desktopLogoRef} className="select-none" viewBox="0 0 44 9" fill="none" xmlns="http://www.w3.org/2000/svg">
           <motion.path d="M0 8.52V0H5.88V1.536H0.816L1.824 0.492V4.392L0.816 3.6H5.664V5.112H0.816L1.824 4.32V8.52H0Z" fill="black" />
           <motion.path
@@ -185,7 +282,7 @@ export default function Navbar() {
       {/* 데스크톱 */}
       <motion.header className="fixed top-0 w-full z-50 hidden md:flex mix-blend-difference pointer-events-none">
         <motion.nav className="absolute top-4 left-0 w-full flex gap-4 px-4 pointer-events-auto">
-          {/* 1. 로고 */}
+          {/* 1. 로고 텍스트 */}
           <motion.div className="text-white shrink-0 pr-4 lg:pr-16 xl:pr-64">
             <motion.span className="font-extrabold text-lg">Fellows </motion.span>
             <motion.span className="font-normal text-lg">works</motion.span>
@@ -196,14 +293,20 @@ export default function Navbar() {
             {/* 2. 메뉴 */}
             <motion.div className="flex flex-col items-start flex-1 min-w-0">
               {menuItems.map((item) => (
-                <a key={item.href} href={item.href} className="text-white text-lg leading-tight select-none">
+                <motion.a
+                  key={item.href}
+                  href={item.href}
+                  className="text-white text-lg leading-tight select-none"
+                  onMouseEnter={handleIconEnter}
+                  onMouseLeave={handleIconLeave}
+                >
                   <LetterSwapForward label={item.label} className="cursor-none" reverse />
-                </a>
+                </motion.a>
               ))}
             </motion.div>
 
             {/* 3. 아이콘 - 메뉴 옆에 바로 */}
-            <motion.div className="flex items-center space-x-4 shrink-0 px-1 md:px-4 lg:px-10 xl:px-16 select-none">
+            <motion.div className="relative flex items-center space-x-4 shrink-0 mx-1 md:mx-4 lg:mx-10 xl:mx-16 select-none px-4 py-2 rounded-full">
               <motion.div className="text-yellow-200 text-5xl md:text-6xl lg:text-7xl animate-spin duration-5000">❋</motion.div>
               <motion.div className="text-yellow-200 text-5xl md:text-6xl lg:text-7xl animate-spin duration-10000">❖</motion.div>
               <motion.div className="text-yellow-200 text-5xl md:text-6xl lg:text-7xl animate-spin duration-15000">✥</motion.div>
@@ -271,6 +374,37 @@ export default function Navbar() {
               <motion.p className="text-sm text-zinc-500 text-center">© 2025 Fellows. All rights reserved.</motion.p>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 아이콘에 달라붙는 iOS pointer 스타일 오버레이 */}
+      <AnimatePresence>
+        {iconLock && (
+          <motion.div
+            className="fixed pointer-events-none z-[55] rounded-md bg-black/12"
+            style={{
+              left: iconLock.rect.left + iconLock.rect.width / 2,
+              top: iconLock.rect.top + iconLock.rect.height / 2,
+              transform: "translate(-50%, -50%)",
+            }}
+            initial={{
+              opacity: 0,
+              width: 0,
+              height: 0,
+            }}
+            animate={{
+              opacity: 1,
+              width: iconLock.rect.width + iconLock.padding * 2,
+              height: iconLock.rect.height + iconLock.padding * 2,
+            }}
+            exit={{ opacity: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 320,
+              damping: 26,
+              mass: 0.6,
+            }}
+          />
         )}
       </AnimatePresence>
     </>

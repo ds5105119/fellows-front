@@ -28,7 +28,7 @@ export default function WorkMain6() {
         Together
       </div>
 
-      <div className="mt-6 md:mt-12 flex md:space-x-64">
+      <div className="mt-6 md:mt-12 flex xl:space-x-64">
         {/* 모바일 버전 */}
         <motion.button
           className="relative rounded-full bg-amber-500 h-24 w-[200px] cursor-none overflow-hidden block md:hidden mt-6"

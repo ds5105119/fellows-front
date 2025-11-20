@@ -51,7 +51,7 @@ export default async function RootLayout({
         }
       >
         <LenisProvider>
-          <div className="relative overscroll-none">
+          <div className="relative overscroll-none md:cursor-none">
             <main className="scrollbar-hide break-keep">{children}</main>
             <Footer />
           </div>

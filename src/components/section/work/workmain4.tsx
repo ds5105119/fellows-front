@@ -9,19 +9,17 @@ const sections = [
     number: "01",
     title: "DISCOVER",
     description:
-      "Kicking off with a discovery to learn in (more detail) about your brand, clients, goals, personality, services, ethos and more. We want to know you and your business inside and out. The goal here is to gather as much information as possible to help us understand your brand as thoroughly as possible, so there is no second-guessing. We want to know your goals, dislikes, and expectations.",
+      "브랜드, 고객, 목표, 서비스, 가치관 등 모든 것을 깊이 이해하기 위해 탐색을 시작합니다. 당신과 비즈니스를 속속들이 이해하는 것이 목표이며, 명확한 방향성을 위해 필요한 모든 정보를 수집합니다.",
   },
   {
     number: "02",
     title: "DEFINE",
-    description:
-      "We define the vision, strategy, and scope based on insights gathered. Creating clarity and focus to align design and development with your goals.",
+    description: "수집된 인사이트를 기반으로 비전, 전략, 범위를 정의합니다. 디자인과 개발이 목표에 맞게 자연스럽게 연결되도록 명확성과 집중을 제공합니다.",
   },
   {
     number: "03",
     title: "DELIVER",
-    description:
-      "Execution of designs and implementation of web solutions that excite and move people. We ensure every pixel and interaction is crafted to perfection. Execution of designs and implementation of web solutions that excite and move people. We ensure every pixel and interaction is crafted to perfection",
+    description: "사람들에게 감동을 주는 디자인과 웹 솔루션을 구현합니다. 모든 픽셀과 인터랙션이 완벽하게 다듬어져, 사용 경험이 세련되고 직관적이도록 합니다.",
   },
 ];
 

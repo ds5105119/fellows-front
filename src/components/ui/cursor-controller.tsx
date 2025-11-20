@@ -2,7 +2,8 @@
 
 import React, { createContext, useEffect, useContext, useMemo, useRef, useState, useCallback } from "react";
 import type { ReactNode } from "react";
-import { motion, AnimatePresence, type Variants, type Transition } from "motion/react";
+import { motion, AnimatePresence, LayoutGroup, type Variants, type Transition } from "motion/react";
+
 interface CursorProps {
   children: ReactNode;
   className?: string;
@@ -51,7 +52,7 @@ export const Cursor: React.FC<CursorProps> = ({ children, className = "", varian
       };
     }
 
-    // default: track whole document
+    // 기본: 전체 문서 추적
     document.addEventListener("mousemove", updatePosition);
     setVisible(true);
 
@@ -65,6 +66,7 @@ export const Cursor: React.FC<CursorProps> = ({ children, className = "", varian
       ref={cursorRef}
       className={`pointer-events-none fixed top-0 left-0 z-[1000] hidden md:block ${className}`}
       style={{
+        // 마우스 위치 + 중앙 정렬
         transform: `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`,
         width: 0,
         height: 0,
@@ -84,6 +86,7 @@ export const Cursor: React.FC<CursorProps> = ({ children, className = "", varian
               ...transition,
             }}
           >
+            {/* 여기 안에 layoutId="cursor"가 들어간 모양들이 들어올 거야 */}
             {children}
           </motion.div>
         )}
@@ -92,21 +95,17 @@ export const Cursor: React.FC<CursorProps> = ({ children, className = "", varian
   );
 };
 
-type CursorPayload = {
+export type CursorPayload = {
   content?: ReactNode;
   variants?: Variants;
   transition?: Transition;
-  className?: string;
+  className?: string; // Cursor wrapper용 클래스
 };
 
 type CursorAPI = {
-  /** 즉시 치환 */
   setCursor: (nodeOrPayload: ReactNode | CursorPayload) => void;
-  /** 원상복구 */
   resetCursor: () => void;
-  /** 중첩 진입/이탈 관리 (hover-in 시 push, leave 시 disposer 호출) */
   pushCursor: (payload: CursorPayload) => () => void;
-  /** hover/focus 바인딩 헬퍼 */
   withCursor: (payload: CursorPayload) => {
     onMouseEnter: () => void;
     onMouseLeave: () => void;
@@ -141,7 +140,7 @@ export function CursorProvider({
 
   const setCursor = useCallback((nodeOrPayload: ReactNode | CursorPayload) => {
     setState((prev) =>
-      typeof nodeOrPayload === "object" && nodeOrPayload && "content" in nodeOrPayload
+      typeof nodeOrPayload === "object" && nodeOrPayload !== null && "content" in nodeOrPayload
         ? (nodeOrPayload as CursorPayload)
         : { ...prev, content: nodeOrPayload as ReactNode }
     );
@@ -202,11 +201,13 @@ export function CursorProvider({
 
   return (
     <CursorCtx.Provider value={value}>
-      {/* 실제 커서 렌더: 네가 만든 Cursor 컴포넌트를 그대로 사용 */}
-      <Cursor attachToParent={attachToParent} variants={state.variants} transition={state.transition}>
-        {state.content}
-      </Cursor>
-      {children}
+      {/* layoutId 공유를 위해 LayoutGroup으로 Cursor + children 감싸기 */}
+      <LayoutGroup id="global-cursor">
+        <Cursor attachToParent={attachToParent} variants={state.variants} transition={state.transition} className={state.className}>
+          {state.content}
+        </Cursor>
+        {children}
+      </LayoutGroup>
     </CursorCtx.Provider>
   );
 }
